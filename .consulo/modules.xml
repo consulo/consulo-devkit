@@ -78,7 +78,7 @@
       </module>
       <module name="devkit-lombok" dirurl="file://$PROJECT_DIR$/devkit-lombok">
         <extension id="java" sdk-module-name="consulo-devkit" sdk-name="" language-level-module-name="consulo-devkit" language-level-name="" />
-        <extension id="consulo-plugin" sdk-module-name="consulo-devkit" sdk-name="" />
+        <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" />
         <content url="file://$MODULE_DIR$">
           <content-folder type="SOURCE" url="file://$MODULE_DIR$/src" />
         </content>
