@@ -74,6 +74,51 @@
             <SOURCES />
           </library>
         </orderEntry>
+        <orderEntry type="module" module-name="devkit-lombok" />
+      </module>
+      <module name="devkit-lombok" dirurl="file://$PROJECT_DIR$/devkit-lombok">
+        <extension id="java" sdk-module-name="consulo-devkit" sdk-name="" language-level-module-name="consulo-devkit" language-level-name="" />
+        <extension id="consulo-plugin" sdk-module-name="consulo-devkit" sdk-name="" />
+        <content url="file://$MODULE_DIR$">
+          <content-folder type="SOURCE" url="file://$MODULE_DIR$/src" />
+        </content>
+        <orderEntry type="sourceFolder" forTests="false" />
+        <orderEntry type="module-extension-sdk" extension-id="java" />
+        <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
+        <orderEntry type="module-library">
+          <library name="consulo:Java Platform">
+            <CLASSES>
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java-platform/lib/java-compiler-artifact-impl.jar!/" />
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java-platform/lib/java-platform.jar!/" />
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java-platform/lib/java-rt.jar!/" />
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java-platform/lib/jdk-annotations.jar!/" />
+            </CLASSES>
+            <JAVADOC />
+            <SOURCES />
+          </library>
+        </orderEntry>
+        <orderEntry type="module-library">
+          <library name="consulo:Java">
+            <CLASSES>
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/java-copyright.jar!/" />
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/java-debugger-api.jar!/" />
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/java-debugger-impl.jar!/" />
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/java-intellilang.jar!/" />
+              <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/java.jar!/" />
+            </CLASSES>
+            <JAVADOC />
+            <SOURCES />
+          </library>
+        </orderEntry>
+        <orderEntry type="module-library">
+          <library>
+            <CLASSES>
+              <root url="jar://G:/consulo-ext-plugins/lombok/lib/lombok.jar!/" />
+            </CLASSES>
+            <JAVADOC />
+            <SOURCES />
+          </library>
+        </orderEntry>
       </module>
     </modules>
   </component>

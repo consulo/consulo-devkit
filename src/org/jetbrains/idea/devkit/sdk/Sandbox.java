@@ -15,6 +15,7 @@
  */
 package org.jetbrains.idea.devkit.sdk;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.projectRoots.SdkModel;
 import com.intellij.openapi.projectRoots.ValidatableSdkAdditionalData;
@@ -23,7 +24,6 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.JDOMExternalizable;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.vfs.LocalFileSystem;
-import org.consulo.lombok.annotations.Logger;
 import org.jdom.Element;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
@@ -31,8 +31,9 @@ import org.jetbrains.idea.devkit.DevKitBundle;
  * User: anna
  * Date: Nov 22, 2004
  */
-@Logger
 public class Sandbox implements ValidatableSdkAdditionalData, JDOMExternalizable {
+  private static final Logger LOGGER = Logger.getInstance(Sandbox.class);
+
   @SuppressWarnings({"WeakerAccess"})
   public String mySandboxHome;
 

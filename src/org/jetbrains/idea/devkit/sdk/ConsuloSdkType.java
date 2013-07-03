@@ -15,6 +15,7 @@
  */
 package org.jetbrains.idea.devkit.sdk;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.projectRoots.*;
@@ -55,7 +56,7 @@ public class ConsuloSdkType extends SdkType {
 
   @Override
   public Icon getIcon() {
-    return DevkitIcons.Add_sdk;
+    return AllIcons.Icon16;
   }
 
   @Nullable
