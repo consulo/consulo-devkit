@@ -30,7 +30,7 @@ import com.intellij.openapi.projectRoots.JavaSdkType;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.*;
 import com.intellij.packaging.artifacts.Artifact;
-import com.intellij.packaging.artifacts.ArtifactPointerManager;
+import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
 import org.consulo.sdk.SdkPointerManager;
 import org.consulo.sdk.SdkUtil;
@@ -206,7 +206,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
       @NotNull
       @Override
       public NamedPointerManager<Artifact> create() {
-        return ArtifactPointerManager.getInstance(getProject());
+        return ArtifactPointerUtil.getPointerManager(getProject());
       }
     });
 
@@ -254,7 +254,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
   }
 
   public void setArtifactName(@Nullable String name) {
-    myArtifactPointer = name == null ? null : ArtifactPointerManager.getInstance(getProject()).create(name);
+    myArtifactPointer = name == null ? null : ArtifactPointerUtil.getPointerManager(getProject()).create(name);
   }
 
   @Nullable
