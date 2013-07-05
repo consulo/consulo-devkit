@@ -19,13 +19,14 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.HashSet;
-import com.intellij.util.descriptors.ConfigFile;
+import org.consulo.java.platform.roots.SpecialDirUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.build.PluginBuildConfiguration;
 import org.jetbrains.idea.devkit.build.PluginBuildUtil;
 import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
 
@@ -38,6 +39,8 @@ import java.util.Set;
  * @since 13:48/23.05.13
  */
 public class PluginModuleUtil {
+  public static final String PLUGIN_XML = "plugin.xml";
+
   public static Module[] getAllPluginModules(final Project project) {
     List<Module> modules = new ArrayList<Module>();
     Module[] allModules = ModuleManager.getInstance(project).getModules();
@@ -51,15 +54,28 @@ public class PluginModuleUtil {
 
   @Nullable
   public static XmlFile getPluginXml(Module module) {
-    if (module == null) return null;
+    if (module == null) {
+      return null;
+    }
     if (ModuleUtil.getExtension(module, PluginModuleExtension.class) == null) {
       return null;
     }
 
-    final PluginBuildConfiguration buildConfiguration = PluginBuildConfiguration.getInstance(module);
-    if (buildConfiguration == null) return null;
-    final ConfigFile configFile = buildConfiguration.getPluginXmlConfigFile();
-    return configFile != null ? configFile.getXmlFile() : null;
+    PsiManager psiManager = PsiManager.getInstance(module.getProject());
+
+    List<VirtualFile> virtualFiles = SpecialDirUtil.collectSpecialDirs(module, SpecialDirUtil.META_INF);
+    for (VirtualFile virtualFile : virtualFiles) {
+      VirtualFile child = virtualFile.findChild(PLUGIN_XML);
+      if (child == null) {
+        continue;
+      }
+
+      PsiFile file = psiManager.findFile(child);
+      if(file instanceof XmlFile) {
+        return (XmlFile) file;
+      }
+    }
+    return null;
   }
 
   public static boolean isPluginModuleOrDependency(@NotNull Module module) {
@@ -70,9 +86,8 @@ public class PluginModuleUtil {
     return getCandidateModules(module).size() > 0;
   }
 
+  @NotNull
   public static List<Module> getCandidateModules(Module module) {
-    final ModuleRootManager manager = ModuleRootManager.getInstance(module);
-
     final Module[] modules = ModuleManager.getInstance(module.getProject()).getModules();
     final List<Module> candidates = new ArrayList<Module>(modules.length);
     final Set<Module> deps = new HashSet<Module>(modules.length);
@@ -88,5 +103,4 @@ public class PluginModuleUtil {
     }
     return candidates;
   }
-
 }

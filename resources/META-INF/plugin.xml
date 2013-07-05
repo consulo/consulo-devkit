@@ -19,8 +19,6 @@
   <extensions defaultExtensionNs="com.intellij">
     <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
 
-    <antBuildGen implementation="org.jetbrains.idea.devkit.build.ant.ChunkBuildPluginExtension"/>
-
     <useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
 
     <configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
@@ -102,21 +100,8 @@
                         implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionsImpl"/>
 
   </extensions>
-  <module-components>
-    <component>
-      <implementation-class>org.jetbrains.idea.devkit.build.PluginBuildConfiguration</implementation-class>
-      <option name="type" value="PLUGIN_MODULE"/>
-    </component>
-  </module-components>
 
   <actions>
-    <group id="PluginDeployActions">
-      <action class="org.jetbrains.idea.devkit.build.PrepareToDeployAction" id="MakeJarAction"/>
-      <action class="org.jetbrains.idea.devkit.build.PrepareAllToDeployAction" id="MakeAllJarsAction"/>
-      <add-to-group anchor="after" group-id="ProjectViewPopupMenu" relative-to-action="Compile"/>
-      <add-to-group anchor="after" group-id="BuildMenu" relative-to-action="BuildJar"/>
-    </group>
-
     <action class="org.jetbrains.idea.devkit.actions.NewApplicationComponentAction" text="Application Component"
             id="NewApplicationComponent">
       <add-to-group anchor="last" group-id="NewGroup"/>

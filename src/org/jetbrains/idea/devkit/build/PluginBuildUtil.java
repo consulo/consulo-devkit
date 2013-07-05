@@ -18,21 +18,13 @@ package org.jetbrains.idea.devkit.build;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.OrderEnumerator;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.util.Computable;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.Processor;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
-import org.jetbrains.idea.devkit.sdk.Sandbox;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -42,28 +34,6 @@ import java.util.Set;
  */
 public class PluginBuildUtil {
   private PluginBuildUtil() {
-  }
-
-  @NonNls
-  @Nullable
-  public static String getPluginExPath(Module module) {
-    final PluginModuleExtension extension = ModuleUtil.getExtension(module, PluginModuleExtension.class);
-    if (extension == null) {
-      return null;
-    }
-    final Sdk sdk = extension.getSdk();
-    if (sdk == null) {
-      return null;
-    }
-    String sandboxHome = ((Sandbox)sdk.getSdkAdditionalData()).getSandboxHome();
-    if (sandboxHome == null) return null;
-    try {
-      sandboxHome = new File(sandboxHome).getCanonicalPath();
-    }
-    catch (IOException e) {
-      return null;
-    }
-    return sandboxHome + File.separator + "plugins" + File.separator + module.getName();
   }
 
   public static void getDependencies(Module module, final Set<Module> modules) {
