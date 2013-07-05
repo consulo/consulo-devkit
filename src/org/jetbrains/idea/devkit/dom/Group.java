@@ -143,4 +143,10 @@ public interface Group extends Actions {
    * @return created child
    */
   AddToGroup addAddToGroup();
+
+  /**
+   * Return internal flag - show in internal Consulo mode.
+   * @return
+   */
+  GenericAttributeValue<Boolean> isInternal();
 }
