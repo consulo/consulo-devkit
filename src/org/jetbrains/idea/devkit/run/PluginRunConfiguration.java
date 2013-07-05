@@ -49,7 +49,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-public class PluginRunConfiguration extends RunConfigurationBase implements ModuleRunConfiguration{
+public class PluginRunConfiguration extends RunConfigurationBase implements ModuleRunProfile{
   private static final String JAVA_SDK = "java-sdk";
   private static final String CONSULO_SDK = "consulo-sdk";
   private static final String ARTIFACT = "artifact";
@@ -63,7 +63,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
   public String VM_PARAMETERS;
   public String PROGRAM_PARAMETERS;
 
-  public PluginRunConfiguration(final Project project, final ConfigurationFactory factory, final String name) {
+  protected PluginRunConfiguration(Project project, ConfigurationFactory factory, String name) {
     super(project, factory, name);
   }
 
@@ -72,13 +72,15 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
     return new PluginRunConfigurationEditor(getProject());
   }
 
+  @Nullable
   @Override
-  public JDOMExternalizable createRunnerSettings(ConfigurationInfoProvider provider) {
+  public JDOMExternalizable createRunnerSettings(ConfigurationInfoProvider configurationInfoProvider) {
     return null;
   }
 
+  @Nullable
   @Override
-  public SettingsEditor<JDOMExternalizable> getRunnerSettingsEditor(ProgramRunner runner) {
+  public SettingsEditor<JDOMExternalizable> getRunnerSettingsEditor(ProgramRunner programRunner) {
     return null;
   }
 
@@ -95,11 +97,11 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
     }
 
     final Artifact artifact = myArtifactPointer == null ? null : myArtifactPointer.get();
-    if(artifact == null) {
+    if (artifact == null) {
       throw new ExecutionException(DevKitBundle.message("run.configuration.no.plugin.artifact"));
     }
 
-    String sandboxHome = ((Sandbox)consuloSdk.getSdkAdditionalData()).getSandboxHome();
+    String sandboxHome = ((Sandbox) consuloSdk.getSdkAdditionalData()).getSandboxHome();
 
     if (sandboxHome == null) {
       throw new ExecutionException(DevKitBundle.message("sandbox.no.configured"));
@@ -107,8 +109,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 
     try {
       sandboxHome = new File(sandboxHome).getCanonicalPath();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ExecutionException(DevKitBundle.message("sandbox.no.configured"));
     }
     final String canonicalSandbox = sandboxHome;
@@ -154,7 +155,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
         params.getClassPath().addFirst(libPath + File.separator + "extensions.jar");
         params.getClassPath().addFirst(libPath + File.separator + "bootstrap.jar");
         params.getClassPath().addFirst(libPath + File.separator + "idea.jar");
-        params.getClassPath().addFirst(((JavaSdkType)javaSdk.getSdkType()).getToolsPath(javaSdk));
+        params.getClassPath().addFirst(((JavaSdkType) javaSdk.getSdkType()).getToolsPath(javaSdk));
 
         params.setMainClass("com.intellij.idea.Main");
 
@@ -166,6 +167,11 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
     return state;
   }
 
+  @Override
+  public void checkConfiguration() throws RuntimeConfigurationException {
+
+  }
+
   private static void fillParameterList(ParametersList list, @Nullable String value) {
     if (value == null) return;
 
@@ -174,10 +180,6 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
         list.add(parameter);
       }
     }
-  }
-
-  @Override
-  public void checkConfiguration() throws RuntimeConfigurationException {
   }
 
   @Override
@@ -227,9 +229,9 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
     final NamedPointerManager<T> namedPointerManager = fun.create();
 
     Element child = parent.getChild(childName);
-    if(child != null) {
+    if (child != null) {
       final String attributeValue = child.getAttributeValue(NAME);
-      if(attributeValue != null) {
+      if (attributeValue != null) {
         return namedPointerManager.create(attributeValue);
       }
     }
@@ -237,7 +239,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
   }
 
   private static void writePointer(String childName, Element parent, NamedPointer<?> pointer) {
-    if(pointer == null) {
+    if (pointer == null) {
       return;
     }
     Element element = new Element(childName);
@@ -261,7 +263,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
   }
 
   public void setJavaSdkName(@Nullable String name) {
-    myJavaSdkPointer = name == null ? null :SdkUtil.createPointer(name);
+    myJavaSdkPointer = name == null ? null : SdkUtil.createPointer(name);
   }
 
   public void setConsuloSdkName(@Nullable String name) {
@@ -277,11 +279,11 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
   @Override
   public Module[] getModules() {
     Artifact artifact = myArtifactPointer == null ? null : myArtifactPointer.get();
-    if(artifact == null) {
+    if (artifact == null) {
       return Module.EMPTY_ARRAY;
     }
     final Set<Module> modules =
-      ArtifactUtil.getModulesIncludedInArtifacts(Collections.singletonList(artifact), getProject());
+        ArtifactUtil.getModulesIncludedInArtifacts(Collections.singletonList(artifact), getProject());
 
     return modules.isEmpty() ? Module.EMPTY_ARRAY : modules.toArray(new Module[modules.size()]);
   }

@@ -157,6 +157,7 @@
           <content-type name="Java" enabled="true" />
           <content-type name="SQL" enabled="true" />
           <content-type name="PL/SQL" enabled="true" />
+          <content-type name="PHP" enabled="true" />
           <content-type name="Groovy" enabled="true" />
           <content-type name="VTL" enabled="true" />
         </content-types>
