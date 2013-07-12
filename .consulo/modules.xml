@@ -113,7 +113,7 @@
         <orderEntry type="module-library">
           <library>
             <CLASSES>
-              <root url="jar://G:/consulo-ext-plugins/lombok/lib/lombok.jar!/" />
+              <root url="jar://$MODULE_DIR$/../lombok-base/lib/lombok-base.jar!/" />
             </CLASSES>
             <JAVADOC />
             <SOURCES />

@@ -101,6 +101,9 @@ public class PluginConfigPanel extends JPanel {
 
             JarFileSystem jarFileSystem = JarFileSystem.getInstance();
             for (File file : classPath) {
+              if(file.isDirectory()) {
+                continue;
+              }
               modifiableModel.addRoot(jarFileSystem.findFileByPath(file.getPath() + JarFileSystem.JAR_SEPARATOR), OrderRootType.CLASSES);
             }
 
