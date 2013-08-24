@@ -20,7 +20,6 @@ import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.*;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
@@ -70,18 +69,6 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
   @Override
   public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
     return new PluginRunConfigurationEditor(getProject());
-  }
-
-  @Nullable
-  @Override
-  public JDOMExternalizable createRunnerSettings(ConfigurationInfoProvider configurationInfoProvider) {
-    return null;
-  }
-
-  @Nullable
-  @Override
-  public SettingsEditor<JDOMExternalizable> getRunnerSettingsEditor(ProgramRunner programRunner) {
-    return null;
   }
 
   @Override
