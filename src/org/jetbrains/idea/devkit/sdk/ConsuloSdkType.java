@@ -15,31 +15,35 @@
  */
 package org.jetbrains.idea.devkit.sdk;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.ide.highlighter.JarArchiveFileType;
-import com.intellij.openapi.application.PathManager;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.projectRoots.*;
-import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.ArchiveFileSystem;
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
-import icons.DevkitIcons;
-import org.jdom.Element;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.DevKitBundle;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.swing.Icon;
+
+import org.jdom.Element;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import com.intellij.icons.AllIcons;
+import com.intellij.ide.highlighter.JarArchiveFileType;
+import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.projectRoots.AdditionalDataConfigurable;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.SdkAdditionalData;
+import com.intellij.openapi.projectRoots.SdkModel;
+import com.intellij.openapi.projectRoots.SdkModificator;
+import com.intellij.openapi.projectRoots.SdkType;
+import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.ArchiveFileSystem;
+import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
+import icons.DevkitIcons;
 
 /**
  * User: anna
@@ -162,18 +166,7 @@ public class ConsuloSdkType extends SdkType {
         }
         addSources(new File(sdkHome), sdkModificator);
 
-        sdkModificator.setSdkAdditionalData(new Sandbox(getDefaultSandbox()));
         sdkModificator.commitChanges();
-    }
-
-    static String getDefaultSandbox() {
-        @NonNls String defaultSandbox = "";
-        try {
-            defaultSandbox = new File(PathManager.getSystemPath()).getCanonicalPath() + File.separator + "plugins-sandbox";
-        } catch (IOException e) {
-            //can't be on running instance
-        }
-        return defaultSandbox;
     }
 
     private static void addSources(File file, SdkModificator sdkModificator) {
@@ -201,28 +194,12 @@ public class ConsuloSdkType extends SdkType {
 
 
     public AdditionalDataConfigurable createAdditionalDataConfigurable(final SdkModel sdkModel, SdkModificator sdkModificator) {
-        return new IdeaJdkConfigurable(sdkModel, sdkModificator);
+        return null;
     }
 
     public void saveAdditionalData(SdkAdditionalData additionalData, Element additional) {
-        if (additionalData instanceof Sandbox) {
-            try {
-                ((Sandbox) additionalData).writeExternal(additional);
-            } catch (WriteExternalException e) {
-                LOG.error(e);
-            }
-        }
     }
 
-    public SdkAdditionalData loadAdditionalData(Sdk sdk, Element additional) {
-        Sandbox sandbox = new Sandbox();
-        try {
-            sandbox.readExternal(additional);
-        } catch (InvalidDataException e) {
-            LOG.error(e);
-        }
-        return sandbox;
-    }
 
     @Override
     public String getPresentableName() {

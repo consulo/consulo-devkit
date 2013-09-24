@@ -30,7 +30,6 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
-import org.jetbrains.idea.devkit.sdk.Sandbox;
 
 import java.io.File;
 import java.util.Arrays;

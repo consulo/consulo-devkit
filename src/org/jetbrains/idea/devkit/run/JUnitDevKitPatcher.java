@@ -15,6 +15,13 @@
  */
 package org.jetbrains.idea.devkit.run;
 
+import java.io.File;
+
+import org.consulo.java.platform.module.extension.JavaModuleExtension;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import com.intellij.execution.JavaTestPatcher;
 import com.intellij.execution.configurations.JavaParameters;
 import com.intellij.execution.configurations.ParametersList;
@@ -23,15 +30,6 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.projectRoots.JavaSdkType;
 import com.intellij.openapi.projectRoots.Sdk;
 import lombok.NonNull;
-import org.consulo.java.platform.module.extension.JavaModuleExtension;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
-import org.jetbrains.idea.devkit.sdk.Sandbox;
-import org.jetbrains.idea.devkit.util.DescriptorUtil;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * User: anna
@@ -73,15 +71,6 @@ public class JUnitDevKitPatcher implements JavaTestPatcher {
 
   @Nullable
   private static String getSandboxPath(final Sdk jdk) {
-    String sandboxHome = ((Sandbox)jdk.getSdkAdditionalData()).getSandboxHome();
-    if (sandboxHome != null) {
-      try {
-        sandboxHome = new File(sandboxHome).getCanonicalPath();
-      }
-      catch (IOException e) {
-        sandboxHome = new File(sandboxHome).getAbsolutePath();
-      }
-    }
-    return sandboxHome;
+    return null; //TODO [VISTALL]
   }
 }
