@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
+import org.consulo.compiler.CompilerPathsManager;
 import org.consulo.sdk.SdkPointerManager;
 import org.consulo.sdk.SdkUtil;
 import org.consulo.util.pointers.Named;
@@ -55,7 +56,6 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.NotNullFactory;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
@@ -152,7 +152,9 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 		final String dataPath;
 		try
 		{
-			File temp = FileUtil.createTempDirectory("consulo-data", "data");
+			CompilerPathsManager compilerPathsManager = CompilerPathsManager.getInstance(env.getProject());
+
+			File temp = new File(compilerPathsManager.getCompilerOutput().getCanonicalPath(), "sandbox");
 			dataPath = temp.getCanonicalPath();
 		}
 		catch(IOException e)
