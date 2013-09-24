@@ -73,7 +73,6 @@ public class IconsReferencesContributor extends PsiReferenceContributor
       @NotNull
       @Override
       public PsiReference[] getReferencesByElement(@NotNull final PsiElement element, @NotNull ProcessingContext context) {
-        if (!PlatformUtils.isIdeaProject(element.getProject())) return PsiReference.EMPTY_ARRAY;
         return new PsiReference[]{new PsiReferenceBase<PsiElement>(element, true) {
           @Override
           public PsiElement resolve() {
@@ -155,7 +154,6 @@ public class IconsReferencesContributor extends PsiReferenceContributor
       @NotNull
       @Override
       public PsiReference[] getReferencesByElement(@NotNull final PsiElement element, @NotNull ProcessingContext context) {
-        if (!PlatformUtils.isIdeaProject(element.getProject())) return PsiReference.EMPTY_ARRAY;
         return new FileReferenceSet(element) {
           @Override
           protected Collection<PsiFileSystemItem> getExtraContexts() {

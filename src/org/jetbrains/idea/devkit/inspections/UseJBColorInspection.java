@@ -15,6 +15,14 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
+import java.awt.Color;
+
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorConstantQuickFix;
+import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorQuickFix;
+import org.jetbrains.idea.devkit.util.PluginModuleUtil;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
@@ -25,15 +33,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.JBColor;
-import com.intellij.util.PlatformUtils;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorConstantQuickFix;
-import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorQuickFix;
-import org.jetbrains.idea.devkit.util.PluginModuleUtil;
-
-import java.awt.*;
 
 /**
  * @author Konstantin Bulenkov
@@ -43,7 +42,7 @@ public class UseJBColorInspection extends DevKitInspectionBase {
   @Override
   public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly) {
     final Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
-    if (module == null || !(PlatformUtils.isIdeaProject(holder.getProject()) || PluginModuleUtil.isPluginModuleOrDependency(module))) {
+    if (module == null || !PluginModuleUtil.isPluginModuleOrDependency(module)) {
       return new JavaElementVisitor() {
       };
     }
