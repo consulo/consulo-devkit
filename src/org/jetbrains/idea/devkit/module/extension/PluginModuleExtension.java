@@ -15,23 +15,72 @@
  */
 package org.jetbrains.idea.devkit.module.extension;
 
+import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
+import org.jdom.Element;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.SdkType;
-import org.consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
+import com.intellij.openapi.vfs.pointers.VirtualFilePointerManager;
 
 /**
  * @author VISTALL
  * @since 1:58/23.05.13
  */
-public class PluginModuleExtension extends ModuleExtensionWithSdkImpl<PluginModuleExtension> {
-  public PluginModuleExtension(@NotNull String id, @NotNull Module module) {
-    super(id, module);
-  }
+public class PluginModuleExtension extends ModuleExtensionWithSdkImpl<PluginModuleExtension>
+{
+	private static final String CUSTOM_PLUGIN_DIR_URL = "custom-plugin-dir-url";
 
-  @Override
-  protected Class<? extends SdkType> getSdkTypeClass() {
-    return ConsuloSdkType.class;
-  }
+	protected VirtualFilePointer myCustomPluginDirPointer;
+
+	public PluginModuleExtension(@NotNull String id, @NotNull Module module)
+	{
+		super(id, module);
+	}
+
+	@Override
+	protected Class<? extends SdkType> getSdkTypeClass()
+	{
+		return ConsuloSdkType.class;
+	}
+
+	@Nullable
+	public String getCustomPluginDirPresentableUrl()
+	{
+		return myCustomPluginDirPointer == null ? null : myCustomPluginDirPointer.getPresentableUrl();
+	}
+
+	@Override
+	public void commit(@NotNull PluginModuleExtension mutableModuleExtension)
+	{
+		super.commit(mutableModuleExtension);
+
+		myCustomPluginDirPointer = mutableModuleExtension.myCustomPluginDirPointer;
+	}
+
+	@Override
+	protected void loadStateImpl(@NotNull Element element)
+	{
+		super.loadStateImpl(element);
+
+		setCustomPluginDirUrl(element.getAttributeValue(CUSTOM_PLUGIN_DIR_URL));
+	}
+
+	public void setCustomPluginDirUrl(@Nullable String url)
+	{
+		myCustomPluginDirPointer = url == null ? null : VirtualFilePointerManager.getInstance().create(url, getModule(), null);
+	}
+
+	@Override
+	protected void getStateImpl(@NotNull Element element)
+	{
+		super.getStateImpl(element);
+
+		if(myCustomPluginDirPointer != null)
+		{
+			element.setAttribute(CUSTOM_PLUGIN_DIR_URL, myCustomPluginDirPointer.getUrl());
+		}
+	}
 }

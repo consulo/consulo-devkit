@@ -15,59 +15,69 @@
  */
 package org.jetbrains.idea.devkit.module.extension;
 
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import lombok.NonNull;
+import java.awt.BorderLayout;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
 import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
 import org.consulo.module.extension.ui.ModuleExtensionWithSdkPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.awt.*;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.util.Comparing;
+import lombok.NonNull;
 
 /**
  * @author VISTALL
  * @since 1:58/23.05.13
  */
-public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtensionWithSdk<PluginModuleExtension> {
-  private PluginModuleExtension myPluginModuleExtension;
+public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtensionWithSdk<PluginModuleExtension>
+{
+	private PluginModuleExtension myPluginModuleExtension;
 
-  public PluginMutableModuleExtension(@NotNull String id, @NotNull Module module, PluginModuleExtension pluginModuleExtension) {
-    super(id, module);
-    myPluginModuleExtension = pluginModuleExtension;
+	public PluginMutableModuleExtension(@NotNull String id, @NotNull Module module, PluginModuleExtension pluginModuleExtension)
+	{
+		super(id, module);
+		myPluginModuleExtension = pluginModuleExtension;
 
-    commit(myPluginModuleExtension);
-  }
+		commit(myPluginModuleExtension);
+	}
 
-  @Nullable
-  @Override
-  public JComponent createConfigurablePanel(@NonNull ModifiableRootModel rootModel, @Nullable Runnable updateOnCheck) {
-    JPanel panel = new JPanel(new BorderLayout());
-    panel.add(new ModuleExtensionWithSdkPanel(this, updateOnCheck), BorderLayout.NORTH);
-    return new PluginConfigPanel(this, rootModel, updateOnCheck);
-  }
+	@Nullable
+	@Override
+	public JComponent createConfigurablePanel(@NonNull ModifiableRootModel rootModel, @Nullable Runnable updateOnCheck)
+	{
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new ModuleExtensionWithSdkPanel(this, updateOnCheck), BorderLayout.NORTH);
+		return new PluginConfigPanel(this, rootModel, updateOnCheck);
+	}
 
-  @Override
-  public void setEnabled(boolean val) {
-    myIsEnabled = val;
-  }
+	@Override
+	public void setEnabled(boolean val)
+	{
+		myIsEnabled = val;
+	}
 
-  @Override
-  public boolean isModified() {
-    return isModifiedImpl(myPluginModuleExtension);
-  }
+	@Override
+	public boolean isModified()
+	{
+		return isModifiedImpl(myPluginModuleExtension) || !Comparing.equal(myCustomPluginDirPointer, myPluginModuleExtension.myCustomPluginDirPointer);
+	}
 
-  @Override
-  public void commit() {
-    myPluginModuleExtension.commit(this);
-  }
+	@Override
+	public void commit()
+	{
+		myPluginModuleExtension.commit(this);
+	}
 
-  @NotNull
-  @Override
-  public MutableModuleInheritableNamedPointer<Sdk> getInheritableSdk() {
-    return (MutableModuleInheritableNamedPointer<Sdk>)super.getInheritableSdk();
-  }
+	@NotNull
+	@Override
+	public MutableModuleInheritableNamedPointer<Sdk> getInheritableSdk()
+	{
+		return (MutableModuleInheritableNamedPointer<Sdk>) super.getInheritableSdk();
+	}
 }
