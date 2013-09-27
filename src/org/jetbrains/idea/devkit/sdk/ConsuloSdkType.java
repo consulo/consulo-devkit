@@ -31,7 +31,6 @@ import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
 import com.intellij.openapi.application.PathManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.projectRoots.AdditionalDataConfigurable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkAdditionalData;
@@ -43,177 +42,221 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.ArchiveFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import icons.DevkitIcons;
 
 /**
  * User: anna
  * Date: Nov 22, 2004
  */
-public class ConsuloSdkType extends SdkType {
-    private static final Logger LOG = Logger.getInstance("#org.jetbrains.idea.devkit.projectRoots.IdeaJdk");
-    @NonNls
-    private static final String LIB_DIR_NAME = "lib";
-    @NonNls
-    private static final String SRC_DIR_NAME = "src";
-    @NonNls
-    private static final String PLUGINS_DIR = "plugins";
+public class ConsuloSdkType extends SdkType
+{
+	@NonNls
+	private static final String LIB_DIR_NAME = "lib";
+	@NonNls
+	private static final String SRC_DIR_NAME = "src";
+	@NonNls
+	private static final String PLUGINS_DIR = "plugins";
 
-    public ConsuloSdkType() {
-        super(DevKitBundle.message("sdk.title"));
-    }
+	public ConsuloSdkType()
+	{
+		super(DevKitBundle.message("sdk.title"));
+	}
 
-    @Override
-    public Icon getIcon() {
-        return AllIcons.Icon16;
-    }
+	@Nullable
+	private static File getMainJar(String home)
+	{
 
-    @Nullable
-    @Override
-    public Icon getGroupIcon() {
-        return DevkitIcons.Sdk_closed;
-    }
+		final File libDir = new File(home, LIB_DIR_NAME);
+		File f = new File(libDir, "idea.jar");
+		if(f.exists())
+		{
+			return f;
+		}
 
-    @NotNull
-    @Override
-    public String getHelpTopic() {
-        return "reference.project.structure.sdk.idea";
-    }
+		return null;
+	}
 
-    public String suggestHomePath() {
-        return PathManager.getHomePath().replace(File.separatorChar, '/');
-    }
+	@Nullable
+	public static String getBuildNumber(String ideaHome)
+	{
+		try
+		{
+			@NonNls final String buildTxt = "/build.txt";
+			return FileUtil.loadFile(new File(ideaHome + buildTxt)).trim();
+		}
+		catch(IOException e)
+		{
+			return null;
+		}
+	}
 
-    public boolean isValidSdkHome(String path) {
-        File home = new File(path);
-        if (!home.exists()) {
-            return false;
-        }
-        if (getBuildNumber(path) == null || getMainJar(path) == null) {
-            return false;
-        }
-        return true;
-    }
+	private static VirtualFile[] getIdeaLibrary(String home)
+	{
+		String plugins = home + File.separator + PLUGINS_DIR + File.separator;
+		ArrayList<VirtualFile> result = new ArrayList<VirtualFile>();
+		appendIdeaLibrary(home, result, "junit.jar");
+		appendIdeaLibrary(plugins + "core", result);
+		return VfsUtilCore.toVirtualFileArray(result);
+	}
 
-    @Nullable
-    private static File getMainJar(String home) {
+	private static void appendIdeaLibrary(final String libDirPath, final ArrayList<VirtualFile> result, @NonNls final String... forbidden)
+	{
+		final String path = libDirPath + File.separator + LIB_DIR_NAME;
+		ArchiveFileSystem fileSystem = JarArchiveFileType.INSTANCE.getFileSystem();
+		final File lib = new File(path);
+		if(lib.isDirectory())
+		{
+			File[] jars = lib.listFiles();
+			if(jars != null)
+			{
+				for(File jar : jars)
+				{
+					@NonNls String name = jar.getName();
+					if(jar.isFile() && Arrays.binarySearch(forbidden, name) < 0 && (name.endsWith(".jar") || name.endsWith(".zip")))
+					{
+						result.add(fileSystem.findLocalVirtualFileByPath(jar.getPath()));
+					}
+				}
+			}
+		}
+	}
 
-        final File libDir = new File(home, LIB_DIR_NAME);
-        File f = new File(libDir, "idea.jar");
-        if (f.exists()) {
-            return f;
-        }
+	private static void addSources(File file, SdkModificator sdkModificator)
+	{
+		final File src = new File(new File(file, LIB_DIR_NAME), SRC_DIR_NAME);
+		if(!src.exists())
+		{
+			return;
+		}
+		File[] srcs = src.listFiles(new FileFilter()
+		{
+			public boolean accept(File pathname)
+			{
+				@NonNls final String path = pathname.getPath();
+				//noinspection SimplifiableIfStatement
+				if(path.contains("generics"))
+				{
+					return false;
+				}
+				return path.endsWith(".jar") || path.endsWith(".zip");
+			}
+		});
+		for(int i = 0; srcs != null && i < srcs.length; i++)
+		{
+			File jarFile = srcs[i];
+			if(jarFile.exists())
+			{
+				ArchiveFileSystem fileSystem = JarArchiveFileType.INSTANCE.getFileSystem();
+				String path = jarFile.getAbsolutePath().replace(File.separatorChar, '/') + ArchiveFileSystem.ARCHIVE_SEPARATOR;
+				fileSystem.setNoCopyJarForPath(path);
+				VirtualFile vFile = fileSystem.findFileByPath(path);
+				sdkModificator.addRoot(vFile, OrderRootType.SOURCES);
+			}
+		}
+	}
 
-        return null;
-    }
+	@Nullable
+	public static Sdk findIdeaJdk(@Nullable Sdk jdk)
+	{
+		if(jdk == null)
+		{
+			return null;
+		}
+		if(jdk.getSdkType() instanceof ConsuloSdkType)
+		{
+			return jdk;
+		}
+		return null;
+	}
 
-    @Nullable
-    @Override
-    public String getVersionString(String sdkHome) {
-        return getBuildNumber(sdkHome);
-    }
+	public static SdkType getInstance()
+	{
+		return SdkType.findInstance(ConsuloSdkType.class);
+	}
 
-    @Override
-    public String suggestSdkName(String currentSdkName, String sdkHome) {
-        String buildNumber = getBuildNumber(sdkHome);
-        return "Consulo " + (buildNumber != null ? buildNumber : "");
-    }
+	@Override
+	public Icon getIcon()
+	{
+		return AllIcons.Icon16;
+	}
 
-    @Nullable
-    public static String getBuildNumber(String ideaHome) {
-        try {
-            @NonNls final String buildTxt = "/build.txt";
-            return FileUtil.loadFile(new File(ideaHome + buildTxt)).trim();
-        } catch (IOException e) {
-            return null;
-        }
-    }
+	@Nullable
+	@Override
+	public Icon getGroupIcon()
+	{
+		return AllIcons.Icon16;
+	}
 
-    private static VirtualFile[] getIdeaLibrary(String home) {
-        String plugins = home + File.separator + PLUGINS_DIR + File.separator;
-        ArrayList<VirtualFile> result = new ArrayList<VirtualFile>();
-        appendIdeaLibrary(home, result, "junit.jar");
-        appendIdeaLibrary(plugins + "core", result);
-        return VfsUtilCore.toVirtualFileArray(result);
-    }
+	@NotNull
+	@Override
+	public String getHelpTopic()
+	{
+		return "reference.project.structure.sdk.idea";
+	}
 
-    private static void appendIdeaLibrary(final String libDirPath, final ArrayList<VirtualFile> result, @NonNls final String... forbidden) {
-        final String path = libDirPath + File.separator + LIB_DIR_NAME;
-        ArchiveFileSystem fileSystem = JarArchiveFileType.INSTANCE.getFileSystem();
-        final File lib = new File(path);
-        if (lib.isDirectory()) {
-            File[] jars = lib.listFiles();
-            if (jars != null) {
-                for (File jar : jars) {
-                    @NonNls String name = jar.getName();
-                    if (jar.isFile() && Arrays.binarySearch(forbidden, name) < 0 && (name.endsWith(".jar") || name.endsWith(".zip"))) {
-                        result.add(fileSystem.findLocalVirtualFileByPath(jar.getPath()));
-                    }
-                }
-            }
-        }
-    }
+	public String suggestHomePath()
+	{
+		return PathManager.getHomePath().replace(File.separatorChar, '/');
+	}
 
-    @Override
-    public void setupSdkPaths(Sdk sdk) {
-        final SdkModificator sdkModificator = sdk.getSdkModificator();
-        final String sdkHome = sdk.getHomePath();
+	public boolean isValidSdkHome(String path)
+	{
+		File home = new File(path);
+		if(!home.exists())
+		{
+			return false;
+		}
+		if(getBuildNumber(path) == null || getMainJar(path) == null)
+		{
+			return false;
+		}
+		return true;
+	}
 
-        final VirtualFile[] ideaLib = getIdeaLibrary(sdkHome);
-        if (ideaLib != null) {
-            for (VirtualFile aIdeaLib : ideaLib) {
-                sdkModificator.addRoot(aIdeaLib, OrderRootType.CLASSES);
-            }
-        }
-        addSources(new File(sdkHome), sdkModificator);
+	@Nullable
+	@Override
+	public String getVersionString(String sdkHome)
+	{
+		return getBuildNumber(sdkHome);
+	}
 
-        sdkModificator.commitChanges();
-    }
+	@Override
+	public String suggestSdkName(String currentSdkName, String sdkHome)
+	{
+		String buildNumber = getBuildNumber(sdkHome);
+		return "Consulo " + (buildNumber != null ? buildNumber : "");
+	}
 
-    private static void addSources(File file, SdkModificator sdkModificator) {
-        final File src = new File(new File(file, LIB_DIR_NAME), SRC_DIR_NAME);
-        if (!src.exists()) return;
-        File[] srcs = src.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                @NonNls final String path = pathname.getPath();
-                //noinspection SimplifiableIfStatement
-                if (path.contains("generics")) return false;
-                return path.endsWith(".jar") || path.endsWith(".zip");
-            }
-        });
-        for (int i = 0; srcs != null && i < srcs.length; i++) {
-            File jarFile = srcs[i];
-            if (jarFile.exists()) {
-                ArchiveFileSystem fileSystem = JarArchiveFileType.INSTANCE.getFileSystem();
-                String path = jarFile.getAbsolutePath().replace(File.separatorChar, '/') + ArchiveFileSystem.ARCHIVE_SEPARATOR;
-                fileSystem.setNoCopyJarForPath(path);
-                VirtualFile vFile = fileSystem.findFileByPath(path);
-                sdkModificator.addRoot(vFile, OrderRootType.SOURCES);
-            }
-        }
-    }
+	@Override
+	public void setupSdkPaths(Sdk sdk)
+	{
+		final SdkModificator sdkModificator = sdk.getSdkModificator();
+		final String sdkHome = sdk.getHomePath();
 
+		final VirtualFile[] ideaLib = getIdeaLibrary(sdkHome);
+		if(ideaLib != null)
+		{
+			for(VirtualFile aIdeaLib : ideaLib)
+			{
+				sdkModificator.addRoot(aIdeaLib, OrderRootType.CLASSES);
+			}
+		}
+		addSources(new File(sdkHome), sdkModificator);
 
-    public AdditionalDataConfigurable createAdditionalDataConfigurable(final SdkModel sdkModel, SdkModificator sdkModificator) {
-        return null;
-    }
+		sdkModificator.commitChanges();
+	}
 
-    public void saveAdditionalData(SdkAdditionalData additionalData, Element additional) {
-    }
+	public AdditionalDataConfigurable createAdditionalDataConfigurable(final SdkModel sdkModel, SdkModificator sdkModificator)
+	{
+		return null;
+	}
 
+	public void saveAdditionalData(SdkAdditionalData additionalData, Element additional)
+	{
+	}
 
-    @Override
-    public String getPresentableName() {
-        return getName();
-    }
-
-    @Nullable
-    public static Sdk findIdeaJdk(@Nullable Sdk jdk) {
-        if (jdk == null) return null;
-        if (jdk.getSdkType() instanceof ConsuloSdkType) return jdk;
-        return null;
-    }
-
-    public static SdkType getInstance() {
-        return SdkType.findInstance(ConsuloSdkType.class);
-    }
+	@Override
+	public String getPresentableName()
+	{
+		return getName();
+	}
 }
