@@ -15,21 +15,42 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.dom.Dependency;
+import org.jetbrains.idea.devkit.dom.Extension;
+import org.jetbrains.idea.devkit.dom.ExtensionPoint;
+import org.jetbrains.idea.devkit.dom.ExtensionPoints;
+import org.jetbrains.idea.devkit.dom.Extensions;
+import org.jetbrains.idea.devkit.dom.IdeaPlugin;
+import org.jetbrains.idea.devkit.dom.With;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PropertyUtil;
 import com.intellij.psi.util.PsiTypesUtil;
 import com.intellij.psi.xml.XmlElement;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
-import com.intellij.refactoring.psi.PropertyUtils;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.LinkedMultiMap;
 import com.intellij.util.containers.MultiMap;
-import com.intellij.util.xml.*;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.DomFileElement;
+import com.intellij.util.xml.DomUtil;
+import com.intellij.util.xml.ExtendClassImpl;
+import com.intellij.util.xml.PsiClassConverter;
+import com.intellij.util.xml.TagValue;
+import com.intellij.util.xml.XmlName;
 import com.intellij.util.xml.reflect.DomExtender;
 import com.intellij.util.xml.reflect.DomExtension;
 import com.intellij.util.xml.reflect.DomExtensionsRegistrar;
@@ -38,11 +59,6 @@ import com.intellij.util.xmlb.annotations.AbstractCollection;
 import com.intellij.util.xmlb.annotations.Attribute;
 import com.intellij.util.xmlb.annotations.Property;
 import com.intellij.util.xmlb.annotations.Tag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.dom.*;
-
-import java.util.*;
 
 /**
  * @author mike
@@ -165,8 +181,8 @@ public class ExtensionDomExtender extends DomExtender<Extensions> {
   }
 
   private static void registerField(final DomExtensionsRegistrar registrar, @NotNull final PsiField field, With withElement) {
-    final PsiMethod getter = PropertyUtils.findGetterForField(field);
-    final PsiMethod setter = PropertyUtils.findSetterForField(field);
+    final PsiMethod getter = PropertyUtil.findGetterForField(field);
+    final PsiMethod setter = PropertyUtil.findSetterForField(field);
     if (!field.hasModifierProperty(PsiModifier.PUBLIC) && (getter == null || setter == null)) {
       return;
     }

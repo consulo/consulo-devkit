@@ -15,20 +15,19 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import com.intellij.psi.*;
-import com.intellij.refactoring.psi.PropertyUtils;
-import com.intellij.util.xml.ConvertContext;
-import com.intellij.util.xml.ResolvingConverter;
-import com.intellij.util.xmlb.annotations.Attribute;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.dom.ExtensionPoint;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.dom.ExtensionPoint;
+import com.intellij.psi.*;
+import com.intellij.util.xml.ConvertContext;
+import com.intellij.util.xml.ResolvingConverter;
+import com.intellij.util.xmlb.annotations.Attribute;
 
 /**
  * @author yole
@@ -82,8 +81,8 @@ public class PluginFieldNameConverter extends ResolvingConverter<PsiField> {
 
   public static String getAnnotationValue(PsiField psiField, Class annotationClass) {
     final PsiConstantEvaluationHelper evalHelper = JavaPsiFacade.getInstance(psiField.getProject()).getConstantEvaluationHelper();
-    final PsiMethod getter = PropertyUtils.findGetterForField(psiField);
-    final PsiMethod setter = PropertyUtils.findSetterForField(psiField);
+    final PsiMethod getter = com.intellij.psi.util.PropertyUtil.findGetterForField(psiField);
+    final PsiMethod setter = com.intellij.psi.util.PropertyUtil.findSetterForField(psiField);
     final PsiAnnotation attrAnno = ExtensionDomExtender.findAnnotation(annotationClass, psiField, getter, setter);
     if (attrAnno != null) {
       return ExtensionDomExtender.getStringAttribute(attrAnno, "value", evalHelper);

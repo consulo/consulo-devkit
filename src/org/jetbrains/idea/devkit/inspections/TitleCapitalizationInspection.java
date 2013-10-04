@@ -15,7 +15,14 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import com.intellij.codeInspection.*;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.codeInspection.ProblemHighlightType;
+import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.lang.properties.psi.Property;
 import com.intellij.lang.properties.references.PropertyReference;
 import com.intellij.openapi.diagnostic.Logger;
@@ -27,12 +34,9 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import com.intellij.refactoring.psi.PropertyUtils;
+import com.intellij.psi.util.PropertyUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author yole
@@ -132,7 +136,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
     }
     if (arg instanceof PsiMethodCallExpression) {
       PsiMethod psiMethod = ((PsiMethodCallExpression)arg).resolveMethod();
-      PsiExpression returnValue = PropertyUtils.getGetterReturnExpression(psiMethod);
+      PsiExpression returnValue = PropertyUtil.getGetterReturnExpression(psiMethod);
       if (returnValue != null) {
         return getTitleValue(returnValue);
       }
@@ -227,7 +231,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
       else if (element instanceof PsiMethodCallExpression) {
         final PsiMethodCallExpression methodCallExpression = (PsiMethodCallExpression)element;
         final PsiMethod method = methodCallExpression.resolveMethod();
-        final PsiExpression returnValue = PropertyUtils.getGetterReturnExpression(method);
+        final PsiExpression returnValue = PropertyUtil.getGetterReturnExpression(method);
         if (returnValue != null) {
           doFix(project, returnValue);
         }
