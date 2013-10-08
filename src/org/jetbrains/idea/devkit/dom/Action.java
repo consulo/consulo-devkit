@@ -19,156 +19,156 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.psi.PsiClass;
-import com.intellij.util.xml.*;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
-
-import java.util.List;
+import com.intellij.psi.PsiClass;
+import com.intellij.util.xml.Attribute;
+import com.intellij.util.xml.Convert;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.ExtendClass;
+import com.intellij.util.xml.GenericAttributeValue;
+import com.intellij.util.xml.Required;
 
 /**
  * plugin.dtd:action interface.
  */
-public interface Action extends DomElement {
+public interface Action extends DomElement
+{
 
-  /**
-   * Returns the value of the popup child.
-   * Attribute popup
-   *
-   * @return the value of the popup child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getPopup();
+	/**
+	 * Returns the value of the popup child.
+	 * Attribute popup
+	 *
+	 * @return the value of the popup child.
+	 */
+	@NotNull
+	GenericAttributeValue<String> getPopup();
 
+	/**
+	 * Returns the value of the icon child.
+	 * Attribute icon
+	 *
+	 * @return the value of the icon child.
+	 */
+	@NotNull
+	GenericAttributeValue<String> getIcon();
 
-  /**
-   * Returns the value of the icon child.
-   * Attribute icon
-   *
-   * @return the value of the icon child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getIcon();
+	/**
+	 * Returns the value of the description child.
+	 * Attribute description
+	 *
+	 * @return the value of the description child.
+	 */
+	@NotNull
+	GenericAttributeValue<String> getDescription();
 
+	/**
+	 * Returns the value of the class child.
+	 * Attribute class
+	 *
+	 * @return the value of the class child.
+	 */
+	@NotNull
+	@Attribute("class")
+	@Required
+	@ExtendClass(value = "com.intellij.openapi.actionSystem.AnAction",
+			instantiatable = true, allowNonPublic = true, allowAbstract = false, allowInterface = false)
+	@Convert(PluginPsiClassConverter.class)
+	GenericAttributeValue<PsiClass> getClazz();
 
-  /**
-   * Returns the value of the description child.
-   * Attribute description
-   *
-   * @return the value of the description child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getDescription();
+	/**
+	 * Returns the value of the text child.
+	 * Attribute text
+	 *
+	 * @return the value of the text child.
+	 */
+	@NotNull
+	GenericAttributeValue<String> getText();
 
+	/**
+	 * Returns the value of the id child.
+	 * Attribute id
+	 *
+	 * @return the value of the id child.
+	 */
+	@NotNull
+	@Required
+	GenericAttributeValue<String> getId();
 
-  /**
-   * Returns the value of the class child.
-   * Attribute class
-   *
-   * @return the value of the class child.
-   */
-  @NotNull
-  @Attribute("class")
-  @Required
-  @ExtendClass(value = "com.intellij.openapi.actionSystem.AnAction",
-               instantiatable = true, allowNonPublic = true, allowAbstract = false, allowInterface = false)
-  @Convert(PluginPsiClassConverter.class)
-  GenericAttributeValue<PsiClass> getClazz();
+	/**
+	 * Returns the list of keyboard-shortcut children.
+	 *
+	 * @return the list of keyboard-shortcut children.
+	 */
+	@NotNull
+	List<KeyboardShortcut> getKeyboardShortcuts();
 
+	/**
+	 * Adds new child to the list of keyboard-shortcut children.
+	 *
+	 * @return created child
+	 */
+	KeyboardShortcut addKeyboardShortcut();
 
-  /**
-   * Returns the value of the text child.
-   * Attribute text
-   *
-   * @return the value of the text child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getText();
+	/**
+	 * Returns the list of mouse-shortcut children.
+	 *
+	 * @return the list of mouse-shortcut children.
+	 */
+	@NotNull
+	List<MouseShortcut> getMouseShortcuts();
 
+	/**
+	 * Adds new child to the list of mouse-shortcut children.
+	 *
+	 * @return created child
+	 */
+	MouseShortcut addMouseShortcut();
 
-  /**
-   * Returns the value of the id child.
-   * Attribute id
-   *
-   * @return the value of the id child.
-   */
-  @NotNull
-  @Required
-  GenericAttributeValue<String> getId();
+	/**
+	 * Returns the list of shortcut children.
+	 *
+	 * @return the list of shortcut children.
+	 */
+	@NotNull
+	List<Shortcut> getShortcuts();
 
+	/**
+	 * Adds new child to the list of shortcut children.
+	 *
+	 * @return created child
+	 */
+	Shortcut addShortcut();
 
-  /**
-   * Returns the list of keyboard-shortcut children.
-   *
-   * @return the list of keyboard-shortcut children.
-   */
-  @NotNull
-  List<KeyboardShortcut> getKeyboardShortcuts();
+	/**
+	 * Returns the list of add-to-group children.
+	 *
+	 * @return the list of add-to-group children.
+	 */
+	@NotNull
+	List<AddToGroup> getAddToGroups();
 
-  /**
-   * Adds new child to the list of keyboard-shortcut children.
-   *
-   * @return created child
-   */
-  KeyboardShortcut addKeyboardShortcut();
+	/**
+	 * Adds new child to the list of add-to-group children.
+	 *
+	 * @return created child
+	 */
+	AddToGroup addAddToGroup();
 
+	@NotNull
+	GenericAttributeValue<String> getUseShortcutOf();
 
-  /**
-   * Returns the list of mouse-shortcut children.
-   *
-   * @return the list of mouse-shortcut children.
-   */
-  @NotNull
-  List<MouseShortcut> getMouseShortcuts();
+	@NotNull
+	GenericAttributeValue<String> getKeymap();
 
-  /**
-   * Adds new child to the list of mouse-shortcut children.
-   *
-   * @return created child
-   */
-  MouseShortcut addMouseShortcut();
+	/**
+	 * Return internal flag - show in internal Consulo mode.
+	 */
+	GenericAttributeValue<Boolean> isInternal();
 
+	GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
 
-  /**
-   * Returns the list of shortcut children.
-   *
-   * @return the list of shortcut children.
-   */
-  @NotNull
-  List<Shortcut> getShortcuts();
-
-  /**
-   * Adds new child to the list of shortcut children.
-   *
-   * @return created child
-   */
-  Shortcut addShortcut();
-
-
-  /**
-   * Returns the list of add-to-group children.
-   *
-   * @return the list of add-to-group children.
-   */
-  @NotNull
-  List<AddToGroup> getAddToGroups();
-
-  /**
-   * Adds new child to the list of add-to-group children.
-   *
-   * @return created child
-   */
-  AddToGroup addAddToGroup();
-
-  @NotNull
-  GenericAttributeValue<String> getUseShortcutOf();
-
-  @NotNull
-  GenericAttributeValue<String> getKeymap();
-
-  /**
-   * Return internal flag - show in internal Consulo mode.
-   * @return
-   */
-  GenericAttributeValue<Boolean> isInternal();
+	GenericAttributeValue<String> getRequireModuleExtensions();
 }

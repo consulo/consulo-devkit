@@ -19,12 +19,16 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.psi.PsiClass;
-import com.intellij.util.xml.*;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
-
-import java.util.List;
+import com.intellij.psi.PsiClass;
+import com.intellij.util.xml.Attribute;
+import com.intellij.util.xml.Convert;
+import com.intellij.util.xml.ExtendClass;
+import com.intellij.util.xml.GenericAttributeValue;
+import com.intellij.util.xml.GenericDomValue;
 
 /**
  * plugin.dtd:group interface.
@@ -144,9 +148,13 @@ public interface Group extends Actions {
    */
   AddToGroup addAddToGroup();
 
-  /**
-   * Return internal flag - show in internal Consulo mode.
-   * @return
-   */
-  GenericAttributeValue<Boolean> isInternal();
+	/**
+	 * Return internal flag - show in internal Consulo mode.
+	 */
+	GenericAttributeValue<Boolean> isInternal();
+
+	GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
+
+	GenericAttributeValue<String> getRequireModuleExtensions();
+
 }
