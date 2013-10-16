@@ -15,6 +15,16 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.Icon;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.dom.Extension;
+import org.jetbrains.idea.devkit.dom.Extensions;
+import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.google.common.collect.ImmutableMap;
 import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInsight.intention.IntentionAction;
@@ -43,15 +53,6 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomService;
 import com.intellij.xml.util.IncludedXmlTag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.dom.Extension;
-import org.jetbrains.idea.devkit.dom.Extensions;
-import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-
-import javax.swing.*;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Dmitry Avdeev
@@ -133,7 +134,7 @@ class RegisterInspectionFix implements IntentionAction {
 
         @Override
         public Icon getIconFor(DomFileElement<IdeaPlugin> aValue) {
-          return TypePresentationService.getService().getIcon(aValue);
+          return TypePresentationService.getInstance().getIcon(aValue);
         }
 
         @NotNull
