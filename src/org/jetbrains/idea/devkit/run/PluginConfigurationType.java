@@ -22,7 +22,7 @@ import java.util.Set;
 
 import javax.swing.Icon;
 
-import org.consulo.java.platform.module.extension.JavaModuleExtension;
+import org.consulo.java.module.extension.JavaModuleExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;

@@ -10,7 +10,7 @@
   <depends>com.intellij.xml</depends>
   <depends optional="true" config-file="org.consulo.lombok.xml">org.consulo.lombok</depends>
 
-  <resource-bundle>org.jetbrains.idea.devkit.DevKitBundle</resource-bundle>
+  <resource-bundle>messages.DevKitBundle</resource-bundle>
 
   <extensions defaultExtensionNs="org.consulo.java">
     <testPatcher implementation="org.jetbrains.idea.devkit.run.JUnitDevKitPatcher" />

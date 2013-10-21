@@ -17,7 +17,7 @@ package org.jetbrains.idea.devkit.run;
 
 import java.io.File;
 
-import org.consulo.java.platform.module.extension.JavaModuleExtension;
+import org.consulo.java.module.extension.JavaModuleExtension;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;

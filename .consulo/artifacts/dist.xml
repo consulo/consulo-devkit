@@ -7,9 +7,11 @@
           <element id="file-copy" path="$PROJECT_DIR$/lib/dtdparser113.jar" />
           <element id="zip-archive" name="devkit.jar">
             <element id="module-output" name="consulo-devkit" />
+            <element id="module-production-resource-output" name="consulo-devkit" />
           </element>
           <element id="zip-archive" name="devkit-lombok.jar">
             <element id="module-output" name="devkit-lombok" />
+            <element id="module-production-resource-output" name="devkit-lombok" />
           </element>
         </element>
       </element>

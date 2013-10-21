@@ -15,13 +15,13 @@
  */
 package org.jetbrains.idea.devkit;
 
-import com.intellij.CommonBundle;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.PropertyKey;
-
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.ResourceBundle;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.PropertyKey;
+import com.intellij.CommonBundle;
 
 /**
  * User: anna
@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
 public class DevKitBundle {
   private static Reference<ResourceBundle> ourBundle;
 
-  @NonNls private static final String BUNDLE = "org.jetbrains.idea.devkit.DevKitBundle";
+  @NonNls private static final String BUNDLE = "messages.DevKitBundle";
 
   private DevKitBundle() {
   }

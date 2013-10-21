@@ -46,7 +46,7 @@ public enum ComponentType {
 
   ComponentType(Class<? extends BaseComponent> clazz,
                 @NonNls String name,
-                @PropertyKey(resourceBundle = "org.jetbrains.idea.devkit.DevKitBundle") String propertyKey) {
+                @PropertyKey(resourceBundle = "messages.DevKitBundle") String propertyKey) {
     myPropertyKey = propertyKey;
     myClassName = clazz.getName();
     myName = name;
