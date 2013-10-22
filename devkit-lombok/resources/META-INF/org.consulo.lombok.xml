@@ -1,8 +1,10 @@
 <idea-plugin>
-    <extensions defaultExtensionNs="org.consulo.lombok">
-        <processor annotationClass="org.consulo.lombok.annotations.Logger" implementationClass="org.consulo.lombok.devkit.processor.impl.IdeaLoggerAnnotationProcessor" />
-        <processor annotationClass="org.consulo.lombok.annotations.ModuleService" implementationClass="org.consulo.lombok.devkit.processor.impl.ModuleServiceAnnotationProcessor" />
-        <processor annotationClass="org.consulo.lombok.annotations.ProjectService" implementationClass="org.consulo.lombok.devkit.processor.impl.ProjectServiceAnnotationProcessor" />
-        <processor annotationClass="org.consulo.lombok.annotations.ApplicationService" implementationClass="org.consulo.lombok.devkit.processor.impl.ApplicationServiceAnnotationProcessor" />
-    </extensions>
+	<extensions defaultExtensionNs="org.consulo.lombok">
+		<processor annotationClass="org.consulo.lombok.annotations.Logger" implementationClass="org.consulo.lombok.devkit.processor.impl.IdeaLoggerAnnotationProcessor"/>
+		<processor annotationClass="org.consulo.lombok.annotations.ModuleService" implementationClass="org.consulo.lombok.devkit.processor.impl.ModuleServiceAnnotationProcessor"/>
+		<processor annotationClass="org.consulo.lombok.annotations.ProjectService" implementationClass="org.consulo.lombok.devkit.processor.impl.ProjectServiceAnnotationProcessor"/>
+		<processor annotationClass="org.consulo.lombok.annotations.ApplicationService" implementationClass="org.consulo.lombok.devkit.processor.impl.ApplicationServiceAnnotationProcessor"/>
+		<processor annotationClass="org.consulo.lombok.annotations.ArrayFactoryFields" implementationClass="org.consulo.lombok.devkit.processor.impl.ArrayFactoryFieldsAnnotationProcessor"/>
+		<processor annotationClass="org.consulo.lombok.annotations.Bundle" implementationClass="org.consulo.lombok.devkit.processor.impl.BundleAnnotationProcessor"/>
+	</extensions>
 </idea-plugin>

@@ -4,6 +4,7 @@
     <modules>
       <module name="consulo-devkit" dirurl="file://$PROJECT_DIR$">
         <extension id="java" sdk-module-name="" sdk-name="1.6" language-level-module-name="" language-level-name="JDK_1_6" special-dir-location="SOURCE_DIR" />
+        <extension id="lombok" />
         <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" />
         <content url="file://$MODULE_DIR$">
           <content-folder type="PRODUCTION" url="file://$MODULE_DIR$/src" />
@@ -61,7 +62,7 @@
       </module>
       <module name="devkit-lombok" dirurl="file://$PROJECT_DIR$/devkit-lombok">
         <extension id="java" sdk-module-name="consulo-devkit" sdk-name="" language-level-module-name="consulo-devkit" language-level-name="" special-dir-location="SOURCE_DIR" />
-        <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" />
+        <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" custom-plugin-dir-url="H:\github.com\consulo\consulo-devkit\dep" />
         <content url="file://$MODULE_DIR$">
           <content-folder type="PRODUCTION" url="file://$MODULE_DIR$/src" />
           <content-folder type="PRODUCTION_RESOURCE" url="file://$MODULE_DIR$/resources" />
@@ -69,15 +70,6 @@
         <orderEntry type="sourceFolder" forTests="false" />
         <orderEntry type="module-extension-sdk" extension-id="java" />
         <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
-        <orderEntry type="module-library">
-          <library>
-            <CLASSES>
-              <root url="jar://$MODULE_DIR$/../dep/lombok-base/lib/lombok-base.jar!/" />
-            </CLASSES>
-            <DOCUMENTATION />
-            <SOURCES />
-          </library>
-        </orderEntry>
         <orderEntry type="module-library">
           <library name="consulo:Java">
             <CLASSES>
@@ -89,6 +81,15 @@
               <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/java-rt.jar!/" />
               <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/java.jar!/" />
               <root url="jar://$APPLICATION_HOME_DIR$/plugins/java/lib/jdk-annotations.jar!/" />
+            </CLASSES>
+            <DOCUMENTATION />
+            <SOURCES />
+          </library>
+        </orderEntry>
+        <orderEntry type="module-library">
+          <library name="consulo:Lombok Support">
+            <CLASSES>
+              <root url="jar://$MODULE_DIR$/../dep/lombok-base/lib/lombok-base.jar!/" />
             </CLASSES>
             <DOCUMENTATION />
             <SOURCES />
