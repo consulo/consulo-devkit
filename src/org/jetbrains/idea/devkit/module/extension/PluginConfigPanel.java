@@ -40,12 +40,18 @@ import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.ArchiveFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.ui.CheckBoxList;
 import com.intellij.ui.CheckBoxListListener;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.util.Function;
 import com.intellij.util.ui.UIUtil;
+import lombok.val;
 
 /**
  * @author VISTALL
@@ -102,7 +108,10 @@ public class PluginConfigPanel extends JPanel
 			@Override
 			protected void textChanged(DocumentEvent documentEvent)
 			{
-				myMutableModuleExtension.setCustomPluginDirUrl(myCustomPluginPath.getText());
+				String fileUrl = StringUtil.isEmptyOrSpaces(myCustomPluginPath.getText()) ? null :
+						VirtualFileManager.constructUrl("file", FileUtil.toSystemIndependentName(myCustomPluginPath.getText()));
+
+				myMutableModuleExtension.setCustomPluginDirUrl(fileUrl);
 
 				updateCustomBundledPluginList();
 			}
@@ -169,17 +178,18 @@ public class PluginConfigPanel extends JPanel
 
 				List<IdeaPluginDescriptorImpl> items = null;
 
-				String customPluginDirPresentableUrl = myMutableModuleExtension.getCustomPluginDirPresentableUrl();
-				if(customPluginDirPresentableUrl == null)
+				VirtualFile customPluginDir = myMutableModuleExtension.getCustomPluginDir();
+				if(customPluginDir == null || !customPluginDir.exists())
 				{
 					items = Collections.emptyList();
 				}
 				else
 				{
-					final int pluginCount = PluginManager.countPlugins(customPluginDirPresentableUrl);
+					File file = VfsUtil.virtualToIoFile(customPluginDir);
+					val pluginCount = PluginManager.countPlugins(file.getAbsolutePath());
 
 					items = new ArrayList<IdeaPluginDescriptorImpl>(pluginCount);
-					PluginManager.loadDescriptors(customPluginDirPresentableUrl, items, null, pluginCount);
+					PluginManager.loadDescriptors(file.getAbsolutePath(), items, null, pluginCount);
 				}
 
 				updateBusy(myCustomPluginList, false, items);
@@ -267,7 +277,12 @@ public class PluginConfigPanel extends JPanel
 						{
 							continue;
 						}
-						modifiableModel.addRoot(jarFileSystem.findLocalVirtualFileByPath(file.getPath()), OrderRootType.CLASSES);
+						VirtualFile localVirtualFileByPath = jarFileSystem.findLocalVirtualFileByPath(file.getPath());
+						if(localVirtualFileByPath == null)
+						{
+							continue;
+						}
+						modifiableModel.addRoot(localVirtualFileByPath, OrderRootType.CLASSES);
 					}
 
 					modifiableModel.commit();
