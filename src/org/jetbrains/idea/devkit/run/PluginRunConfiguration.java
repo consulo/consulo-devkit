@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-import org.consulo.compiler.CompilerPathsManager;
 import org.consulo.sdk.SdkPointerManager;
 import org.consulo.sdk.SdkUtil;
 import org.consulo.util.pointers.Named;
@@ -31,6 +30,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
+import com.intellij.compiler.CompilerConfiguration;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -56,6 +56,7 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.NotNullFactory;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
@@ -152,9 +153,10 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 		final String dataPath;
 		try
 		{
-			CompilerPathsManager compilerPathsManager = CompilerPathsManager.getInstance(env.getProject());
+			CompilerConfiguration compilerPathsManager = CompilerConfiguration.getInstance(env.getProject());
 
-			File temp = new File(compilerPathsManager.getCompilerOutput().getCanonicalPath(), "sandbox");
+			String path = VfsUtilCore.urlToPath(compilerPathsManager.getCompilerOutputUrl());
+			File temp = new File(path, "sandbox");
 			dataPath = temp.getCanonicalPath();
 		}
 		catch(IOException e)
