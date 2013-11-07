@@ -22,11 +22,24 @@
  */
 package org.jetbrains.idea.devkit.dom.generator;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import org.apache.xerces.impl.dv.XSSimpleType;
 import org.apache.xerces.impl.dv.xs.XSSimpleTypeDecl;
 import org.apache.xerces.impl.xs.XSAttributeGroupDecl;
 import org.apache.xerces.impl.xs.XSComplexTypeDecl;
 import org.apache.xerces.impl.xs.XSElementDecl;
+import org.apache.xerces.impl.xs.XSImplementationImpl;
 import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.impl.xs.util.XSObjectListImpl;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
@@ -35,11 +48,6 @@ import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMError;
 import org.w3c.dom.DOMErrorHandler;
 import org.w3c.dom.TypeInfo;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-
-import javax.xml.namespace.QName;
-import java.io.File;
-import java.util.*;
 
 /**
  * @author Gregory.Shrago
@@ -114,10 +122,7 @@ public class XSDModelLoader implements ModelLoader {
 
 
   private XSModel loadSchema(File schemaFile, XMLEntityResolver resolver) throws Exception {
-    // get DOM Implementation using DOM Registry
-    System.setProperty(DOMImplementationRegistry.PROPERTY, "org.apache.xerces.dom.DOMXSImplementationSourceImpl");
-    DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-    XSImplementation impl = (XSImplementation)registry.getDOMImplementation("XS-Loader");
+    XSImplementation impl = new XSImplementationImpl();
     XSLoader schemaLoader = impl.createXSLoader(null);
     DOMConfiguration config = schemaLoader.getConfig();
 

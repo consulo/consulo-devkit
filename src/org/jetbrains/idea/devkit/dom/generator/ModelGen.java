@@ -15,8 +15,14 @@
  */
 package org.jetbrains.idea.devkit.dom.generator;
 
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.containers.ContainerUtil;
+import java.io.CharArrayReader;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.xerces.xni.XMLResourceIdentifier;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
@@ -27,14 +33,8 @@ import org.jdom.input.SAXBuilder;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import java.io.CharArrayReader;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.intellij.util.ArrayUtil;
+import com.intellij.util.containers.ContainerUtil;
 
 /**
  * @author Gregory.Shrago
@@ -90,18 +90,18 @@ public class ModelGen {
 
   public void loadConfig(Element element) {
     final Element namespaceEl = element.getChild("namespaces");
-    for (Element e : (List<Element>)namespaceEl.getChildren("schemaLocation")) {
+    for (Element e : namespaceEl.getChildren("schemaLocation")) {
       final String name = e.getAttributeValue("name");
       final String file = e.getAttributeValue("file");
       schemaLocationMap.put(name, file);
     }
-    for (Element e : (List<Element>)namespaceEl.getChildren("reserved-name")) {
+    for (Element e : namespaceEl.getChildren("reserved-name")) {
       final String name = e.getAttributeValue("name");
       final String replacement = e.getAttributeValue("replace-with");
       model.name2replaceMap.put(name, replacement);
     }
     NamespaceDesc def = new NamespaceDesc("", "generated", "java.lang.Object", "", null, null, null, null);
-    for (Element nsElement : (List<Element>)namespaceEl.getChildren("namespace")) {
+    for (Element nsElement : namespaceEl.getChildren("namespace")) {
       final String name = nsElement.getAttributeValue("name");
       final NamespaceDesc nsDesc = new NamespaceDesc(name, def);
 
