@@ -15,13 +15,13 @@
  */
 package org.jetbrains.idea.devkit.module.extension;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.module.Module;
+import javax.swing.Icon;
+
 import org.consulo.module.extension.ModuleExtensionProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.module.Module;
 
 /**
  * @author VISTALL
@@ -38,12 +38,6 @@ public class PluginModuleExtensionProvider implements ModuleExtensionProvider<Pl
   @Override
   public String getName() {
     return "Consulo Develop Kit";
-  }
-
-  @NotNull
-  @Override
-  public Class<PluginModuleExtension> getImmutableClass() {
-    return PluginModuleExtension.class;
   }
 
   @NotNull
