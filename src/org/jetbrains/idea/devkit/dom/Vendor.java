@@ -19,9 +19,9 @@
 
 package org.jetbrains.idea.devkit.dom;
 
+import org.jetbrains.annotations.NotNull;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * plugin.dtd:vendor interface.
@@ -67,16 +67,4 @@ public interface Vendor extends DomElement {
    */
   @NotNull
   GenericAttributeValue<String> getUrl();
-
-
-  /**
-   * Returns the value of the logo child.
-   * Attribute logo
-   *
-   * @return the value of the logo child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getLogo();
-
-
 }
