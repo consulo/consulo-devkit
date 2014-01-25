@@ -19,11 +19,16 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.util.xml.*;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
+import com.intellij.util.xml.DefinesXml;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.GenericAttributeValue;
+import com.intellij.util.xml.GenericDomValue;
+import com.intellij.util.xml.NameValue;
+import com.intellij.util.xml.SubTagList;
 
 /**
  * plugin.dtd:idea-plugin interface.
@@ -42,9 +47,6 @@ public interface IdeaPlugin extends DomElement {
 
   @NotNull
   GenericAttributeValue<String> getUrl();
-
-  @NotNull
-  GenericAttributeValue<Boolean> getUseIdeaClassloader();
 
   @NotNull
   GenericDomValue<String> getName();
@@ -99,10 +101,6 @@ public interface IdeaPlugin extends DomElement {
 
   @SubTagList("depends")
   Dependency addDependency();
-
-  @NotNull
-  @SubTagList("module")
-  List<PluginModule> getModules();
 
   @NotNull
   @SubTagList("extensions")

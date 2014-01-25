@@ -15,6 +15,18 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
+import gnu.trove.THashSet;
+import gnu.trove.TObjectHashingStrategy;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -25,83 +37,78 @@ import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomService;
 import com.intellij.util.xml.ResolvingConverter;
-import gnu.trove.THashSet;
-import gnu.trove.TObjectHashingStrategy;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-import org.jetbrains.idea.devkit.dom.PluginModule;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author mike
  */
-public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin> {
+public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
+{
+	@Override
+	@NotNull
+	public Collection<? extends IdeaPlugin> getVariants(final ConvertContext context)
+	{
+		Collection<IdeaPlugin> plugins = getAllPlugins(context.getProject());
+		return new THashSet<IdeaPlugin>(plugins, new TObjectHashingStrategy<IdeaPlugin>()
+		{
+			@Override
+			public int computeHashCode(IdeaPlugin object)
+			{
+				return StringUtil.notNullize(object.getPluginId()).hashCode();
+			}
 
-  @NotNull
-  public Collection<? extends IdeaPlugin> getVariants(final ConvertContext context) {
-    Collection<IdeaPlugin> plugins = getAllPlugins(context.getProject());
-    return new THashSet<IdeaPlugin>(plugins, new TObjectHashingStrategy<IdeaPlugin>() {
-      @Override
-      public int computeHashCode(IdeaPlugin object) {
-        return StringUtil.notNullize(object.getPluginId()).hashCode();
-      }
+			@Override
+			public boolean equals(IdeaPlugin o1, IdeaPlugin o2)
+			{
+				return StringUtil.notNullize(o1.getPluginId()).equals(o2.getPluginId());
+			}
+		});
+	}
 
-      @Override
-      public boolean equals(IdeaPlugin o1, IdeaPlugin o2) {
-        return StringUtil.notNullize(o1.getPluginId()).equals(o2.getPluginId());
-      }
-    });
-  }
+	@Override
+	public String getErrorMessage(@Nullable final String s, final ConvertContext context)
+	{
+		return DevKitBundle.message("error.cannot.resolve.plugin", s);
+	}
 
-  @NotNull
-  @Override
-  public Set<String> getAdditionalVariants(@NotNull final ConvertContext context) {
-    final THashSet<String> result = new THashSet<String>();
-    for (IdeaPlugin ideaPlugin : getVariants(context)) {
-      for (PluginModule module : ideaPlugin.getModules()) {
-        ContainerUtil.addIfNotNull(module.getValue().getValue(), result);
-      }
-    }
-    return result;
-  }
+	public static Collection<IdeaPlugin> getAllPlugins(final Project project)
+	{
+		if(DumbService.isDumb(project))
+		{
+			return Collections.emptyList();
+		}
+		GlobalSearchScope scope = GlobalSearchScope.allScope(project);
+		List<DomFileElement<IdeaPlugin>> files = DomService.getInstance().getFileElements(IdeaPlugin.class, project, scope);
+		return ContainerUtil.map(files, new Function<DomFileElement<IdeaPlugin>, IdeaPlugin>()
+		{
+			@Override
+			public IdeaPlugin fun(DomFileElement<IdeaPlugin> ideaPluginDomFileElement)
+			{
+				return ideaPluginDomFileElement.getRootElement();
+			}
+		});
+	}
 
-  @Override
-  public String getErrorMessage(@Nullable final String s, final ConvertContext context) {
-    return DevKitBundle.message("error.cannot.resolve.plugin", s);
-  }
+	@Override
+	public IdeaPlugin fromString(@Nullable @NonNls final String s, final ConvertContext context)
+	{
+		for(IdeaPlugin ideaPlugin : getVariants(context))
+		{
+			final String otherId = ideaPlugin.getPluginId();
+			if(otherId == null)
+			{
+				continue;
+			}
+			if(otherId.equals(s))
+			{
+				return ideaPlugin;
+			}
+		}
+		return null;
+	}
 
-  public static Collection<IdeaPlugin> getAllPlugins(final Project project) {
-    if (DumbService.isDumb(project)) return Collections.emptyList();
-    GlobalSearchScope scope = GlobalSearchScope.allScope(project);
-    List<DomFileElement<IdeaPlugin>> files = DomService.getInstance().getFileElements(IdeaPlugin.class, project, scope);
-    return ContainerUtil.map(files, new Function<DomFileElement<IdeaPlugin>, IdeaPlugin>() {
-      public IdeaPlugin fun(DomFileElement<IdeaPlugin> ideaPluginDomFileElement) {
-        return ideaPluginDomFileElement.getRootElement();
-      }
-    });
-  }
-
-  public IdeaPlugin fromString(@Nullable @NonNls final String s, final ConvertContext context) {
-    for (IdeaPlugin ideaPlugin : getVariants(context)) {
-      final String otherId = ideaPlugin.getPluginId();
-      if (otherId == null) continue;
-      if (otherId.equals(s)) return ideaPlugin;
-      for (PluginModule module : ideaPlugin.getModules()) {
-        final String moduleName = module.getValue().getValue();
-        if (moduleName != null && moduleName.equals(s)) return ideaPlugin;
-      }
-    }
-    return null;
-  }
-
-  public String toString(@Nullable final IdeaPlugin ideaPlugin, final ConvertContext context) {
-    return ideaPlugin != null ? ideaPlugin.getPluginId() : null;
-  }
+	@Override
+	public String toString(@Nullable final IdeaPlugin ideaPlugin, final ConvertContext context)
+	{
+		return ideaPlugin != null ? ideaPlugin.getPluginId() : null;
+	}
 }
