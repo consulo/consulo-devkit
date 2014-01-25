@@ -23,6 +23,7 @@ import com.intellij.openapi.fileTypes.StdFileTypes;
 
 public class DevKitFileTemplatesFactory implements FileTemplateGroupDescriptorFactory {
 
+  @Override
   public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
     FileTemplateGroupDescriptor descriptor =
       new FileTemplateGroupDescriptor(DevKitBundle.message("plugin.descriptor"), AllIcons.Nodes.Plugin);

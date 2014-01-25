@@ -129,6 +129,7 @@ public class ConsuloSdkType extends SdkType
 		}
 		File[] srcs = src.listFiles(new FileFilter()
 		{
+			@Override
 			public boolean accept(File pathname)
 			{
 				@NonNls final String path = pathname.getPath();
@@ -155,7 +156,7 @@ public class ConsuloSdkType extends SdkType
 	}
 
 	@Nullable
-	public static Sdk findIdeaJdk(@Nullable Sdk jdk)
+	public static Sdk findConsuloSdk(@Nullable Sdk jdk)
 	{
 		if(jdk == null)
 		{
@@ -193,11 +194,13 @@ public class ConsuloSdkType extends SdkType
 		return "reference.project.structure.sdk.idea";
 	}
 
+	@Override
 	public String suggestHomePath()
 	{
 		return PathManager.getHomePath().replace(File.separatorChar, '/');
 	}
 
+	@Override
 	public boolean isValidSdkHome(String path)
 	{
 		File home = new File(path);
@@ -245,18 +248,21 @@ public class ConsuloSdkType extends SdkType
 		sdkModificator.commitChanges();
 	}
 
+	@Override
 	public AdditionalDataConfigurable createAdditionalDataConfigurable(final SdkModel sdkModel, SdkModificator sdkModificator)
 	{
 		return null;
 	}
 
+	@Override
 	public void saveAdditionalData(SdkAdditionalData additionalData, Element additional)
 	{
 	}
 
+	@NotNull
 	@Override
 	public String getPresentableName()
 	{
-		return getName();
+		return DevKitBundle.message("sdk.title");
 	}
 }

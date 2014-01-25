@@ -40,7 +40,7 @@ public class JUnitDevKitPatcher implements JavaTestPatcher {
   @Override
   public void patchJavaParameters(@Nullable Module module, @NonNull JavaParameters javaParameters) {
     Sdk jdk = javaParameters.getJdk();
-    jdk = ConsuloSdkType.findIdeaJdk(jdk);
+    jdk = ConsuloSdkType.findConsuloSdk(jdk);
     if (jdk == null) return;
 
     @NonNls String libPath = jdk.getHomePath() + File.separator + "lib";

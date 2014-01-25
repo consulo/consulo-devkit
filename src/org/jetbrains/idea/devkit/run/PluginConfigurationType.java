@@ -105,10 +105,7 @@ public class PluginConfigurationType implements ConfigurationType
 	private static Pair<Module, Artifact> findArtifact(Project project)
 	{
 		ArtifactManager artifactManager = ArtifactManager.getInstance(project);
-		if(artifactManager == null)
-		{
-			return null;
-		}
+
 		for(Artifact artifact : artifactManager.getArtifacts())
 		{
 			if(artifact.getArtifactType() == PlainArtifactType.getInstance())
