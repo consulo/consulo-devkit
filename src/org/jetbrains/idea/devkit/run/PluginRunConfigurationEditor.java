@@ -15,7 +15,14 @@
  */
 package org.jetbrains.idea.devkit.run;
 
-import com.intellij.execution.configurations.LogFileOptions;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JPanel;
+
+import org.consulo.lombok.annotations.Logger;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
@@ -30,12 +37,6 @@ import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SimpleTextAttributes;
-import org.consulo.lombok.annotations.Logger;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
-
-import javax.swing.*;
-import java.util.ArrayList;
 
 @Logger
 public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfiguration> {
@@ -53,7 +54,7 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
   private SdkComboBox myConsuloSdkComboBox;
   private RawCommandLineEditor myProgramParameters;
   private RawCommandLineEditor myVMParameters;
-  private JCheckBox myShowIdeaLogCheckBox;
+
   private JComboBox myArtifactComboBox;
   private JPanel myRoot;
 
@@ -63,27 +64,8 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
     myProject = project;
   }
 
-  private static void setShow(PluginRunConfiguration prc, boolean show) {
-    final ArrayList<LogFileOptions> logFiles = prc.getLogFiles();
-    for (LogFileOptions logFile : logFiles) {
-      logFile.setEnable(show);
-    }
-  }
-
-  private static boolean isShow(PluginRunConfiguration prc) {
-    final ArrayList<LogFileOptions> logFiles = prc.getLogFiles();
-    for (LogFileOptions logFile : logFiles) {
-      if (logFile.isEnabled()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   @Override
   public void resetEditorFrom(PluginRunConfiguration prc) {
-    myShowIdeaLogCheckBox.setSelected(isShow(prc));
-
     myVMParameters.setText(prc.VM_PARAMETERS);
     myProgramParameters.setText(prc.PROGRAM_PARAMETERS);
 
@@ -121,8 +103,6 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 
   @Override
   public void applyEditorTo(PluginRunConfiguration prc) throws ConfigurationException {
-    setShow(prc, myShowIdeaLogCheckBox.isSelected());
-
     prc.setArtifactName(myArtifactComboBox.getSelectedItem() == null ? null : ((ArtifactItem)myArtifactComboBox.getSelectedItem()).myName);
     prc.setJavaSdkName(myJavaSdkComboBox.getSelectedSdkName());
     prc.setConsuloSdkName(myConsuloSdkComboBox.getSelectedSdkName());

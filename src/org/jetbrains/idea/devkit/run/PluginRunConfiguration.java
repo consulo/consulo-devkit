@@ -31,23 +31,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.compiler.CompilerConfiguration;
+import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.JavaCommandLineState;
-import com.intellij.execution.configurations.JavaParameters;
-import com.intellij.execution.configurations.ModuleRunProfile;
-import com.intellij.execution.configurations.ParametersList;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RunProfileState;
-import com.intellij.execution.configurations.RuntimeConfigurationException;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.SettingsEditor;
+import com.intellij.openapi.options.SettingsEditorGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.JavaSdkType;
 import com.intellij.openapi.projectRoots.Sdk;
@@ -56,6 +50,7 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.NotNullFactory;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
@@ -63,6 +58,9 @@ import com.intellij.packaging.impl.artifacts.ArtifactUtil;
 
 public class PluginRunConfiguration extends RunConfigurationBase implements ModuleRunProfile
 {
+	public static final PredefinedLogFile IDEA_LOG = new PredefinedLogFile("IDEA_LOG", true);
+
+	private static final String LOG_FILE = "/system/log/idea.log";
 	private static final String JAVA_SDK = "java-sdk";
 	private static final String CONSULO_SDK = "consulo-sdk";
 	private static final String ARTIFACT = "artifact";
@@ -123,10 +121,55 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 		parent.addContent(element);
 	}
 
+	@NotNull
 	@Override
+	@SuppressWarnings("unchecked")
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
 	{
-		return new PluginRunConfigurationEditor(getProject());
+		SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
+		settingsEditorGroup.addEditor("General", new PluginRunConfigurationEditor(getProject()));
+		settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<PluginRunConfiguration>());
+		return settingsEditorGroup;
+	}
+
+	@Nullable
+	@Override
+	public LogFileOptions getOptionsForPredefinedLogFile(PredefinedLogFile predefinedLogFile)
+	{
+		if(IDEA_LOG.equals(predefinedLogFile))
+		{
+			try
+			{
+				String sandboxPath = getSandboxPath();
+				return new LogFileOptions("idea.log", sandboxPath + LOG_FILE , true, false, true);
+			}
+			catch(ExecutionException e)
+			{
+				return null;
+			}
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	private String getSandboxPath() throws ExecutionException
+	{
+		final String dataPath;
+		try
+		{
+			CompilerConfiguration compilerPathsManager = CompilerConfiguration.getInstance(getProject());
+
+			String path = VfsUtilCore.urlToPath(compilerPathsManager.getCompilerOutputUrl());
+			File temp = new File(path, "sandbox");
+			dataPath = temp.getCanonicalPath();
+		}
+		catch(IOException e)
+		{
+			throw new ExecutionException(e);
+		}
+		return dataPath;
 	}
 
 	@Override
@@ -150,26 +193,13 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 			throw new ExecutionException(DevKitBundle.message("run.configuration.no.plugin.artifact"));
 		}
 
-		final String dataPath;
-		try
-		{
-			CompilerConfiguration compilerPathsManager = CompilerConfiguration.getInstance(env.getProject());
-
-			String path = VfsUtilCore.urlToPath(compilerPathsManager.getCompilerOutputUrl());
-			File temp = new File(path, "sandbox");
-			dataPath = temp.getCanonicalPath();
-		}
-		catch(IOException e)
-		{
-			throw new ExecutionException(e);
-		}
+		final String dataPath = getSandboxPath();
 
 		final JavaCommandLineState state = new JavaCommandLineState(env)
 		{
 			@Override
 			protected JavaParameters createJavaParameters() throws ExecutionException
 			{
-
 				final JavaParameters params = new JavaParameters();
 
 				ParametersList vm = params.getVMParametersList();
@@ -177,26 +207,28 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 				fillParameterList(vm, VM_PARAMETERS);
 				fillParameterList(params.getProgramParametersList(), PROGRAM_PARAMETERS);
 
-				@NonNls String libPath = consuloSdk.getHomePath() + File.separator + "lib";
-				vm.add("-Xbootclasspath/a:" + libPath + File.separator + "boot.jar");
+				@NonNls String libPath = consuloSdk.getHomePath() + "/lib";
+				vm.add("-Xbootclasspath/a:" + libPath + "/boot.jar");
 
-				vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + File.separator + "config");
-				vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + File.separator + "system");
+				vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + "/config");
+				vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + "/system");
 				vm.defineProperty(PathManager.PROPERTY_PLUGINS_PATH, artifact.getOutputPath());
+
+				File logFile = new File(dataPath, LOG_FILE);
+				FileUtil.createIfDoesntExist(logFile);
+				vm.defineProperty(PathManager.PROPERTY_LOG_PATH, logFile.getParent());
 
 				if(SystemInfo.isMac)
 				{
 					vm.defineProperty("idea.smooth.progress", "false");
 					vm.defineProperty("apple.laf.useScreenMenuBar", "true");
 				}
-
-				if(SystemInfo.isXWindow)
+				else if(SystemInfo.isXWindow)
 				{
 					if(VM_PARAMETERS == null || !VM_PARAMETERS.contains("-Dsun.awt.disablegrab"))
 					{
 						vm.defineProperty("sun.awt.disablegrab", "true"); // See http://devnet.jetbrains.net/docs/DOC-1142
 					}
-
 				}
 				params.setWorkingDirectory(consuloSdk.getHomePath() + File.separator + "bin" + File.separator);
 

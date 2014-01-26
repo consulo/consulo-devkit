@@ -81,6 +81,8 @@ public class PluginConfigurationType implements ConfigurationType
 			{
 				PluginRunConfiguration runConfiguration = (PluginRunConfiguration) configuration;
 
+				runConfiguration.addPredefinedLogFile(PluginRunConfiguration.IDEA_LOG);
+
 				Pair<Module, Artifact> pair = findArtifact(configuration.getProject());
 				if(pair != null)
 				{
