@@ -37,14 +37,9 @@ import lombok.NonNull;
  */
 public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtensionWithSdk<PluginModuleExtension>
 {
-	private PluginModuleExtension myPluginModuleExtension;
-
-	public PluginMutableModuleExtension(@NotNull String id, @NotNull Module module, PluginModuleExtension pluginModuleExtension)
+	public PluginMutableModuleExtension(@NotNull String id, @NotNull Module module)
 	{
 		super(id, module);
-		myPluginModuleExtension = pluginModuleExtension;
-
-		commit(myPluginModuleExtension);
 	}
 
 	@Nullable
@@ -63,15 +58,9 @@ public class PluginMutableModuleExtension extends PluginModuleExtension implemen
 	}
 
 	@Override
-	public boolean isModified()
+	public boolean isModified(@NotNull PluginModuleExtension pluginModuleExtension)
 	{
-		return isModifiedImpl(myPluginModuleExtension) || !Comparing.equal(myCustomPluginDirPointer, myPluginModuleExtension.myCustomPluginDirPointer);
-	}
-
-	@Override
-	public void commit()
-	{
-		myPluginModuleExtension.commit(this);
+		return isModifiedImpl(pluginModuleExtension) || !Comparing.equal(myCustomPluginDirPointer, pluginModuleExtension.myCustomPluginDirPointer);
 	}
 
 	@NotNull

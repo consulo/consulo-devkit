@@ -27,30 +27,33 @@ import com.intellij.openapi.module.Module;
  * @author VISTALL
  * @since 2:00/23.05.13
  */
-public class PluginModuleExtensionProvider implements ModuleExtensionProvider<PluginModuleExtension, PluginMutableModuleExtension> {
-  @Nullable
-  @Override
-  public Icon getIcon() {
-    return AllIcons.Nodes.Plugin;
-  }
+public class PluginModuleExtensionProvider implements ModuleExtensionProvider<PluginModuleExtension, PluginMutableModuleExtension>
+{
+	@Nullable
+	@Override
+	public Icon getIcon()
+	{
+		return AllIcons.Nodes.Plugin;
+	}
 
-  @NotNull
-  @Override
-  public String getName() {
-    return "Consulo Develop Kit";
-  }
+	@NotNull
+	@Override
+	public String getName()
+	{
+		return "Consulo Develop Kit";
+	}
 
-  @NotNull
-  @Override
-  public PluginModuleExtension createImmutable(@NotNull String id, @NotNull Module module) {
-    return new PluginModuleExtension(id, module);
-  }
+	@NotNull
+	@Override
+	public PluginModuleExtension createImmutable(@NotNull String id, @NotNull Module module)
+	{
+		return new PluginModuleExtension(id, module);
+	}
 
-  @NotNull
-  @Override
-  public PluginMutableModuleExtension createMutable(@NotNull String id,
-                                                    @NotNull Module module,
-                                                    @NotNull PluginModuleExtension pluginModuleExtension) {
-    return new PluginMutableModuleExtension(id, module, pluginModuleExtension);
-  }
+	@NotNull
+	@Override
+	public PluginMutableModuleExtension createMutable(@NotNull String id, @NotNull Module module)
+	{
+		return new PluginMutableModuleExtension(id, module);
+	}
 }
