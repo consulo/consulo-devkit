@@ -32,6 +32,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.projectRoots.AdditionalDataConfigurable;
+import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkAdditionalData;
 import com.intellij.openapi.projectRoots.SdkModel;
@@ -246,6 +247,12 @@ public class ConsuloSdkType extends SdkType
 		addSources(new File(sdkHome), sdkModificator);
 
 		sdkModificator.commitChanges();
+	}
+
+	@Override
+	public boolean isRootTypeApplicable(OrderRootType type)
+	{
+		return JavaSdk.getInstance().isRootTypeApplicable(type);
 	}
 
 	@Override
