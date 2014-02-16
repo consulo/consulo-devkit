@@ -17,12 +17,13 @@ package org.jetbrains.idea.devkit.sdk;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.Icon;
 
+import org.consulo.lombok.annotations.Logger;
+import org.jdom.Document;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.projectRoots.AdditionalDataConfigurable;
 import com.intellij.openapi.projectRoots.JavaSdk;
@@ -39,15 +41,18 @@ import com.intellij.openapi.projectRoots.SdkModel;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.vfs.ArchiveFileSystem;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
 
 /**
  * User: anna
  * Date: Nov 22, 2004
  */
+@Logger
 public class ConsuloSdkType extends SdkType
 {
 	@NonNls
@@ -63,31 +68,16 @@ public class ConsuloSdkType extends SdkType
 	}
 
 	@Nullable
-	private static File getMainJar(String home)
+	private static File getJarFromLibs(String home, String jarName)
 	{
-
 		final File libDir = new File(home, LIB_DIR_NAME);
-		File f = new File(libDir, "idea.jar");
+		File f = new File(libDir, jarName);
 		if(f.exists())
 		{
 			return f;
 		}
 
 		return null;
-	}
-
-	@Nullable
-	public static String getBuildNumber(String ideaHome)
-	{
-		try
-		{
-			@NonNls final String buildTxt = "/build.txt";
-			return FileUtil.loadFile(new File(ideaHome + buildTxt)).trim();
-		}
-		catch(IOException e)
-		{
-			return null;
-		}
 	}
 
 	private static VirtualFile[] getIdeaLibrary(String home)
@@ -134,11 +124,7 @@ public class ConsuloSdkType extends SdkType
 			public boolean accept(File pathname)
 			{
 				@NonNls final String path = pathname.getPath();
-				//noinspection SimplifiableIfStatement
-				if(path.contains("generics"))
-				{
-					return false;
-				}
+
 				return path.endsWith(".jar") || path.endsWith(".zip");
 			}
 		});
@@ -209,7 +195,7 @@ public class ConsuloSdkType extends SdkType
 		{
 			return false;
 		}
-		if(getBuildNumber(path) == null || getMainJar(path) == null)
+		if(getJarFromLibs(path, "idea.jar") == null)
 		{
 			return false;
 		}
@@ -221,6 +207,37 @@ public class ConsuloSdkType extends SdkType
 	public String getVersionString(String sdkHome)
 	{
 		return getBuildNumber(sdkHome);
+	}
+
+	private String getBuildNumber(String sdkHome)
+	{
+		File mainJar = getJarFromLibs(sdkHome, "resources.jar");
+		assert mainJar != null;
+		VirtualFile ideaJarFile = LocalFileSystem.getInstance().findFileByIoFile(mainJar);
+		assert ideaJarFile != null;
+		VirtualFile ideaJarRoot = ArchiveVfsUtil.getArchiveRootForLocalFile(ideaJarFile);
+		if(ideaJarRoot == null)
+		{
+			return null;
+		}
+
+		VirtualFile appInfo = ideaJarRoot.findFileByRelativePath(ApplicationInfo.APPLICATION_INFO_XML);
+		if(appInfo == null)
+		{
+			return null;
+		}
+
+		try
+		{
+			Document document = JDOMUtil.loadDocument(appInfo.getInputStream());
+			Element build = document.getRootElement().getChild("build");
+			return build.getAttributeValue("number");
+		}
+		catch(Exception e)
+		{
+			LOGGER.error(e);
+		}
+		return null;
 	}
 
 	@Override
