@@ -1,143 +1,149 @@
 <idea-plugin version="2">
-  <name>Plugin DevKit</name>
-  <id>org.consulo.devkit</id>
-  <version>SNAPSHOT</version>
-  <depends>org.consulo.java</depends>
-  <category>inspection</category>
-  <vendor>JetBrains</vendor>
+	<name>Plugin DevKit</name>
+	<id>org.consulo.devkit</id>
+	<version>SNAPSHOT</version>
+	<depends>org.consulo.java</depends>
+	<category>inspection</category>
+	<vendor>JetBrains</vendor>
 
-  <depends>com.intellij.properties</depends>
-  <depends>com.intellij.xml</depends>
-  <depends optional="true" config-file="org.consulo.lombok.xml">org.consulo.lombok</depends>
+	<depends>com.intellij.properties</depends>
+	<depends>com.intellij.xml</depends>
+	<depends optional="true" config-file="org.consulo.lombok.xml">org.consulo.lombok</depends>
 
-  <resource-bundle>messages.DevKitBundle</resource-bundle>
+	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
-  <extensions defaultExtensionNs="org.consulo.java">
-    <testPatcher implementation="org.jetbrains.idea.devkit.run.JUnitDevKitPatcher" />
-  </extensions>
-  <extensions defaultExtensionNs="com.intellij">
-    <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+	<extensions defaultExtensionNs="org.consulo.java">
+		<testPatcher implementation="org.jetbrains.idea.devkit.run.JUnitDevKitPatcher"/>
+	</extensions>
+	<extensions defaultExtensionNs="com.intellij">
+		<errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
 
-    <useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
+		<useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
 
-    <configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
+		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
 
-    <sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
-    <fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
-    <documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
+		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
+		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
+		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 
-    <library.presentationProvider implementation="org.jetbrains.idea.devkit.module.library.PluginLibraryPresentationProvider" />
-    <moduleExtensionProvider key="consulo-plugin" parent-key="java" implementationClass="org.jetbrains.idea.devkit.module.extension.PluginModuleExtensionProvider" />
-    <localInspection language="XML" shortName="PluginXmlValidity" displayName="Plugin.xml Validity"
-                     bundle="messages.DevKitBundle"
-                     groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.PluginXmlDomInspection"/>
-    <localInspection language="JAVA" shortName="ComponentNotRegistered" bundle="messages.DevKitBundle"
-                     key="inspections.component.not.registered.name" groupKey="inspections.group.name" enabledByDefault="true"
-                     level="WARNING" implementationClass="org.jetbrains.idea.devkit.inspections.ComponentNotRegisteredInspection"/>
-    <localInspection language="JAVA" shortName="InspectionDescriptionNotFoundInspection" displayName="Inspection Description Checker"
-                     bundle="messages.DevKitBundle"
-                     groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection"/>
-    <localInspection language="JAVA" shortName="InspectionUsingGrayColors" displayName="Using new Color(a,a,a)"
-                     bundle="messages.DevKitBundle"
-                     groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.UseGrayInspection"/>
-    <localInspection language="JAVA" shortName="UseJBColor" displayName="Use Darcula aware JBColor"
-                     bundle="messages.DevKitBundle"
-                     groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.UseJBColorInspection"/>
-    <localInspection language="JAVA" shortName="IntentionDescriptionNotFoundInspection" displayName="Intention Description Checker"
-                     bundle="messages.DevKitBundle"
-                     groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection"/>
-    <localInspection shortName="ComponentRegistrationProblems"
-                     bundle="messages.DevKitBundle" key="inspections.registration.problems.name"
-                     groupKey="inspections.group.name"
-                     enabledByDefault="true" level="ERROR"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.RegistrationProblemsInspection"/>
-    <localInspection language="JAVA" shortName="DialogTitleCapitalization"
-                     bundle="messages.DevKitBundle"
-                     groupKey="inspections.group.name"
-                     displayName="Incorrect dialog title capitalization"
-                     enabledByDefault="true"
-                     level="WARNING"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.TitleCapitalizationInspection"/>
-    <localInspection language="XML" shortName="InspectionMappingConsistency"
-                     bundle="messages.DevKitBundle"
-                     groupKey="inspections.group.name"
-                     displayName="&lt;inspection&gt; tag consistency"
-                     enabledByDefault="true"
-                     level="WARNING"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.InspectionMappingConsistencyInspection"/>
-    <localInspection language="XML" shortName="ExtensionPointBeanClass"
-                     bundle="messages.DevKitBundle"
-                     groupKey="inspections.group.name"
-                     displayName="&lt;extensionPoint&gt; beanClass specification"
-                     enabledByDefault="true"
-                     level="WARNING"
-                     implementationClass="org.jetbrains.idea.devkit.inspections.ExtensionPointBeanClassInspection"/>
+		<library.presentationProvider implementation="org.jetbrains.idea.devkit.module.library.PluginLibraryPresentationProvider"/>
+		<moduleExtensionProvider key="consulo-plugin" parent-key="java"
+								 implementationClass="org.jetbrains.idea.devkit.module.extension.PluginModuleExtensionProvider"/>
+		<localInspection language="XML" shortName="PluginXmlValidity" displayName="Plugin.xml Validity"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.PluginXmlDomInspection"/>
+		<localInspection language="JAVA" shortName="ComponentNotRegistered" bundle="messages.DevKitBundle"
+						 key="inspections.component.not.registered.name" groupKey="inspections.group.name" enabledByDefault="true"
+						 level="WARNING" implementationClass="org.jetbrains.idea.devkit.inspections.ComponentNotRegisteredInspection"/>
+		<localInspection language="JAVA" shortName="InspectionDescriptionNotFoundInspection" displayName="Inspection Description Checker"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection"/>
+		<localInspection language="JAVA" shortName="InspectionUsingGrayColors" displayName="Using new Color(a,a,a)"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.UseGrayInspection"/>
+		<localInspection language="JAVA" shortName="UseJBColor" displayName="Use Darcula aware JBColor"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.UseJBColorInspection"/>
+		<localInspection language="JAVA" shortName="IntentionDescriptionNotFoundInspection" displayName="Intention Description Checker"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection"/>
+		<localInspection shortName="ComponentRegistrationProblems"
+						 bundle="messages.DevKitBundle" key="inspections.registration.problems.name"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true" level="ERROR"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.RegistrationProblemsInspection"/>
+		<localInspection language="JAVA" shortName="DialogTitleCapitalization"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 displayName="Incorrect dialog title capitalization"
+						 enabledByDefault="true"
+						 level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.TitleCapitalizationInspection"/>
+		<localInspection language="XML" shortName="InspectionMappingConsistency"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 displayName="&lt;inspection&gt; tag consistency"
+						 enabledByDefault="true"
+						 level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.InspectionMappingConsistencyInspection"/>
+		<localInspection language="XML" shortName="ExtensionPointBeanClass"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 displayName="&lt;extensionPoint&gt; beanClass specification"
+						 enabledByDefault="true"
+						 level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.ExtensionPointBeanClassInspection"/>
 
-    <implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
-    <psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>
-    <psi.referenceContributor implementation="org.jetbrains.idea.devkit.references.IconsReferencesContributor"/>
-    <referencesSearch implementation="org.jetbrains.idea.devkit.references.IconsReferencesContributor"/>
-    <unusedDeclarationFixProvider implementation="org.jetbrains.idea.devkit.inspections.quickfix.RegisterExtensionFixProvider"/>
-  </extensions>
+		<implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
+		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>
+		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.references.IconsReferencesContributor"/>
+		<referencesSearch implementation="org.jetbrains.idea.devkit.references.IconsReferencesContributor"/>
+		<unusedDeclarationFixProvider implementation="org.jetbrains.idea.devkit.inspections.quickfix.RegisterExtensionFixProvider"/>
+	</extensions>
 
-  <extensions defaultExtensionNs="com.intellij.xml.dom">
+	<extensions defaultExtensionNs="com.intellij.xml.dom">
 
-    <fileDescription implementation="org.jetbrains.idea.devkit.dom.impl.PluginXmlDomFileDescription"/>
-    <extender domClass="org.jetbrains.idea.devkit.dom.Extensions"
-                  extenderClass="org.jetbrains.idea.devkit.dom.impl.ExtensionDomExtender"/>
-    <implementation interfaceClass="org.jetbrains.idea.devkit.dom.IdeaPlugin"
-                        implementationClass="org.jetbrains.idea.devkit.dom.impl.IdeaPluginImpl"/>
-    <implementation interfaceClass="org.jetbrains.idea.devkit.dom.Extension"
-                        implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionImpl"/>
-    <implementation interfaceClass="org.jetbrains.idea.devkit.dom.Extensions"
-                        implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionsImpl"/>
+		<fileDescription implementation="org.jetbrains.idea.devkit.dom.impl.PluginXmlDomFileDescription"/>
+		<extender domClass="org.jetbrains.idea.devkit.dom.Extensions"
+				  extenderClass="org.jetbrains.idea.devkit.dom.impl.ExtensionDomExtender"/>
+		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.IdeaPlugin"
+						implementationClass="org.jetbrains.idea.devkit.dom.impl.IdeaPluginImpl"/>
+		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.Extension"
+						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionImpl"/>
+		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.Extensions"
+						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionsImpl"/>
 
-  </extensions>
+	</extensions>
 
-  <actions>
-    <action class="org.jetbrains.idea.devkit.actions.NewApplicationComponentAction" text="Application Component"
-            id="NewApplicationComponent">
-      <add-to-group anchor="last" group-id="NewGroup"/>
-    </action>
+	<actions>
+		<action class="org.jetbrains.idea.devkit.actions.NewApplicationComponentAction" text="Application Component"
+				id="NewApplicationComponent">
+			<add-to-group anchor="last" group-id="NewGroup"/>
+		</action>
 
-    <action class="org.jetbrains.idea.devkit.actions.NewProjectComponentAction" text="Project Component" id="NewProjectComponent">
-      <add-to-group anchor="last" group-id="NewGroup"/>
-    </action>
+		<action class="org.jetbrains.idea.devkit.actions.NewProjectComponentAction" text="Project Component" id="NewProjectComponent">
+			<add-to-group anchor="last" group-id="NewGroup"/>
+		</action>
 
-    <action class="org.jetbrains.idea.devkit.actions.NewModuleComponentAction" text="Module Component" id="NewModuleComponent">
-      <add-to-group anchor="last" group-id="NewGroup"/>
-    </action>
+		<action class="org.jetbrains.idea.devkit.actions.NewModuleComponentAction" text="Module Component" id="NewModuleComponent">
+			<add-to-group anchor="last" group-id="NewGroup"/>
+		</action>
 
-    <action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
-      <add-to-group anchor="last" group-id="NewGroup"/>
-    </action>
+		<action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
+			<add-to-group anchor="last" group-id="NewGroup"/>
+		</action>
 
-    <action class="org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction" text="Generate Externalization"
-            id="GenerateExternalization">
-      <add-to-group anchor="last" group-id="GenerateGroup"/>
-    </action>
+		<action class="org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction" text="Generate Externalization"
+				id="GenerateExternalization">
+			<add-to-group anchor="last" group-id="GenerateGroup"/>
+		</action>
 
-    <group id="Internal.DevKit" internal="true" text="DevKit" popup="true">
-      <action internal="true" class="org.jetbrains.idea.devkit.actions.ToggleHighlightingMarkupAction" text="Toggle Expected Highlighting Markup"
-              id="ToggleHighlightingMarkup"/>
+		<group id="DownloadDependenciesGroup">
+			<separator />
+			<action id="DownloadDependencies" class="org.jetbrains.idea.devkit.actions.DownloadDependenciesAction" />
+			<add-to-group anchor="last" group-id="ProjectViewPopupMenuSettingsGroup" />
+		</group>
 
-      <action internal="true" class="org.jetbrains.idea.devkit.actions.ShuffleNamesAction" text="Shuffle Names"
-              id="ShuffleNamesAction"/>
+		<group id="Internal.DevKit" internal="true" text="DevKit" popup="true">
+			<action internal="true" class="org.jetbrains.idea.devkit.actions.ToggleHighlightingMarkupAction"
+					text="Toggle Expected Highlighting Markup"
+					id="ToggleHighlightingMarkup"/>
 
-      <action internal="true" class="org.jetbrains.idea.devkit.actions.ShowSerializedXmlAction" text="Show Serialized XML for Class"
-              id="ShowSerializedXml"/>
+			<action internal="true" class="org.jetbrains.idea.devkit.actions.ShuffleNamesAction" text="Shuffle Names"
+					id="ShuffleNamesAction"/>
 
-      <action internal="true" class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
-              id="GenerateDomModel"/>
+			<action internal="true" class="org.jetbrains.idea.devkit.actions.ShowSerializedXmlAction" text="Show Serialized XML for Class"
+					id="ShowSerializedXml"/>
 
-      <add-to-group group-id="Internal" anchor="last"/>
-    </group>
+			<action internal="true" class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
+					id="GenerateDomModel"/>
 
-  </actions>
-
+			<add-to-group group-id="Internal" anchor="last"/>
+		</group>
+	</actions>
 </idea-plugin>
