@@ -16,7 +16,6 @@
 package org.jetbrains.idea.devkit.run;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -30,7 +29,6 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
-import com.intellij.compiler.CompilerConfiguration;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -51,7 +49,6 @@ import com.intellij.openapi.util.NotNullFactory;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
@@ -138,15 +135,8 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 	{
 		if(IDEA_LOG.equals(predefinedLogFile))
 		{
-			try
-			{
-				String sandboxPath = getSandboxPath();
-				return new LogFileOptions("idea.log", sandboxPath + LOG_FILE , true, false, true);
-			}
-			catch(ExecutionException e)
-			{
-				return null;
-			}
+			String sandboxPath = getSandboxPath();
+			return new LogFileOptions("idea.log", sandboxPath + LOG_FILE , true, false, true);
 		}
 		else
 		{
@@ -154,22 +144,9 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 		}
 	}
 
-	private String getSandboxPath() throws ExecutionException
+	private String getSandboxPath()
 	{
-		final String dataPath;
-		try
-		{
-			CompilerConfiguration compilerPathsManager = CompilerConfiguration.getInstance(getProject());
-
-			String path = VfsUtilCore.urlToPath(compilerPathsManager.getCompilerOutputUrl());
-			File temp = new File(path, "sandbox");
-			dataPath = temp.getCanonicalPath();
-		}
-		catch(IOException e)
-		{
-			throw new ExecutionException(e);
-		}
-		return dataPath;
+		return getProject().getBasePath() + "/" + Project.DIRECTORY_STORE_FOLDER + "/sandbox" ;
 	}
 
 	@Override
