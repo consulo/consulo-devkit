@@ -29,7 +29,6 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.Comparing;
-import lombok.NonNull;
 
 /**
  * @author VISTALL
@@ -44,7 +43,7 @@ public class PluginMutableModuleExtension extends PluginModuleExtension implemen
 
 	@Nullable
 	@Override
-	public JComponent createConfigurablePanel(@NonNull ModifiableRootModel rootModel, @Nullable Runnable updateOnCheck)
+	public JComponent createConfigurablePanel(@NotNull ModifiableRootModel rootModel, @Nullable Runnable updateOnCheck)
 	{
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new ModuleExtensionWithSdkPanel(this, updateOnCheck), BorderLayout.NORTH);
