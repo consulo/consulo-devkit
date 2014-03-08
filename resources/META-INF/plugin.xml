@@ -28,8 +28,12 @@
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 
 		<library.presentationProvider implementation="org.jetbrains.idea.devkit.module.library.PluginLibraryPresentationProvider"/>
-		<moduleExtensionProvider key="consulo-plugin" parent-key="java"
-								 implementationClass="org.jetbrains.idea.devkit.module.extension.PluginModuleExtensionProvider"/>
+		<moduleExtensionProvider key="consulo-plugin"
+								 parentKey="java"
+								 icon="/icons/plugin.png"
+								 name="Consulo Plugin"
+								 immutableClass="org.jetbrains.idea.devkit.module.extension.PluginModuleExtension"
+								 mutableClass="org.jetbrains.idea.devkit.module.extension.PluginMutableModuleExtension"/>
 		<localInspection language="XML" shortName="PluginXmlValidity" displayName="Plugin.xml Validity"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
