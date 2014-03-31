@@ -41,8 +41,9 @@ public class PluginModuleExtension extends ModuleExtensionWithSdkImpl<PluginModu
 		super(id, module);
 	}
 
+	@NotNull
 	@Override
-	protected Class<? extends SdkType> getSdkTypeClass()
+	public Class<? extends SdkType> getSdkTypeClass()
 	{
 		return ConsuloSdkType.class;
 	}
