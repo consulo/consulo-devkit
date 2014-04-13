@@ -30,7 +30,7 @@
 		<library.presentationProvider implementation="org.jetbrains.idea.devkit.module.library.PluginLibraryPresentationProvider"/>
 		<moduleExtensionProvider key="consulo-plugin"
 								 parentKey="java"
-								 icon="/icons/plugin.png"
+								 icon="/icon16.png"
 								 name="Consulo Plugin"
 								 immutableClass="org.jetbrains.idea.devkit.module.extension.PluginModuleExtension"
 								 mutableClass="org.jetbrains.idea.devkit.module.extension.PluginMutableModuleExtension"/>
@@ -122,6 +122,12 @@
 		<action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
 			<add-to-group anchor="last" group-id="NewGroup"/>
 		</action>
+
+		<group id="DownloadDependenciesGroup">
+			<separator />
+			<action id="DownloadDependencies" class="org.jetbrains.idea.devkit.actions.DownloadDependenciesAction" />
+			<add-to-group anchor="last" group-id="ProjectViewPopupMenuSettingsGroup" />
+		</group>
 
 		<action class="org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction" text="Generate Externalization"
 				id="GenerateExternalization">
