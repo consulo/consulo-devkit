@@ -15,16 +15,17 @@
  */
 package org.jetbrains.idea.devkit.module.library;
 
+import java.util.List;
+
+import javax.swing.Icon;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.roots.libraries.DummyLibraryProperties;
 import com.intellij.openapi.roots.libraries.LibraryKind;
 import com.intellij.openapi.roots.libraries.LibraryPresentationProvider;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.util.List;
 
 /**
  * @author VISTALL
@@ -40,7 +41,7 @@ public class PluginLibraryPresentationProvider extends LibraryPresentationProvid
   @Nullable
   @Override
   public Icon getIcon() {
-    return AllIcons.Nodes.Plugin;
+    return AllIcons.Icon16;
   }
 
   @Nullable

@@ -146,7 +146,7 @@ public class PluginConfigurationType implements ConfigurationType
 	@Override
 	public Icon getIcon()
 	{
-		return AllIcons.Nodes.Plugin;
+		return AllIcons.Icon16;
 	}
 
 	@Override
