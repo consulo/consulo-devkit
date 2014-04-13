@@ -23,12 +23,17 @@
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
 
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
+		<bundledSdkProvider implementation="org.jetbrains.idea.devkit.sdk.ConsuloBundledSdkProvider" />
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 
 		<library.presentationProvider implementation="org.jetbrains.idea.devkit.module.library.PluginLibraryPresentationProvider"/>
-		<moduleExtensionProvider key="consulo-plugin" parent-key="java"
-								 implementationClass="org.jetbrains.idea.devkit.module.extension.PluginModuleExtensionProvider"/>
+		<moduleExtensionProvider key="consulo-plugin"
+								 parentKey="java"
+								 icon="/icons/plugin.png"
+								 name="Consulo Plugin"
+								 immutableClass="org.jetbrains.idea.devkit.module.extension.PluginModuleExtension"
+								 mutableClass="org.jetbrains.idea.devkit.module.extension.PluginMutableModuleExtension"/>
 		<localInspection language="XML" shortName="PluginXmlValidity" displayName="Plugin.xml Validity"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
@@ -123,12 +128,6 @@
 			<add-to-group anchor="last" group-id="GenerateGroup"/>
 		</action>
 
-		<group id="DownloadDependenciesGroup">
-			<separator />
-			<action id="DownloadDependencies" class="org.jetbrains.idea.devkit.actions.DownloadDependenciesAction" />
-			<add-to-group anchor="last" group-id="ProjectViewPopupMenuSettingsGroup" />
-		</group>
-
 		<group id="Internal.DevKit" internal="true" text="DevKit" popup="true">
 			<action internal="true" class="org.jetbrains.idea.devkit.actions.ToggleHighlightingMarkupAction"
 					text="Toggle Expected Highlighting Markup"
@@ -145,5 +144,7 @@
 
 			<add-to-group group-id="Internal" anchor="last"/>
 		</group>
+
 	</actions>
+
 </idea-plugin>

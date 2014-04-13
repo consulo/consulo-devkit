@@ -156,7 +156,8 @@ public class ConsuloSdkType extends SdkType
 		return null;
 	}
 
-	public static SdkType getInstance()
+	@NotNull
+	public static ConsuloSdkType getInstance()
 	{
 		return SdkType.findInstance(ConsuloSdkType.class);
 	}

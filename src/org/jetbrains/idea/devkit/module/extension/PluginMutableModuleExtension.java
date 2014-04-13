@@ -25,11 +25,9 @@ import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
 import org.consulo.module.extension.ui.ModuleExtensionWithSdkPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.Comparing;
-import lombok.NonNull;
 
 /**
  * @author VISTALL
@@ -37,18 +35,18 @@ import lombok.NonNull;
  */
 public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtensionWithSdk<PluginModuleExtension>
 {
-	public PluginMutableModuleExtension(@NotNull String id, @NotNull Module module)
+	public PluginMutableModuleExtension(@NotNull String id, @NotNull ModifiableRootModel module)
 	{
 		super(id, module);
 	}
 
 	@Nullable
 	@Override
-	public JComponent createConfigurablePanel(@NonNull ModifiableRootModel rootModel, @Nullable Runnable updateOnCheck)
+	public JComponent createConfigurablePanel(@Nullable Runnable updateOnCheck)
 	{
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new ModuleExtensionWithSdkPanel(this, updateOnCheck), BorderLayout.NORTH);
-		return new PluginConfigPanel(this, rootModel, updateOnCheck);
+		return new PluginConfigPanel(this, myRootModel, updateOnCheck);
 	}
 
 	@Override
