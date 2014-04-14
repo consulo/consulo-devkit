@@ -31,8 +31,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
-import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import com.intellij.ide.plugins.RepositoryHelper;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -61,17 +59,6 @@ import com.intellij.util.net.HttpConfigurable;
 @Logger
 public class DownloadDependenciesAction extends AnAction
 {
-	@Override
-	public void update(AnActionEvent e)
-	{
-		Project project = e.getData(PlatformDataKeys.PROJECT);
-		if(project == null)
-		{
-			return;
-		}
-		e.getPresentation().setEnabledAndVisible(ModuleExtensionHelper.getInstance(project).hasModuleExtension(PluginModuleExtension.class));
-	}
-
 	@Override
 	public void actionPerformed(AnActionEvent e)
 	{

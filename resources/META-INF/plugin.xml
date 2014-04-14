@@ -125,7 +125,8 @@
 
 		<group id="DownloadDependenciesGroup">
 			<separator />
-			<action id="DownloadDependencies" class="org.jetbrains.idea.devkit.actions.DownloadDependenciesAction" />
+			<action id="DownloadDependencies" class="org.jetbrains.idea.devkit.actions.DownloadDependenciesAction" can-use-project-as-default="true"
+					require-module-extensions="consulo-plugin"/>
 			<add-to-group anchor="last" group-id="ProjectViewPopupMenuSettingsGroup" />
 		</group>
 
