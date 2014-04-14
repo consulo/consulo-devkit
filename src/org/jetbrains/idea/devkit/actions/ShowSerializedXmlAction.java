@@ -15,6 +15,22 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
+import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.jdom.Element;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.CommonBundle;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -37,16 +53,6 @@ import com.intellij.util.lang.UrlClassLoader;
 import com.intellij.util.xmlb.Accessor;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import org.jdom.Element;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
-import java.lang.reflect.Array;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
 
 /**
  * @author nik
@@ -94,7 +100,7 @@ public class ShowSerializedXmlAction extends DumbAwareAction {
     }
 
     final Project project = module.getProject();
-    UrlClassLoader loader = new UrlClassLoader(urls, XmlSerializer.class.getClassLoader());
+    UrlClassLoader loader = UrlClassLoader.build().urls(urls).parent(XmlSerializer.class.getClassLoader()).get();
     final Class<?> aClass;
     try {
       aClass = Class.forName(className, true, loader);
