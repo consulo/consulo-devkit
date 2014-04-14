@@ -1,14 +1,15 @@
 <idea-plugin version="2">
-	<name>Plugin DevKit</name>
 	<id>org.consulo.devkit</id>
-	<version>SNAPSHOT</version>
-	<depends>org.consulo.java</depends>
+	<name>Consulo Plugin DevKit</name>
+	<version>Frameworks</version>
 	<category>inspection</category>
 	<vendor>JetBrains</vendor>
 
+	<depends>org.consulo.java</depends>
 	<depends>com.intellij.properties</depends>
 	<depends>com.intellij.xml</depends>
-	<depends optional="true" config-file="org.consulo.lombok.xml">org.consulo.lombok</depends>
+	<depends>com.intellij.uiDesigner</depends> <!--This depend is not used, but it needed for developing, and it required-->
+	<depends>org.consulo.lombok</depends>
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
