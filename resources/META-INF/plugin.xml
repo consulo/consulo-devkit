@@ -9,7 +9,7 @@
 	<depends>com.intellij.properties</depends>
 	<depends>com.intellij.xml</depends>
 	<depends>com.intellij.uiDesigner</depends> <!--This depend is not used, but it needed for developing, and it required-->
-	<depends config-file="org.consulo.lombok.xml">org.consulo.lombok</depends>
+	<depends optional="true" config-file="org.consulo.lombok.xml">org.consulo.lombok</depends>
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
