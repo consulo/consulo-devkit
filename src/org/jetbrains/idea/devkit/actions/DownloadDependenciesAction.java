@@ -47,6 +47,7 @@ import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.templates.github.DownloadUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.io.ZipUtil;
@@ -59,6 +60,18 @@ import com.intellij.util.net.HttpConfigurable;
 @Logger
 public class DownloadDependenciesAction extends AnAction
 {
+	@Override
+	public void update(AnActionEvent e)
+	{
+		super.update(e);
+		if(e.getPresentation().isVisible())
+		{
+			Project project = e.getData(PlatformDataKeys.PROJECT);
+			VirtualFile virtualFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
+			e.getPresentation().setEnabledAndVisible(virtualFile != null && virtualFile.equals(project.getBaseDir()));
+		}
+	}
+
 	@Override
 	public void actionPerformed(AnActionEvent e)
 	{
