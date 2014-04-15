@@ -19,21 +19,23 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.fileTemplates.FileTemplateDescriptor;
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor;
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory;
-import com.intellij.openapi.fileTypes.StdFileTypes;
+import com.intellij.ide.highlighter.HtmlFileType;
+import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.ide.highlighter.XmlFileType;
 
-public class DevKitFileTemplatesFactory implements FileTemplateGroupDescriptorFactory {
-
-  @Override
-  public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
-    FileTemplateGroupDescriptor descriptor =
-      new FileTemplateGroupDescriptor(DevKitBundle.message("plugin.descriptor"), AllIcons.Nodes.Plugin);
-    descriptor.addTemplate(new FileTemplateDescriptor("plugin.xml", StdFileTypes.XML.getIcon()));
-    descriptor.addTemplate(new FileTemplateDescriptor("ProjectComponent.java", StdFileTypes.JAVA.getIcon()));
-    descriptor.addTemplate(new FileTemplateDescriptor("ApplicationComponent.java", StdFileTypes.JAVA.getIcon()));
-    descriptor.addTemplate(new FileTemplateDescriptor("ModuleComponent.java", StdFileTypes.JAVA.getIcon()));
-    descriptor.addTemplate(new FileTemplateDescriptor("Action.java", StdFileTypes.JAVA.getIcon()));
-    descriptor.addTemplate(new FileTemplateDescriptor("InspectionDescription.html", StdFileTypes.HTML.getIcon()));
-    return descriptor;
-  }
+public class DevKitFileTemplatesFactory implements FileTemplateGroupDescriptorFactory
+{
+	@Override
+	public FileTemplateGroupDescriptor getFileTemplatesDescriptor()
+	{
+		FileTemplateGroupDescriptor descriptor = new FileTemplateGroupDescriptor(DevKitBundle.message("plugin.descriptor"), AllIcons.Nodes.Plugin);
+		descriptor.addTemplate(new FileTemplateDescriptor("plugin.xml", XmlFileType.INSTANCE.getIcon()));
+		descriptor.addTemplate(new FileTemplateDescriptor("ProjectComponent.java", JavaFileType.INSTANCE.getIcon()));
+		descriptor.addTemplate(new FileTemplateDescriptor("ApplicationComponent.java", JavaFileType.INSTANCE.getIcon()));
+		descriptor.addTemplate(new FileTemplateDescriptor("ModuleComponent.java", JavaFileType.INSTANCE.getIcon()));
+		descriptor.addTemplate(new FileTemplateDescriptor("Action.java", JavaFileType.INSTANCE.getIcon()));
+		descriptor.addTemplate(new FileTemplateDescriptor("InspectionDescription.html", HtmlFileType.INSTANCE.getIcon()));
+		return descriptor;
+	}
 
 }
