@@ -168,6 +168,8 @@ public interface Action extends DomElement
 	 */
 	GenericAttributeValue<Boolean> isInternal();
 
+	GenericAttributeValue<Boolean> isSecondary();
+
 	GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
 
 	GenericAttributeValue<String> getRequireModuleExtensions();
