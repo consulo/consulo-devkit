@@ -36,7 +36,6 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ex.ApplicationInfoEx;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -92,7 +91,7 @@ public class DownloadDependenciesAction extends AnAction
 				FileUtil.delete(depDir);
 				try
 				{
-					HttpURLConnection connection = HttpConfigurable.getInstance().openHttpConnection("http://must-be.org:8080/vulcan_web/projects.jsp");
+					HttpURLConnection connection = HttpConfigurable.getInstance().openHttpConnection("http://must-be.org/vulcan/projects.jsp");
 					connection.connect();
 
 					InputStream inputStream = null;
@@ -151,12 +150,11 @@ public class DownloadDependenciesAction extends AnAction
 						collectDependencies(projectName, map, toDownloadIds, buildProjectToId);
 
 						String uuid = UpdateChecker.getInstallationUID(PropertiesComponent.getInstance());
-						String buildNumber = ApplicationInfo.getInstance().getBuild().asString();
 
 						for(String toDownloadId : toDownloadIds)
 						{
 							String url = RepositoryHelper.getDownloadUrl() + URLEncoder.encode(toDownloadId, "UTF8") +
-									"&build=" + buildNumber + "&uuid=" + URLEncoder.encode(uuid, "UTF8");
+									"&build=SNAPSHOT&uuid=" + URLEncoder.encode(uuid, "UTF8");
 
 							File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
 							File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
