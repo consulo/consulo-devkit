@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.generate.tostring.util.StringUtil;
+import org.mustbe.consulo.java.util.JavaClassNames;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.light.LightMethodBuilder;
@@ -42,7 +43,6 @@ public class BundleAnnotationProcessor extends LombokSelfClassProcessor
 	public void processElement(@NotNull PsiClass parent, @NotNull PsiClass psiClass, @NotNull List<PsiElement> result)
 	{
 		JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(parent.getProject());
-		PsiElementFactory elementFactory = javaPsiFacade.getElementFactory();
 
 		PsiJavaParserFacade parserFacade = javaPsiFacade.getParserFacade();
 
@@ -57,20 +57,27 @@ public class BundleAnnotationProcessor extends LombokSelfClassProcessor
 		createMessage1(parent, psiClass, result, parserFacade, affectedAnnotation, value);
 	}
 
-	private static void createMessage0(PsiClass parent, PsiClass psiClass, List<PsiElement> result, PsiJavaParserFacade parserFacade, PsiAnnotation affectedAnnotation, String value)
+	private static void createMessage0(
+			PsiClass parent,
+			PsiClass psiClass,
+			List<PsiElement> result,
+			PsiJavaParserFacade parserFacade,
+			PsiAnnotation affectedAnnotation,
+			String value)
 	{
 		LightMethodBuilder builder = new LightMethodBuilder(parent.getManager(), "message");
 		builder.setContainingClass(psiClass);
 		builder.setModifiers(PsiModifier.STATIC, PsiModifier.FINAL, PsiModifier.PUBLIC);
 		builder.setNavigationElement(affectedAnnotation);
-		builder.setMethodReturnType(CommonClassNames.JAVA_LANG_STRING);
+		builder.setMethodReturnType(JavaClassNames.JAVA_LANG_STRING);
 
 
 		final PsiParameter parameterFromText = parserFacade.createParameterFromText("@org.jetbrains.annotations.PropertyKey(" +
 				value +
 				") java.lang.String key", psiClass);
 
-		builder.addParameter(new LightParameter("key", JavaPsiFacade.getElementFactory(parent.getProject()).createTypeByFQClassName(CommonClassNames.JAVA_LANG_STRING), builder, JavaLanguage.INSTANCE)
+		builder.addParameter(new LightParameter("key", JavaPsiFacade.getElementFactory(parent.getProject()).createTypeByFQClassName(JavaClassNames
+				.JAVA_LANG_STRING), builder, JavaLanguage.INSTANCE)
 		{
 			@NotNull
 			@Override
@@ -83,20 +90,27 @@ public class BundleAnnotationProcessor extends LombokSelfClassProcessor
 		result.add(builder);
 	}
 
-	private static void createMessage1(PsiClass parent, PsiClass psiClass, List<PsiElement> result, PsiJavaParserFacade parserFacade, PsiAnnotation affectedAnnotation, String value)
+	private static void createMessage1(
+			PsiClass parent,
+			PsiClass psiClass,
+			List<PsiElement> result,
+			PsiJavaParserFacade parserFacade,
+			PsiAnnotation affectedAnnotation,
+			String value)
 	{
 		LightMethodBuilder builder = new LightMethodBuilder(parent.getManager(), "message");
 		builder.setContainingClass(psiClass);
 		builder.setModifiers(PsiModifier.STATIC, PsiModifier.FINAL, PsiModifier.PUBLIC);
 		builder.setNavigationElement(affectedAnnotation);
-		builder.setMethodReturnType(CommonClassNames.JAVA_LANG_STRING);
+		builder.setMethodReturnType(JavaClassNames.JAVA_LANG_STRING);
 
 
 		final PsiParameter parameterFromText = parserFacade.createParameterFromText("@org.jetbrains.annotations.PropertyKey(" +
 				value +
 				") java.lang.String key", psiClass);
 
-		builder.addParameter(new LightParameter("key", JavaPsiFacade.getElementFactory(parent.getProject()).createTypeByFQClassName(CommonClassNames.JAVA_LANG_STRING), builder, JavaLanguage.INSTANCE)
+		builder.addParameter(new LightParameter("key", JavaPsiFacade.getElementFactory(parent.getProject()).createTypeByFQClassName(JavaClassNames
+				.JAVA_LANG_STRING), builder, JavaLanguage.INSTANCE)
 		{
 			@NotNull
 			@Override
@@ -106,7 +120,8 @@ public class BundleAnnotationProcessor extends LombokSelfClassProcessor
 			}
 		});
 
-		PsiClassType javaLangObject = JavaPsiFacade.getElementFactory(parent.getProject()).createTypeByFQClassName(CommonClassNames.JAVA_LANG_OBJECT);
+		PsiClassType javaLangObject = JavaPsiFacade.getElementFactory(parent.getProject()).createTypeByFQClassName(JavaClassNames
+				.JAVA_LANG_OBJECT);
 
 		builder.addParameter("args", new PsiEllipsisType(javaLangObject), true);
 

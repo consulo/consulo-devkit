@@ -15,6 +15,12 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.mustbe.consulo.java.util.JavaClassNames;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.GlobalInspectionTool;
 import com.intellij.codeInspection.InspectionEP;
@@ -22,7 +28,10 @@ import com.intellij.codeInspection.LocalInspectionEP;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.reference.UnusedDeclarationFixProvider;
 import com.intellij.ide.highlighter.XmlFileType;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.ProjectScope;
 import com.intellij.psi.search.PsiNonJavaFileReferenceProcessor;
@@ -30,11 +39,6 @@ import com.intellij.psi.search.PsiSearchHelper;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.xml.XmlTag;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * @author Dmitry Avdeev
@@ -67,7 +71,7 @@ public class RegisterExtensionFixProvider implements UnusedDeclarationFixProvide
                                                               List<ExtensionPointCandidate> list,
                                                               HashSet<PsiClass> processed) {
     for (PsiClass superClass : aClass.getSupers()) {
-      if (!processed.add(superClass) || CommonClassNames.JAVA_LANG_OBJECT.equals(superClass.getQualifiedName())) {
+      if (!processed.add(superClass) || JavaClassNames.JAVA_LANG_OBJECT.equals(superClass.getQualifiedName())) {
         continue;
       }
       findExtensionPointCandidates(superClass, list);

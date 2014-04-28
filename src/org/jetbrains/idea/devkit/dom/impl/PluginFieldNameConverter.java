@@ -24,7 +24,16 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
-import com.intellij.psi.*;
+import org.mustbe.consulo.java.util.JavaClassNames;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiConstantEvaluationHelper;
+import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiModifier;
+import com.intellij.psi.PsiType;
 import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.ResolvingConverter;
 import com.intellij.util.xmlb.annotations.Attribute;
@@ -44,7 +53,7 @@ public class PluginFieldNameConverter extends ResolvingConverter<PsiField> {
         PsiType type = field.getType();
         if (type instanceof PsiClassType) {
           PsiClass resolved = ((PsiClassType)type).resolve();
-          if (resolved != null && CommonClassNames.JAVA_LANG_STRING.equals(resolved.getQualifiedName())) {
+          if (resolved != null && JavaClassNames.JAVA_LANG_STRING.equals(resolved.getQualifiedName())) {
             result.add(field);
           }
         }
