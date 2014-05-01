@@ -58,6 +58,15 @@
             <SOURCES />
           </library>
         </orderEntry>
+        <orderEntry type="module-library">
+          <library name="consulo:JFlex Support">
+            <CLASSES>
+              <root url="jar://$MODULE_DIR$/dep/jflex/lib/jflex.jar!/" />
+            </CLASSES>
+            <DOCUMENTATION />
+            <SOURCES />
+          </library>
+        </orderEntry>
       </module>
       <module name="devkit-lombok" dirurl="file://$PROJECT_DIR$/devkit-lombok">
         <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" custom-plugin-dir-url="H:\github.com\consulo\consulo-devkit\dep" />
