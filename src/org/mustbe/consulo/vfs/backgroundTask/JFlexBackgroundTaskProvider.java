@@ -20,10 +20,8 @@ import java.io.File;
 
 import org.consulo.java.module.extension.JavaModuleExtension;
 import org.consulo.vfs.backgroundTask.BackgroundTaskByVfsParameters;
-import org.intellij.lang.jflex.fileTypes.JFlexFileType;
 import org.intellij.lang.jflex.vfs.backgroundTask.JFlexBackgroundTaskByVfsChangeProvider;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.cl.PluginClassLoader;
@@ -42,14 +40,6 @@ import com.intellij.openapi.vfs.VirtualFile;
  */
 public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeProvider
 {
-	@Override
-	public boolean validate(@NotNull Project project, @NotNull VirtualFile virtualFile)
-	{
-		Module module = ModuleUtilCore.findModuleForFile(virtualFile, project);
-		return module != null && virtualFile.getFileType() == JFlexFileType.INSTANCE &&
-				ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null;
-	}
-
 	@Override
 	public void setDefaultParameters(@NotNull Project project, @NotNull VirtualFile virtualFile, @NotNull BackgroundTaskByVfsParameters parameters)
 	{
