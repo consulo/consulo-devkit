@@ -19,14 +19,11 @@ package org.mustbe.consulo.vfs.backgroundTask;
 import java.io.File;
 
 import org.consulo.java.module.extension.JavaModuleExtension;
-import org.consulo.vfs.backgroundTask.BackgroundTaskByVfsChangeProvider;
 import org.consulo.vfs.backgroundTask.BackgroundTaskByVfsParameters;
 import org.intellij.lang.jflex.fileTypes.JFlexFileType;
-import org.intellij.lang.jflex.psi.JFlexElement;
-import org.intellij.lang.jflex.psi.JFlexPsiFile;
+import org.intellij.lang.jflex.vfs.backgroundTask.JFlexBackgroundTaskByVfsChangeProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
-import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.cl.PluginClassLoader;
@@ -37,16 +34,13 @@ import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.ArrayUtil;
 
 /**
  * @author VISTALL
  * @since 01.05.14
  */
-public class JFlexBackgroundTaskProvider extends BackgroundTaskByVfsChangeProvider
+public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeProvider
 {
 	@Override
 	public boolean validate(@NotNull Project project, @NotNull VirtualFile virtualFile)
@@ -106,27 +100,6 @@ public class JFlexBackgroundTaskProvider extends BackgroundTaskByVfsChangeProvid
 	@Override
 	public String getTemplateName()
 	{
-		return "Consulo JFlex lexer generation";
-	}
-
-	@NotNull
-	@Override
-	public String[] getGeneratedFiles(@NotNull PsiFile psiFile)
-	{
-		if(!(psiFile instanceof JFlexPsiFile))
-		{
-			return ArrayUtil.EMPTY_STRING_ARRAY;
-		}
-		JFlexElement classname = ((JFlexPsiFile) psiFile).getClassname();
-		if(classname == null)
-		{
-			return ArrayUtil.EMPTY_STRING_ARRAY;
-		}
-		String text = classname.getText();
-		if(StringUtil.isEmpty(text))
-		{
-			return ArrayUtil.EMPTY_STRING_ARRAY;
-		}
-		return new String[] {"$OutPath$/" + text + JavaFileType.DOT_DEFAULT_EXTENSION};
+		return "JFlex (Consulo Specific)";
 	}
 }
