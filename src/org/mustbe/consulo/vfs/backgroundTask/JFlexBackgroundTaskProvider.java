@@ -17,11 +17,14 @@
 package org.mustbe.consulo.vfs.backgroundTask;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.consulo.java.module.extension.JavaModuleExtension;
 import org.consulo.vfs.backgroundTask.BackgroundTaskByVfsParameters;
 import org.intellij.lang.jflex.vfs.backgroundTask.JFlexBackgroundTaskByVfsChangeProvider;
 import org.jetbrains.annotations.NotNull;
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.cl.PluginClassLoader;
@@ -29,9 +32,11 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.JavaSdk;
+import com.intellij.openapi.projectRoots.JavaSdkType;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 
 /**
@@ -41,7 +46,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeProvider
 {
 	@Override
-	public void setDefaultParameters(@NotNull Project project, @NotNull VirtualFile virtualFile, @NotNull BackgroundTaskByVfsParameters parameters)
+	public void setDefaultParameters(
+			@NotNull Project project,
+			@NotNull VirtualFile virtualFile,
+			@NotNull BackgroundTaskByVfsParameters backgroundTaskByVfsParameters)
 	{
 		Sdk sdk = null;
 		Module module = ModuleUtilCore.findModuleForFile(virtualFile, project);
@@ -60,29 +68,33 @@ public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeP
 			sdk = SdkTable.getInstance().findMostRecentSdkOfType(JavaSdk.getInstance());
 		}
 
+		List<String> parameters = new ArrayList<String>();
 		if(sdk != null)
 		{
-			String vmExecutablePath = JavaSdk.getInstance().getVMExecutablePath(sdk);
-			parameters.setExePath(vmExecutablePath);
+			GeneralCommandLine generalCommandLine = new GeneralCommandLine();
+
+			((JavaSdkType) sdk).setupCommandLine(generalCommandLine, sdk);
+			parameters.addAll(generalCommandLine.getParametersList().getList());
 		}
 		else
 		{
-			parameters.setExePath(SystemInfo.isWindows ? "java.exe" : "java");
+			backgroundTaskByVfsParameters.setExePath(SystemInfo.isWindows ? "java.exe" : "java");
 		}
 
 		PluginClassLoader classLoader = (PluginClassLoader) JFlexBackgroundTaskProvider.class.getClassLoader();
 		IdeaPluginDescriptor plugin = PluginManager.getPlugin(classLoader.getPluginId());
 
-		StringBuilder builder = new StringBuilder();
-		builder.append("-jar ");
-		builder.append(new File(plugin.getPath(), "jflex/jflex.jar"));
-		builder.append(" --charat --nobak --skel ");
-		builder.append(new File(plugin.getPath(), "jflex/idea-flex.skeleton"));
-		builder.append(" $FilePath$");
+		parameters.add("-jar");
+		parameters.add(new File(plugin.getPath(), "jflex/jflex.jar").getAbsolutePath());
+		parameters.add("--charat");
+		parameters.add("--nobak");
+		parameters.add("--skel");
+		parameters.add(new File(plugin.getPath(), "jflex/idea-flex.skeleton").getAbsolutePath());
+		parameters.add("$FilePath$");
 
-		parameters.setProgramParameters(builder.toString());
-		parameters.setWorkingDirectory("$FileParentPath$");
-		parameters.setOutPath("$FileParentPath$");
+		backgroundTaskByVfsParameters.setProgramParameters(StringUtil.join(parameters, " "));
+		backgroundTaskByVfsParameters.setWorkingDirectory("$FileParentPath$");
+		backgroundTaskByVfsParameters.setOutPath("$FileParentPath$");
 
 	}
 
