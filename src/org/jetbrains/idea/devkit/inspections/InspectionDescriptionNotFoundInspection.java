@@ -16,15 +16,9 @@
 
 package org.jetbrains.idea.devkit.inspections;
 
-import com.intellij.codeInspection.*;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.containers.ContainerUtil;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.consulo.psi.PsiPackage;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
@@ -32,9 +26,27 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.mustbe.consulo.roots.ContentFolderScopes;
+import com.intellij.codeInspection.InspectionManager;
+import com.intellij.codeInspection.InspectionProfileEntry;
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.codeInspection.ProblemHighlightType;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootManager;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiIdentifier;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiModifier;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.containers.ContainerUtil;
 
 /**
  * @author Konstantin Bulenkov
@@ -122,7 +134,7 @@ public class InspectionDescriptionNotFoundInspection extends DevKitInspectionBas
       }
     }
     else {
-      ContainerUtil.addAll(result, ModuleRootManager.getInstance(module).getSourceRoots());
+      ContainerUtil.addAll(result, ModuleRootManager.getInstance(module).getContentFolderFiles(ContentFolderScopes.productionAndTest()));
     }
     return result;
   }

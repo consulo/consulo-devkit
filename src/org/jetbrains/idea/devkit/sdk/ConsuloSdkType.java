@@ -33,11 +33,8 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.PathManager;
-import com.intellij.openapi.projectRoots.AdditionalDataConfigurable;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkAdditionalData;
-import com.intellij.openapi.projectRoots.SdkModel;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.OrderRootType;
@@ -135,7 +132,7 @@ public class ConsuloSdkType extends SdkType
 			{
 				ArchiveFileSystem fileSystem = JarArchiveFileType.INSTANCE.getFileSystem();
 				String path = jarFile.getAbsolutePath().replace(File.separatorChar, '/') + ArchiveFileSystem.ARCHIVE_SEPARATOR;
-				fileSystem.setNoCopyJarForPath(path);
+				fileSystem.addNoCopyArchiveForPath(path);
 				VirtualFile vFile = fileSystem.findFileByPath(path);
 				sdkModificator.addRoot(vFile, OrderRootType.SOURCES);
 			}
@@ -159,7 +156,7 @@ public class ConsuloSdkType extends SdkType
 	@NotNull
 	public static ConsuloSdkType getInstance()
 	{
-		return SdkType.findInstance(ConsuloSdkType.class);
+		return EP_NAME.findExtension(ConsuloSdkType.class);
 	}
 
 	@Override
@@ -192,15 +189,7 @@ public class ConsuloSdkType extends SdkType
 	public boolean isValidSdkHome(String path)
 	{
 		File home = new File(path);
-		if(!home.exists())
-		{
-			return false;
-		}
-		if(getJarFromLibs(path, "idea.jar") == null)
-		{
-			return false;
-		}
-		return true;
+		return home.exists() && getJarFromLibs(path, "idea.jar") != null;
 	}
 
 	@Nullable
@@ -271,17 +260,6 @@ public class ConsuloSdkType extends SdkType
 	public boolean isRootTypeApplicable(OrderRootType type)
 	{
 		return JavaSdk.getInstance().isRootTypeApplicable(type);
-	}
-
-	@Override
-	public AdditionalDataConfigurable createAdditionalDataConfigurable(final SdkModel sdkModel, SdkModificator sdkModificator)
-	{
-		return null;
-	}
-
-	@Override
-	public void saveAdditionalData(SdkAdditionalData additionalData, Element additional)
-	{
 	}
 
 	@NotNull
