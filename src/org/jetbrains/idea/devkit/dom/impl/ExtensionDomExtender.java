@@ -460,7 +460,8 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 			ContainerUtil.addIfNotNull(dependency.getStringValue(), result);
 		}
 
-		if(ideaPlugin.getPluginId() == null)
+		String pluginId = ideaPlugin.getPluginId();
+		if(pluginId == null)
 		{
 			final VirtualFile file = DomUtil.getFile(ideaPlugin).getOriginalFile().getVirtualFile();
 			if(file != null)
@@ -489,6 +490,10 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 					}
 				}
 			}
+		}
+		else
+		{
+			result.add(pluginId);
 		}
 
 		return result;
