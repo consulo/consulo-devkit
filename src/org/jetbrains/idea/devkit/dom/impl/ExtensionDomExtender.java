@@ -118,7 +118,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 		String prefix = getEpPrefix(extensions);
 		for(IdeaPlugin plugin : getVisiblePlugins(ideaPlugin))
 		{
-			final String pluginId = StringUtil.notNullize(plugin.getPluginId(), "com.intellij");
+			final String pluginId = StringUtil.notNullize(plugin.getPluginId(), PluginManager.CORE_PLUGIN_ID);
 			for(ExtensionPoints points : plugin.getExtensionPoints())
 			{
 				for(ExtensionPoint point : points.getExtensionPoints())
@@ -132,10 +132,6 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 	private static String getEpPrefix(Extensions extensions)
 	{
 		String prefix = extensions.getDefaultExtensionNs().getStringValue();
-		if(prefix == null)
-		{
-			prefix = extensions.getXmlns().getStringValue();
-		}
 		return prefix != null ? prefix + "." : "";
 	}
 

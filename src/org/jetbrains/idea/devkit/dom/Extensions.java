@@ -19,24 +19,20 @@
 
 package org.jetbrains.idea.devkit.dom;
 
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.dom.impl.ExtensionNsConverter;
 import com.intellij.util.xml.Attribute;
 import com.intellij.util.xml.Convert;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.dom.impl.ExtensionNsConverter;
-
-import java.util.List;
 
 public interface Extensions extends DomElement {
   @NotNull
   @Attribute("defaultExtensionNs")
   @Convert(value = ExtensionNsConverter.class, soft = true)
   GenericAttributeValue<IdeaPlugin> getDefaultExtensionNs();
-
-  @NotNull
-  @Convert(value = ExtensionNsConverter.class, soft = true)
-  GenericAttributeValue<IdeaPlugin> getXmlns();
 
   List<Extension> getExtensions();
 
