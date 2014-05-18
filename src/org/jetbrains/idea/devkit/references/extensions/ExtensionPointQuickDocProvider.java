@@ -15,6 +15,10 @@
  */
 package org.jetbrains.idea.devkit.references.extensions;
 
+import java.util.List;
+
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.inspections.DevKitInspectionBase;
 import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.lang.java.JavaDocumentationProvider;
 import com.intellij.lang.xml.XMLLanguage;
@@ -28,60 +32,70 @@ import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlToken;
 import com.intellij.psi.xml.XmlTokenType;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.inspections.DevKitInspectionBase;
-
-import java.util.List;
 
 /**
  * @author Konstantin Bulenkov
  */
-public class ExtensionPointQuickDocProvider implements DocumentationProvider {
-  @Override
-  public String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
-    return null;
-  }
+public class ExtensionPointQuickDocProvider implements DocumentationProvider
+{
+	@Override
+	public String getQuickNavigateInfo(PsiElement element, PsiElement originalElement)
+	{
+		return null;
+	}
 
-  @Override
-  public List<String> getUrlFor(PsiElement element, PsiElement originalElement) {
-    return null;
-  }
+	@Override
+	public List<String> getUrlFor(PsiElement element, PsiElement originalElement)
+	{
+		return null;
+	}
 
-  @Override
-  public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
-    if (originalElement == null) return null;
-    if (originalElement.getLanguage() == XMLLanguage.INSTANCE || DevKitInspectionBase.isPluginXml(originalElement.getContainingFile())) {
-      final PsiElement context = element.getContext();
-      String fqn = null;
-      if (originalElement instanceof XmlToken && ((XmlToken)originalElement).getTokenType() == XmlTokenType.XML_NAME) {
-        PsiElement attr;
-        PsiElement tag;
-        if (context != null && (attr = context.getParent()) instanceof XmlAttribute && (tag = attr.getParent()) instanceof XmlTag) {
-          final String interfaceFqn = ((XmlTag)tag).getAttributeValue("interface");
-          final String beanClassFqn = ((XmlTag)tag).getAttributeValue("beanClass");
-          fqn = interfaceFqn == null ? beanClassFqn : interfaceFqn;
-        }
-      }
+	@Override
+	public String generateDoc(PsiElement element, @Nullable PsiElement originalElement)
+	{
+		if(originalElement == null)
+		{
+			return null;
+		}
+		if(originalElement.getLanguage() == XMLLanguage.INSTANCE || DevKitInspectionBase.isPluginXml(originalElement.getContainingFile()))
+		{
+			final PsiElement context = element.getContext();
+			String fqn = null;
+			if(originalElement instanceof XmlToken && ((XmlToken) originalElement).getTokenType() == XmlTokenType.XML_NAME)
+			{
+				PsiElement attr;
+				PsiElement tag;
+				if(context != null && (attr = context.getParent()) instanceof XmlAttribute && (tag = attr.getParent()) instanceof XmlTag)
+				{
+					final String interfaceFqn = ((XmlTag) tag).getAttributeValue("interface");
+					final String beanClassFqn = ((XmlTag) tag).getAttributeValue("beanClass");
+					fqn = interfaceFqn == null ? beanClassFqn : interfaceFqn;
+				}
+			}
 
-      if (fqn != null) {
-        final Project project = element.getProject();
-        final PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(fqn, GlobalSearchScope.allScope(project));
-        if (psiClass != null) {
-          return new JavaDocumentationProvider().generateExternalJavadoc(psiClass);
-        }
-      }
+			if(fqn != null)
+			{
+				final Project project = element.getProject();
+				final PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(fqn, GlobalSearchScope.allScope(project));
+				if(psiClass != null)
+				{
+					return JavaDocumentationProvider.generateExternalJavadoc(psiClass);
+				}
+			}
 
-    }
-    return null;
-  }
+		}
+		return null;
+	}
 
-  @Override
-  public PsiElement getDocumentationElementForLookupItem(PsiManager psiManager, Object object, PsiElement element) {
-    return null;
-  }
+	@Override
+	public PsiElement getDocumentationElementForLookupItem(PsiManager psiManager, Object object, PsiElement element)
+	{
+		return null;
+	}
 
-  @Override
-  public PsiElement getDocumentationElementForLink(PsiManager psiManager, String link, PsiElement context) {
-    return null;
-  }
+	@Override
+	public PsiElement getDocumentationElementForLink(PsiManager psiManager, String link, PsiElement context)
+	{
+		return null;
+	}
 }
