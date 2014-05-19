@@ -101,7 +101,12 @@ public class ConsuloSdkType extends SdkType
 					@NonNls String name = jar.getName();
 					if(jar.isFile() && Arrays.binarySearch(forbidden, name) < 0 && (name.endsWith(".jar") || name.endsWith(".zip")))
 					{
-						result.add(fileSystem.findLocalVirtualFileByPath(jar.getPath()));
+						VirtualFile virtualFile = fileSystem.findLocalVirtualFileByPath(jar.getPath());
+						if(virtualFile == null)
+						{
+							continue;
+						}
+						result.add(virtualFile);
 					}
 				}
 			}
