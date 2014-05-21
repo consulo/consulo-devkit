@@ -73,7 +73,7 @@ public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeP
 		{
 			GeneralCommandLine generalCommandLine = new GeneralCommandLine();
 
-			((JavaSdkType) sdk).setupCommandLine(generalCommandLine, sdk);
+			((JavaSdkType) sdk.getSdkType()).setupCommandLine(generalCommandLine, sdk);
 			parameters.addAll(generalCommandLine.getParametersList().getList());
 		}
 		else
