@@ -19,52 +19,64 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.psi.PsiClass;
-import com.intellij.util.xml.*;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
-
-import java.util.List;
+import com.intellij.psi.PsiClass;
+import com.intellij.util.xml.Convert;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.ExtendClass;
+import com.intellij.util.xml.GenericDomValue;
+import com.intellij.util.xml.Required;
+import com.intellij.util.xml.SubTag;
 
 /**
  * plugin.dtd:component interface.
  */
-public interface Component extends DomElement {
+public interface Component extends DomElement
+{
+	@NotNull
+	@Required
+	@Convert(PluginPsiClassConverter.class)
+	GenericDomValue<PsiClass> getImplementationClass();
 
-  @NotNull
-  @Required
-  @Convert(PluginPsiClassConverter.class)
-  GenericDomValue<PsiClass> getImplementationClass();
+	@NotNull
+	@ExtendClass(instantiatable = false)
+	@Convert(PluginPsiClassConverter.class)
+	GenericDomValue<PsiClass> getInterfaceClass();
 
+	@NotNull
+	@Convert(PluginPsiClassConverter.class)
+	@ExtendClass(allowEmpty = true)
+	GenericDomValue<PsiClass> getHeadlessImplementationClass();
 
-  @NotNull
-  @ExtendClass(instantiatable = false)
-  @Convert(PluginPsiClassConverter.class)
-  GenericDomValue<PsiClass> getInterfaceClass();
+	@NotNull
+	@Convert(PluginPsiClassConverter.class)
+	@ExtendClass(allowEmpty = true)
+	GenericDomValue<PsiClass> getCompilerServerImplementationClass();
 
-  @NotNull
-  @Convert(PluginPsiClassConverter.class)
-  @ExtendClass(allowEmpty = true)
-  GenericDomValue<PsiClass> getHeadlessImplementationClass();
+	@NotNull
+	List<Option> getOptions();
 
-  @NotNull
-  List<Option> getOptions();
+	Option addOption();
 
-  Option addOption();
+	interface Application extends Component
+	{
+	}
 
-  interface Application extends Component {
-  }
+	interface Module extends Component
+	{
+	}
 
-  interface Module extends Component {
-  }
+	interface Project extends Component
+	{
+		@NotNull
+		@SubTag(value = "skipForDefaultProject", indicator = true)
+		GenericDomValue<Boolean> getSkipForDefaultProject();
 
-  interface Project extends Component {
-    @NotNull
-    @SubTag(value = "skipForDefaultProject", indicator = true)
-    GenericDomValue<Boolean> getSkipForDefaultProject();
-
-    @NotNull
-    @SubTag(value = "loadForDefaultProject", indicator = true)
-    GenericDomValue<Boolean> getLoadForDefaultProject();
-  }
+		@NotNull
+		@SubTag(value = "loadForDefaultProject", indicator = true)
+		GenericDomValue<Boolean> getLoadForDefaultProject();
+	}
 }
