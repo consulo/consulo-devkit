@@ -8,6 +8,7 @@
 	<depends>org.consulo.java</depends>
 	<depends>com.intellij.properties</depends>
 	<depends>com.intellij.xml</depends>
+	<depends>com.intellij.junit</depends>
 	<depends>com.intellij.uiDesigner</depends> <!--This depend is not used, but it needed for developing, and it required-->
 	<depends optional="true" config-file="jflex.xml">JFlex Support</depends>
 	<depends optional="true" config-file="org.consulo.lombok.xml">org.consulo.lombok</depends>
@@ -15,13 +16,15 @@
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
 	<extensions defaultExtensionNs="org.consulo.java">
-		<testPatcher implementation="org.jetbrains.idea.devkit.run.JUnitDevKitPatcher"/>
+		<!--<runConfigurationExtension implementation="org.mustbe.consulo.run.ConsuloJUnitRunConfigurationExtension" /> -->
 	</extensions>
+
 	<extensions defaultExtensionNs="com.intellij">
 		<errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
 
 		<useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
 
+		<programRunner implementation="org.jetbrains.idea.devkit.run.ConsuloDebuggerRunner" />
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
 
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>

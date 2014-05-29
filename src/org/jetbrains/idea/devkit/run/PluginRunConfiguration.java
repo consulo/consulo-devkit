@@ -15,40 +15,39 @@
  */
 package org.jetbrains.idea.devkit.run;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.Set;
 
 import org.consulo.sdk.SdkPointerManager;
 import org.consulo.sdk.SdkUtil;
-import org.consulo.util.pointers.Named;
 import org.consulo.util.pointers.NamedPointer;
 import org.consulo.util.pointers.NamedPointerManager;
 import org.jdom.Element;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.*;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
+import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.execution.configurations.LogFileOptions;
+import com.intellij.execution.configurations.ModuleRunProfile;
+import com.intellij.execution.configurations.PredefinedLogFile;
+import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.configurations.RunConfigurationBase;
+import com.intellij.execution.configurations.RunProfileState;
+import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.options.SettingsEditorGroup;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.JavaSdkType;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.DefaultJDOMExternalizer;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.NotNullFactory;
-import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.WriteExternalException;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
@@ -57,11 +56,11 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 {
 	public static final PredefinedLogFile IDEA_LOG = new PredefinedLogFile("IDEA_LOG", true);
 
-	private static final String LOG_FILE = "/system/log/idea.log";
+	public static final String LOG_FILE = "/system/log/idea.log";
 	private static final String JAVA_SDK = "java-sdk";
 	private static final String CONSULO_SDK = "consulo-sdk";
 	private static final String ARTIFACT = "artifact";
-	private static final String NAME = "name";
+
 	public String VM_PARAMETERS;
 	public String PROGRAM_PARAMETERS;
 	private NamedPointer<Sdk> myJavaSdkPointer;
@@ -71,51 +70,6 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 	protected PluginRunConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
 		super(project, factory, name);
-	}
-
-	private static void fillParameterList(ParametersList list, @Nullable String value)
-	{
-		if(value == null)
-		{
-			return;
-		}
-
-		for(String parameter : value.split(" "))
-		{
-			if(parameter != null && parameter.length() > 0)
-			{
-				list.add(parameter);
-			}
-		}
-	}
-
-	@Nullable
-	private static <T extends Named> NamedPointer<T> readPointer(String childName, Element parent, NotNullFactory<NamedPointerManager<T>> fun)
-	{
-		final NamedPointerManager<T> namedPointerManager = fun.create();
-
-		Element child = parent.getChild(childName);
-		if(child != null)
-		{
-			final String attributeValue = child.getAttributeValue(NAME);
-			if(attributeValue != null)
-			{
-				return namedPointerManager.create(attributeValue);
-			}
-		}
-		return null;
-	}
-
-	private static void writePointer(String childName, Element parent, NamedPointer<?> pointer)
-	{
-		if(pointer == null)
-		{
-			return;
-		}
-		Element element = new Element(childName);
-		element.setAttribute(NAME, pointer.getName());
-
-		parent.addContent(element);
 	}
 
 	@NotNull
@@ -136,7 +90,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 		if(IDEA_LOG.equals(predefinedLogFile))
 		{
 			String sandboxPath = getSandboxPath();
-			return new LogFileOptions("idea.log", sandboxPath + LOG_FILE , true, false, true);
+			return new LogFileOptions("idea.log", sandboxPath + LOG_FILE, true, false, true);
 		}
 		else
 		{
@@ -144,9 +98,9 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 		}
 	}
 
-	private String getSandboxPath()
+	public String getSandboxPath()
 	{
-		return getProject().getBasePath() + "/" + Project.DIRECTORY_STORE_FOLDER + "/sandbox" ;
+		return getProject().getBasePath() + "/" + Project.DIRECTORY_STORE_FOLDER + "/sandbox";
 	}
 
 	@Override
@@ -170,64 +124,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 			throw new ExecutionException(DevKitBundle.message("run.configuration.no.plugin.artifact"));
 		}
 
-		final String dataPath = getSandboxPath();
-
-		final JavaCommandLineState state = new JavaCommandLineState(env)
-		{
-			@Override
-			protected JavaParameters createJavaParameters() throws ExecutionException
-			{
-				final JavaParameters params = new JavaParameters();
-
-				ParametersList vm = params.getVMParametersList();
-
-				fillParameterList(vm, VM_PARAMETERS);
-				fillParameterList(params.getProgramParametersList(), PROGRAM_PARAMETERS);
-
-				@NonNls String libPath = consuloSdk.getHomePath() + "/lib";
-				vm.add("-Xbootclasspath/a:" + libPath + "/boot.jar");
-
-				vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + "/config");
-				vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + "/system");
-				vm.defineProperty(PathManager.PROPERTY_PLUGINS_PATH, artifact.getOutputPath());
-
-				File logFile = new File(dataPath, LOG_FILE);
-				FileUtil.createIfDoesntExist(logFile);
-				vm.defineProperty(PathManager.PROPERTY_LOG_PATH, logFile.getParent());
-
-				if(SystemInfo.isMac)
-				{
-					vm.defineProperty("idea.smooth.progress", "false");
-					vm.defineProperty("apple.laf.useScreenMenuBar", "true");
-				}
-				else if(SystemInfo.isXWindow)
-				{
-					if(VM_PARAMETERS == null || !VM_PARAMETERS.contains("-Dsun.awt.disablegrab"))
-					{
-						vm.defineProperty("sun.awt.disablegrab", "true"); // See http://devnet.jetbrains.net/docs/DOC-1142
-					}
-				}
-				params.setWorkingDirectory(consuloSdk.getHomePath() + File.separator + "bin" + File.separator);
-
-				params.setJdk(javaSdk);
-
-				params.getClassPath().addFirst(libPath + File.separator + "log4j.jar");
-				params.getClassPath().addFirst(libPath + File.separator + "jdom.jar");
-				params.getClassPath().addFirst(libPath + File.separator + "trove4j.jar");
-				params.getClassPath().addFirst(libPath + File.separator + "util.jar");
-				params.getClassPath().addFirst(libPath + File.separator + "extensions.jar");
-				params.getClassPath().addFirst(libPath + File.separator + "bootstrap.jar");
-				params.getClassPath().addFirst(libPath + File.separator + "idea.jar");
-				params.getClassPath().addFirst(((JavaSdkType) javaSdk.getSdkType()).getToolsPath(javaSdk));
-
-				params.setMainClass("com.intellij.idea.Main");
-
-				return params;
-			}
-		};
-
-		state.setConsoleBuilder(TextConsoleBuilderFactory.getInstance().createBuilder(getProject()));
-		return state;
+		return new ConsuloSandboxRunState(env, javaSdk, consuloSdk, artifact);
 	}
 
 	@Override
@@ -241,7 +138,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 	{
 		DefaultJDOMExternalizer.readExternal(this, element);
 
-		myJavaSdkPointer = readPointer(JAVA_SDK, element, new NotNullFactory<NamedPointerManager<Sdk>>()
+		myJavaSdkPointer = PluginRunXmlConfigurationUtil.readPointer(JAVA_SDK, element, new NotNullFactory<NamedPointerManager<Sdk>>()
 		{
 			@NotNull
 			@Override
@@ -251,7 +148,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 			}
 		});
 
-		myConsuloSdkPointer = readPointer(CONSULO_SDK, element, new NotNullFactory<NamedPointerManager<Sdk>>()
+		myConsuloSdkPointer = PluginRunXmlConfigurationUtil.readPointer(CONSULO_SDK, element, new NotNullFactory<NamedPointerManager<Sdk>>()
 		{
 			@NotNull
 			@Override
@@ -261,7 +158,7 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 			}
 		});
 
-		myArtifactPointer = readPointer(ARTIFACT, element, new NotNullFactory<NamedPointerManager<Artifact>>()
+		myArtifactPointer = PluginRunXmlConfigurationUtil.readPointer(ARTIFACT, element, new NotNullFactory<NamedPointerManager<Artifact>>()
 		{
 			@NotNull
 			@Override
@@ -279,9 +176,9 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 	{
 		DefaultJDOMExternalizer.writeExternal(this, element);
 
-		writePointer(JAVA_SDK, element, myJavaSdkPointer);
-		writePointer(CONSULO_SDK, element, myConsuloSdkPointer);
-		writePointer(ARTIFACT, element, myArtifactPointer);
+		PluginRunXmlConfigurationUtil.writePointer(JAVA_SDK, element, myJavaSdkPointer);
+		PluginRunXmlConfigurationUtil.writePointer(CONSULO_SDK, element, myConsuloSdkPointer);
+		PluginRunXmlConfigurationUtil.writePointer(ARTIFACT, element, myArtifactPointer);
 
 		super.writeExternal(element);
 	}
