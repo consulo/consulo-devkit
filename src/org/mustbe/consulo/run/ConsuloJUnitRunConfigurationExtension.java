@@ -19,6 +19,8 @@ package org.mustbe.consulo.run;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.run.ConsuloSandboxRunState;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Location;
 import com.intellij.execution.RunConfigurationExtension;
@@ -27,6 +29,7 @@ import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.execution.configurations.RunnerSettings;
 import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.execution.process.ProcessHandler;
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
@@ -41,7 +44,27 @@ public class ConsuloJUnitRunConfigurationExtension extends RunConfigurationExten
 	@Override
 	public void updateJavaParameters(RunConfigurationBase t, JavaParameters javaParameters, RunnerSettings runnerSettings) throws ExecutionException
 	{
+		ConsuloJUnitData data = t.getUserData(ConsuloJUnitData.KEY);
+		if(data == null)
+		{
+			return;
+		}
 
+		String consuloPath = data.getConsuloPath();
+		if(consuloPath == null)
+		{
+			return;
+		}
+
+		javaParameters.addEnv(PathManager.PROPERTY_HOME_PATH, consuloPath);
+
+		String pluginPath = data.getPluginPath();
+		if(pluginPath != null)
+		{
+			javaParameters.addEnv(PathManager.PROPERTY_PLUGINS_PATH, pluginPath);
+		}
+
+		ConsuloSandboxRunState.addConsuloLibs(consuloPath, javaParameters);
 	}
 
 	@NotNull
@@ -54,20 +77,20 @@ public class ConsuloJUnitRunConfigurationExtension extends RunConfigurationExten
 	@Override
 	protected void readExternal(@NotNull RunConfigurationBase runConfiguration, @NotNull Element element) throws InvalidDataException
 	{
-
+		ConsuloJUnitData.read(runConfiguration, element);
 	}
 
 	@Override
 	protected void writeExternal(@NotNull RunConfigurationBase runConfiguration, @NotNull Element element) throws WriteExternalException
 	{
-
+		ConsuloJUnitData.write(runConfiguration, element);
 	}
 
 	@Nullable
 	@Override
 	protected String getEditorTitle()
 	{
-		return null;
+		return DevKitBundle.message("run.configuration.title");
 	}
 
 	@Override
@@ -98,6 +121,6 @@ public class ConsuloJUnitRunConfigurationExtension extends RunConfigurationExten
 	@Override
 	protected SettingsEditor createEditor(@NotNull RunConfigurationBase configuration)
 	{
-		return null;
+		return new ConsuloJUnitSettingsEditor(configuration.getProject());
 	}
 }

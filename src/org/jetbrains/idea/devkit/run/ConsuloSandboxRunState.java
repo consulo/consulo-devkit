@@ -18,7 +18,6 @@ package org.jetbrains.idea.devkit.run;
 
 import java.io.File;
 
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
@@ -73,9 +72,6 @@ public class ConsuloSandboxRunState extends CommandLineState
 		vm.addParametersString(profile.VM_PARAMETERS);
 		params.getProgramParametersList().addParametersString(profile.PROGRAM_PARAMETERS);
 
-		@NonNls String libPath = consuloSdk.getHomePath() + "/lib";
-		vm.add("-Xbootclasspath/a:" + libPath + "/boot.jar");
-
 		vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + "/config");
 		vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + "/system");
 		vm.defineProperty(PathManager.PROPERTY_PLUGINS_PATH, artifact.getOutputPath());
@@ -100,16 +96,25 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		params.setJdk(javaSdk);
 
-		params.getClassPath().addFirst(libPath + File.separator + "log4j.jar");
-		params.getClassPath().addFirst(libPath + File.separator + "jdom.jar");
-		params.getClassPath().addFirst(libPath + File.separator + "trove4j.jar");
-		params.getClassPath().addFirst(libPath + File.separator + "util.jar");
-		params.getClassPath().addFirst(libPath + File.separator + "extensions.jar");
-		params.getClassPath().addFirst(libPath + File.separator + "bootstrap.jar");
-		params.getClassPath().addFirst(libPath + File.separator + "jna.jar");
+		addConsuloLibs(consuloSdk.getHomePath(), params);
 
 		params.setMainClass("com.intellij.idea.Main");
 		return params;
+	}
+
+	public static void addConsuloLibs(String consuloHomePath, JavaParameters params)
+	{
+		String libPath = consuloHomePath + "/lib";
+
+		params.getVMParametersList().add("-Xbootclasspath/a:" + libPath + "/boot.jar");
+
+		params.getClassPath().addFirst(libPath + "/log4j.jar");
+		params.getClassPath().addFirst(libPath + "/jdom.jar");
+		params.getClassPath().addFirst(libPath + "/trove4j.jar");
+		params.getClassPath().addFirst(libPath + "/util.jar");
+		params.getClassPath().addFirst(libPath + "/extensions.jar");
+		params.getClassPath().addFirst(libPath + "/bootstrap.jar");
+		params.getClassPath().addFirst(libPath + "/jna.jar");
 	}
 
 	public JavaParameters getJavaParameters()
