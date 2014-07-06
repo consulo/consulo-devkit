@@ -61,7 +61,7 @@ public class InspectionDescriptionNotFoundInspection extends DevKitInspectionBas
     final PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
     final Module module = ModuleUtil.findModuleForPsiElement(aClass);
 
-    if (nameIdentifier == null || module == null || !PsiUtil.isInstantiatable(aClass)) return null;
+    if (nameIdentifier == null || module == null || !PsiUtil.isInstantiable(aClass)) return null;
 
     final PsiClass base = JavaPsiFacade.getInstance(project).findClass(INSPECTION_PROFILE_ENTRY, GlobalSearchScope.allScope(project));
 

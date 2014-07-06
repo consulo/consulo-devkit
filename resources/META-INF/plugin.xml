@@ -94,6 +94,11 @@
 		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.references.IconsReferencesContributor"/>
 		<referencesSearch implementation="org.jetbrains.idea.devkit.references.IconsReferencesContributor"/>
 		<unusedDeclarationFixProvider implementation="org.jetbrains.idea.devkit.inspections.quickfix.RegisterExtensionFixProvider"/>
+
+		<codeInsight.lineMarkerProvider language="JAVA"
+										implementationClass="org.jetbrains.idea.devkit.navigation.DescriptionTypeRelatedItemLineMarkerProvider"/>
+		<codeInsight.lineMarkerProvider language="JAVA"
+										implementationClass="org.jetbrains.idea.devkit.navigation.ExtensionPointDeclarationRelatedItemLineMarkerProvider"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij.xml.dom">
@@ -107,7 +112,8 @@
 						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionImpl"/>
 		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.Extensions"
 						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionsImpl"/>
-
+		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.ExtensionPoint"
+							implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionPointImpl"/>
 	</extensions>
 
 	<actions>
