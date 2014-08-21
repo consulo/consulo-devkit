@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.pointers.VirtualFilePointer;
 import com.intellij.openapi.vfs.pointers.VirtualFilePointerManager;
@@ -36,7 +36,7 @@ public class PluginModuleExtension extends ModuleExtensionWithSdkImpl<PluginModu
 
 	protected VirtualFilePointer myCustomPluginDirPointer;
 
-	public PluginModuleExtension(@NotNull String id, @NotNull ModifiableRootModel module)
+	public PluginModuleExtension(@NotNull String id, @NotNull ModuleRootLayer module)
 	{
 		super(id, module);
 	}

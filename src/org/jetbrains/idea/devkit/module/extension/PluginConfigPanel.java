@@ -35,10 +35,10 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.impl.ModuleRootLayerImpl;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
+import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
@@ -62,7 +62,7 @@ public class PluginConfigPanel extends JPanel
 
 	private static final String LIBRARY_PREFIX = "consulo:";
 	private final PluginMutableModuleExtension myMutableModuleExtension;
-	private final ModifiableRootModel myRootModel;
+	private final ModuleRootLayerImpl myRootLayer;
 	private final Runnable myUpdateOnCheck;
 	private JPanel myRoot;
 	private ModuleExtensionWithSdkPanel myModuleExtensionWithSdkPanel;
@@ -71,10 +71,10 @@ public class PluginConfigPanel extends JPanel
 	private CheckBoxList<IdeaPluginDescriptorImpl> myCustomPluginList;
 	private TextFieldWithBrowseButton myCustomPluginPath;
 
-	public PluginConfigPanel(PluginMutableModuleExtension mutableModuleExtension, ModifiableRootModel rootModel, Runnable updateOnCheck)
+	public PluginConfigPanel(PluginMutableModuleExtension mutableModuleExtension, ModuleRootLayerImpl rootLayer, Runnable updateOnCheck)
 	{
 		myMutableModuleExtension = mutableModuleExtension;
-		myRootModel = rootModel;
+		myRootLayer = rootLayer;
 		myUpdateOnCheck = updateOnCheck;
 
 		updateBundledPluginList();
@@ -222,7 +222,7 @@ public class PluginConfigPanel extends JPanel
 	private Library findLibrary(IdeaPluginDescriptorImpl ideaPluginDescriptor)
 	{
 		final String pluginName = LIBRARY_PREFIX + ideaPluginDescriptor.getName();
-		final Iterator<Library> libraryIterator = myRootModel.getModuleLibraryTable().getLibraryIterator();
+		final Iterator<Library> libraryIterator = myRootLayer.getModuleLibraryTable().getLibraryIterator();
 		while(libraryIterator.hasNext())
 		{
 			final Library next = libraryIterator.next();
@@ -261,7 +261,7 @@ public class PluginConfigPanel extends JPanel
 			final Object itemAt = myBoxList.getItemAt(index);
 			if(itemAt != null)
 			{
-				final LibraryTable moduleLibraryTable = myRootModel.getModuleLibraryTable();
+				final LibraryTable moduleLibraryTable = myRootLayer.getModuleLibraryTable();
 				final IdeaPluginDescriptorImpl ideaPluginDescriptor = (IdeaPluginDescriptorImpl) itemAt;
 				if(value)
 				{
@@ -282,7 +282,7 @@ public class PluginConfigPanel extends JPanel
 						{
 							continue;
 						}
-						modifiableModel.addRoot(localVirtualFileByPath, OrderRootType.CLASSES);
+						modifiableModel.addRoot(localVirtualFileByPath, BinariesOrderRootType.getInstance());
 					}
 
 					modifiableModel.commit();

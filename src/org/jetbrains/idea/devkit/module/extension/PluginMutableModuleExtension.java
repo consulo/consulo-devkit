@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootLayer;
+import com.intellij.openapi.roots.impl.ModuleRootLayerImpl;
 import com.intellij.openapi.util.Comparing;
 
 /**
@@ -35,7 +37,7 @@ import com.intellij.openapi.util.Comparing;
  */
 public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtensionWithSdk<PluginModuleExtension>
 {
-	public PluginMutableModuleExtension(@NotNull String id, @NotNull ModifiableRootModel module)
+	public PluginMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer module)
 	{
 		super(id, module);
 	}
@@ -46,7 +48,7 @@ public class PluginMutableModuleExtension extends PluginModuleExtension implemen
 	{
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(new ModuleExtensionWithSdkPanel(this, updateOnCheck), BorderLayout.NORTH);
-		return new PluginConfigPanel(this, myRootModel, updateOnCheck);
+		return new PluginConfigPanel(this, (ModuleRootLayerImpl) myModuleRootLayer, updateOnCheck);
 	}
 
 	@Override
