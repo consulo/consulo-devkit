@@ -26,7 +26,6 @@ import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
-import com.intellij.openapi.project.Project;
 
 /**
  * @author VISTALL
@@ -42,8 +41,8 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 
 	@Nullable
 	@Override
-	protected RunContentDescriptor createContentDescriptor(
-			Project project, RunProfileState state, RunContentDescriptor contentToReuse, ExecutionEnvironment env) throws ExecutionException
+	protected RunContentDescriptor createContentDescriptor(@NotNull RunProfileState state, @NotNull ExecutionEnvironment env) throws
+			ExecutionException
 	{
 		String address = DebuggerUtils.getInstance().findAvailableDebugAddress(true);
 		RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", address, false);
@@ -51,6 +50,6 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 		ConsuloSandboxRunState consuloSandboxRunState = (ConsuloSandboxRunState) state;
 
 		consuloSandboxRunState.getJavaParameters().getVMParametersList().addParametersString(connection.getLaunchCommandLine());
-		return attachVirtualMachine(project, state, contentToReuse, env, connection, true);
+		return attachVirtualMachine(state, env, connection, true);
 	}
 }
