@@ -92,6 +92,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 				vm.defineProperty("sun.awt.disablegrab", "true"); // See http://devnet.jetbrains.net/docs/DOC-1142
 			}
 		}
+		vm.defineProperty("consulo.in.sandbox", "true");
 		params.setWorkingDirectory(consuloSdk.getHomePath() + File.separator + "bin" + File.separator);
 
 		params.setJdk(javaSdk);
