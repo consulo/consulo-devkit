@@ -19,6 +19,7 @@ package org.jetbrains.idea.devkit.run;
 import java.io.File;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.JavaParameters;
@@ -39,14 +40,11 @@ public class ConsuloSandboxRunState extends CommandLineState
 {
 	private JavaParameters myJavaParameters;
 
-	public ConsuloSandboxRunState(
-			ExecutionEnvironment environment,
-			Sdk javaSdk,
-			Sdk consuloSdk,
-			Artifact artifact)
+	public ConsuloSandboxRunState(@NotNull ExecutionEnvironment environment, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
+			@Nullable Artifact artifact)
 	{
 		super(environment);
-		myJavaParameters = createJavaParameters(environment, javaSdk, consuloSdk, artifact);
+		myJavaParameters = createJavaParameters(environment, javaSdk, consuloSdkHome, artifact);
 	}
 
 	@NotNull
@@ -56,11 +54,8 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return myJavaParameters.createOSProcessHandler();
 	}
 
-	private static JavaParameters createJavaParameters(
-			ExecutionEnvironment env,
-			Sdk javaSdk,
-			Sdk consuloSdk,
-			Artifact artifact)
+	private static JavaParameters createJavaParameters(@NotNull ExecutionEnvironment env, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
+			@Nullable Artifact artifact)
 	{
 		PluginRunConfiguration profile = (PluginRunConfiguration) env.getRunProfile();
 		final String dataPath = profile.getSandboxPath();
@@ -74,7 +69,11 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + "/config");
 		vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + "/system");
-		vm.defineProperty(PathManager.PROPERTY_PLUGINS_PATH, artifact.getOutputPath());
+
+		if(artifact != null)
+		{
+			vm.defineProperty(PathManager.PROPERTY_PLUGINS_PATH, artifact.getOutputPath());
+		}
 
 		File logFile = new File(dataPath, PluginRunConfiguration.LOG_FILE);
 		FileUtil.createIfDoesntExist(logFile);
@@ -93,11 +92,11 @@ public class ConsuloSandboxRunState extends CommandLineState
 			}
 		}
 		vm.defineProperty("consulo.in.sandbox", "true");
-		params.setWorkingDirectory(consuloSdk.getHomePath() + File.separator + "bin" + File.separator);
+		params.setWorkingDirectory(consuloSdkHome + File.separator + "bin" + File.separator);
 
 		params.setJdk(javaSdk);
 
-		addConsuloLibs(consuloSdk.getHomePath(), params);
+		addConsuloLibs(consuloSdkHome, params);
 
 		params.setMainClass("com.intellij.idea.Main");
 		return params;

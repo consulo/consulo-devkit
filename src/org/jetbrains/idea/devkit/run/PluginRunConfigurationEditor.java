@@ -15,16 +15,20 @@
  */
 package org.jetbrains.idea.devkit.run;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.consulo.lombok.annotations.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
@@ -32,12 +36,17 @@ import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
+import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.util.ObjectUtils;
 
 @Logger
 public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfiguration>
@@ -61,18 +70,36 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 
 	private JComboBox myArtifactComboBox;
 	private JPanel myRoot;
+	private JCheckBox myAlternativeConsuloSdkCheckBox;
+	private TextFieldWithBrowseButton myAltConsuloSdkTextField;
 
 	private final Project myProject;
 
 	public PluginRunConfigurationEditor(Project project)
 	{
 		myProject = project;
+		myAlternativeConsuloSdkCheckBox.addChangeListener(new ChangeListener()
+		{
+			@Override
+			public void stateChanged(ChangeEvent e)
+			{
+				myAltConsuloSdkTextField.setEditable(myAlternativeConsuloSdkCheckBox.isSelected());
+				myConsuloSdkComboBox.setEnabled(!myAlternativeConsuloSdkCheckBox.isSelected());
+			}
+		});
+		myAltConsuloSdkTextField.addBrowseFolderListener("Select SDK", "Select alternative consulo sdk for run", project,
+				FileChooserDescriptorFactory.createSingleFolderDescriptor());
 	}
 
 	@Override
 	public void resetEditorFrom(PluginRunConfiguration prc)
 	{
 		myVMParameters.setText(prc.VM_PARAMETERS);
+		myAlternativeConsuloSdkCheckBox.setSelected(prc.USE_ALT_CONSULO_SDK);
+		if(prc.ALT_CONSULO_SDK_PATH != null)
+		{
+			myAltConsuloSdkTextField.setText(FileUtil.toSystemDependentName(prc.ALT_CONSULO_SDK_PATH));
+		}
 		myVMParameters.setDialogCaption(DevKitBundle.message("label.vm.parameters"));
 		myProgramParameters.setText(prc.PROGRAM_PARAMETERS);
 		myProgramParameters.setDialogCaption(DevKitBundle.message("label.program.parameters"));
@@ -86,8 +113,12 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 				int i = -1;
 				for(int l = 0; l < myArtifactComboBox.getItemCount(); l++)
 				{
-					final ArtifactItem itemAt = (ArtifactItem) myArtifactComboBox.getItemAt(l);
-					if(itemAt.myArtifact == artifact)
+					final Object itemAt = myArtifactComboBox.getItemAt(l);
+					if(!(itemAt instanceof ArtifactItem))
+					{
+						continue;
+					}
+					if(((ArtifactItem) itemAt).myArtifact == artifact)
 					{
 						i = l;
 						break;
@@ -110,7 +141,7 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 		}
 		else
 		{
-			myArtifactComboBox.setSelectedItem(null);
+			myArtifactComboBox.setSelectedItem(ObjectUtils.NULL);
 		}
 
 		myJavaSdkComboBox.setSelectedSdk(prc.getJavaSdkName());
@@ -120,12 +151,15 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 	@Override
 	public void applyEditorTo(PluginRunConfiguration prc) throws ConfigurationException
 	{
-		prc.setArtifactName(myArtifactComboBox.getSelectedItem() == null ? null : ((ArtifactItem) myArtifactComboBox.getSelectedItem()).myName);
+		prc.setArtifactName(myArtifactComboBox.getSelectedItem() == ObjectUtils.NULL ? null : ((ArtifactItem) myArtifactComboBox.getSelectedItem())
+				.myName);
 		prc.setJavaSdkName(myJavaSdkComboBox.getSelectedSdkName());
 		prc.setConsuloSdkName(myConsuloSdkComboBox.getSelectedSdkName());
 
 		prc.VM_PARAMETERS = myVMParameters.getText();
 		prc.PROGRAM_PARAMETERS = myProgramParameters.getText();
+		prc.ALT_CONSULO_SDK_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myAltConsuloSdkTextField.getText()));
+		prc.USE_ALT_CONSULO_SDK = myAlternativeConsuloSdkCheckBox.isSelected();
 	}
 
 	@Override
@@ -163,10 +197,11 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 			{
 				return sdkTypeId instanceof ConsuloSdkType;
 			}
-		}, false);
+		}, true);
 
 		final Artifact[] sortedArtifacts = ArtifactManager.getInstance(myProject).getSortedArtifacts();
-		myArtifactComboBox = new JComboBox();
+		myArtifactComboBox = new ComboBox();
+		myArtifactComboBox.addItem(ObjectUtils.NULL);
 		for(Artifact sortedArtifact : sortedArtifacts)
 		{
 			myArtifactComboBox.addItem(new ArtifactItem(sortedArtifact.getName(), sortedArtifact));
@@ -177,10 +212,16 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 			@Override
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus)
 			{
+				if(value == ObjectUtils.NULL)
+				{
+					append("<None>", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+					setIcon(AllIcons.Actions.Help);
+					return;
+				}
+
 				ArtifactItem artifactItem = (ArtifactItem) value;
 				if(artifactItem == null)
 				{
-					append("<None>", SimpleTextAttributes.ERROR_ATTRIBUTES);
 					return;
 				}
 

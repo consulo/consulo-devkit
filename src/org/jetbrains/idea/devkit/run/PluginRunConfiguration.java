@@ -19,13 +19,13 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.consulo.sdk.SdkPointerManager;
-import org.consulo.sdk.SdkUtil;
 import org.consulo.util.pointers.NamedPointer;
 import org.consulo.util.pointers.NamedPointerManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
+import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -48,6 +48,7 @@ import com.intellij.openapi.util.DefaultJDOMExternalizer;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.NotNullFactory;
 import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
@@ -66,6 +67,8 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 	private NamedPointer<Sdk> myJavaSdkPointer;
 	private NamedPointer<Sdk> myConsuloSdkPointer;
 	private NamedPointer<Artifact> myArtifactPointer;
+	public boolean USE_ALT_CONSULO_SDK;
+	public String ALT_CONSULO_SDK_PATH;
 
 	protected PluginRunConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
@@ -112,19 +115,28 @@ public class PluginRunConfiguration extends RunConfigurationBase implements Modu
 			throw new ExecutionException(DevKitBundle.message("run.configuration.no.java.sdk"));
 		}
 
-		final Sdk consuloSdk = myConsuloSdkPointer == null ? null : myConsuloSdkPointer.get();
-		if(consuloSdk == null)
+		final String consuloSdkHome = getConsuloSdkHome();
+		if(consuloSdkHome == null)
 		{
 			throw new ExecutionException(DevKitBundle.message("run.configuration.no.consulo.sdk"));
 		}
 
 		final Artifact artifact = myArtifactPointer == null ? null : myArtifactPointer.get();
-		if(artifact == null)
-		{
-			throw new ExecutionException(DevKitBundle.message("run.configuration.no.plugin.artifact"));
-		}
+		return new ConsuloSandboxRunState(env, javaSdk, consuloSdkHome, artifact);
+	}
 
-		return new ConsuloSandboxRunState(env, javaSdk, consuloSdk, artifact);
+	public String getConsuloSdkHome()
+	{
+		if(USE_ALT_CONSULO_SDK)
+		{
+			if(StringUtil.isEmpty(ALT_CONSULO_SDK_PATH))
+			{
+				return null;
+			}
+			return ALT_CONSULO_SDK_PATH;
+		}
+		Sdk sdk = myConsuloSdkPointer == null ? null : myConsuloSdkPointer.get();
+		return sdk == null ? null : sdk.getHomePath();
 	}
 
 	@Override

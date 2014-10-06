@@ -32,12 +32,12 @@ import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ConfigurationType;
 import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.packaging.artifacts.Artifact;
@@ -47,6 +47,8 @@ import com.intellij.packaging.impl.artifacts.PlainArtifactType;
 
 public class PluginConfigurationType implements ConfigurationType
 {
+	private static final Icon Icon16_Sandbox = IconLoader.findIcon("/icon16-sandbox.png");
+
 	private final ConfigurationFactory myFactory;
 	private String myVmParameters;
 
@@ -57,7 +59,7 @@ public class PluginConfigurationType implements ConfigurationType
 			@Override
 			public RunConfiguration createTemplateConfiguration(Project project)
 			{
-				final PluginRunConfiguration runConfiguration = new PluginRunConfiguration(project, this, "");
+				final PluginRunConfiguration runConfiguration = new PluginRunConfiguration(project, this, getDisplayName());
 
 				if(runConfiguration.VM_PARAMETERS == null)
 				{
@@ -146,7 +148,7 @@ public class PluginConfigurationType implements ConfigurationType
 	@Override
 	public Icon getIcon()
 	{
-		return AllIcons.Icon16;
+		return Icon16_Sandbox;
 	}
 
 	@Override
