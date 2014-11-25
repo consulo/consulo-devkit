@@ -66,6 +66,14 @@
               </binaries>
             </library>
           </orderEntry>
+          <orderEntry type="module-library">
+            <library name="consulo:UI Designer">
+              <binaries>
+                <root url="jar://$MODULE_DIR$/dep/ui-designer/lib/forms_compiler.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/ui-designer/lib/ui-designer.jar!/" />
+              </binaries>
+            </library>
+          </orderEntry>
         </module-layer>
       </module>
       <module name="devkit-lombok" dirurl="file://$PROJECT_DIR$/devkit-lombok" current-layer="Default">
@@ -100,4 +108,3 @@
     </modules>
   </component>
 </project>
-

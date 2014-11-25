@@ -24,6 +24,8 @@
 
 		<useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
 
+		<newModuleBuilder implementation="org.mustbe.consulo.devkit.newProjectOrModule.DevkitNewModuleBuilder" />
+
 		<programRunner implementation="org.jetbrains.idea.devkit.run.ConsuloDebuggerRunner" />
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
 

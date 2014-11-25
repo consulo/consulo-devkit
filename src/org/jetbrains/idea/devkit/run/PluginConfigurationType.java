@@ -47,6 +47,12 @@ import com.intellij.packaging.impl.artifacts.PlainArtifactType;
 
 public class PluginConfigurationType implements ConfigurationType
 {
+	@NotNull
+	public static PluginConfigurationType getInstance()
+	{
+		return CONFIGURATION_TYPE_EP.findExtension(PluginConfigurationType.class);
+	}
+
 	private static final Icon Icon16_Sandbox = IconLoader.findIcon("/icon16-sandbox.png");
 
 	private final ConfigurationFactory myFactory;

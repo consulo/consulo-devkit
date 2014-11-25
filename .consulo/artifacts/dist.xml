@@ -8,6 +8,11 @@
           <element id="zip-archive" name="devkit.jar">
             <element id="module-output" name="consulo-devkit" />
             <element id="module-production-resource-output" name="consulo-devkit" />
+            <element id="directory" name="moduleTemplates">
+              <element id="zip-archive" name="#ConsuloDevkitSimplePlugin.zip">
+                <element id="dir-copy" path="$PROJECT_DIR$/templates/ConsuloDevkitSimplePlugin" />
+              </element>
+            </element>
           </element>
           <element id="zip-archive" name="devkit-lombok.jar">
             <element id="module-output" name="devkit-lombok" />

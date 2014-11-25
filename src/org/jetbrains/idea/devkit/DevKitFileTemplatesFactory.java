@@ -29,7 +29,6 @@ public class DevKitFileTemplatesFactory implements FileTemplateGroupDescriptorFa
 	public FileTemplateGroupDescriptor getFileTemplatesDescriptor()
 	{
 		FileTemplateGroupDescriptor descriptor = new FileTemplateGroupDescriptor(DevKitBundle.message("plugin.descriptor"), AllIcons.Nodes.Plugin);
-		descriptor.addTemplate(new FileTemplateDescriptor("plugin.xml", XmlFileType.INSTANCE.getIcon()));
 		descriptor.addTemplate(new FileTemplateDescriptor("ProjectComponent.java", JavaFileType.INSTANCE.getIcon()));
 		descriptor.addTemplate(new FileTemplateDescriptor("ApplicationComponent.java", JavaFileType.INSTANCE.getIcon()));
 		descriptor.addTemplate(new FileTemplateDescriptor("ModuleComponent.java", JavaFileType.INSTANCE.getIcon()));
