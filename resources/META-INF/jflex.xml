@@ -16,6 +16,6 @@
 
 <idea-plugin>
 	<extensions defaultExtensionNs="com.intellij">
-		<taskByVfsChange implementation="org.mustbe.consulo.vfs.backgroundTask.JFlexBackgroundTaskProvider" />
+		<taskByVfsChange implementation="org.mustbe.consulo.devkit.vfs.backgroundTask.JFlexBackgroundTaskProvider" />
 	</extensions>
 </idea-plugin>

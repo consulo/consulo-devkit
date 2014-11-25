@@ -16,7 +16,7 @@
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
 	<extensions defaultExtensionNs="org.consulo.java">
-		<runConfigurationExtension implementation="org.mustbe.consulo.run.ConsuloJUnitRunConfigurationExtension" />
+		<runConfigurationExtension implementation="org.mustbe.consulo.devkit.run.ConsuloJUnitRunConfigurationExtension" />
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">

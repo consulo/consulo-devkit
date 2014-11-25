@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.run;
+package org.mustbe.consulo.devkit.run;
 
 import java.awt.BorderLayout;
 import java.util.List;

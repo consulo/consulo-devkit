@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.run;
+package org.mustbe.consulo.devkit.run;
 
 import org.consulo.sdk.SdkUtil;
 import org.consulo.util.pointers.NamedPointer;

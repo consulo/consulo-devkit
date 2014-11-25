@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.vfs.backgroundTask;
+package org.mustbe.consulo.devkit.vfs.backgroundTask;
 
 import java.io.File;
 import java.util.ArrayList;

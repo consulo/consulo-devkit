@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mustbe.consulo.run;
+package org.mustbe.consulo.devkit.run;
 
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
