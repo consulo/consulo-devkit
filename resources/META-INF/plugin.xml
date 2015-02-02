@@ -9,14 +9,15 @@
 	<depends>com.intellij.properties</depends>
 	<depends>com.intellij.xml</depends>
 	<depends>com.intellij.junit</depends>
-	<depends>com.intellij.uiDesigner</depends> <!--This depend is not used, but it needed for developing, and it required-->
+	<depends>com.intellij.uiDesigner</depends>
+	<!--This depend is not used, but it needed for developing, and it required-->
 	<depends optional="true" config-file="jflex.xml">JFlex Support</depends>
 	<depends optional="true" config-file="org.consulo.lombok.xml">org.consulo.lombok</depends>
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
 	<extensions defaultExtensionNs="org.consulo.java">
-		<runConfigurationExtension implementation="org.mustbe.consulo.devkit.run.ConsuloJUnitRunConfigurationExtension" />
+		<runConfigurationExtension implementation="org.mustbe.consulo.devkit.run.ConsuloJUnitRunConfigurationExtension"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
@@ -24,13 +25,13 @@
 
 		<useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
 
-		<newModuleBuilder implementation="org.mustbe.consulo.devkit.newProjectOrModule.DevkitNewModuleBuilder" />
+		<newModuleBuilder implementation="org.mustbe.consulo.devkit.newProjectOrModule.DevkitNewModuleBuilder"/>
 
-		<programRunner implementation="org.jetbrains.idea.devkit.run.ConsuloDebuggerRunner" />
+		<programRunner implementation="org.jetbrains.idea.devkit.run.ConsuloDebuggerRunner"/>
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
 
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
-		<bundledSdkProvider implementation="org.jetbrains.idea.devkit.sdk.ConsuloBundledSdkProvider" />
+		<bundledSdkProvider implementation="org.jetbrains.idea.devkit.sdk.ConsuloBundledSdkProvider"/>
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 
@@ -115,13 +116,19 @@
 		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.Extensions"
 						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionsImpl"/>
 		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.ExtensionPoint"
-							implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionPointImpl"/>
+						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionPointImpl"/>
 	</extensions>
 
 	<actions>
 		<action class="org.jetbrains.idea.devkit.actions.NewApplicationComponentAction" text="Application Component"
 				id="NewApplicationComponent">
 			<add-to-group anchor="last" group-id="NewGroup"/>
+		</action>
+
+		<action id="DevKit.GenerateIconsClassAction" class="org.mustbe.consulo.devkit.action.GenerateIconsClassAction" text="Generate Icons Class"
+				icon="AllIcons.Nodes.Class" can-use-project-as-default="true"
+				require-module-extensions="consulo-plugin">
+			<add-to-group anchor="last" group-id="ToolsMenu"/>
 		</action>
 
 		<action class="org.jetbrains.idea.devkit.actions.NewProjectComponentAction" text="Project Component" id="NewProjectComponent">
@@ -137,10 +144,10 @@
 		</action>
 
 		<group id="DownloadDependenciesGroup">
-			<separator />
+			<separator/>
 			<action id="DownloadDependencies" class="org.jetbrains.idea.devkit.actions.DownloadDependenciesAction" can-use-project-as-default="true"
 					require-module-extensions="consulo-plugin"/>
-			<add-to-group anchor="last" group-id="ProjectViewPopupMenuSettingsGroup" />
+			<add-to-group anchor="last" group-id="ProjectViewPopupMenuSettingsGroup"/>
 		</group>
 
 		<action class="org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction" text="Generate Externalization"
