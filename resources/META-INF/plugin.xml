@@ -31,7 +31,6 @@
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
 
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
-		<bundledSdkProvider implementation="org.jetbrains.idea.devkit.sdk.ConsuloBundledSdkProvider"/>
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 

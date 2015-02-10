@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.Icon;
 
@@ -38,6 +40,8 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.types.BinariesOrderRootType;
+import com.intellij.openapi.roots.types.SourcesOrderRootType;
 import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.vfs.ArchiveFileSystem;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -139,7 +143,7 @@ public class ConsuloSdkType extends SdkType
 				String path = jarFile.getAbsolutePath().replace(File.separatorChar, '/') + ArchiveFileSystem.ARCHIVE_SEPARATOR;
 				fileSystem.addNoCopyArchiveForPath(path);
 				VirtualFile vFile = fileSystem.findFileByPath(path);
-				sdkModificator.addRoot(vFile, OrderRootType.SOURCES);
+				sdkModificator.addRoot(vFile, SourcesOrderRootType.getInstance());
 			}
 		}
 	}
@@ -184,10 +188,17 @@ public class ConsuloSdkType extends SdkType
 		return "reference.project.structure.sdk.idea";
 	}
 
+	@NotNull
 	@Override
-	public String suggestHomePath()
+	public Collection<String> suggestHomePaths()
 	{
-		return PathManager.getHomePath().replace(File.separatorChar, '/');
+		return Collections.singletonList( PathManager.getHomePath().replace(File.separatorChar, '/'));
+	}
+
+	@Override
+	public boolean canCreatePredefinedSdks()
+	{
+		return true;
 	}
 
 	@Override
@@ -253,7 +264,7 @@ public class ConsuloSdkType extends SdkType
 		{
 			for(VirtualFile aIdeaLib : ideaLib)
 			{
-				sdkModificator.addRoot(aIdeaLib, OrderRootType.CLASSES);
+				sdkModificator.addRoot(aIdeaLib, BinariesOrderRootType.getInstance());
 			}
 		}
 		addSources(new File(sdkHome), sdkModificator);
