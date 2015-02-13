@@ -24,11 +24,11 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.consulo.sdk.SdkUtil;
 import org.consulo.util.pointers.Named;
 import org.consulo.util.pointers.NamedPointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.options.ConfigurationException;

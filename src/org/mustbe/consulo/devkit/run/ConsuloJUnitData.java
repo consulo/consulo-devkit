@@ -16,10 +16,10 @@
 
 package org.mustbe.consulo.devkit.run;
 
-import org.consulo.sdk.SdkUtil;
 import org.consulo.util.pointers.NamedPointer;
 import org.jdom.Element;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.execution.configurations.RunConfigurationBase;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.Key;
