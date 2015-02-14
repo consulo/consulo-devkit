@@ -26,12 +26,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.mustbe.consulo.sdk.SdkUtil;
+import com.intellij.debugger.impl.GenericDebugRunnerConfiguration;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.LogFileOptions;
-import com.intellij.execution.configurations.ModuleRunProfile;
 import com.intellij.execution.configurations.PredefinedLogFile;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationBase;
@@ -53,7 +53,7 @@ import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
 
-public class PluginRunConfiguration extends RunConfigurationBase implements ModuleRunProfile
+public class PluginRunConfiguration extends RunConfigurationBase implements GenericDebugRunnerConfiguration
 {
 	public static final PredefinedLogFile IDEA_LOG = new PredefinedLogFile("IDEA_LOG", true);
 
