@@ -90,6 +90,13 @@
 						 enabledByDefault="true"
 						 level="WARNING"
 						 implementationClass="org.jetbrains.idea.devkit.inspections.ExtensionPointBeanClassInspection"/>
+		<localInspection language="JAVA"
+						 level="WARNING"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
+						 displayName="@RequiredReadAction and @RequiredWriteAction inspection"
+						 implementationClass="org.mustbe.consulo.devkit.inspections.RequiredXActionInspection" />
 
 		<implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
 		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>
