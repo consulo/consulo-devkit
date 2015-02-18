@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.DevKitBundle;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.RequiredWriteAction;
 import com.intellij.codeInsight.AnnotationUtil;
@@ -35,6 +36,7 @@ import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.ThrowableComputable;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.InheritanceUtil;
@@ -295,10 +297,9 @@ public class RequiredXActionInspection extends LocalInspectionTool
 			switch(type)
 			{
 				case READ:
-					text = "Annotation @RequiredReadAction is nested or run code inside ApplicationManager.getApplication().runReadAction({...})";
-					break;
 				case WRITE:
-					text = "Annotation @RequiredWriteAction is nested or run code inside ApplicationManager.getApplication().runWriteAction({...})";
+					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run",
+							StringUtil.capitalize(type.name().toLowerCase()));
 					break;
 				default:
 					throw new IllegalArgumentException();
