@@ -105,6 +105,9 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 				javaExtension.setEnabled(true);
 				devkitExtension.setEnabled(true);
 
+				modifiableRootModel.addModuleExtensionSdkEntry(javaExtension);
+				modifiableRootModel.addModuleExtensionSdkEntry(devkitExtension);
+
 				javaExtension.getInheritableSdk().set(null, DEFAULT_JAVA_SDK_NAME);
 
 				devkitExtension.getInheritableSdk().set(null, DEFAULT_CONSULO_SDK_NAME);
