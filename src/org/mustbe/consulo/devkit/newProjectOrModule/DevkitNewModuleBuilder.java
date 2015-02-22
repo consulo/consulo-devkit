@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.consulo.java.module.extension.JavaMutableModuleExtension;
 import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.consulo.util.pointers.NamedPointer;
 import org.jetbrains.annotations.NotNull;
@@ -62,6 +63,7 @@ import com.intellij.packaging.impl.elements.moduleContent.ProductionModuleOutput
 import com.intellij.packaging.impl.elements.moduleContent.ProductionResourceModuleOutputElementType;
 import com.intellij.packaging.impl.run.BuildArtifactsBeforeRunTask;
 import com.intellij.packaging.impl.run.BuildArtifactsBeforeRunTaskProvider;
+import com.intellij.pom.java.LanguageLevel;
 import com.intellij.uiDesigner.GuiDesignerConfiguration;
 
 /**
@@ -96,7 +98,7 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 			{
 				unzip(modifiableRootModel);
 
-				MutableModuleExtensionWithSdk<?> javaExtension = modifiableRootModel.getExtensionWithoutCheck("java");
+				JavaMutableModuleExtension<?> javaExtension = modifiableRootModel.getExtensionWithoutCheck("java");
 				MutableModuleExtensionWithSdk<?> devkitExtension = modifiableRootModel.getExtensionWithoutCheck("consulo-plugin");
 
 				assert javaExtension != null;
@@ -108,6 +110,7 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 				modifiableRootModel.addModuleExtensionSdkEntry(javaExtension);
 				modifiableRootModel.addModuleExtensionSdkEntry(devkitExtension);
 
+				javaExtension.getInheritableLanguageLevel().set(null, LanguageLevel.JDK_1_6);
 				javaExtension.getInheritableSdk().set(null, DEFAULT_JAVA_SDK_NAME);
 
 				devkitExtension.getInheritableSdk().set(null, DEFAULT_CONSULO_SDK_NAME);
