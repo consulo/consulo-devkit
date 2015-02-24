@@ -137,7 +137,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 		}
 
 		@Override
-		public void visitMethodCallExpression(PsiMethodCallExpression expression)
+		public void visitCallExpression(PsiCallExpression expression)
 		{
 			Pair<ThreeState, ActionType> handled = isHandled(expression);
 			switch(handled.getFirst())
@@ -149,7 +149,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 		}
 
 		@NotNull
-		private Pair<ThreeState, ActionType> isHandled(PsiMethodCallExpression expression)
+		private Pair<ThreeState, ActionType> isHandled(PsiCall expression)
 		{
 			PsiMethod psiMethod = expression.resolveMethod();
 			if(psiMethod == null)
@@ -291,7 +291,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 			return false;
 		}
 
-		private void reportError(@NotNull PsiMethodCallExpression expression, @NotNull ActionType type)
+		private void reportError(@NotNull PsiCall expression, @NotNull ActionType type)
 		{
 			String text;
 			switch(type)
