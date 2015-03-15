@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
+import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.RequiredWriteAction;
 import com.intellij.codeInsight.AnnotationUtil;
@@ -92,6 +93,14 @@ public class RequiredXActionInspection extends LocalInspectionTool
 				if(AnnotationUtil.isAnnotated(method, actionClass.getName(), false))
 				{
 					return actionType;
+				}
+
+				if(actionType == READ)
+				{
+					if(AnnotationUtil.isAnnotated(method, RequiredDispatchThread.class.getName(), false))
+					{
+						return actionType;
+					}
 				}
 
 				if(baseRunMethod != null)
