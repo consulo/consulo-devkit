@@ -302,7 +302,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 									PsiElement maybeExpressionList = ((PsiReferenceExpression) result).getParent();
 									if(maybeExpressionList instanceof PsiExpressionList)
 									{
-										if(isInsideRunAction((PsiExpressionList) maybeExpressionList, actionType))
+										if(acceptActionTypeFromCall((PsiExpressionList) maybeExpressionList, actionType))
 										{
 											weFoundRunAction = true;
 											break;
@@ -319,7 +319,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 						// ApplicationManager.getApplication().runReadAction(new Runnable() {});
 						else if(maybeParameterListOrVariable instanceof PsiExpressionList)
 						{
-							if(isInsideRunAction((PsiExpressionList) maybeParameterListOrVariable, actionType))
+							if(acceptActionTypeFromCall((PsiExpressionList) maybeParameterListOrVariable, actionType))
 							{
 								return Pair.create(ThreeState.YES, actionType);
 							}
@@ -331,14 +331,21 @@ public class RequiredXActionInspection extends LocalInspectionTool
 			return Pair.create(ThreeState.NO, actionType);
 		}
 
-		private boolean isInsideRunAction(@NotNull PsiExpressionList expressionList, @NotNull ActionType actionType)
+		private boolean acceptActionTypeFromCall(@NotNull PsiExpressionList expressionList, @NotNull ActionType actionType)
 		{
-			PsiElement parent = expressionList.getParent();
-			for(AcceptableMethodCallCheck acceptableMethodCallCheck : actionType.myAcceptableMethodCallChecks)
+			for(ActionType type : ActionType.values())
 			{
-				if(acceptableMethodCallCheck.accept(parent))
+				if(actionType.isAcceptableActionType(type))
 				{
-					return true;
+					PsiElement parent = expressionList.getParent();
+
+					for(AcceptableMethodCallCheck acceptableMethodCallCheck : type.myAcceptableMethodCallChecks)
+					{
+						if(acceptableMethodCallCheck.accept(parent))
+						{
+							return true;
+						}
+					}
 				}
 			}
 			return false;
