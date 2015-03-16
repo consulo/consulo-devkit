@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.RequiredReadAction;
@@ -54,19 +55,42 @@ public class RequiredXActionInspection extends LocalInspectionTool
 {
 	public static enum ActionType
 	{
-		NONE(null, null, null),
-		READ(RequiredReadAction.class, "runReadAction", ReadAction.class),
-		WRITE(RequiredWriteAction.class, "runWriteAction", WriteAction.class);
+		NONE(null, ArrayUtil.EMPTY_STRING_ARRAY, null),
+		READ(RequiredReadAction.class, "runReadAction", ReadAction.class)
+				{
+					@Override
+					public boolean isAcceptableActionType(@NotNull ActionType type)
+					{
+						return type == READ || type == DISPATCH_THREAD;
+					}
+				},
+		WRITE(RequiredWriteAction.class, "runWriteAction", WriteAction.class),
+		DISPATCH_THREAD(RequiredDispatchThread.class, new String[]{
+				"invokeLater",
+				"invokeAndWait"
+		}, null);
 
+		@Nullable
 		private final Class<?> myActionClass;
-		private final String myApplicationMethod;
+		@NotNull
+		private final String[] myApplicationMethods;
+		@Nullable
 		private final Class<? extends BaseActionRunnable> myActionRunnable;
 
-		ActionType(Class<? extends Annotation> actionClass, String applicationMethod, Class<? extends BaseActionRunnable> actionRunnable)
+		ActionType(@Nullable Class<? extends Annotation> actionClass,
+				@NotNull String[] applicationMethods,
+				@Nullable Class<? extends BaseActionRunnable> actionRunnable)
 		{
 			myActionClass = actionClass;
-			myApplicationMethod = applicationMethod;
+			myApplicationMethods = applicationMethods;
 			myActionRunnable = actionRunnable;
+		}
+
+		ActionType(@NotNull Class<? extends Annotation> actionClass,
+				@NotNull String applicationMethods,
+				@Nullable Class<? extends BaseActionRunnable> actionRunnable)
+		{
+			this(actionClass, new String[]{applicationMethods}, actionRunnable);
 		}
 
 		@NotNull
@@ -95,15 +119,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 					return actionType;
 				}
 
-				if(actionType == READ)
-				{
-					if(AnnotationUtil.isAnnotated(method, RequiredDispatchThread.class.getName(), false))
-					{
-						return actionType;
-					}
-				}
-
-				if(baseRunMethod != null)
+				if(baseRunMethod != null && actionType.myActionRunnable != null)
 				{
 					PsiMethod[] superMethods = method.findSuperMethods(baseActionRunnable);
 					if(ArrayUtil.contains(baseRunMethod, superMethods))
@@ -120,6 +136,11 @@ public class RequiredXActionInspection extends LocalInspectionTool
 				}
 			}
 			return NONE;
+		}
+
+		public boolean isAcceptableActionType(@NotNull ActionType type)
+		{
+			return type == this;
 		}
 	}
 
@@ -179,7 +200,8 @@ public class RequiredXActionInspection extends LocalInspectionTool
 			}
 
 			// method annotated by annotation
-			if(ActionType.findActionType(callMethod) == actionType)
+			ActionType callMethodActionType = ActionType.findActionType(callMethod);
+			if(actionType.isAcceptableActionType(callMethodActionType))
 			{
 				return Pair.create(ThreeState.UNSURE, null);
 			}
@@ -281,9 +303,13 @@ public class RequiredXActionInspection extends LocalInspectionTool
 					return false;
 				}
 
-				String applicationMethod = actionType.myApplicationMethod;
-				assert applicationMethod != null;
-				if(applicationMethod.equals(psiMethod.getName()))
+				String[] applicationMethods = actionType.myApplicationMethods;
+				if(applicationMethods.length == 0)
+				{
+					return false;
+				}
+
+				if(ArrayUtil.contains(psiMethod.getName(), applicationMethods))
 				{
 					PsiClass containingClass = psiMethod.getContainingClass();
 					if(containingClass == null)
@@ -308,6 +334,10 @@ public class RequiredXActionInspection extends LocalInspectionTool
 				case READ:
 				case WRITE:
 					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run",
+							StringUtil.capitalize(type.name().toLowerCase()));
+					break;
+				case DISPATCH_THREAD:
+					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.dispath",
 							StringUtil.capitalize(type.name().toLowerCase()));
 					break;
 				default:
