@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.SwingUtilities;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
@@ -46,6 +48,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.ThreeState;
+import com.intellij.util.ThrowableRunnable;
+import com.intellij.util.ui.UIUtil;
 
 /**
  * @author VISTALL
@@ -53,10 +57,49 @@ import com.intellij.util.ThreeState;
  */
 public class RequiredXActionInspection extends LocalInspectionTool
 {
+	public static class AcceptableMethodCallCheck
+	{
+		private final Class<?> myParentClass;
+		private final String myMethodName;
+
+		public AcceptableMethodCallCheck(Class<?> parentClass, String methodName)
+		{
+			myParentClass = parentClass;
+			myMethodName = methodName;
+		}
+
+		public boolean accept(PsiElement parent)
+		{
+			if(parent instanceof PsiMethodCallExpression)
+			{
+				PsiMethod psiMethod = ((PsiMethodCallExpression) parent).resolveMethod();
+				if(psiMethod == null)
+				{
+					return false;
+				}
+
+				if(myMethodName.equals(psiMethod.getName()))
+				{
+					PsiClass containingClass = psiMethod.getContainingClass();
+					if(containingClass == null)
+					{
+						return false;
+					}
+
+					if(myParentClass.getName().equals(containingClass.getQualifiedName()))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
+
 	public static enum ActionType
 	{
-		NONE(null, ArrayUtil.EMPTY_STRING_ARRAY, null),
-		READ(RequiredReadAction.class, "runReadAction", ReadAction.class)
+		NONE(null, null),
+		READ(RequiredReadAction.class, ReadAction.class, new AcceptableMethodCallCheck(Application.class, "runReadAction"))
 				{
 					@Override
 					public boolean isAcceptableActionType(@NotNull ActionType type)
@@ -64,33 +107,28 @@ public class RequiredXActionInspection extends LocalInspectionTool
 						return type == READ || type == DISPATCH_THREAD;
 					}
 				},
-		WRITE(RequiredWriteAction.class, "runWriteAction", WriteAction.class),
-		DISPATCH_THREAD(RequiredDispatchThread.class, new String[]{
-				"invokeLater",
-				"invokeAndWait"
-		}, null);
+		WRITE(RequiredWriteAction.class, WriteAction.class, new AcceptableMethodCallCheck(Application.class, "runWriteAction")),
+		DISPATCH_THREAD(RequiredDispatchThread.class, null, new AcceptableMethodCallCheck(Application.class, "invokeLater"),
+				new AcceptableMethodCallCheck(Application.class, "invokeAndWait"),
+				new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),
+				new AcceptableMethodCallCheck(UIUtil.class, "invokeLaterIfNeeded"),
+				new AcceptableMethodCallCheck(SwingUtilities.class, "invokeAndWait"),
+				new AcceptableMethodCallCheck(SwingUtilities.class, "invokeLater"));
 
 		@Nullable
 		private final Class<?> myActionClass;
-		@NotNull
-		private final String[] myApplicationMethods;
 		@Nullable
 		private final Class<? extends BaseActionRunnable> myActionRunnable;
+		@NotNull
+		private final AcceptableMethodCallCheck[] myAcceptableMethodCallChecks;
 
 		ActionType(@Nullable Class<? extends Annotation> actionClass,
-				@NotNull String[] applicationMethods,
-				@Nullable Class<? extends BaseActionRunnable> actionRunnable)
+				@Nullable Class<? extends BaseActionRunnable> actionRunnable,
+				@NotNull AcceptableMethodCallCheck... methodCallChecks)
 		{
 			myActionClass = actionClass;
-			myApplicationMethods = applicationMethods;
+			myAcceptableMethodCallChecks = methodCallChecks;
 			myActionRunnable = actionRunnable;
-		}
-
-		ActionType(@NotNull Class<? extends Annotation> actionClass,
-				@NotNull String applicationMethods,
-				@Nullable Class<? extends BaseActionRunnable> actionRunnable)
-		{
-			this(actionClass, new String[]{applicationMethods}, actionRunnable);
 		}
 
 		@NotNull
@@ -146,15 +184,16 @@ public class RequiredXActionInspection extends LocalInspectionTool
 
 	public static class RequiredXActionVisitor extends JavaElementVisitor
 	{
-		private static Map<String, String[]> ourInterfacees = new HashMap<String, String[]>()
+		private static Map<String, Class[]> ourInterfacees = new HashMap<String, Class[]>()
 		{
 			{
-				put("compute", new String[]{
-						Computable.class.getName(),
-						ThrowableComputable.class.getName()
+				put("compute", new Class[]{
+						Computable.class,
+						ThrowableComputable.class
 				});
-				put("run", new String[]{
-						Runnable.class.getName()
+				put("run", new Class[]{
+						Runnable.class,
+						ThrowableRunnable.class
 				});
 			}
 		};
@@ -208,7 +247,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 
 			if(callMethod.getParameterList().getParametersCount() == 0)
 			{
-				String[] qualifiedNames = ourInterfacees.get(callMethod.getName());
+				Class[] qualifiedNames = ourInterfacees.get(callMethod.getName());
 				if(qualifiedNames == null)
 				{
 					return Pair.create(ThreeState.NO, actionType);
@@ -221,9 +260,9 @@ public class RequiredXActionInspection extends LocalInspectionTool
 				}
 
 				boolean inherit = false;
-				for(String qualifiedName : qualifiedNames)
+				for(Class clazz : qualifiedNames)
 				{
-					if(InheritanceUtil.isInheritor(containingClass, qualifiedName))
+					if(InheritanceUtil.isInheritor(containingClass, clazz.getName()))
 					{
 						inherit = true;
 						break;
@@ -295,32 +334,11 @@ public class RequiredXActionInspection extends LocalInspectionTool
 		private boolean isInsideRunAction(@NotNull PsiExpressionList expressionList, @NotNull ActionType actionType)
 		{
 			PsiElement parent = expressionList.getParent();
-			if(parent instanceof PsiMethodCallExpression)
+			for(AcceptableMethodCallCheck acceptableMethodCallCheck : actionType.myAcceptableMethodCallChecks)
 			{
-				PsiMethod psiMethod = ((PsiMethodCallExpression) parent).resolveMethod();
-				if(psiMethod == null)
+				if(acceptableMethodCallCheck.accept(parent))
 				{
-					return false;
-				}
-
-				String[] applicationMethods = actionType.myApplicationMethods;
-				if(applicationMethods.length == 0)
-				{
-					return false;
-				}
-
-				if(ArrayUtil.contains(psiMethod.getName(), applicationMethods))
-				{
-					PsiClass containingClass = psiMethod.getContainingClass();
-					if(containingClass == null)
-					{
-						return false;
-					}
-
-					if(Application.class.getName().equals(containingClass.getQualifiedName()))
-					{
-						return true;
-					}
+					return true;
 				}
 			}
 			return false;
