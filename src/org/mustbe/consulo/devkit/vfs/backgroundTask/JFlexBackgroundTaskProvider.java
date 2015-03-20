@@ -88,6 +88,7 @@ public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeP
 		parameters.add("-jar");
 		parameters.add(new File(plugin.getPath(), "jflex/jflex.jar").getAbsolutePath());
 		parameters.add("--charat");
+		parameters.add("--noconstr");
 		parameters.add("--nobak");
 		parameters.add("--skel");
 		parameters.add(new File(plugin.getPath(), "jflex/idea-flex.skeleton").getAbsolutePath());
