@@ -60,7 +60,7 @@ public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeP
 
 		if(sdk == null)
 		{
-			sdk = SdkTable.getInstance().findBundleSdkByType(JavaSdk.class);
+			sdk = SdkTable.getInstance().findPredefinedSdkByType(JavaSdk.getInstance());
 		}
 
 		if(sdk == null)
@@ -84,7 +84,7 @@ public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeP
 
 		PluginClassLoader classLoader = (PluginClassLoader) JFlexBackgroundTaskProvider.class.getClassLoader();
 		IdeaPluginDescriptor plugin = PluginManager.getPlugin(classLoader.getPluginId());
-
+		assert plugin != null;
 		parameters.add("-jar");
 		parameters.add(new File(plugin.getPath(), "jflex/jflex.jar").getAbsolutePath());
 		parameters.add("--charat");
