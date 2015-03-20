@@ -53,17 +53,58 @@
   /** zzAtEOF == true <=> the scanner is at the EOF */
   private boolean zzAtEOF;
 
+  private IElementType myTokenType;
+  private int myState;
+
 --- user class code
 
 --- constructor declaration
 
+  @Override
+  public IElementType getTokenType() {
+    if (myTokenType == null) locateToken();
+    return myTokenType;
+  }
+
+  @Override
   public final int getTokenStart(){
+    if (myTokenType == null) locateToken();
     return zzStartRead;
   }
 
+  @Override
   public final int getTokenEnd(){
+    if (myTokenType == null) locateToken();
     return getTokenStart() + yylength();
   }
+
+  @Override
+  public void advance() {
+    if (myTokenType == null) locateToken();
+    myTokenType = null;
+  }
+
+  @Override
+  public int getState() {
+    if (myTokenType == null) locateToken();
+    return myState;
+  }
+
+  @Override
+  public void start(final CharSequence buffer, int startOffset, int endOffset, final int initialState) {
+    reset(buffer, startOffset, endOffset, initialState);
+    myTokenType = null;
+  }
+
+   @Override
+   public CharSequence getBufferSequence() {
+     return zzBuffer;
+   }
+
+   @Override
+   public int getBufferEnd() {
+     return zzEndRead;
+   }
 
   public void reset(CharSequence buffer, int start, int end,int initialState){
     zzBuffer = buffer;
@@ -73,9 +114,25 @@
     zzAtBOL = true;
     zzEndRead = end;
     yybegin(initialState);
+    myTokenType = null;
   }
 
-  /**
+   private void locateToken() {
+     if (myTokenType != null) return;
+     try {
+       myState = yystate();
+       myTokenType = advanceImpl();
+     }
+     catch (java.io.IOException e) { /*Can't happen*/ }
+     catch (Error e) {
+       // add lexer class name to the error
+       final Error error = new Error(getClass().getName() + ": " + e.getMessage());
+       error.setStackTrace(e.getStackTrace());
+       throw error;
+     }
+   }
+
+   /**
    * Refills the input buffer.
    *
    * @return      <code>false</code>, iff there was new input.
