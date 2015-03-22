@@ -20,6 +20,7 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+import org.mustbe.consulo.RequiredReadAction;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.ModuleRootLayer;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -69,6 +70,7 @@ public class PluginModuleExtension extends ModuleExtensionWithSdkImpl<PluginModu
 	}
 
 	@Override
+	@RequiredReadAction
 	protected void loadStateImpl(@NotNull Element element)
 	{
 		super.loadStateImpl(element);

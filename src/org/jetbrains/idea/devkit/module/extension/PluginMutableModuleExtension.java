@@ -15,20 +15,16 @@
  */
 package org.jetbrains.idea.devkit.module.extension;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.consulo.module.extension.MutableModuleInheritableNamedPointer;
-import org.consulo.module.extension.ui.ModuleExtensionWithSdkPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredDispatchThread;
+import org.mustbe.consulo.devkit.module.extension.DevKitModuleExtensionPanel;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootLayer;
-import com.intellij.openapi.roots.impl.ModuleRootLayerImpl;
 import com.intellij.openapi.util.Comparing;
 
 /**
@@ -44,11 +40,10 @@ public class PluginMutableModuleExtension extends PluginModuleExtension implemen
 
 	@Nullable
 	@Override
+	@RequiredDispatchThread
 	public JComponent createConfigurablePanel(@Nullable Runnable updateOnCheck)
 	{
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new ModuleExtensionWithSdkPanel(this, updateOnCheck), BorderLayout.NORTH);
-		return new PluginConfigPanel(this, (ModuleRootLayerImpl) myModuleRootLayer, updateOnCheck);
+		return new DevKitModuleExtensionPanel(this, updateOnCheck);
 	}
 
 	@Override
