@@ -16,7 +16,6 @@
 package org.mustbe.consulo.devkit.test;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NonNls;
@@ -64,7 +63,6 @@ public class ConsuloTestApplication
 			ApplicationEx app = ApplicationManagerEx.getApplicationEx();
 			app.load(PathManager.getOptionsPath());
 
-			List<Class<?>> classes = new ArrayList<Class<?>>();
 			if(myArgs.length == 1)
 			{
 				List<String> lines = FileUtil.loadLines(new File(StringUtil.unquoteString(myArgs[0])));
@@ -87,7 +85,9 @@ public class ConsuloTestApplication
 					try
 					{
 						Class<?> aClass = plugin.getPluginClassLoader().loadClass(split.get(1));
-						classes.add(aClass);
+						JUnitCore core = new JUnitCore();
+						core.addListener(new SMTestSender());
+						core.run(aClass);
 					}
 					catch(ClassNotFoundException e)
 					{
@@ -96,9 +96,6 @@ public class ConsuloTestApplication
 				}
 			}
 
-			JUnitCore core = new JUnitCore();
-			core.addListener(new SMTestSender());
-			core.run(classes.toArray(new Class[classes.size()]));
 			System.exit(0);
 		}
 		catch(Throwable e)

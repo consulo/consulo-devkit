@@ -16,6 +16,7 @@
 
 package org.mustbe.consulo.devkit.run;
 
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
@@ -29,6 +30,8 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.options.SettingsEditorGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.InvalidDataException;
+import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.packaging.artifacts.Artifact;
 
@@ -38,12 +41,45 @@ import com.intellij.packaging.artifacts.Artifact;
  */
 public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 {
+	public TargetType getTargetType()
+	{
+		return myTargetType;
+	}
+
+	public void setTargetType(TargetType targetType)
+	{
+		myTargetType = targetType;
+	}
+
+	public static enum TargetType
+	{
+		CLASS,
+		PACKAGE
+	}
+
 	public String PLUGIN_ID;
+
+	private TargetType myTargetType = TargetType.CLASS;
 	public String CLASS_NAME;
+	public String PACKAGE_NAME;
 
 	public ConsuloTestRunConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
 		super(project, factory, name);
+	}
+
+	@Override
+	public void readExternal(Element element) throws InvalidDataException
+	{
+		super.readExternal(element);
+		myTargetType = TargetType.valueOf(element.getAttributeValue("target-type", "CLASS"));
+	}
+
+	@Override
+	public void writeExternal(Element element) throws WriteExternalException
+	{
+		super.writeExternal(element);
+		element.setAttribute("target-type", myTargetType.name());
 	}
 
 	@NotNull
@@ -70,11 +106,17 @@ public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 		{
 			throw new ExecutionException("'Plugin ID' cant be empty");
 		}
-		if(StringUtil.isEmptyOrSpaces(runProfile.CLASS_NAME))
+		switch(getTargetType())
 		{
-			throw new ExecutionException("'Class Name' cant be empty");
+			case CLASS:
+				if(StringUtil.isEmptyOrSpaces(runProfile.CLASS_NAME))
+				{
+					throw new ExecutionException("'Class Name' cant be empty");
+				}
+				break;
 		}
 		return new ConsuloTestRunState(env, javaSdk, consuloHome, artifact);
 	}
+
 }
 

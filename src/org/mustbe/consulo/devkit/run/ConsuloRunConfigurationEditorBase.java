@@ -82,15 +82,19 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 	public ConsuloRunConfigurationEditorBase(Project project)
 	{
 		myProject = project;
+	}
+
+	protected void initPanel()
+	{
 		FormBuilder builder = FormBuilder.createFormBuilder();
 
-		setupPanel(project, builder);
+		setupPanel( builder);
 
 		myRoot = new JPanel(new BorderLayout());
 		myRoot.add(builder.getPanel(), BorderLayout.NORTH);
 	}
 
-	protected void setupPanel(@NotNull Project project, @NotNull FormBuilder builder)
+	protected void setupPanel(@NotNull FormBuilder builder)
 	{
 		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
 		if(!projectSdksModel.isInitialized())
@@ -129,7 +133,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		});
 
 		myAltConsuloSdkTextField = new TextFieldWithBrowseButton();
-		myAltConsuloSdkTextField.addBrowseFolderListener("Select SDK", "Select alternative consulo sdk for run", project,
+		myAltConsuloSdkTextField.addBrowseFolderListener("Select SDK", "Select alternative consulo sdk for run", myProject,
 				FileChooserDescriptorFactory.createSingleFolderDescriptor());
 
 		final Artifact[] sortedArtifacts = ArtifactManager.getInstance(myProject).getSortedArtifacts();

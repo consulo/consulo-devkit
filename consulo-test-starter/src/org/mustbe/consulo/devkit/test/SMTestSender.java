@@ -30,6 +30,7 @@ import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
+import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageTypes;
 import junit.framework.ComparisonFailure;
@@ -44,7 +45,7 @@ class SMTestSender extends RunListener
 	@Override
 	public void testRunStarted(Description description) throws Exception
 	{
-		myCurrentClassName = description.toString();
+		myCurrentClassName = StringUtil.getShortName(description.getChildren().get(0).getClassName());
 		System.out.println("##teamcity[testSuiteStarted name =\'" + myCurrentClassName + "\']");
 	}
 
@@ -206,17 +207,24 @@ class SMTestSender extends RunListener
 		return null;
 	}
 
-	public static String getMethodName(Description description) {
-		try {
+	public static String getMethodName(Description description)
+	{
+		try
+		{
 			return description.getMethodName();
 		}
-		catch (NoSuchMethodError e) {
+		catch(NoSuchMethodError e)
+		{
 			final String displayName = description.getDisplayName();
 			Matcher matcher = Pattern.compile("(.*)\\((.*)\\)").matcher(displayName);
-			if (matcher.matches()) return matcher.group(1);
+			if(matcher.matches())
+			{
+				return matcher.group(1);
+			}
 			return null;
 		}
 	}
+
 	private static ComparisonFailureData createExceptionNotification(String message, final String regex)
 	{
 		final Matcher matcher = Pattern.compile(regex, Pattern.DOTALL | Pattern.CASE_INSENSITIVE).matcher(message);

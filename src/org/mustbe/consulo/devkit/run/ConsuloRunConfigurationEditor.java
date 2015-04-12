@@ -11,5 +11,6 @@ public class ConsuloRunConfigurationEditor extends ConsuloRunConfigurationEditor
 	public ConsuloRunConfigurationEditor(Project project)
 	{
 		super(project);
+		initPanel();
 	}
 }
