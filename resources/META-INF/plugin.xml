@@ -32,8 +32,6 @@
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
 		<configurationType implementation="org.mustbe.consulo.devkit.run.ConsuloTestRunConfigurationType" />
 
-		<appStarter implementation="org.mustbe.consulo.devkit.starter.ConsuloTestStarter" />
-
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
