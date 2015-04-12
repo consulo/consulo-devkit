@@ -58,7 +58,7 @@ public class PluginConfigurationType implements ConfigurationType
 	private final ConfigurationFactory myFactory;
 	private String myVmParameters;
 
-	PluginConfigurationType()
+	public PluginConfigurationType()
 	{
 		myFactory = new ConfigurationFactoryEx(this)
 		{
