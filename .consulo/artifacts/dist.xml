@@ -20,6 +20,9 @@
           </element>
         </element>
         <element id="dir-copy" path="$PROJECT_DIR$/dist" />
+        <element id="zip-archive" name="consulo-test-starter.jar">
+          <element id="module-output" name="consulo-test-starter" />
+        </element>
       </element>
     </root>
   </artifact>

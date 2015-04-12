@@ -27,6 +27,7 @@ import org.consulo.lombok.annotations.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+import org.mustbe.consulo.devkit.run.ConsuloRunConfigurationBase;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.ConfigurationException;
@@ -49,7 +50,7 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ObjectUtils;
 
 @Logger
-public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfiguration>
+public class PluginRunConfigurationEditor extends SettingsEditor<ConsuloRunConfigurationBase>
 {
 	private static class ArtifactItem
 	{
@@ -92,7 +93,7 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 	}
 
 	@Override
-	public void resetEditorFrom(PluginRunConfiguration prc)
+	public void resetEditorFrom(ConsuloRunConfigurationBase prc)
 	{
 		myVMParameters.setText(prc.VM_PARAMETERS);
 		myAlternativeConsuloSdkCheckBox.setSelected(prc.USE_ALT_CONSULO_SDK);
@@ -149,7 +150,7 @@ public class PluginRunConfigurationEditor extends SettingsEditor<PluginRunConfig
 	}
 
 	@Override
-	public void applyEditorTo(PluginRunConfiguration prc) throws ConfigurationException
+	public void applyEditorTo(ConsuloRunConfigurationBase prc) throws ConfigurationException
 	{
 		prc.setArtifactName(myArtifactComboBox.getSelectedItem() == ObjectUtils.NULL ? null : ((ArtifactItem) myArtifactComboBox.getSelectedItem())
 				.myName);

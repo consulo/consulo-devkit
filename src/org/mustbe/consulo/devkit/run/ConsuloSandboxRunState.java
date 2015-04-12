@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jetbrains.idea.devkit.run;
+package org.mustbe.consulo.devkit.run;
 
 import java.io.File;
 
@@ -38,12 +38,14 @@ import com.intellij.packaging.artifacts.Artifact;
  */
 public class ConsuloSandboxRunState extends CommandLineState
 {
-	private JavaParameters myJavaParameters;
+	protected JavaParameters myJavaParameters;
+	protected ExecutionEnvironment myEnvironment;
 
 	public ConsuloSandboxRunState(@NotNull ExecutionEnvironment environment, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
 			@Nullable Artifact artifact)
 	{
 		super(environment);
+		myEnvironment = environment;
 		myJavaParameters = createJavaParameters(environment, javaSdk, consuloSdkHome, artifact);
 	}
 
@@ -54,10 +56,10 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return myJavaParameters.createOSProcessHandler();
 	}
 
-	private static JavaParameters createJavaParameters(@NotNull ExecutionEnvironment env, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
+	private JavaParameters createJavaParameters(@NotNull ExecutionEnvironment env, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
 			@Nullable Artifact artifact)
 	{
-		PluginRunConfiguration profile = (PluginRunConfiguration) env.getRunProfile();
+		ConsuloRunConfigurationBase profile = (ConsuloRunConfigurationBase) env.getRunProfile();
 		final String dataPath = profile.getSandboxPath();
 
 		final JavaParameters params = new JavaParameters();
@@ -75,7 +77,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 			vm.defineProperty(PathManager.PROPERTY_PLUGINS_PATH, artifact.getOutputPath());
 		}
 
-		File logFile = new File(dataPath, PluginRunConfiguration.LOG_FILE);
+		File logFile = new File(dataPath, ConsuloRunConfigurationBase.LOG_FILE);
 		FileUtil.createIfDoesntExist(logFile);
 		vm.defineProperty(PathManager.PROPERTY_LOG_PATH, logFile.getParent());
 
@@ -98,11 +100,17 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		addConsuloLibs(consuloSdkHome, params);
 
-		params.setMainClass("com.intellij.idea.Main");
+		params.setMainClass(getMainClass());
 		return params;
 	}
 
-	public static void addConsuloLibs(String consuloHomePath, JavaParameters params)
+	@NotNull
+	public String getMainClass()
+	{
+		return "com.intellij.idea.Main";
+	}
+
+	protected void addConsuloLibs(@NotNull String consuloHomePath, @NotNull JavaParameters params)
 	{
 		String libPath = consuloHomePath + "/lib";
 

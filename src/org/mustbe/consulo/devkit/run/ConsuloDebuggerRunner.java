@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jetbrains.idea.devkit.run;
+package org.mustbe.consulo.devkit.run;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +36,7 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 	@Override
 	public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile)
 	{
-		return super.canRun(executorId, profile) && profile instanceof PluginRunConfiguration;
+		return super.canRun(executorId, profile) && profile instanceof ConsuloRunConfigurationBase;
 	}
 
 	@Nullable

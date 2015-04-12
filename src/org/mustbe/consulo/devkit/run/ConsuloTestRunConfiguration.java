@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2012 JetBrains s.r.o.
+ * Copyright 2013-2015 must-be.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.idea.devkit.run;
+
+package org.mustbe.consulo.devkit.run;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.devkit.run.ConsuloRunConfigurationBase;
-import org.mustbe.consulo.devkit.run.ConsuloSandboxRunState;
-import com.intellij.debugger.impl.GenericDebugRunnerConfiguration;
+import org.jetbrains.idea.devkit.run.PluginRunConfigurationEditor;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -31,21 +30,24 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.packaging.artifacts.Artifact;
 
-public class PluginRunConfiguration extends ConsuloRunConfigurationBase implements GenericDebugRunnerConfiguration
+/**
+ * @author VISTALL
+ * @since 12.04.2015
+ */
+public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 {
-	protected PluginRunConfiguration(Project project, ConfigurationFactory factory, String name)
+	public ConsuloTestRunConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
 		super(project, factory, name);
 	}
 
 	@NotNull
 	@Override
-	@SuppressWarnings("unchecked")
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
 	{
 		SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
 		settingsEditorGroup.addEditor("General", new PluginRunConfigurationEditor(getProject()));
-		settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<PluginRunConfiguration>());
+		settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfigurationBase>());
 		return settingsEditorGroup;
 	}
 
@@ -56,6 +58,7 @@ public class PluginRunConfiguration extends ConsuloRunConfigurationBase implemen
 			@NotNull String consuloHome,
 			@Nullable Artifact artifact)
 	{
-		return new ConsuloSandboxRunState(env, javaSdk, consuloHome, artifact);
+		return new ConsuloTestRunState(env, javaSdk, consuloHome, artifact);
 	}
 }
+

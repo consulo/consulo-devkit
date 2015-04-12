@@ -110,7 +110,7 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 	}
 
 	@Nullable
-	private static Pair<Module, Artifact> findArtifact(Project project)
+	public static Pair<Module, Artifact> findArtifact(Project project)
 	{
 		ArtifactManager artifactManager = ArtifactManager.getInstance(project);
 

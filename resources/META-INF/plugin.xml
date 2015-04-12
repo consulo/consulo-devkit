@@ -23,8 +23,12 @@
 
 		<newModuleBuilder implementation="org.mustbe.consulo.devkit.newProjectOrModule.DevkitNewModuleBuilder"/>
 
-		<programRunner implementation="org.jetbrains.idea.devkit.run.ConsuloDebuggerRunner"/>
+		<programRunner implementation="org.mustbe.consulo.devkit.run.ConsuloDebuggerRunner"/>
+
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
+		<configurationType implementation="org.mustbe.consulo.devkit.run.ConsuloTestRunConfigurationType" />
+
+		<appStarter implementation="org.mustbe.consulo.devkit.starter.ConsuloTestStarter" />
 
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
