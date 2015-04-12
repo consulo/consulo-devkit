@@ -24,15 +24,6 @@
           </orderEntry>
           <orderEntry type="module" module-name="devkit-lombok" />
           <orderEntry type="module-library">
-            <library name="consulo:Java">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/java/lib/java-rt.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/java.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/jdk-annotations.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
             <library name="consulo:XML">
               <binaries>
                 <root url="jar://$MODULE_DIR$/dep/xml/lib/jsr173_1.0_api.jar!/" />
@@ -69,6 +60,26 @@
               <binaries>
                 <root url="jar://$MODULE_DIR$/dep/ui-designer/lib/forms_compiler.jar!/" />
                 <root url="jar://$MODULE_DIR$/dep/ui-designer/lib/ui-designer.jar!/" />
+              </binaries>
+            </library>
+          </orderEntry>
+          <orderEntry type="module-library">
+            <library name="consulo:Java">
+              <binaries>
+                <root url="jar://$MODULE_DIR$/dep/java/lib/asm-all.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/coverage-report-idea.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/coverage-report.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/coverate_rt.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/instrumentation-util.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/jacocoagent.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/jacocoant.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/java-i18n.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/java-manifest.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/java-rt.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/java.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/jdi.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/jdk-annotations.jar!/" />
+                <root url="jar://$MODULE_DIR$/dep/java/lib/jimage-jdk6.jar!/" />
               </binaries>
             </library>
           </orderEntry>

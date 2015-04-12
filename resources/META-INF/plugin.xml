@@ -16,6 +16,10 @@
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
+	<extensions defaultExtensionNs="org.consulo.java">
+		<coverageEngineExtension implementation="org.mustbe.consulo.devkit.run.ConsuloRunCoverageEngineExtension" />
+	</extensions>
+
 	<extensions defaultExtensionNs="com.intellij">
 		<errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
 

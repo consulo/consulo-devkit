@@ -22,6 +22,7 @@ import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.configurations.coverage.CoverageConfigurable;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.options.SettingsEditorGroup;
@@ -43,6 +44,7 @@ public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase impleme
 	{
 		SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
 		settingsEditorGroup.addEditor("General", new ConsuloRunConfigurationEditor(getProject()));
+		settingsEditorGroup.addEditor("Coverage", new CoverageConfigurable(this));
 		settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfiguration>());
 		return settingsEditorGroup;
 	}
