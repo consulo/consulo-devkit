@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
 import org.jetbrains.idea.devkit.run.PluginConfigurationType;
-import org.jetbrains.idea.devkit.run.PluginRunConfiguration;
 import org.mustbe.consulo.devkit.ConsuloSandboxIcons;
 import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
@@ -66,7 +65,7 @@ public class ConsuloTestRunConfigurationType extends ConfigurationTypeBase
 			{
 				ConsuloTestRunConfiguration runConfiguration = (ConsuloTestRunConfiguration) configuration;
 
-				runConfiguration.addPredefinedLogFile(PluginRunConfiguration.IDEA_LOG);
+				runConfiguration.addPredefinedLogFile(ConsuloRunConfiguration.IDEA_LOG);
 
 				Pair<Module, Artifact> pair = PluginConfigurationType.findArtifact(configuration.getProject());
 				if(pair != null)

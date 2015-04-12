@@ -142,7 +142,7 @@ public abstract class ConsuloRunConfigurationBase extends RunConfigurationBase i
 	public abstract ConsuloSandboxRunState createState(Executor executor, @NotNull ExecutionEnvironment env,
 			@NotNull Sdk javaSdk,
 			@NotNull String consuloHome,
-			@Nullable Artifact artifact);
+			@Nullable Artifact artifact) throws ExecutionException;
 
 	@Override
 	public void readExternal(Element element) throws InvalidDataException

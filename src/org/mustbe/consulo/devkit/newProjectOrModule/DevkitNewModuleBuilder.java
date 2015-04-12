@@ -27,8 +27,8 @@ import org.consulo.java.module.extension.JavaMutableModuleExtension;
 import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.consulo.util.pointers.NamedPointer;
 import org.jetbrains.annotations.NotNull;
+import org.mustbe.consulo.devkit.run.ConsuloRunConfiguration;
 import org.jetbrains.idea.devkit.run.PluginConfigurationType;
-import org.jetbrains.idea.devkit.run.PluginRunConfiguration;
 import org.mustbe.consulo.ide.impl.NewModuleBuilder;
 import org.mustbe.consulo.ide.impl.NewModuleContext;
 import org.mustbe.consulo.ide.impl.UnzipNewModuleBuilderProcessor;
@@ -153,7 +153,7 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 						PluginConfigurationType.getInstance().getConfigurationFactories()[0]);
 
 
-				PluginRunConfiguration configuration = (PluginRunConfiguration) runConfiguration.getConfiguration();
+				ConsuloRunConfiguration configuration = (ConsuloRunConfiguration) runConfiguration.getConfiguration();
 				configuration.setArtifactName("plugin");
 				configuration.setJavaSdkName(DEFAULT_JAVA_SDK_NAME);
 				configuration.setConsuloSdkName(DEFAULT_CONSULO_SDK_NAME);

@@ -18,8 +18,8 @@ package org.mustbe.consulo.devkit.run;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.run.PluginRunConfigurationEditor;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
+import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -28,6 +28,7 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.options.SettingsEditorGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.packaging.artifacts.Artifact;
 
 /**
@@ -36,6 +37,9 @@ import com.intellij.packaging.artifacts.Artifact;
  */
 public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 {
+	public String PLUGIN_ID;
+	public String CLASS_NAME;
+
 	public ConsuloTestRunConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
 		super(project, factory, name);
@@ -43,10 +47,11 @@ public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 
 	@NotNull
 	@Override
+	@SuppressWarnings("unchecked")
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
 	{
 		SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
-		settingsEditorGroup.addEditor("General", new PluginRunConfigurationEditor(getProject()));
+		settingsEditorGroup.addEditor("General", new ConsuloTestRunConfigurationEditor(getProject()));
 		settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfigurationBase>());
 		return settingsEditorGroup;
 	}
@@ -56,8 +61,17 @@ public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 	public ConsuloSandboxRunState createState(Executor executor, @NotNull ExecutionEnvironment env,
 			@NotNull Sdk javaSdk,
 			@NotNull String consuloHome,
-			@Nullable Artifact artifact)
+			@Nullable Artifact artifact) throws ExecutionException
 	{
+		ConsuloTestRunConfiguration runProfile = (ConsuloTestRunConfiguration)env.getRunProfile();
+		if(StringUtil.isEmptyOrSpaces(runProfile.PLUGIN_ID))
+		{
+			throw new ExecutionException("'Plugin ID' cant be empty");
+		}
+		if(StringUtil.isEmptyOrSpaces(runProfile.CLASS_NAME))
+		{
+			throw new ExecutionException("'Class Name' cant be empty");
+		}
 		return new ConsuloTestRunState(env, javaSdk, consuloHome, artifact);
 	}
 }

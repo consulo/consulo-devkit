@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
 import org.mustbe.consulo.devkit.ConsuloSandboxIcons;
+import org.mustbe.consulo.devkit.run.ConsuloRunConfiguration;
 import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import com.intellij.diagnostic.VMOptions;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
@@ -62,7 +63,7 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 			@Override
 			public RunConfiguration createTemplateConfiguration(Project project)
 			{
-				final PluginRunConfiguration runConfiguration = new PluginRunConfiguration(project, this, getDisplayName());
+				final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName());
 
 				if(runConfiguration.VM_PARAMETERS == null)
 				{
@@ -84,9 +85,9 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 			@Override
 			public void onNewConfigurationCreated(@NotNull RunConfiguration configuration)
 			{
-				PluginRunConfiguration runConfiguration = (PluginRunConfiguration) configuration;
+				ConsuloRunConfiguration runConfiguration = (ConsuloRunConfiguration) configuration;
 
-				runConfiguration.addPredefinedLogFile(PluginRunConfiguration.IDEA_LOG);
+				runConfiguration.addPredefinedLogFile(ConsuloRunConfiguration.IDEA_LOG);
 
 				Pair<Module, Artifact> pair = findArtifact(configuration.getProject());
 				if(pair != null)

@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.idea.devkit.run;
+package org.mustbe.consulo.devkit.run;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.devkit.run.ConsuloRunConfigurationBase;
-import org.mustbe.consulo.devkit.run.ConsuloSandboxRunState;
 import com.intellij.debugger.impl.GenericDebugRunnerConfiguration;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.Executor;
@@ -31,9 +29,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.packaging.artifacts.Artifact;
 
-public class PluginRunConfiguration extends ConsuloRunConfigurationBase implements GenericDebugRunnerConfiguration
+public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase implements GenericDebugRunnerConfiguration
 {
-	protected PluginRunConfiguration(Project project, ConfigurationFactory factory, String name)
+	public ConsuloRunConfiguration(Project project, ConfigurationFactory factory, String name)
 	{
 		super(project, factory, name);
 	}
@@ -44,8 +42,8 @@ public class PluginRunConfiguration extends ConsuloRunConfigurationBase implemen
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
 	{
 		SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
-		settingsEditorGroup.addEditor("General", new PluginRunConfigurationEditor(getProject()));
-		settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<PluginRunConfiguration>());
+		settingsEditorGroup.addEditor("General", new ConsuloRunConfigurationEditor(getProject()));
+		settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfiguration>());
 		return settingsEditorGroup;
 	}
 

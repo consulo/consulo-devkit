@@ -15,6 +15,10 @@
  */
 package org.mustbe.consulo.devkit.test;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jetbrains.annotations.NonNls;
 import org.junit.runner.JUnitCore;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
@@ -24,6 +28,8 @@ import com.intellij.openapi.application.ex.ApplicationEx;
 import com.intellij.openapi.application.ex.ApplicationManagerEx;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 
 public class ConsuloTestApplication
 {
@@ -33,6 +39,7 @@ public class ConsuloTestApplication
 	private static final Logger LOG = Logger.getInstance(ConsuloTestApplication.class);
 
 	private static ConsuloTestApplication ourInstance;
+	private String[] myArgs;
 
 	public static ConsuloTestApplication getInstance()
 	{
@@ -41,6 +48,7 @@ public class ConsuloTestApplication
 
 	public ConsuloTestApplication(String[] args)
 	{
+		myArgs = args;
 		LOG.assertTrue(ourInstance == null);
 		ourInstance = this;
 
@@ -56,19 +64,41 @@ public class ConsuloTestApplication
 			ApplicationEx app = ApplicationManagerEx.getApplicationEx();
 			app.load(PathManager.getOptionsPath());
 
-			PluginId id = PluginId.getId("org.mustbe.consulo.csharp");
-			IdeaPluginDescriptor plugin = PluginManager.getPlugin(id);
-			if(plugin == null)
+			List<Class<?>> classes = new ArrayList<Class<?>>();
+			if(myArgs.length == 1)
 			{
-				System.out.println("Plugin id is wrong");
-				System.exit(-1);
-			}
+				List<String> lines = FileUtil.loadLines(new File(StringUtil.unquoteString(myArgs[0])));
 
-			Class<?> aClass = plugin.getPluginClassLoader().loadClass("org.musbe.consulo.csharp.parsing.CSharpParsingTest");
+
+				for(String line : lines)
+				{
+					List<String> split = StringUtil.split(line, ",");
+
+					String pluginId = split.get(0);
+
+					PluginId id = PluginId.getId(pluginId);
+					IdeaPluginDescriptor plugin = PluginManager.getPlugin(id);
+					if(plugin == null)
+					{
+						System.out.println("Plugin id '" + pluginId + "' is wrong");
+						continue;
+					}
+
+					try
+					{
+						Class<?> aClass = plugin.getPluginClassLoader().loadClass(split.get(1));
+						classes.add(aClass);
+					}
+					catch(ClassNotFoundException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
 
 			JUnitCore core = new JUnitCore();
 			core.addListener(new SMTestSender());
-			core.run(aClass);
+			core.run(classes.toArray(new Class[classes.size()]));
 			System.exit(0);
 		}
 		catch(Throwable e)

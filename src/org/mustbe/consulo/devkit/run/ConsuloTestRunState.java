@@ -17,6 +17,7 @@
 package org.mustbe.consulo.devkit.run;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,6 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.JavaParameters;
-import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
@@ -37,6 +37,8 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.cl.PluginClassLoader;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.packaging.artifacts.Artifact;
 
 /**
@@ -70,19 +72,32 @@ public class ConsuloTestRunState extends ConsuloSandboxRunState
 	@Override
 	public ExecutionResult execute(@NotNull Executor executor, @NotNull ProgramRunner runner) throws ExecutionException
 	{
-		TestConsoleProperties testConsoleProperties = new SMTRunnerConsoleProperties((RunConfiguration) myEnvironment.getRunProfile(), "ConsuloUnit",
-				executor);
+		ConsuloTestRunConfiguration runProfile = (ConsuloTestRunConfiguration) myEnvironment.getRunProfile();
+		TestConsoleProperties testConsoleProperties = new SMTRunnerConsoleProperties(runProfile,
+				"ConsuloUnit", executor);
 
 		testConsoleProperties.setIfUndefined(TestConsoleProperties.HIDE_PASSED_TESTS, false);
 
 		final BaseTestsOutputConsoleView smtConsoleView = SMTestRunnerConnectionUtil.createConsoleWithCustomLocator("ConsuloUnit",
 				testConsoleProperties, myEnvironment, null);
 
-		ProcessHandler osProcessHandler = startProcess();
+		try
+		{
+			File file = FileUtil.createTempFile("consulo", "test_classes.txt");
+			FileUtil.writeToFile(file, runProfile.PLUGIN_ID + "," + runProfile.CLASS_NAME);
 
-		smtConsoleView.attachToProcess(osProcessHandler);
+			myJavaParameters.getProgramParametersList().add(StringUtil.QUOTER.fun(FileUtil.toSystemIndependentName(file.getAbsolutePath())));
 
-		return new DefaultExecutionResult(smtConsoleView, osProcessHandler);
+			ProcessHandler osProcessHandler = startProcess();
+
+			smtConsoleView.attachToProcess(osProcessHandler);
+
+			return new DefaultExecutionResult(smtConsoleView, osProcessHandler);
+		}
+		catch(IOException e)
+		{
+			throw new ExecutionException(e);
+		}
 	}
 
 	@Override

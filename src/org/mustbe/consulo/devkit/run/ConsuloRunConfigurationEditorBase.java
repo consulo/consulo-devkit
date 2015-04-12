@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.idea.devkit.run;
+package org.mustbe.consulo.devkit.run;
+
+import java.awt.BorderLayout;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -27,7 +29,6 @@ import org.consulo.lombok.annotations.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
-import org.mustbe.consulo.devkit.run.ConsuloRunConfigurationBase;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.ConfigurationException;
@@ -47,10 +48,12 @@ import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ObjectUtils;
+import com.intellij.util.ui.FormBuilder;
 
 @Logger
-public class PluginRunConfigurationEditor extends SettingsEditor<ConsuloRunConfigurationBase>
+public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConfigurationBase> extends SettingsEditor<T>
 {
 	private static class ArtifactItem
 	{
@@ -76,9 +79,45 @@ public class PluginRunConfigurationEditor extends SettingsEditor<ConsuloRunConfi
 
 	private final Project myProject;
 
-	public PluginRunConfigurationEditor(Project project)
+	public ConsuloRunConfigurationEditorBase(Project project)
 	{
 		myProject = project;
+		FormBuilder builder = FormBuilder.createFormBuilder();
+
+		setupPanel(project, builder);
+
+		myRoot = new JPanel(new BorderLayout());
+		myRoot.add(builder.getPanel(), BorderLayout.NORTH);
+	}
+
+	protected void setupPanel(@NotNull Project project, @NotNull FormBuilder builder)
+	{
+		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
+		if(!projectSdksModel.isInitialized())
+		{
+			projectSdksModel.reset(myProject);
+		}
+		myJavaSdkComboBox = new SdkComboBox(projectSdksModel, new Condition<SdkTypeId>()
+		{
+			@Override
+			public boolean value(SdkTypeId sdkTypeId)
+			{
+				return sdkTypeId instanceof JavaSdk;
+			}
+		}, false);
+		builder.addLabeledComponent("Java SDK", myJavaSdkComboBox);
+
+		myConsuloSdkComboBox = new SdkComboBox(projectSdksModel, new Condition<SdkTypeId>()
+		{
+			@Override
+			public boolean value(SdkTypeId sdkTypeId)
+			{
+				return sdkTypeId instanceof ConsuloSdkType;
+			}
+		}, true);
+		builder.addLabeledComponent("Consulo SDK", myConsuloSdkComboBox);
+
+		myAlternativeConsuloSdkCheckBox = new JBCheckBox("Alt Consulo SDK:");
 		myAlternativeConsuloSdkCheckBox.addChangeListener(new ChangeListener()
 		{
 			@Override
@@ -88,12 +127,61 @@ public class PluginRunConfigurationEditor extends SettingsEditor<ConsuloRunConfi
 				myConsuloSdkComboBox.setEnabled(!myAlternativeConsuloSdkCheckBox.isSelected());
 			}
 		});
+
+		myAltConsuloSdkTextField = new TextFieldWithBrowseButton();
 		myAltConsuloSdkTextField.addBrowseFolderListener("Select SDK", "Select alternative consulo sdk for run", project,
 				FileChooserDescriptorFactory.createSingleFolderDescriptor());
+
+		final Artifact[] sortedArtifacts = ArtifactManager.getInstance(myProject).getSortedArtifacts();
+		myArtifactComboBox = new ComboBox();
+		myArtifactComboBox.addItem(ObjectUtils.NULL);
+		for(Artifact sortedArtifact : sortedArtifacts)
+		{
+			myArtifactComboBox.addItem(new ArtifactItem(sortedArtifact.getName(), sortedArtifact));
+		}
+
+		myArtifactComboBox.setRenderer(new ColoredListCellRenderer()
+		{
+			@Override
+			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus)
+			{
+				if(value == ObjectUtils.NULL)
+				{
+					append("<None>", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+					setIcon(AllIcons.Actions.Help);
+					return;
+				}
+
+				ArtifactItem artifactItem = (ArtifactItem) value;
+				if(artifactItem == null)
+				{
+					return;
+				}
+
+				final Artifact artifact = artifactItem.myArtifact;
+				if(artifact == null)
+				{
+					append(artifactItem.myName, SimpleTextAttributes.ERROR_ATTRIBUTES);
+					setIcon(AllIcons.Nodes.Artifact);
+				}
+				else
+				{
+					append(artifactItem.myName, SimpleTextAttributes.REGULAR_ATTRIBUTES);
+					setIcon(artifact.getArtifactType().getIcon());
+				}
+			}
+		});
+
+		builder.addLabeledComponent("Plugin Artifact", myArtifactComboBox);
+
+		myProgramParameters = new RawCommandLineEditor();
+		builder.addLabeledComponent("Program Parameters", myProgramParameters);
+		myVMParameters = new RawCommandLineEditor();
+		builder.addLabeledComponent("VM Parameters", myVMParameters);
 	}
 
 	@Override
-	public void resetEditorFrom(ConsuloRunConfigurationBase prc)
+	public void resetEditorFrom(T prc)
 	{
 		myVMParameters.setText(prc.VM_PARAMETERS);
 		myAlternativeConsuloSdkCheckBox.setSelected(prc.USE_ALT_CONSULO_SDK);
@@ -150,7 +238,7 @@ public class PluginRunConfigurationEditor extends SettingsEditor<ConsuloRunConfi
 	}
 
 	@Override
-	public void applyEditorTo(ConsuloRunConfigurationBase prc) throws ConfigurationException
+	public void applyEditorTo(T prc) throws ConfigurationException
 	{
 		prc.setArtifactName(myArtifactComboBox.getSelectedItem() == ObjectUtils.NULL ? null : ((ArtifactItem) myArtifactComboBox.getSelectedItem())
 				.myName);
@@ -168,76 +256,5 @@ public class PluginRunConfigurationEditor extends SettingsEditor<ConsuloRunConfi
 	public JComponent createEditor()
 	{
 		return myRoot;
-	}
-
-	@Override
-	public void disposeEditor()
-	{
-	}
-
-	private void createUIComponents()
-	{
-		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
-		if(!projectSdksModel.isInitialized())
-		{
-			projectSdksModel.reset(myProject);
-		}
-		myJavaSdkComboBox = new SdkComboBox(projectSdksModel, new Condition<SdkTypeId>()
-		{
-			@Override
-			public boolean value(SdkTypeId sdkTypeId)
-			{
-				return sdkTypeId instanceof JavaSdk;
-			}
-		}, false);
-
-		myConsuloSdkComboBox = new SdkComboBox(projectSdksModel, new Condition<SdkTypeId>()
-		{
-			@Override
-			public boolean value(SdkTypeId sdkTypeId)
-			{
-				return sdkTypeId instanceof ConsuloSdkType;
-			}
-		}, true);
-
-		final Artifact[] sortedArtifacts = ArtifactManager.getInstance(myProject).getSortedArtifacts();
-		myArtifactComboBox = new ComboBox();
-		myArtifactComboBox.addItem(ObjectUtils.NULL);
-		for(Artifact sortedArtifact : sortedArtifacts)
-		{
-			myArtifactComboBox.addItem(new ArtifactItem(sortedArtifact.getName(), sortedArtifact));
-		}
-
-		myArtifactComboBox.setRenderer(new ColoredListCellRenderer()
-		{
-			@Override
-			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus)
-			{
-				if(value == ObjectUtils.NULL)
-				{
-					append("<None>", SimpleTextAttributes.REGULAR_ATTRIBUTES);
-					setIcon(AllIcons.Actions.Help);
-					return;
-				}
-
-				ArtifactItem artifactItem = (ArtifactItem) value;
-				if(artifactItem == null)
-				{
-					return;
-				}
-
-				final Artifact artifact = artifactItem.myArtifact;
-				if(artifact == null)
-				{
-					append(artifactItem.myName, SimpleTextAttributes.ERROR_ATTRIBUTES);
-					setIcon(AllIcons.Nodes.Artifact);
-				}
-				else
-				{
-					append(artifactItem.myName, SimpleTextAttributes.REGULAR_ATTRIBUTES);
-					setIcon(artifact.getArtifactType().getIcon());
-				}
-			}
-		});
 	}
 }
