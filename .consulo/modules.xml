@@ -67,11 +67,8 @@
             <library name="consulo:Java">
               <binaries>
                 <root url="jar://$MODULE_DIR$/dep/java/lib/asm-all.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/coverage-report-idea.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/coverage-report.jar!/" />
                 <root url="jar://$MODULE_DIR$/dep/java/lib/coverate_rt.jar!/" />
                 <root url="jar://$MODULE_DIR$/dep/java/lib/instrumentation-util.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/jacocoagent.jar!/" />
                 <root url="jar://$MODULE_DIR$/dep/java/lib/jacocoant.jar!/" />
                 <root url="jar://$MODULE_DIR$/dep/java/lib/java-i18n.jar!/" />
                 <root url="jar://$MODULE_DIR$/dep/java/lib/java-manifest.jar!/" />
@@ -81,6 +78,11 @@
                 <root url="jar://$MODULE_DIR$/dep/java/lib/jdk-annotations.jar!/" />
                 <root url="jar://$MODULE_DIR$/dep/java/lib/jimage-jdk6.jar!/" />
               </binaries>
+              <sources>
+                <root url="file://F:/consulo-java/java-coverage-impl/src" />
+                <root url="file://F:/consulo-java/java-execution-api/src" />
+                <root url="file://F:/consulo-java/java-execution-impl/src" />
+              </sources>
             </library>
           </orderEntry>
         </module-layer>

@@ -59,7 +59,7 @@ public class ConsuloTestRunState extends ConsuloSandboxRunState
 	public ConsuloTestRunState(@NotNull ExecutionEnvironment environment,
 			@NotNull Sdk javaSdk,
 			@NotNull String consuloSdkHome,
-			@Nullable Artifact artifact)
+			@Nullable Artifact artifact) throws ExecutionException
 	{
 		super(environment, javaSdk, consuloSdkHome, artifact);
 

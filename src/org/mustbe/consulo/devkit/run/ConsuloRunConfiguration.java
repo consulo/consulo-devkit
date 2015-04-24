@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.debugger.impl.GenericDebugRunnerConfiguration;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
+import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -54,7 +55,7 @@ public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase impleme
 	public ConsuloSandboxRunState createState(Executor executor, @NotNull ExecutionEnvironment env,
 			@NotNull Sdk javaSdk,
 			@NotNull String consuloHome,
-			@Nullable Artifact artifact)
+			@Nullable Artifact artifact) throws ExecutionException
 	{
 		return new ConsuloSandboxRunState(env, javaSdk, consuloHome, artifact);
 	}

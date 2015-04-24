@@ -33,6 +33,13 @@ import com.intellij.execution.ui.RunContentDescriptor;
  */
 public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 {
+	@NotNull
+	@Override
+	public String getRunnerId()
+	{
+		return "ConsuloDebuggerRunner";
+	}
+
 	@Override
 	public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile)
 	{

@@ -21,12 +21,14 @@ import java.io.File;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.execution.ExecutionException;
+import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.JavaParameters;
 import com.intellij.execution.configurations.ParametersList;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
@@ -42,7 +44,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 	protected ExecutionEnvironment myEnvironment;
 
 	public ConsuloSandboxRunState(@NotNull ExecutionEnvironment environment, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
-			@Nullable Artifact artifact)
+			@Nullable Artifact artifact) throws ExecutionException
 	{
 		super(environment);
 		myEnvironment = environment;
@@ -57,7 +59,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 	}
 
 	private JavaParameters createJavaParameters(@NotNull ExecutionEnvironment env, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
-			@Nullable Artifact artifact)
+			@Nullable Artifact artifact) throws ExecutionException
 	{
 		ConsuloRunConfigurationBase profile = (ConsuloRunConfigurationBase) env.getRunProfile();
 		final String dataPath = profile.getSandboxPath();
@@ -101,6 +103,10 @@ public class ConsuloSandboxRunState extends CommandLineState
 		addConsuloLibs(consuloSdkHome, params);
 
 		params.setMainClass(getMainClass());
+		for(RunConfigurationExtension ext : Extensions.getExtensions(RunConfigurationExtension.EP_NAME))
+		{
+			ext.updateJavaParameters(profile, params, getRunnerSettings());
+		}
 		return params;
 	}
 
