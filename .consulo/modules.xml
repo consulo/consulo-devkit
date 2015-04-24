@@ -78,11 +78,6 @@
                 <root url="jar://$MODULE_DIR$/dep/java/lib/jdk-annotations.jar!/" />
                 <root url="jar://$MODULE_DIR$/dep/java/lib/jimage-jdk6.jar!/" />
               </binaries>
-              <sources>
-                <root url="file://F:/consulo-java/java-coverage-impl/src" />
-                <root url="file://F:/consulo-java/java-execution-api/src" />
-                <root url="file://F:/consulo-java/java-execution-impl/src" />
-              </sources>
             </library>
           </orderEntry>
         </module-layer>
