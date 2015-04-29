@@ -1,8 +1,8 @@
 <idea-plugin version="2">
 	<id>org.consulo.devkit</id>
 	<name>Consulo Plugin DevKit</name>
-	<version>Frameworks</version>
-	<category>inspection</category>
+	<version>SNAPSHOT</version>
+	<category>IDE Frameworks</category>
 	<vendor>JetBrains</vendor>
 
 	<depends>org.consulo.java</depends>
