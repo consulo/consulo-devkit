@@ -1,6 +1,0 @@
-<options>
-	<dep>consulo-lombok</dep>
-	<dep>consulo-java</dep>
-	<dep>consulo-properties</dep>
-	<dep>consulo-xml</dep>
-</options>
