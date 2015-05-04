@@ -84,7 +84,7 @@
       </module>
       <module name="devkit-lombok" dirurl="file://$PROJECT_DIR$/devkit-lombok" current-layer="Default">
         <module-layer name="Default">
-          <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" custom-plugin-dir-url="H:\github.com\consulo\consulo-devkit\dep" />
+          <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo 1.SNAPSHOT" custom-plugin-dir-url="file://$MODULE_DIR$/../dep" />
           <extension id="java" sdk-module-name="consulo-devkit" sdk-name="" language-level-module-name="consulo-devkit" language-level-name="" special-dir-location="SOURCE_DIR" />
           <content url="file://$MODULE_DIR$">
             <content-folder type="PRODUCTION_RESOURCE" url="file://$MODULE_DIR$/resources" />
@@ -106,6 +106,13 @@
                 <root url="jar://$MODULE_DIR$/../dep/java/lib/java-rt.jar!/" />
                 <root url="jar://$MODULE_DIR$/../dep/java/lib/java.jar!/" />
                 <root url="jar://$MODULE_DIR$/../dep/java/lib/jdk-annotations.jar!/" />
+              </binaries>
+            </library>
+          </orderEntry>
+          <orderEntry type="module-library">
+            <library name="consulo:Properties Support">
+              <binaries>
+                <root url="jar://$MODULE_DIR$/../dep/properties/lib/properties.jar!/" />
               </binaries>
             </library>
           </orderEntry>

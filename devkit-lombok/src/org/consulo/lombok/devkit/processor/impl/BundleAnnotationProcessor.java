@@ -18,9 +18,7 @@ package org.consulo.lombok.devkit.processor.impl;
 import java.util.List;
 
 import org.consulo.lombok.processors.LombokSelfClassProcessor;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.java.util.JavaClassNames;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.util.text.StringUtil;
@@ -42,23 +40,19 @@ public class BundleAnnotationProcessor extends LombokSelfClassProcessor
 	@Override
 	public void processElement(@NotNull PsiClass parent, @NotNull PsiClass psiClass, @NotNull List<PsiElement> result)
 	{
-		JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(parent.getProject());
+		JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(psiClass.getProject());
 
 		PsiJavaParserFacade parserFacade = javaPsiFacade.getParserFacade();
 
 		PsiAnnotation affectedAnnotation = getAffectedAnnotation(psiClass);
-		String value = calcAnnotationValue(affectedAnnotation, PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME, javaPsiFacade);
-		if(StringUtil.isEmpty(value))
-		{
-			value = "messages." + psiClass.getName();
-		}
+
+		String value = calcBundleMessageFilePath(affectedAnnotation, psiClass);
 
 		createMessage0(parent, psiClass, result, parserFacade, affectedAnnotation, value);
 		createMessage1(parent, psiClass, result, parserFacade, affectedAnnotation, value);
 	}
 
-	private static void createMessage0(
-			PsiClass parent,
+	private static void createMessage0(PsiClass parent,
 			PsiClass psiClass,
 			List<PsiElement> result,
 			PsiJavaParserFacade parserFacade,
@@ -90,8 +84,7 @@ public class BundleAnnotationProcessor extends LombokSelfClassProcessor
 		result.add(builder);
 	}
 
-	private static void createMessage1(
-			PsiClass parent,
+	private static void createMessage1(PsiClass parent,
 			PsiClass psiClass,
 			List<PsiElement> result,
 			PsiJavaParserFacade parserFacade,
@@ -120,27 +113,35 @@ public class BundleAnnotationProcessor extends LombokSelfClassProcessor
 			}
 		});
 
-		PsiClassType javaLangObject = JavaPsiFacade.getElementFactory(parent.getProject()).createTypeByFQClassName(JavaClassNames
-				.JAVA_LANG_OBJECT);
+		PsiClassType javaLangObject = JavaPsiFacade.getElementFactory(parent.getProject()).createTypeByFQClassName(JavaClassNames.JAVA_LANG_OBJECT);
 
 		builder.addParameter("args", new PsiEllipsisType(javaLangObject), true);
 
 		result.add(builder);
 	}
 
-	@Nullable
-	public static String calcAnnotationValue(@NotNull PsiAnnotation annotation, @NonNls String attr, @NotNull JavaPsiFacade javaPsiFacade)
+	@NotNull
+	public static String calcBundleMessageFilePath(@NotNull PsiAnnotation annotation, @NotNull PsiClass psiClass)
 	{
-		PsiElement value = annotation.findAttributeValue(attr);
+		JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(psiClass.getProject());
+
+		String result = null;
+		PsiElement value = annotation.findAttributeValue(PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
 		if(value instanceof PsiExpression)
 		{
 			Object o = javaPsiFacade.getConstantEvaluationHelper().computeConstantExpression(value);
 			if(o instanceof String)
 			{
-				return (String) o;
+				result = (String) o;
 			}
 		}
-		return null;
+
+		if(StringUtil.isEmpty(result))
+		{
+			result = "messages." + psiClass.getName();
+		}
+
+		return result;
 	}
 
 	@NotNull

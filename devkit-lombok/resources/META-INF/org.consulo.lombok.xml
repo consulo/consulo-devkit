@@ -23,4 +23,9 @@
 		<processor annotationClass="org.consulo.lombok.annotations.ArrayFactoryFields" implementationClass="org.consulo.lombok.devkit.processor.impl.ArrayFactoryFieldsAnnotationProcessor"/>
 		<processor annotationClass="org.consulo.lombok.annotations.Bundle" implementationClass="org.consulo.lombok.devkit.processor.impl.BundleAnnotationProcessor"/>
 	</extensions>
+
+	<extensions defaultExtensionNs="com.intellij">
+		<codeInsight.lineMarkerProvider language="JAVA"
+										implementationClass="org.mustbe.consulo.devkit.navigation.BundleItemLineMarkerProvider" />
+	</extensions>
 </idea-plugin>
