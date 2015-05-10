@@ -16,12 +16,12 @@
 
 package org.mustbe.consulo.devkit.run;
 
-import org.consulo.java.module.extension.JavaModuleExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
 import org.jetbrains.idea.devkit.run.PluginConfigurationType;
 import org.mustbe.consulo.devkit.ConsuloSandboxIcons;
+import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
 import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationTypeBase;

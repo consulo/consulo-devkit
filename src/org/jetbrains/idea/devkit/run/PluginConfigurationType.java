@@ -20,13 +20,13 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-import org.consulo.java.module.extension.JavaModuleExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
 import org.mustbe.consulo.devkit.ConsuloSandboxIcons;
 import org.mustbe.consulo.devkit.run.ConsuloRunConfiguration;
+import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
 import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import com.intellij.diagnostic.VMOptions;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;

@@ -23,15 +23,15 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.consulo.java.module.extension.JavaMutableModuleExtension;
 import org.consulo.module.extension.MutableModuleExtensionWithSdk;
 import org.consulo.util.pointers.NamedPointer;
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.devkit.run.ConsuloRunConfiguration;
 import org.jetbrains.idea.devkit.run.PluginConfigurationType;
+import org.mustbe.consulo.devkit.run.ConsuloRunConfiguration;
 import org.mustbe.consulo.ide.impl.NewModuleBuilder;
 import org.mustbe.consulo.ide.impl.NewModuleContext;
 import org.mustbe.consulo.ide.impl.UnzipNewModuleBuilderProcessor;
+import org.mustbe.consulo.java.module.extension.JavaMutableModuleExtension;
 import org.mustbe.consulo.roots.impl.ProductionContentFolderTypeProvider;
 import org.mustbe.consulo.roots.impl.ProductionResourceContentFolderTypeProvider;
 import com.intellij.compiler.impl.javaCompiler.JavaCompilerConfiguration;

@@ -18,7 +18,6 @@ package org.jetbrains.idea.devkit.inspections;
 import java.util.List;
 import java.util.Set;
 
-import org.consulo.java.module.extension.JavaModuleExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
@@ -26,6 +25,7 @@ import org.jetbrains.idea.devkit.util.ActionType;
 import org.jetbrains.idea.devkit.util.ComponentType;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import org.jetbrains.idea.devkit.util.PluginModuleUtil;
+import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
