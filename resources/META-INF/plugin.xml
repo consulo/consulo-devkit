@@ -97,8 +97,15 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
-						 displayName="@RequiredReadAction and @RequiredWriteAction inspection"
+						 displayName="Invocation state(read, write, dispatch) validate inspection"
 						 implementationClass="org.mustbe.consulo.devkit.inspections.RequiredXActionInspection" />
+		<localInspection language="JAVA"
+						 level="WARNING"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
+						 displayName="Invocation state(read, write, dispatch) annotation place inspection"
+						 implementationClass="org.mustbe.consulo.devkit.inspections.PlaceXActionAnnotationInspection" />
 
 		<implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
 		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>

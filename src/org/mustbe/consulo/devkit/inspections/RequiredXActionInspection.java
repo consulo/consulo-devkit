@@ -132,6 +132,32 @@ public class RequiredXActionInspection extends LocalInspectionTool
 		}
 
 		@NotNull
+		public static ActionType findSelfActionType(@NotNull PsiMethod method)
+		{
+			for(ActionType actionType : values())
+			{
+				Class<?> actionClass = actionType.myActionClass;
+				if(actionClass == null)
+				{
+					continue;
+				}
+
+				if(AnnotationUtil.isAnnotated(method, actionClass.getName(), false))
+				{
+					return actionType;
+				}
+			}
+			return NONE;
+		}
+
+		@NotNull
+		public Class<?> getActionClass()
+		{
+			assert myActionClass != null;
+			return myActionClass;
+		}
+
+		@NotNull
 		public static ActionType findActionType(@NotNull PsiMethod method)
 		{
 			PsiClass baseActionRunnable = JavaPsiFacade.getInstance(method.getProject()).findClass(BaseActionRunnable.class.getName(),
