@@ -22,13 +22,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorConstantQuickFix;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorQuickFix;
-import org.jetbrains.idea.devkit.util.PluginModuleUtil;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -37,15 +34,11 @@ import com.intellij.ui.JBColor;
 /**
  * @author Konstantin Bulenkov
  */
-public class UseJBColorInspection extends DevKitInspectionBase {
+public class UseJBColorInspection extends DevKitOnlyInspectionBase
+{
   @NotNull
   @Override
-  public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly) {
-    final Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
-    if (module == null || !PluginModuleUtil.isPluginModuleOrDependency(module)) {
-      return new JavaElementVisitor() {
-      };
-    }
+  public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly) {
     return new JavaElementVisitor() {
       @Override
       public void visitNewExpression(PsiNewExpression expression) {

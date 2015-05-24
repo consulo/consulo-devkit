@@ -56,6 +56,7 @@ import com.intellij.util.containers.ContainerUtil;
  */
 public abstract class DevKitInspectionBase extends BaseJavaLocalInspectionTool {
 
+  @Override
   @NotNull
   public String getGroupDisplayName() {
     return DevKitBundle.message("inspections.group.name");

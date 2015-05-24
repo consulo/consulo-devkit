@@ -17,7 +17,7 @@
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
 	<extensions defaultExtensionNs="org.consulo.java">
-		<coverageEngineExtension implementation="org.mustbe.consulo.devkit.run.ConsuloRunCoverageEngineExtension" />
+		<coverageEngineExtension implementation="org.mustbe.consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
@@ -30,7 +30,7 @@
 		<programRunner implementation="org.mustbe.consulo.devkit.run.ConsuloDebuggerRunner"/>
 
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
-		<configurationType implementation="org.mustbe.consulo.devkit.run.ConsuloTestRunConfigurationType" />
+		<configurationType implementation="org.mustbe.consulo.devkit.run.ConsuloTestRunConfigurationType"/>
 
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
@@ -98,14 +98,31 @@
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
 						 displayName="Invocation state(read, write, dispatch) validate inspection"
-						 implementationClass="org.mustbe.consulo.devkit.inspections.RequiredXActionInspection" />
+						 implementationClass="org.mustbe.consulo.devkit.inspections.RequiredXActionInspection"/>
 		<localInspection language="JAVA"
 						 level="WARNING"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
 						 displayName="Invocation state(read, write, dispatch) annotation place inspection"
-						 implementationClass="org.mustbe.consulo.devkit.inspections.PlaceXActionAnnotationInspection" />
+						 implementationClass="org.mustbe.consulo.devkit.inspections.PlaceXActionAnnotationInspection"/>
+
+		<localInspection language="JAVA" shortName="UndesirableClassUsage" displayName="Undesirable class usage"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.UndesirableClassUsageInspection"/>
+		<localInspection language="JAVA" shortName="FileEqualsUsage" displayName="File.equals() usage"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.FileEqualsUsageInspection"/>
+		<localInspection language="JAVA" shortName="GtkPreferredJComboBoxRenderer" displayName="Preferred JComboBox renderer"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.GtkPreferredJComboBoxRendererInspection"/>
+		<localInspection language="JAVA" shortName="UnsafeVfsRecursion" displayName="Unsafe VFS recursion"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.UnsafeVfsRecursionInspection"/>
 
 		<implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
 		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>
