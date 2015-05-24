@@ -95,6 +95,7 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 							Class<?> actionClass = selfActionType.getActionClass();
 							holder.registerProblem(nameIdentifier, "Overriden methods are not annotated by @" + actionClass
 									.getSimpleName(), new MyAnnotateMethodFix(actionClass.getName()));
+							break;
 						}
 					}
 				}
