@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.debugger.engine.DebuggerUtils;
 import com.intellij.debugger.impl.GenericDebuggerRunner;
+import com.intellij.debugger.settings.DebuggerSettings;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.RemoteConnection;
 import com.intellij.execution.configurations.RunProfile;
@@ -51,7 +52,7 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 	protected RunContentDescriptor createContentDescriptor(@NotNull RunProfileState state, @NotNull ExecutionEnvironment env) throws
 			ExecutionException
 	{
-		String address = DebuggerUtils.getInstance().findAvailableDebugAddress(true);
+		String address = DebuggerUtils.getInstance().findAvailableDebugAddress(DebuggerSettings.SOCKET_TRANSPORT).address();
 		RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", address, false);
 
 		ConsuloSandboxRunState consuloSandboxRunState = (ConsuloSandboxRunState) state;
