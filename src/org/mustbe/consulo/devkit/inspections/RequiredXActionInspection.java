@@ -113,7 +113,14 @@ public class RequiredXActionInspection extends LocalInspectionTool
 				new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),
 				new AcceptableMethodCallCheck(UIUtil.class, "invokeLaterIfNeeded"),
 				new AcceptableMethodCallCheck(SwingUtilities.class, "invokeAndWait"),
-				new AcceptableMethodCallCheck(SwingUtilities.class, "invokeLater"));
+				new AcceptableMethodCallCheck(SwingUtilities.class, "invokeLater")) {
+			@Override
+			public boolean isAcceptableActionType(@NotNull ActionType type)
+			{
+				// write actions required call from dispatch thread, and it inherit dispatch state
+				return type == DISPATCH_THREAD || type == WRITE;
+			}
+		};
 
 		@Nullable
 		private final Class<?> myActionClass;
