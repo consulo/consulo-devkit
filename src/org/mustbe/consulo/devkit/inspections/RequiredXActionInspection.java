@@ -104,7 +104,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 					@Override
 					public boolean isAcceptableActionType(@NotNull ActionType type)
 					{
-						return type == READ || type == DISPATCH_THREAD;
+						return type == READ || type == DISPATCH_THREAD || type == WRITE;
 					}
 				},
 		WRITE(RequiredWriteAction.class, WriteAction.class, new AcceptableMethodCallCheck(Application.class, "runWriteAction")),
