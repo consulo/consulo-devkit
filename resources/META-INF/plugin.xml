@@ -18,6 +18,8 @@
 
 	<extensions defaultExtensionNs="org.consulo.java">
 		<coverageEngineExtension implementation="org.mustbe.consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
+		<overrideImplementsAnnotationsHandler
+				implementation="org.mustbe.consulo.devkit.codeInsight.generation.XActionOverrideImplementsAnnotationsHandler"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
