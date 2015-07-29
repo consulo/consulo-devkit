@@ -99,7 +99,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
 		if(!projectSdksModel.isInitialized())
 		{
-			projectSdksModel.reset();
+			projectSdksModel.reset(myProject);
 		}
 		myJavaSdkComboBox = new SdkComboBox(projectSdksModel, new Condition<SdkTypeId>()
 		{
