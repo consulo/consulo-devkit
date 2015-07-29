@@ -88,7 +88,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 	{
 		FormBuilder builder = FormBuilder.createFormBuilder();
 
-		setupPanel( builder);
+		setupPanel(builder);
 
 		myRoot = new JPanel(new BorderLayout());
 		myRoot.add(builder.getPanel(), BorderLayout.NORTH);
@@ -99,7 +99,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
 		if(!projectSdksModel.isInitialized())
 		{
-			projectSdksModel.reset(myProject);
+			projectSdksModel.reset();
 		}
 		myJavaSdkComboBox = new SdkComboBox(projectSdksModel, new Condition<SdkTypeId>()
 		{
@@ -131,10 +131,13 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 				myConsuloSdkComboBox.setEnabled(!myAlternativeConsuloSdkCheckBox.isSelected());
 			}
 		});
+		builder.addComponent(myAlternativeConsuloSdkCheckBox);
 
 		myAltConsuloSdkTextField = new TextFieldWithBrowseButton();
 		myAltConsuloSdkTextField.addBrowseFolderListener("Select SDK", "Select alternative consulo sdk for run", myProject,
 				FileChooserDescriptorFactory.createSingleFolderDescriptor());
+		myAltConsuloSdkTextField.setEditable(myAlternativeConsuloSdkCheckBox.isSelected());
+		builder.addComponent(myAltConsuloSdkTextField);
 
 		final Artifact[] sortedArtifacts = ArtifactManager.getInstance(myProject).getSortedArtifacts();
 		myArtifactComboBox = new ComboBox();
