@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.run.PluginRunXmlConfigurationUtil;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.debugger.impl.GenericDebugRunnerConfiguration;
 import com.intellij.execution.ExecutionException;
@@ -39,6 +40,7 @@ import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.DefaultJDOMExternalizer;
@@ -229,8 +231,13 @@ public abstract class ConsuloRunConfigurationBase extends RunConfigurationBase i
 
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public Module[] getModules()
 	{
+		if(USE_ALT_CONSULO_SDK)
+		{
+			return ModuleManager.getInstance(getProject()).getModules();
+		}
 		Artifact artifact = myArtifactPointer == null ? null : myArtifactPointer.get();
 		if(artifact == null)
 		{
