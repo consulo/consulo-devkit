@@ -234,13 +234,13 @@ public abstract class ConsuloRunConfigurationBase extends RunConfigurationBase i
 	@RequiredReadAction
 	public Module[] getModules()
 	{
-		if(USE_ALT_CONSULO_SDK)
-		{
-			return ModuleManager.getInstance(getProject()).getModules();
-		}
 		Artifact artifact = myArtifactPointer == null ? null : myArtifactPointer.get();
 		if(artifact == null)
 		{
+			if(USE_ALT_CONSULO_SDK)
+			{
+				return ModuleManager.getInstance(getProject()).getModules();
+			}
 			return Module.EMPTY_ARRAY;
 		}
 		final Set<Module> modules = ArtifactUtil.getModulesIncludedInArtifacts(Collections.singletonList(artifact), getProject());
