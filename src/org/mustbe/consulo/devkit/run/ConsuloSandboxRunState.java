@@ -96,6 +96,10 @@ public class ConsuloSandboxRunState extends CommandLineState
 			}
 		}
 		vm.defineProperty("consulo.in.sandbox", "true");
+		if(profile.INTERNAL_MODE)
+		{
+			vm.defineProperty("idea.is.internal", "true");
+		}
 		params.setWorkingDirectory(consuloSdkHome + File.separator + "bin" + File.separator);
 
 		params.setJdk(javaSdk);

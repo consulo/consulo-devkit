@@ -73,6 +73,7 @@ public abstract class ConsuloRunConfigurationBase extends RunConfigurationBase i
 	protected NamedPointer<Artifact> myArtifactPointer;
 	public boolean USE_ALT_CONSULO_SDK;
 	public String ALT_CONSULO_SDK_PATH;
+	public boolean INTERNAL_MODE;
 
 	public ConsuloRunConfigurationBase(Project project, ConfigurationFactory factory, String name)
 	{
