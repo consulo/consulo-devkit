@@ -49,7 +49,7 @@ import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.RawCommandLineEditor;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBCheckBox;
-import com.intellij.util.ObjectUtils;
+import com.intellij.util.ObjectUtil;
 import com.intellij.util.ui.FormBuilder;
 
 @Logger
@@ -99,7 +99,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
 		if(!projectSdksModel.isInitialized())
 		{
-			projectSdksModel.reset(myProject);
+			projectSdksModel.reset();
 		}
 		myJavaSdkComboBox = new SdkComboBox(projectSdksModel, new Condition<SdkTypeId>()
 		{
@@ -141,7 +141,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 
 		final Artifact[] sortedArtifacts = ArtifactManager.getInstance(myProject).getSortedArtifacts();
 		myArtifactComboBox = new ComboBox();
-		myArtifactComboBox.addItem(ObjectUtils.NULL);
+		myArtifactComboBox.addItem(ObjectUtil.NULL);
 		for(Artifact sortedArtifact : sortedArtifacts)
 		{
 			myArtifactComboBox.addItem(new ArtifactItem(sortedArtifact.getName(), sortedArtifact));
@@ -152,7 +152,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 			@Override
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus)
 			{
-				if(value == ObjectUtils.NULL)
+				if(value == ObjectUtil.NULL)
 				{
 					append("<None>", SimpleTextAttributes.REGULAR_ATTRIBUTES);
 					setIcon(AllIcons.Actions.Help);
@@ -237,7 +237,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		}
 		else
 		{
-			myArtifactComboBox.setSelectedItem(ObjectUtils.NULL);
+			myArtifactComboBox.setSelectedItem(ObjectUtil.NULL);
 		}
 
 		myJavaSdkComboBox.setSelectedSdk(prc.getJavaSdkName());
@@ -247,7 +247,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 	@Override
 	public void applyEditorTo(T prc) throws ConfigurationException
 	{
-		prc.setArtifactName(myArtifactComboBox.getSelectedItem() == ObjectUtils.NULL ? null : ((ArtifactItem) myArtifactComboBox.getSelectedItem())
+		prc.setArtifactName(myArtifactComboBox.getSelectedItem() == ObjectUtil.NULL ? null : ((ArtifactItem) myArtifactComboBox.getSelectedItem())
 				.myName);
 		prc.setJavaSdkName(myJavaSdkComboBox.getSelectedSdkName());
 		prc.setConsuloSdkName(myConsuloSdkComboBox.getSelectedSdkName());
