@@ -23,26 +23,31 @@ import com.intellij.psi.PsiElement;
 /**
  * User: anna
  */
-public class DevKitEntryPoints implements ImplicitUsageProvider {
-  @Override
-  public boolean isImplicitUsage(PsiElement element) {
-    if (element instanceof PsiClass) {
-      final PsiClass domClass =
-        JavaPsiFacade.getInstance(element.getProject()).findClass("com.intellij.util.xml.DomElement", element.getResolveScope());
-      if (domClass != null && ((PsiClass)element).isInheritor(domClass, true)) {
-        return true;
-      }
-    }
-    return false;
-  }
+public class DevKitEntryPoints implements ImplicitUsageProvider
+{
+	@Override
+	public boolean isImplicitUsage(PsiElement element)
+	{
+		if(element instanceof PsiClass)
+		{
+			final PsiClass domClass = JavaPsiFacade.getInstance(element.getProject()).findClass("com.intellij.util.xml.DomElement", element.getResolveScope());
+			if(domClass != null && ((PsiClass) element).isInheritor(domClass, true))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
-  @Override
-  public boolean isImplicitRead(PsiElement element) {
-    return false;
-  }
+	@Override
+	public boolean isImplicitRead(PsiElement element)
+	{
+		return false;
+	}
 
-  @Override
-  public boolean isImplicitWrite(PsiElement element) {
-    return false;
-  }
+	@Override
+	public boolean isImplicitWrite(PsiElement element)
+	{
+		return false;
+	}
 }
