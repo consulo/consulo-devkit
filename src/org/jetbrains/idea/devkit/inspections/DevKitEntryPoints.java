@@ -15,10 +15,14 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
+import org.mustbe.consulo.Exported;
+import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInsight.daemon.ImplicitUsageProvider;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiMethod;
 
 /**
  * User: anna
@@ -35,6 +39,10 @@ public class DevKitEntryPoints implements ImplicitUsageProvider
 			{
 				return true;
 			}
+		}
+		if(element instanceof PsiField || element instanceof PsiMethod)
+		{
+			return AnnotationUtil.isAnnotated((com.intellij.psi.PsiModifierListOwner) element, Exported.class.getName(), false);
 		}
 		return false;
 	}
