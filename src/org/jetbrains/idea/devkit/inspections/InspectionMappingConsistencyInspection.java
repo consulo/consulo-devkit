@@ -15,6 +15,13 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
+import java.text.MessageFormat;
+
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.dom.Extension;
+import org.jetbrains.idea.devkit.dom.ExtensionPoint;
+import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.codeInsight.daemon.impl.analysis.InsertRequiredAttributeFix;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -31,13 +38,6 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomUtil;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.dom.Extension;
-import org.jetbrains.idea.devkit.dom.ExtensionPoint;
-import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-
-import java.text.MessageFormat;
 
 /**
  * @author Dmitry Avdeev
@@ -94,7 +94,7 @@ public class InspectionMappingConsistencyInspection extends DevKitInspectionBase
     holder.registerProblem(range.second, range.first, message, ContainerUtil.map(createAttrs, new Function<String, LocalQuickFix>() {
       @Override
       public LocalQuickFix fun(final String s) {
-        return new InsertRequiredAttributeFix(PsiTreeUtil.getParentOfType(range.second, XmlTag.class, false), s, null) {
+        return new InsertRequiredAttributeFix(PsiTreeUtil.getParentOfType(range.second, XmlTag.class, false), s) {
           @NotNull
           @Override
           public String getText() {
