@@ -58,7 +58,6 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.TabbedPaneWrapper;
 import com.intellij.util.Function;
 import com.intellij.util.ui.UIUtil;
-import lombok.val;
 
 /**
  * @author VISTALL
@@ -285,7 +284,7 @@ public class DevKitModuleExtensionPanel extends JPanel implements Disposable
 				else
 				{
 					File file = VfsUtil.virtualToIoFile(customPluginDir);
-					val pluginCount = PluginManager.countPlugins(file.getAbsolutePath());
+					int pluginCount = PluginManager.countPlugins(file.getAbsolutePath());
 
 					items = new ArrayList<IdeaPluginDescriptorImpl>(pluginCount);
 					PluginManager.loadDescriptors(file.getAbsolutePath(), items, null, pluginCount);

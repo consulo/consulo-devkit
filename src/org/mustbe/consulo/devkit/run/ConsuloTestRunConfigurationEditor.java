@@ -18,7 +18,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import lombok.val;
 
 /**
  * @author VISTALL
@@ -143,7 +142,7 @@ public class ConsuloTestRunConfigurationEditor extends ConsuloRunConfigurationEd
 
 		JPanel headerPanel = new JPanel();
 
-		val cardLayout = new CardLayout();
+		final CardLayout cardLayout = new CardLayout();
 		mySettingPanel = new JPanel(cardLayout);
 
 		ButtonGroup buttonGroup = new ButtonGroup();

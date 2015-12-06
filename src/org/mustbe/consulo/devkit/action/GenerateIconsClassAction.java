@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredDispatchThread;
 import org.mustbe.consulo.devkit.action.icons.GenerateDirNode;
 import org.mustbe.consulo.devkit.action.icons.IconClassBuilder;
 import org.mustbe.consulo.roots.ContentFolderScopes;
@@ -54,6 +55,7 @@ import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.QualifiedName;
@@ -63,7 +65,6 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.ui.UIUtil;
-import lombok.val;
 
 /**
  * @author VISTALL
@@ -127,13 +128,14 @@ public class GenerateIconsClassAction extends AnAction
 
 	private static final String ourIconsDirName = "icons";
 
+	@RequiredDispatchThread
 	@Override
-	public void actionPerformed(AnActionEvent anActionEvent)
+	public void actionPerformed(@NotNull AnActionEvent anActionEvent)
 	{
 		final Project project = anActionEvent.getData(CommonDataKeys.PROJECT);
 		assert project != null;
 
-		val settingsDialog = new SettingsDialog(project);
+		final SettingsDialog settingsDialog = new SettingsDialog(project);
 
 		if(!settingsDialog.showAndGet())
 		{
@@ -150,9 +152,10 @@ public class GenerateIconsClassAction extends AnAction
 		});
 	}
 
+	@RequiredDispatchThread
 	private static void addFile(final Module module, final String classQName)
 	{
-		val project = module.getProject();
+		final Project project = module.getProject();
 		try
 		{
 
@@ -227,10 +230,10 @@ public class GenerateIconsClassAction extends AnAction
 				}
 			}
 
-			val classText = iconClassBuilder.build().toString();
+			String classText = iconClassBuilder.build().toString();
 
 			String fileName = className + JavaFileType.DOT_DEFAULT_EXTENSION;
-			val psiFile = PsiFileFactory.getInstance(project).createFileFromText(fileName, JavaFileType.INSTANCE, classText);
+			final PsiFile psiFile = PsiFileFactory.getInstance(project).createFileFromText(fileName, JavaFileType.INSTANCE, classText);
 			ApplicationManager.getApplication().runWriteAction(new Runnable()
 			{
 				@Override
@@ -250,9 +253,9 @@ public class GenerateIconsClassAction extends AnAction
 
 			VirtualFile directoryForAdd = contentFolderFiles[0];
 			QualifiedName qualifiedName = QualifiedName.fromDottedString(packageName);
-			for(val part : qualifiedName.getComponents())
+			for(final String part : qualifiedName.getComponents())
 			{
-				val finalDirectoryForAdd = directoryForAdd;
+				final VirtualFile finalDirectoryForAdd = directoryForAdd;
 				VirtualFile temp = finalDirectoryForAdd.findChild(part);
 
 				if(temp == null || !temp.isDirectory())
@@ -269,13 +272,13 @@ public class GenerateIconsClassAction extends AnAction
 				directoryForAdd = temp;
 			}
 
-			val temp = directoryForAdd;
+			final VirtualFile temp = directoryForAdd;
 			VirtualFile file = ApplicationManager.getApplication().runWriteAction(new ThrowableComputable<VirtualFile, Throwable>()
 			{
 				@Override
 				public VirtualFile compute() throws IOException
 				{
-					val child = temp.findOrCreateChildData(null, psiFile.getName());
+					VirtualFile child = temp.findOrCreateChildData(null, psiFile.getName());
 
 					child.setBinaryContent(psiFile.getText().getBytes(CharsetToolkit.UTF8_CHARSET));
 					return child;
