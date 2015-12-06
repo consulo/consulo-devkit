@@ -24,6 +24,7 @@ import org.consulo.lombok.annotations.Bundle;
 import org.consulo.lombok.devkit.processor.impl.BundleAnnotationProcessor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredReadAction;
 import com.intellij.codeHighlighting.Pass;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler;
@@ -33,12 +34,12 @@ import com.intellij.ide.actions.OpenFileAction;
 import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.JavaTokenType;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiJavaToken;
+import com.intellij.psi.PsiIdentifier;
 import com.intellij.util.ConstantFunction;
 
 /**
@@ -47,51 +48,62 @@ import com.intellij.util.ConstantFunction;
  */
 public class BundleItemLineMarkerProvider implements LineMarkerProvider
 {
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element)
 	{
-		if(element instanceof PsiJavaToken && ((PsiJavaToken) element).getTokenType() == JavaTokenType.IDENTIFIER && element.getParent() instanceof
-				PsiClass)
-		{
-			PsiClass psiClass = (PsiClass) element.getParent();
-			PsiAnnotation annotation = AnnotationUtil.findAnnotation(psiClass, Bundle.class.getName());
-			if(annotation != null)
-			{
-				return new LineMarkerInfo<PsiElement>(element, element.getTextRange(), PropertiesFileType.INSTANCE.getIcon(),
-						Pass.LINE_MARKERS, new ConstantFunction<PsiElement, String>("Navigate to file"),
-						new GutterIconNavigationHandler<PsiElement>()
-				{
-					@Override
-					public void navigate(MouseEvent e, PsiElement elt)
-					{
-						PsiClass parent = (PsiClass) elt.getParent();
-						PsiAnnotation annotation = AnnotationUtil.findAnnotation(parent, Bundle.class.getName());
-						if(annotation != null)
-						{
-							String filePath = BundleAnnotationProcessor.calcBundleMessageFilePath(annotation, parent);
-							filePath = filePath.replace(".", "/") + PropertiesFileType.DOT_DEFAULT_EXTENSION;
-							VirtualFile[] contentRoots = ProjectRootManager.getInstance(elt.getProject()).getContentSourceRoots();
-							for(VirtualFile contentRoot : contentRoots)
-							{
-								VirtualFile fileByRelativePath = contentRoot.findFileByRelativePath(filePath);
-								if(fileByRelativePath != null)
-								{
-									OpenFileAction.openFile(fileByRelativePath, elt.getProject());
-								}
-							}
-						}
-
-					}
-				}, GutterIconRenderer.Alignment.LEFT);
-			}
-		}
 		return null;
 	}
 
+	@RequiredReadAction
 	@Override
 	public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result)
 	{
+		for(PsiElement temp : elements)
+		{
+			if(temp instanceof PsiClass)
+			{
+				PsiClass psiClass = (PsiClass) temp;
+				PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
+				if(nameIdentifier == null)
+				{
+					continue;
+				}
 
+				PsiAnnotation annotation = AnnotationUtil.findAnnotation(psiClass, Bundle.class.getName());
+				if(annotation != null)
+				{
+					LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(nameIdentifier, nameIdentifier.getTextRange(), PropertiesFileType.INSTANCE.getIcon(),
+							Pass.UPDATE_OVERRIDEN_MARKERS, new ConstantFunction<PsiElement, String>("Navigate to bundle"), new GutterIconNavigationHandler<PsiElement>()
+					{
+						@Override
+						public void navigate(MouseEvent e, PsiElement elt)
+						{
+							PsiClass parent = (PsiClass) elt.getParent();
+							PsiAnnotation annotation = AnnotationUtil.findAnnotation(parent, Bundle.class.getName());
+							if(annotation != null)
+							{
+								String filePath = BundleAnnotationProcessor.calcBundleMessageFilePath(annotation, parent);
+								filePath = filePath.replace(".", "/") + PropertiesFileType.DOT_DEFAULT_EXTENSION;
+								VirtualFile[] contentRoots = ProjectRootManager.getInstance(elt.getProject()).getContentSourceRoots();
+								for(VirtualFile contentRoot : contentRoots)
+								{
+									VirtualFile fileByRelativePath = contentRoot.findFileByRelativePath(filePath);
+									if(fileByRelativePath != null)
+									{
+										OpenFileAction.openFile(fileByRelativePath, elt.getProject());
+										return;
+									}
+								}
+							}
+
+							Messages.showErrorDialog(parent.getProject(), "Bundle did not found", "Error");
+						}
+					}, GutterIconRenderer.Alignment.LEFT);
+					result.add(markerInfo);
+				}
+			}
+		}
 	}
 }
