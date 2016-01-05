@@ -148,20 +148,6 @@ public class ConsuloSdkType extends SdkType
 		}
 	}
 
-	@Nullable
-	public static Sdk findConsuloSdk(@Nullable Sdk jdk)
-	{
-		if(jdk == null)
-		{
-			return null;
-		}
-		if(jdk.getSdkType() instanceof ConsuloSdkType)
-		{
-			return jdk;
-		}
-		return null;
-	}
-
 	@NotNull
 	public static ConsuloSdkType getInstance()
 	{
@@ -215,12 +201,21 @@ public class ConsuloSdkType extends SdkType
 		return getBuildNumber(sdkHome);
 	}
 
+	@Nullable
 	private String getBuildNumber(String sdkHome)
 	{
 		File mainJar = getJarFromLibs(sdkHome, "resources.jar");
-		assert mainJar != null;
+		if(mainJar == null)
+		{
+			return null;
+		}
+
 		VirtualFile ideaJarFile = LocalFileSystem.getInstance().findFileByIoFile(mainJar);
-		assert ideaJarFile != null;
+		if(ideaJarFile == null)
+		{
+			return null;
+		}
+
 		VirtualFile ideaJarRoot = ArchiveVfsUtil.getArchiveRootForLocalFile(ideaJarFile);
 		if(ideaJarRoot == null)
 		{
