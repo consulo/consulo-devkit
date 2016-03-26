@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2009 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,20 @@ package org.jetbrains.idea.devkit.dom;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 import com.intellij.psi.PsiClass;
 import com.intellij.util.xml.Attribute;
 import com.intellij.util.xml.Convert;
-import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.ExtendClass;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.Required;
+import com.intellij.util.xml.Stubbed;
 
 /**
  * plugin.dtd:action interface.
  */
-public interface Action extends DomElement
+public interface Action extends ActionOrGroup
 {
 
 	/**
@@ -44,7 +45,8 @@ public interface Action extends DomElement
 	 * @return the value of the popup child.
 	 */
 	@NotNull
-	GenericAttributeValue<String> getPopup();
+	GenericAttributeValue<Boolean> getPopup();
+
 
 	/**
 	 * Returns the value of the icon child.
@@ -55,6 +57,7 @@ public interface Action extends DomElement
 	@NotNull
 	GenericAttributeValue<String> getIcon();
 
+
 	/**
 	 * Returns the value of the description child.
 	 * Attribute description
@@ -63,6 +66,7 @@ public interface Action extends DomElement
 	 */
 	@NotNull
 	GenericAttributeValue<String> getDescription();
+
 
 	/**
 	 * Returns the value of the class child.
@@ -78,6 +82,7 @@ public interface Action extends DomElement
 	@Convert(PluginPsiClassConverter.class)
 	GenericAttributeValue<PsiClass> getClazz();
 
+
 	/**
 	 * Returns the value of the text child.
 	 * Attribute text
@@ -85,6 +90,7 @@ public interface Action extends DomElement
 	 * @return the value of the text child.
 	 */
 	@NotNull
+	@Stubbed
 	GenericAttributeValue<String> getText();
 
 	/**
@@ -95,6 +101,7 @@ public interface Action extends DomElement
 	 */
 	@NotNull
 	@Required
+	@Stubbed
 	GenericAttributeValue<String> getId();
 
 	/**
@@ -112,6 +119,7 @@ public interface Action extends DomElement
 	 */
 	KeyboardShortcut addKeyboardShortcut();
 
+
 	/**
 	 * Returns the list of mouse-shortcut children.
 	 *
@@ -126,6 +134,7 @@ public interface Action extends DomElement
 	 * @return created child
 	 */
 	MouseShortcut addMouseShortcut();
+
 
 	/**
 	 * Returns the list of shortcut children.
@@ -158,7 +167,8 @@ public interface Action extends DomElement
 	AddToGroup addAddToGroup();
 
 	@NotNull
-	GenericAttributeValue<String> getUseShortcutOf();
+	@Convert(ActionOrGroupResolveConverter.OnlyActions.class)
+	GenericAttributeValue<ActionOrGroup> getUseShortcutOf();
 
 	@NotNull
 	GenericAttributeValue<String> getKeymap();
@@ -166,11 +176,15 @@ public interface Action extends DomElement
 	/**
 	 * Return internal flag - show in internal Consulo mode.
 	 */
+	@NotNull
 	GenericAttributeValue<Boolean> isInternal();
 
+	@NotNull
 	GenericAttributeValue<Boolean> isSecondary();
 
+	@NotNull
 	GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
 
+	@NotNull
 	GenericAttributeValue<String> getRequireModuleExtensions();
 }

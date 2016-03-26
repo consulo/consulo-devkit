@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2009 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
+import com.intellij.ide.presentation.Presentation;
 import com.intellij.psi.PsiClass;
 import com.intellij.util.xml.Attribute;
 import com.intellij.util.xml.Convert;
@@ -33,128 +34,103 @@ import com.intellij.util.xml.GenericDomValue;
 /**
  * plugin.dtd:group interface.
  */
-public interface Group extends Actions {
-
-  /**
-   * Returns the value of the popup child.
-   * Attribute popup
-   *
-   * @return the value of the popup child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getPopup();
-
-
-  /**
-   * Returns the value of the icon child.
-   * Attribute icon
-   *
-   * @return the value of the icon child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getIcon();
-
-
-  /**
-   * Returns the value of the description child.
-   * Attribute description
-   *
-   * @return the value of the description child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getDescription();
-
-
-  /**
-   * Returns the value of the class child.
-   * Attribute class
-   *
-   * @return the value of the class child.
-   */
-  @NotNull
-  @Attribute("class")
-  @ExtendClass(value = "com.intellij.openapi.actionSystem.ActionGroup",
-               instantiatable = true, allowAbstract = false, allowInterface = false)
-  @Convert(PluginPsiClassConverter.class)
-  GenericAttributeValue<PsiClass> getClazz();
-
-
-  /**
-   * Returns the value of the text child.
-   * Attribute text
-   *
-   * @return the value of the text child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getText();
-
-
-  @NotNull
-  GenericAttributeValue<String> getId();
-
-  /**
-   * Returns the list of reference children.
-   *
-   * @return the list of reference children.
-   */
-  @NotNull
-  List<Reference> getReferences();
-
-  /**
-   * Adds new child to the list of reference children.
-   *
-   * @return created child
-   */
-  Reference addReference();
-
-
-  /**
-   * Returns the value of the separator child.
-   *
-   * @return the value of the separator child.
-   */
-  @NotNull
-  List<GenericDomValue<String>> getSeparators();
-
-
-  /**
-   * Returns the list of action children.
-   *
-   * @return the list of action children.
-   */
-  @NotNull
-  List<Action> getActions();
-
-  /**
-   * Adds new child to the list of action children.
-   *
-   * @return created child
-   */
-  Action addAction();
-
-
-  /**
-   * Returns the list of add-to-group children.
-   *
-   * @return the list of add-to-group children.
-   */
-  @NotNull
-  List<AddToGroup> getAddToGroups();
-
-  /**
-   * Adds new child to the list of add-to-group children.
-   *
-   * @return created child
-   */
-  AddToGroup addAddToGroup();
+@Presentation(icon = "AllIcons.Actions.GroupByPackage")
+public interface Group extends Actions, ActionOrGroup
+{
 
 	/**
-	 * Return internal flag - show in internal Consulo mode.
+	 * Returns the value of the popup child.
+	 * Attribute popup
+	 *
+	 * @return the value of the popup child.
 	 */
+	@NotNull
+	GenericAttributeValue<Boolean> getPopup();
+
+	/**
+	 * Returns the value of the compact child.
+	 * Attribute popup
+	 *
+	 * @return the value of the compact child.
+	 */
+	@NotNull
+	GenericAttributeValue<Boolean> getCompact();
+
+
+	/**
+	 * Returns the value of the icon child.
+	 * Attribute icon
+	 *
+	 * @return the value of the icon child.
+	 */
+	@NotNull
+	GenericAttributeValue<String> getIcon();
+
+
+	/**
+	 * Returns the value of the description child.
+	 * Attribute description
+	 *
+	 * @return the value of the description child.
+	 */
+	@NotNull
+	GenericAttributeValue<String> getDescription();
+
+
+	/**
+	 * Returns the value of the class child.
+	 * Attribute class
+	 *
+	 * @return the value of the class child.
+	 */
+	@NotNull
+	@Attribute("class")
+	@ExtendClass(value = "com.intellij.openapi.actionSystem.ActionGroup",
+			instantiatable = true, allowAbstract = false, allowInterface = false)
+	@Convert(PluginPsiClassConverter.class)
+	GenericAttributeValue<PsiClass> getClazz();
+
+
+	/**
+	 * Returns the value of the text child.
+	 * Attribute text
+	 *
+	 * @return the value of the text child.
+	 */
+	@NotNull
+	GenericAttributeValue<String> getText();
+
+
+	/**
+	 * Returns the value of the separator child.
+	 *
+	 * @return the value of the separator child.
+	 */
+	@NotNull
+	List<GenericDomValue<String>> getSeparators();
+
+
+	/**
+	 * Returns the list of add-to-group children.
+	 *
+	 * @return the list of add-to-group children.
+	 */
+	@NotNull
+	List<AddToGroup> getAddToGroups();
+
+	/**
+	 * Adds new child to the list of add-to-group children.
+	 *
+	 * @return created child
+	 */
+	AddToGroup addAddToGroup();
+
+	@NotNull
 	GenericAttributeValue<Boolean> isInternal();
 
+	@NotNull
 	GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
 
+	@NotNull
 	GenericAttributeValue<String> getRequireModuleExtensions();
-
 }

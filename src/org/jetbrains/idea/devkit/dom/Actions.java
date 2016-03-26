@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2009 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +19,29 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.util.xml.DomElement;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
 
-public interface Actions extends DomElement {
+import org.jetbrains.annotations.NotNull;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.Stubbed;
 
-  @NotNull
-  List<Action> getActions();
+public interface Actions extends DomElement
+{
+	@NotNull
+	@Stubbed
+	List<Action> getActions();
 
-  Action addAction();
+	Action addAction();
 
 
-  @NotNull
-  List<Group> getGroups();
+	@NotNull
+	@Stubbed
+	List<Group> getGroups();
 
-  Group addGroup();
+	Group addGroup();
 
-  @NotNull
-  List<Reference> getReferences();
+	@NotNull
+	List<Reference> getReferences();
 
-  Reference addReference();
+	Reference addReference();
 }

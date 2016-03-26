@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2009 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,45 +19,47 @@
 
 package org.jetbrains.idea.devkit.dom;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
+import com.intellij.util.xml.Convert;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.Required;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * plugin.dtd:add-to-group interface.
  */
-public interface AddToGroup extends DomElement {
-
-  /**
-   * Returns the value of the anchor child.
-   * Attribute anchor
-   *
-   * @return the value of the anchor child.
-   */
-  @NotNull
-  GenericAttributeValue<Anchor> getAnchor();
-
-
-  /**
-   * Returns the value of the relative-to-action child.
-   * Attribute relative-to-action
-   *
-   * @return the value of the relative-to-action child.
-   */
-  @NotNull
-  GenericAttributeValue<String> getRelativeToAction();
+public interface AddToGroup extends DomElement
+{
+	/**
+	 * Returns the value of the anchor child.
+	 * Attribute anchor
+	 *
+	 * @return the value of the anchor child.
+	 */
+	@NotNull
+	GenericAttributeValue<Anchor> getAnchor();
 
 
-  /**
-   * Returns the value of the group-id child.
-   * Attribute group-id
-   *
-   * @return the value of the group-id child.
-   */
-  @NotNull
-  @Required
-  GenericAttributeValue<String> getGroupId();
+	/**
+	 * Returns the value of the relative-to-action child.
+	 * Attribute relative-to-action
+	 *
+	 * @return the value of the relative-to-action child.
+	 */
+	@NotNull
+	@Convert(ActionOrGroupResolveConverter.class)
+	GenericAttributeValue<ActionOrGroup> getRelativeToAction();
 
 
+	/**
+	 * Returns the value of the group-id child.
+	 * Attribute group-id
+	 *
+	 * @return the value of the group-id child.
+	 */
+	@NotNull
+	@Required
+	@Convert(ActionOrGroupResolveConverter.OnlyGroups.class)
+	GenericAttributeValue<ActionOrGroup> getGroupId();
 }
