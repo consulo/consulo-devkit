@@ -122,7 +122,6 @@ public class ConsuloTestRunConfigurationEditor extends ConsuloRunConfigurationEd
 		}
 	}
 
-	private JTextField myPluginIdTextField;
 	private JPanel mySettingPanel;
 
 	private Map<SubPanel, JRadioButton> myMap = new LinkedHashMap<SubPanel, JRadioButton>();
@@ -137,8 +136,6 @@ public class ConsuloTestRunConfigurationEditor extends ConsuloRunConfigurationEd
 	protected void setupPanel(@NotNull FormBuilder builder)
 	{
 		super.setupPanel(builder);
-
-		myPluginIdTextField = new JBTextField();
 
 		JPanel headerPanel = new JPanel();
 
@@ -170,7 +167,6 @@ public class ConsuloTestRunConfigurationEditor extends ConsuloRunConfigurationEd
 			myMap.put(subPanel, radioButton);
 		}
 
-		builder.addLabeledComponent("Plugin ID", myPluginIdTextField);
 		builder.addComponent(headerPanel);
 		builder.addComponent(mySettingPanel);
 	}
@@ -179,8 +175,6 @@ public class ConsuloTestRunConfigurationEditor extends ConsuloRunConfigurationEd
 	public void resetEditorFrom(ConsuloTestRunConfiguration prc)
 	{
 		super.resetEditorFrom(prc);
-
-		myPluginIdTextField.setText(prc.PLUGIN_ID);
 
 		for(Map.Entry<SubPanel, JRadioButton> entry : myMap.entrySet())
 		{
@@ -196,8 +190,6 @@ public class ConsuloTestRunConfigurationEditor extends ConsuloRunConfigurationEd
 	public void applyEditorTo(ConsuloTestRunConfiguration prc) throws ConfigurationException
 	{
 		super.applyEditorTo(prc);
-
-		prc.PLUGIN_ID = StringUtil.nullize(myPluginIdTextField.getText(), true);
 
 		for(Map.Entry<SubPanel, JRadioButton> entry : myMap.entrySet())
 		{

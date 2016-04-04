@@ -19,6 +19,7 @@ package org.mustbe.consulo.devkit.run;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredDispatchThread;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -57,8 +58,6 @@ public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 		PACKAGE
 	}
 
-	public String PLUGIN_ID;
-
 	private TargetType myTargetType = TargetType.CLASS;
 	public String CLASS_NAME;
 	public String PACKAGE_NAME;
@@ -96,16 +95,13 @@ public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 
 	@NotNull
 	@Override
+	@RequiredDispatchThread
 	public ConsuloSandboxRunState createState(Executor executor, @NotNull ExecutionEnvironment env,
 			@NotNull Sdk javaSdk,
 			@NotNull String consuloHome,
 			@Nullable Artifact artifact) throws ExecutionException
 	{
 		ConsuloTestRunConfiguration runProfile = (ConsuloTestRunConfiguration)env.getRunProfile();
-		if(StringUtil.isEmptyOrSpaces(runProfile.PLUGIN_ID))
-		{
-			throw new ExecutionException("'Plugin ID' cant be empty");
-		}
 		switch(getTargetType())
 		{
 			case CLASS:

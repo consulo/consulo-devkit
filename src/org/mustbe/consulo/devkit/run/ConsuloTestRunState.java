@@ -21,14 +21,17 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.consulo.compiler.ModuleCompilerPathsManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.RequiredDispatchThread;
+import org.mustbe.consulo.application.ApplicationProperties;
+import org.mustbe.consulo.roots.impl.TestContentFolderTypeProvider;
 import com.intellij.execution.ConfigurationUtil;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.JavaParameters;
 import com.intellij.execution.junit.JUnitUtil;
 import com.intellij.execution.junit.TestClassFilter;
 import com.intellij.execution.process.ProcessHandler;
@@ -39,13 +42,12 @@ import com.intellij.execution.testframework.TestConsoleProperties;
 import com.intellij.execution.testframework.sm.SMTestRunnerConnectionUtil;
 import com.intellij.execution.testframework.sm.runner.SMTRunnerConsoleProperties;
 import com.intellij.execution.testframework.ui.BaseTestsOutputConsoleView;
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.ide.plugins.cl.PluginClassLoader;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -56,52 +58,51 @@ import com.intellij.psi.search.GlobalSearchScope;
  */
 public class ConsuloTestRunState extends ConsuloSandboxRunState
 {
-	public ConsuloTestRunState(@NotNull ExecutionEnvironment environment,
-			@NotNull Sdk javaSdk,
-			@NotNull String consuloSdkHome,
-			@Nullable Artifact artifact) throws ExecutionException
+	@RequiredDispatchThread
+	public ConsuloTestRunState(@NotNull ExecutionEnvironment environment, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome, @Nullable Artifact artifact) throws ExecutionException
 	{
 		super(environment, javaSdk, consuloSdkHome, artifact);
 
+		myJavaParameters.getVMParametersList().defineProperty(ApplicationProperties.CONSULO_IN_UNIT_TEST, "true");
 		myJavaParameters.getVMParametersList().defineProperty("idea.test.project.dir", environment.getProject().getBasePath());
-	}
 
-	@Override
-	protected void addConsuloLibs(@NotNull String consuloHomePath, @NotNull JavaParameters params)
-	{
-		super.addConsuloLibs(consuloHomePath, params);
-
-		PluginClassLoader classLoader = (PluginClassLoader) ConsuloTestRunState.class.getClassLoader();
-		IdeaPluginDescriptor plugin = PluginManager.getPlugin(classLoader.getPluginId());
-		assert plugin != null;
-		params.getClassPath().add(new File(plugin.getPath(), "consulo-test-starter.jar"));
+		StringBuilder builder = new StringBuilder();
+		for(Module module : ModuleManager.getInstance(environment.getProject()).getModules())
+		{
+			VirtualFile compilerOutput = ModuleCompilerPathsManager.getInstance(module).getCompilerOutput(TestContentFolderTypeProvider.getInstance());
+			if(compilerOutput != null)
+			{
+				builder.append(FileUtil.toSystemIndependentName(compilerOutput.getPath())).append(";");
+			}
+		}
+		myJavaParameters.getVMParametersList().defineProperty("consulo.test.classpath", builder.toString());
 	}
 
 	@NotNull
 	@Override
+	@RequiredDispatchThread
 	public ExecutionResult execute(@NotNull Executor executor, @NotNull ProgramRunner runner) throws ExecutionException
 	{
 		ConsuloTestRunConfiguration runProfile = (ConsuloTestRunConfiguration) myEnvironment.getRunProfile();
-		TestConsoleProperties testConsoleProperties = new SMTRunnerConsoleProperties(runProfile,
-				"ConsuloUnit", executor);
+		TestConsoleProperties testConsoleProperties = new SMTRunnerConsoleProperties(runProfile, "ConsuloUnit", executor);
 
 		testConsoleProperties.setIfUndefined(TestConsoleProperties.HIDE_PASSED_TESTS, false);
 
-		final BaseTestsOutputConsoleView smtConsoleView = SMTestRunnerConnectionUtil.createConsoleWithCustomLocator("ConsuloUnit",
-				testConsoleProperties, myEnvironment, null);
+		final BaseTestsOutputConsoleView smtConsoleView = SMTestRunnerConnectionUtil.createConsole("ConsuloUnit", testConsoleProperties);
 
 		try
 		{
-			File file = FileUtil.createTempFile("consulo", "test_classes.txt");
+			File tempFile = FileUtil.createTempFile("consulo", "test_classes.txt");
+			Module[] modules = runProfile.getModules();
+
+			StringBuilder data = new StringBuilder();
 			switch(runProfile.getTargetType())
 			{
 				case CLASS:
-					FileUtil.writeToFile(file, runProfile.PLUGIN_ID + "," + runProfile.CLASS_NAME);
+					data.append(runProfile.CLASS_NAME);
 					break;
 				case PACKAGE:
 					GlobalSearchScope globalSearchScope = GlobalSearchScope.EMPTY_SCOPE;
-					Module[] modules = runProfile.getModules();
-
 					for(Module module : modules)
 					{
 						globalSearchScope = globalSearchScope.union(module.getModuleWithDependenciesAndLibrariesScope(true));
@@ -109,16 +110,15 @@ public class ConsuloTestRunState extends ConsuloSandboxRunState
 					TestClassFilter testClassFilter = new TestClassFilter(JUnitUtil.getTestCaseClass(SourceScope.modules(modules)), globalSearchScope);
 					Set<PsiClass> psiClasses = new LinkedHashSet<PsiClass>();
 					ConfigurationUtil.findAllTestClasses(testClassFilter, psiClasses);
-					StringBuilder builder = new StringBuilder();
 					for(PsiClass psiClass : psiClasses)
 					{
-						builder.append(runProfile.PLUGIN_ID).append(",").append(psiClass.getQualifiedName()).append("\n");
+						data.append(psiClass.getQualifiedName()).append("\n");
 					}
-					FileUtil.writeToFile(file, builder.toString());
 					break;
 			}
+			FileUtil.writeToFile(tempFile, data.toString());
 
-			myJavaParameters.getProgramParametersList().add(StringUtil.QUOTER.fun(FileUtil.toSystemIndependentName(file.getAbsolutePath())));
+			myJavaParameters.getProgramParametersList().add(StringUtil.QUOTER.fun(FileUtil.toSystemIndependentName(tempFile.getAbsolutePath())));
 
 			ProcessHandler osProcessHandler = startProcess();
 
@@ -130,12 +130,5 @@ public class ConsuloTestRunState extends ConsuloSandboxRunState
 		{
 			throw new ExecutionException(e);
 		}
-	}
-
-	@Override
-	@NotNull
-	public String getMainClass()
-	{
-		return "org.mustbe.consulo.devkit.test.Main";
 	}
 }
