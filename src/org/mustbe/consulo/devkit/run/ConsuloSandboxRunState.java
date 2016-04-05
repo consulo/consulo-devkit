@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mustbe.consulo.application.ApplicationProperties;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.CommandLineState;
@@ -43,8 +44,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 	protected JavaParameters myJavaParameters;
 	protected ExecutionEnvironment myEnvironment;
 
-	public ConsuloSandboxRunState(@NotNull ExecutionEnvironment environment, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
-			@Nullable Artifact artifact) throws ExecutionException
+	public ConsuloSandboxRunState(@NotNull ExecutionEnvironment environment, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome, @Nullable Artifact artifact) throws ExecutionException
 	{
 		super(environment);
 		myEnvironment = environment;
@@ -58,11 +58,16 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return myJavaParameters.createOSProcessHandler();
 	}
 
-	private JavaParameters createJavaParameters(@NotNull ExecutionEnvironment env, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome,
-			@Nullable Artifact artifact) throws ExecutionException
+	@NotNull
+	public String getSandboxPath(ConsuloRunConfigurationBase configuration) throws ExecutionException
+	{
+		return configuration.getSandboxPath();
+	}
+
+	private JavaParameters createJavaParameters(@NotNull ExecutionEnvironment env, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome, @Nullable Artifact artifact) throws ExecutionException
 	{
 		ConsuloRunConfigurationBase profile = (ConsuloRunConfigurationBase) env.getRunProfile();
-		final String dataPath = profile.getSandboxPath();
+		final String dataPath = getSandboxPath(profile);
 
 		final JavaParameters params = new JavaParameters();
 
@@ -95,10 +100,10 @@ public class ConsuloSandboxRunState extends CommandLineState
 				vm.defineProperty("sun.awt.disablegrab", "true"); // See http://devnet.jetbrains.net/docs/DOC-1142
 			}
 		}
-		vm.defineProperty("consulo.in.sandbox", "true");
+		vm.defineProperty(ApplicationProperties.CONSULO_IN_SANDBOX, "true");
 		if(profile.INTERNAL_MODE)
 		{
-			vm.defineProperty("idea.is.internal", "true");
+			vm.defineProperty(ApplicationProperties.IDEA_IS_INTERNAL, "true");
 		}
 		params.setWorkingDirectory(consuloSdkHome + File.separator + "bin" + File.separator);
 

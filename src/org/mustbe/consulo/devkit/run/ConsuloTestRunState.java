@@ -80,6 +80,21 @@ public class ConsuloTestRunState extends ConsuloSandboxRunState
 
 	@NotNull
 	@Override
+	public String getSandboxPath(ConsuloRunConfigurationBase configuration) throws ExecutionException
+	{
+		try
+		{
+			File file = FileUtil.createTempDirectory("consulo", "sandbox", true);
+			return FileUtil.toSystemDependentName(file.getPath());
+		}
+		catch(IOException e)
+		{
+			throw new ExecutionException(e);
+		}
+	}
+
+	@NotNull
+	@Override
 	@RequiredDispatchThread
 	public ExecutionResult execute(@NotNull Executor executor, @NotNull ProgramRunner runner) throws ExecutionException
 	{
