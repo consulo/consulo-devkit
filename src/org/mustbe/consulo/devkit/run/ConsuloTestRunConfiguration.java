@@ -23,10 +23,14 @@ import org.mustbe.consulo.RequiredDispatchThread;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
+import com.intellij.execution.JavaExecutionUtil;
+import com.intellij.execution.ProgramRunnerUtil;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.configurations.coverage.CoverageConfigurable;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.options.SettingsEditorGroup;
 import com.intellij.openapi.project.Project;
@@ -35,6 +39,10 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.packaging.artifacts.Artifact;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiJavaPackage;
+import com.intellij.psi.search.GlobalSearchScope;
 
 /**
  * @author VISTALL
@@ -96,12 +104,13 @@ public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 	@NotNull
 	@Override
 	@RequiredDispatchThread
-	public ConsuloSandboxRunState createState(Executor executor, @NotNull ExecutionEnvironment env,
+	public ConsuloSandboxRunState createState(Executor executor,
+			@NotNull ExecutionEnvironment env,
 			@NotNull Sdk javaSdk,
 			@NotNull String consuloHome,
 			@Nullable Artifact artifact) throws ExecutionException
 	{
-		ConsuloTestRunConfiguration runProfile = (ConsuloTestRunConfiguration)env.getRunProfile();
+		ConsuloTestRunConfiguration runProfile = (ConsuloTestRunConfiguration) env.getRunProfile();
 		switch(getTargetType())
 		{
 			case CLASS:
@@ -114,5 +123,50 @@ public class ConsuloTestRunConfiguration extends ConsuloRunConfigurationBase
 		return new ConsuloTestRunState(env, javaSdk, consuloHome, artifact);
 	}
 
+	@Override
+	public String suggestedName()
+	{
+		switch(myTargetType)
+		{
+			case CLASS:
+				return ProgramRunnerUtil.shortenName(JavaExecutionUtil.getShortClassName(CLASS_NAME), 0);
+			case PACKAGE:
+				return ProgramRunnerUtil.shortenName(JavaExecutionUtil.getShortClassName(PACKAGE_NAME), 0);
+		}
+		return null;
+	}
+
+	@Override
+	@RequiredDispatchThread
+	public void checkConfiguration() throws RuntimeConfigurationException
+	{
+		Module[] modules = getModules();
+		GlobalSearchScope globalSearchScope = GlobalSearchScope.EMPTY_SCOPE;
+		for(Module module : modules)
+		{
+			globalSearchScope = globalSearchScope.union(module.getModuleWithDependenciesAndLibrariesScope(true));
+		}
+		switch(myTargetType)
+		{
+			case CLASS:
+				if(StringUtil.isEmptyOrSpaces(CLASS_NAME))
+				{
+					throw new RuntimeConfigurationException("Test class can't be empty");
+				}
+				PsiClass aClass = JavaPsiFacade.getInstance(getProject()).findClass(CLASS_NAME, globalSearchScope);
+				if(aClass == null)
+				{
+					throw new RuntimeConfigurationException("Test class is not found");
+				}
+				break;
+			case PACKAGE:
+				PsiJavaPackage aPackage = JavaPsiFacade.getInstance(getProject()).findPackage(StringUtil.notNullize(PACKAGE_NAME));
+				if(aPackage == null)
+				{
+					throw new RuntimeConfigurationException("Test package is not found");
+				}
+				break;
+		}
+	}
 }
 

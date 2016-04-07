@@ -33,16 +33,16 @@ import com.intellij.debugger.impl.GenericDebugRunnerConfiguration;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.execution.configurations.LocatableConfigurationBase;
 import com.intellij.execution.configurations.LogFileOptions;
 import com.intellij.execution.configurations.PredefinedLogFile;
-import com.intellij.execution.configurations.RunConfigurationBase;
-import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.DefaultJDOMExternalizer;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.NotNullFactory;
@@ -56,7 +56,7 @@ import com.intellij.packaging.impl.artifacts.ArtifactUtil;
  * @author VISTALL
  * @since 12.04.2015
  */
-public abstract class ConsuloRunConfigurationBase extends RunConfigurationBase implements GenericDebugRunnerConfiguration
+public abstract class ConsuloRunConfigurationBase extends LocatableConfigurationBase implements GenericDebugRunnerConfiguration
 
 {
 	public static final PredefinedLogFile IDEA_LOG = new PredefinedLogFile("IDEA_LOG", true);
@@ -113,12 +113,6 @@ public abstract class ConsuloRunConfigurationBase extends RunConfigurationBase i
 		}
 		Sdk sdk = myConsuloSdkPointer == null ? null : myConsuloSdkPointer.get();
 		return sdk == null ? null : sdk.getHomePath();
-	}
-
-	@Override
-	public void checkConfiguration() throws RuntimeConfigurationException
-	{
-
 	}
 
 	@Nullable
@@ -195,6 +189,12 @@ public abstract class ConsuloRunConfigurationBase extends RunConfigurationBase i
 		PluginRunXmlConfigurationUtil.writePointer(ARTIFACT, element, myArtifactPointer);
 
 		super.writeExternal(element);
+	}
+
+	@Override
+	public boolean isGeneratedName()
+	{
+		return Comparing.equal(getName(), suggestedName());
 	}
 
 	@Nullable
