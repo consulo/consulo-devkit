@@ -32,6 +32,7 @@ import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.Executor;
+import com.intellij.execution.JavaExecutionUtil;
 import com.intellij.execution.junit.JUnitUtil;
 import com.intellij.execution.junit.TestClassFilter;
 import com.intellij.execution.process.ProcessHandler;
@@ -125,9 +126,15 @@ public class ConsuloTestRunState extends ConsuloSandboxRunState
 					TestClassFilter testClassFilter = new TestClassFilter(JUnitUtil.getTestCaseClass(SourceScope.modules(modules)), globalSearchScope);
 					Set<PsiClass> psiClasses = new LinkedHashSet<PsiClass>();
 					ConfigurationUtil.findAllTestClasses(testClassFilter, psiClasses);
+					String packageName = StringUtil.notNullize(runProfile.PACKAGE_NAME);
 					for(PsiClass psiClass : psiClasses)
 					{
-						data.append(psiClass.getQualifiedName()).append("\n");
+						String qualifiedName = psiClass.getQualifiedName();
+						assert qualifiedName != null;
+						if(qualifiedName.startsWith(packageName))
+						{
+							data.append(JavaExecutionUtil.getRuntimeQualifiedName(psiClass)).append("\n");
+						}
 					}
 					break;
 			}
