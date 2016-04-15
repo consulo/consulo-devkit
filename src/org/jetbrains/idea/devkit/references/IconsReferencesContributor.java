@@ -77,8 +77,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 		final PsiMethodPattern method = psiMethod().withName(methodName).definedInClass(IconLoader.class.getName());
 		final PsiJavaElementPattern.Capture<PsiLiteralExpression> javaFile = literalExpression().and(psiExpression().methodCallParameter(0, method));
 
-		final PsiJavaElementPattern.Capture<PsiLiteralExpression> annotationValue = literalExpression().annotationParam("com.intellij.ide" +
-				".presentation.Presentation", "icon");
+		final PsiJavaElementPattern.Capture<PsiLiteralExpression> annotationValue = literalExpression().annotationParam("com.intellij.ide" + ".presentation.Presentation", "icon");
 
 		final XmlAttributeValuePattern pluginXml = XmlPatterns.xmlAttributeValue().withLocalName("icon");
 
@@ -101,8 +100,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 									if(path.size() > 1 && path.get(0).endsWith("Icons"))
 									{
 										Project project = element.getProject();
-										PsiClass cur = JavaPsiFacade.getInstance(project).findClass(fqnIconsClass(path.get(0)),
-												GlobalSearchScope.projectScope(project));
+										PsiClass cur = JavaPsiFacade.getInstance(project).findClass(fqnIconsClass(path.get(0)), GlobalSearchScope.projectScope(project));
 										if(cur == null)
 										{
 											return null;
@@ -169,8 +167,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 							private PsiElement replace(String newElementName, String fqn, String pckg, PsiElement container)
 							{
 								String newValue = "\"" + fqn.substring(pckg.length()) + "." + newElementName + "\"";
-								return getElement().replace(JavaPsiFacade.getElementFactory(container.getProject()).createExpressionFromText
-										(newValue, container.getParent()));
+								return getElement().replace(JavaPsiFacade.getElementFactory(container.getProject()).createExpressionFromText(newValue, container.getParent()));
 							}
 
 							@NotNull
@@ -199,8 +196,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 						if(icons != null)
 						{
 							final ArrayList<PsiFileSystemItem> result = new ArrayList<PsiFileSystemItem>();
-							final VirtualFile[] roots = ModuleRootManager.getInstance(icons).getContentFolderFiles(ContentFolderScopes
-									.productionAndTest());
+							final VirtualFile[] roots = ModuleRootManager.getInstance(icons).getContentFolderFiles(ContentFolderScopes.productionAndTest());
 							final PsiManager psiManager = element.getManager();
 							for(VirtualFile root : roots)
 							{
@@ -242,8 +238,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 									if(path.size() > 1 && path.get(0).endsWith("Icons"))
 									{
 										Project project = element.getProject();
-										PsiClass cur = JavaPsiFacade.getInstance(project).findClass(fqnIconsClass(path.get(0)),
-												GlobalSearchScope.projectScope(project));
+										PsiClass cur = JavaPsiFacade.getInstance(project).findClass(fqnIconsClass(path.get(0)), GlobalSearchScope.projectScope(project));
 										if(cur == null)
 										{
 											return null;
@@ -370,7 +365,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 				model.setCaseSensitive(true);
 				model.setFindAll(true);
 				model.setWholeWordsOnly(true);
-				FindInProjectUtil.findUsages(model, FindInProjectUtil.getPsiDirectory(model, project), project, new Processor<UsageInfo>()
+				FindInProjectUtil.findUsages(model, project, new Processor<UsageInfo>()
 				{
 					@Override
 					public boolean process(final UsageInfo usage)
@@ -422,8 +417,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 
 	private static boolean isIconsModule(Module module)
 	{
-		return module != null && "icons".equals(module.getName()) && ModuleRootManager.getInstance(module).getContentFolderFiles(ContentFolderScopes
-				.productionAndTest()).length == 1;
+		return module != null && "icons".equals(module.getName()) && ModuleRootManager.getInstance(module).getContentFolderFiles(ContentFolderScopes.productionAndTest()).length == 1;
 	}
 
 	private static boolean isImage(VirtualFile image)
