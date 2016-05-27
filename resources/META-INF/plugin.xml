@@ -68,6 +68,24 @@
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true" level="WARNING"
 						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseDPIAwareInsetsInspection"/>
+		<localInspection language="JAVA" shortName="UseCouple" displayName="Use Couple instead of Pair"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="false" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseCoupleInspection"/>
+		<localInspection language="JAVA" shortName="DontUsePairConstructor" displayName="Don't use constructor of Pair class"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.DontUseNewPairInspection"/>
+		<localInspection language="JAVA"
+						 groupKey="inspections.group.name"
+						 displayName="Default StubBasedPsiElementBase.getParent() implementation"
+						 enabledByDefault="true"
+						 level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.StubBasedPsiElementBaseGetParentInspection"/>
+		<localInspection language="JAVA" shortName="StatefulEp" displayName="Stateful Extension"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.StatefulEpInspection"/>
 		<localInspection language="JAVA" shortName="UseJBColor" displayName="Use Darcula aware JBColor"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
