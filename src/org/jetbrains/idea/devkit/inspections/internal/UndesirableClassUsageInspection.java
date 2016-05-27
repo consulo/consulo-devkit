@@ -26,7 +26,6 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.inspections.DevKitOnlyInspectionBase;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.QueryExecutorBase;
@@ -42,7 +41,7 @@ import com.intellij.ui.table.JBTable;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.QueryExecutor;
 
-public class UndesirableClassUsageInspection extends DevKitOnlyInspectionBase
+public class UndesirableClassUsageInspection extends InternalInspection
 {
 	private static final Map<String, String> CLASSES = new THashMap<String, String>();
 

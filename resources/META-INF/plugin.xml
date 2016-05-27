@@ -59,7 +59,15 @@
 		<localInspection language="JAVA" shortName="InspectionUsingGrayColors" displayName="Using new Color(a,a,a)"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.UseGrayInspection"/>
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseGrayInspection"/>
+		<localInspection language="JAVA" shortName="UsePrimitiveTypes" displayName="Use .equals with primitive types"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UsePrimitiveTypesInspection"/>
+		<localInspection language="JAVA" shortName="UseDPIAwareInsets" displayName="Use DPI-aware insets"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true" level="WARNING"
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseDPIAwareInsetsInspection"/>
 		<localInspection language="JAVA" shortName="UseJBColor" displayName="Use Darcula aware JBColor"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"

@@ -38,69 +38,90 @@ import com.intellij.util.containers.HashSet;
  * @author VISTALL
  * @since 13:48/23.05.13
  */
-public class PluginModuleUtil {
-  public static final String PLUGIN_XML = "plugin.xml";
+public class PluginModuleUtil
+{
+	public static final String PLUGIN_XML = "plugin.xml";
 
-  public static Module[] getAllPluginModules(final Project project) {
-    List<Module> modules = new ArrayList<Module>();
-    Module[] allModules = ModuleManager.getInstance(project).getModules();
-    for (Module module : allModules) {
-      if (ModuleUtil.getExtension(module, PluginModuleExtension.class) != null) {
-        modules.add(module);
-      }
-    }
-    return modules.toArray(new Module[modules.size()]);
-  }
+	public static Module[] getAllPluginModules(final Project project)
+	{
+		List<Module> modules = new ArrayList<Module>();
+		Module[] allModules = ModuleManager.getInstance(project).getModules();
+		for(Module module : allModules)
+		{
+			if(ModuleUtil.getExtension(module, PluginModuleExtension.class) != null)
+			{
+				modules.add(module);
+			}
+		}
+		return modules.toArray(new Module[modules.size()]);
+	}
 
-  @Nullable
-  public static XmlFile getPluginXml(Module module) {
-    if (module == null) {
-      return null;
-    }
-    if (ModuleUtil.getExtension(module, PluginModuleExtension.class) == null) {
-      return null;
-    }
+	@Nullable
+	public static XmlFile getPluginXml(Module module)
+	{
+		if(module == null)
+		{
+			return null;
+		}
+		if(ModuleUtil.getExtension(module, PluginModuleExtension.class) == null)
+		{
+			return null;
+		}
 
-    PsiManager psiManager = PsiManager.getInstance(module.getProject());
+		PsiManager psiManager = PsiManager.getInstance(module.getProject());
 
-    List<VirtualFile> virtualFiles = SpecialDirUtil.collectSpecialDirs(module, SpecialDirUtil.META_INF);
-    for (VirtualFile virtualFile : virtualFiles) {
-      VirtualFile child = virtualFile.findChild(PLUGIN_XML);
-      if (child == null) {
-        continue;
-      }
+		List<VirtualFile> virtualFiles = SpecialDirUtil.collectSpecialDirs(module, SpecialDirUtil.META_INF);
+		for(VirtualFile virtualFile : virtualFiles)
+		{
+			VirtualFile child = virtualFile.findChild(PLUGIN_XML);
+			if(child == null)
+			{
+				continue;
+			}
 
-      PsiFile file = psiManager.findFile(child);
-      if(file instanceof XmlFile) {
-        return (XmlFile) file;
-      }
-    }
-    return null;
-  }
+			PsiFile file = psiManager.findFile(child);
+			if(file instanceof XmlFile)
+			{
+				return (XmlFile) file;
+			}
+		}
+		return null;
+	}
 
-  public static boolean isPluginModuleOrDependency(@NotNull Module module) {
-    if (ModuleUtil.getExtension(module, PluginModuleExtension.class) != null) {
-      return true;
-    }
+	public static boolean isPluginModuleOrDependency(@NotNull Module module)
+	{
+		if(ModuleUtil.getExtension(module, PluginModuleExtension.class) != null)
+		{
+			return true;
+		}
 
-    return getCandidateModules(module).size() > 0;
-  }
+		return getCandidateModules(module).size() > 0;
+	}
 
-  @NotNull
-  public static List<Module> getCandidateModules(Module module) {
-    final Module[] modules = ModuleManager.getInstance(module.getProject()).getModules();
-    final List<Module> candidates = new ArrayList<Module>(modules.length);
-    final Set<Module> deps = new HashSet<Module>(modules.length);
-    for (Module m : modules) {
-      if (ModuleUtil.getExtension(module, PluginModuleExtension.class) != null) {
-        deps.clear();
-        PluginBuildUtil.getDependencies(m, deps);
+	@NotNull
+	public static List<Module> getCandidateModules(Module module)
+	{
+		final Module[] modules = ModuleManager.getInstance(module.getProject()).getModules();
+		final List<Module> candidates = new ArrayList<Module>(modules.length);
+		final Set<Module> deps = new HashSet<Module>(modules.length);
+		for(Module m : modules)
+		{
+			if(ModuleUtil.getExtension(module, PluginModuleExtension.class) != null)
+			{
+				deps.clear();
+				PluginBuildUtil.getDependencies(m, deps);
 
-        if (deps.contains(module) && getPluginXml(m) != null) {
-          candidates.add(m);
-        }
-      }
-    }
-    return candidates;
-  }
+				if(deps.contains(module) && getPluginXml(m) != null)
+				{
+					candidates.add(m);
+				}
+			}
+		}
+		return candidates;
+	}
+
+	public static boolean isConsuloProject(Project project)
+	{
+		return project.getName().equals("consulo");
+	}
 }

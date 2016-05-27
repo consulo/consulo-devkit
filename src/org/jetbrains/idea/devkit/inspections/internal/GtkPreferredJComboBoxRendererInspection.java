@@ -18,7 +18,6 @@ package org.jetbrains.idea.devkit.inspections.internal;
 import javax.swing.JComboBox;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.inspections.DevKitOnlyInspectionBase;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
@@ -27,7 +26,7 @@ import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.ListCellRendererWrapper;
 
-public class GtkPreferredJComboBoxRendererInspection extends DevKitOnlyInspectionBase
+public class GtkPreferredJComboBoxRendererInspection extends InternalInspection
 {
 	private static final String COMBO_BOX_CLASS_NAME = JComboBox.class.getName();
 	private static final String[] RIGHT_RENDERER_CLASS_NAMES = {

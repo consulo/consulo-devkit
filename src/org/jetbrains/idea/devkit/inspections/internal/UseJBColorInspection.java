@@ -20,7 +20,6 @@ import java.awt.Color;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.inspections.DevKitOnlyInspectionBase;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorConstantQuickFix;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorQuickFix;
 import com.intellij.codeInspection.InspectionManager;
@@ -35,7 +34,7 @@ import com.intellij.ui.JBColor;
 /**
  * @author Konstantin Bulenkov
  */
-public class UseJBColorInspection extends DevKitOnlyInspectionBase
+public class UseJBColorInspection extends InternalInspection
 {
   @NotNull
   @Override

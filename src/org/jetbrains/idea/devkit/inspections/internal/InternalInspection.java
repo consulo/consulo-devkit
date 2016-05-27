@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2012 JetBrains s.r.o.
+ * Copyright 2000-2014 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,46 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.idea.devkit.inspections;
+package org.jetbrains.idea.devkit.inspections.internal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.util.PluginModuleUtil;
-import com.intellij.codeInspection.LocalInspectionToolSession;
+import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.PsiElementVisitor;
 
-public abstract class DevKitOnlyInspectionBase extends DevKitInspectionBase
+public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 {
-	private static final PsiElementVisitor EMPTY_VISITOR = new PsiElementVisitor()
-	{
-	};
-
 	@NotNull
 	@Override
 	public final PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly)
 	{
-		final Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
-		if(module == null || !PluginModuleUtil.isPluginModuleOrDependency(module))
+		return isAllowed(holder) ? buildInternalVisitor(holder, isOnTheFly) : new PsiElementVisitor()
 		{
-			return EMPTY_VISITOR;
-		}
-		return buildInternalVisitor(holder, isOnTheFly);
+		};
 	}
 
-	@NotNull
-	@Override
-	public final PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session)
+	private boolean isAllowed(ProblemsHolder holder)
 	{
-		final Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
-		if(module == null || !PluginModuleUtil.isPluginModuleOrDependency(module))
+		if(PluginModuleUtil.isConsuloProject(holder.getProject()))
 		{
-			return EMPTY_VISITOR;
+			return true;
 		}
-		return buildInternalVisitor(holder, isOnTheFly);
+
+		Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
+		if(PluginModuleUtil.isPluginModuleOrDependency(module))
+		{
+			return true;
+		}
+
+		//seems that internal inspection tests should test in most cases the inspection
+		//and not that internal inspections are not available in non-idea non-plugin projects
+		return isAllowedByDefault();
 	}
 
+	protected boolean isAllowedByDefault()
+	{
+		return ApplicationManager.getApplication().isUnitTestMode();
+	}
 
 	public abstract PsiElementVisitor buildInternalVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly);
 }

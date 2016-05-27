@@ -16,7 +16,6 @@
 package org.jetbrains.idea.devkit.inspections.internal;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.inspections.DevKitOnlyInspectionBase;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Ref;
@@ -34,7 +33,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
 
-public class UnsafeVfsRecursionInspection extends DevKitOnlyInspectionBase
+public class UnsafeVfsRecursionInspection extends InternalInspection
 {
 	private static final String VIRTUAL_FILE_CLASS_NAME = VirtualFile.class.getName();
 	private static final String GET_CHILDREN_METHOD_NAME = "getChildren";
