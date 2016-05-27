@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.idea.devkit.inspections;
+package org.jetbrains.idea.devkit.inspections.internal;
 
 import gnu.trove.THashMap;
 
@@ -26,6 +26,7 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.inspections.DevKitOnlyInspectionBase;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.QueryExecutorBase;

@@ -63,7 +63,7 @@
 		<localInspection language="JAVA" shortName="UseJBColor" displayName="Use Darcula aware JBColor"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.UseJBColorInspection"/>
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseJBColorInspection"/>
 		<localInspection language="JAVA" shortName="IntentionDescriptionNotFoundInspection" displayName="Intention Description Checker"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
@@ -112,19 +112,19 @@
 		<localInspection language="JAVA" shortName="UndesirableClassUsage" displayName="Undesirable class usage"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.UndesirableClassUsageInspection"/>
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UndesirableClassUsageInspection"/>
 		<localInspection language="JAVA" shortName="FileEqualsUsage" displayName="File.equals() usage"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.FileEqualsUsageInspection"/>
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.FileEqualsUsageInspection"/>
 		<localInspection language="JAVA" shortName="GtkPreferredJComboBoxRenderer" displayName="Preferred JComboBox renderer"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.GtkPreferredJComboBoxRendererInspection"/>
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.GtkPreferredJComboBoxRendererInspection"/>
 		<localInspection language="JAVA" shortName="UnsafeVfsRecursion" displayName="Unsafe VFS recursion"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.UnsafeVfsRecursionInspection"/>
+						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UnsafeVfsRecursionInspection"/>
 
 		<implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
 		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>
