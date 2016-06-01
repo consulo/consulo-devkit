@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.build.PluginBuildUtil;
 import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
+import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.java.roots.SpecialDirUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -88,8 +89,14 @@ public class PluginModuleUtil
 		return null;
 	}
 
-	public static boolean isPluginModuleOrDependency(@NotNull Module module)
+	@RequiredReadAction
+	public static boolean isPluginModuleOrDependency(@Nullable Module module)
 	{
+		if(module == null)
+		{
+			return false;
+		}
+
 		if(ModuleUtil.getExtension(module, PluginModuleExtension.class) != null)
 		{
 			return true;
@@ -98,6 +105,7 @@ public class PluginModuleUtil
 		return getCandidateModules(module).size() > 0;
 	}
 
+	@RequiredReadAction
 	@NotNull
 	public static List<Module> getCandidateModules(Module module)
 	{

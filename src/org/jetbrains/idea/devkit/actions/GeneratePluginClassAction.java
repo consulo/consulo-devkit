@@ -15,9 +15,30 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.swing.Icon;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
+import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
+import org.jetbrains.idea.devkit.util.DescriptorUtil;
+import org.jetbrains.idea.devkit.util.PluginModuleUtil;
+import org.mustbe.consulo.RequiredDispatchThread;
 import com.intellij.ide.IdeView;
 import com.intellij.ide.actions.CreateElementActionBase;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtil;
@@ -32,152 +53,178 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
-import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
-import org.jetbrains.idea.devkit.util.DescriptorUtil;
-import org.jetbrains.idea.devkit.util.PluginModuleUtil;
-
-import javax.swing.*;
-import java.util.*;
 
 /**
  * @author yole
  */
-public abstract class GeneratePluginClassAction extends CreateElementActionBase implements DescriptorUtil.Patcher {
-  protected final Set<XmlFile> myFilesToPatch = new HashSet<XmlFile>();
+public abstract class GeneratePluginClassAction extends CreateElementActionBase implements DescriptorUtil.Patcher
+{
+	protected final Set<XmlFile> myFilesToPatch = new HashSet<XmlFile>();
 
-  // length == 1 is important to make MyInputValidator close the dialog when
-  // module selection is canceled. That's some weird interface actually...
-  private static final PsiElement[] CANCELED = new PsiElement[1];
+	// length == 1 is important to make MyInputValidator close the dialog when
+	// module selection is canceled. That's some weird interface actually...
+	private static final PsiElement[] CANCELED = new PsiElement[1];
 
-  public GeneratePluginClassAction(String text, String description, @Nullable Icon icon) {
-    super(text, description, icon);
-  }
+	public GeneratePluginClassAction(String text, String description, @Nullable Icon icon)
+	{
+		super(text, description, icon);
+	}
 
-  @NotNull
-  protected final PsiElement[] invokeDialog(Project project, PsiDirectory directory) {
-    try {
-      final PsiElement[] psiElements = invokeDialogImpl(project, directory);
-      return psiElements == CANCELED ? PsiElement.EMPTY_ARRAY : psiElements;
-    }
-    finally {
-      myFilesToPatch.clear();
-    }
-  }
+	@NotNull
+	protected final PsiElement[] invokeDialog(Project project, PsiDirectory directory)
+	{
+		try
+		{
+			final PsiElement[] psiElements = invokeDialogImpl(project, directory);
+			return psiElements == CANCELED ? PsiElement.EMPTY_ARRAY : psiElements;
+		}
+		finally
+		{
+			myFilesToPatch.clear();
+		}
+	}
 
-  protected abstract PsiElement[] invokeDialogImpl(Project project, PsiDirectory directory);
+	protected abstract PsiElement[] invokeDialogImpl(Project project, PsiDirectory directory);
 
-  private void addPluginModule(Module module) {
-    final XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
-    if (pluginXml != null) myFilesToPatch.add(pluginXml);
-  }
+	private void addPluginModule(Module module)
+	{
+		final XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
+		if(pluginXml != null)
+		{
+			myFilesToPatch.add(pluginXml);
+		}
+	}
 
-  public void update(final AnActionEvent e) {
-    super.update(e);
-    final Presentation presentation = e.getPresentation();
-    if (presentation.isEnabled()) {
-      final DataContext context = e.getDataContext();
-      Module module = LangDataKeys.MODULE.getData(context);
-      if (module == null || !PluginModuleUtil.isPluginModuleOrDependency(module)) {
-        presentation.setEnabled(false);
-        presentation.setVisible(false);
-      }
-      final IdeView view = LangDataKeys.IDE_VIEW.getData(e.getDataContext());
-      final Project project = PlatformDataKeys.PROJECT.getData(e.getDataContext());
-      if (view != null && project != null) {
-        // from com.intellij.ide.actions.CreateClassAction.update()
-        ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
-        PsiDirectory[] dirs = view.getDirectories();
-        for (PsiDirectory dir : dirs) {
-          if (projectFileIndex.isInSourceContent(dir.getVirtualFile()) && JavaDirectoryService.getInstance().getPackage(dir) != null) {
-            return;
-          }
-        }
+	@RequiredDispatchThread
+	@Override
+	public void update(final AnActionEvent e)
+	{
+		super.update(e);
+		final Presentation presentation = e.getPresentation();
+		if(presentation.isEnabled())
+		{
+			final DataContext context = e.getDataContext();
+			Module module = LangDataKeys.MODULE.getData(context);
+			if(!PluginModuleUtil.isPluginModuleOrDependency(module))
+			{
+				presentation.setEnabled(false);
+				presentation.setVisible(false);
+				return;
+			}
+			final IdeView view = LangDataKeys.IDE_VIEW.getData(e.getDataContext());
+			final Project project = PlatformDataKeys.PROJECT.getData(e.getDataContext());
+			if(view != null && project != null)
+			{
+				// from com.intellij.ide.actions.CreateClassAction.update()
+				ProjectFileIndex projectFileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+				PsiDirectory[] dirs = view.getDirectories();
+				for(PsiDirectory dir : dirs)
+				{
+					if(projectFileIndex.isInSourceContent(dir.getVirtualFile()) && JavaDirectoryService.getInstance().getPackage(dir) != null)
+					{
+						return;
+					}
+				}
 
-        presentation.setEnabled(false);
-        presentation.setVisible(false);
-      }
-    }
-  }
+				presentation.setEnabled(false);
+				presentation.setVisible(false);
+			}
+		}
+	}
 
-  @Nullable
-  protected static Module getModule(PsiDirectory dir) {
-    Project project = dir.getProject();
-    final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
+	@Nullable
+	protected static Module getModule(PsiDirectory dir)
+	{
+		Project project = dir.getProject();
+		final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(project).getFileIndex();
 
-    final VirtualFile vFile = dir.getVirtualFile();
-    if (fileIndex.isInLibrarySource(vFile) || fileIndex.isInLibraryClasses(vFile)) {
-      final List<OrderEntry> orderEntries = fileIndex.getOrderEntriesForFile(vFile);
-      if (orderEntries.isEmpty()) {
-        return null;
-      }
-      Set<Module> modules = new HashSet<Module>();
-      for (OrderEntry orderEntry : orderEntries) {
-        modules.add(orderEntry.getOwnerModule());
-      }
-      final Module[] candidates = modules.toArray(new Module[modules.size()]);
-      Arrays.sort(candidates, ModuleManager.getInstance(project).moduleDependencyComparator());
-      return candidates[0];
-    }
-    return fileIndex.getModuleForFile(vFile);
-  }
+		final VirtualFile vFile = dir.getVirtualFile();
+		if(fileIndex.isInLibrarySource(vFile) || fileIndex.isInLibraryClasses(vFile))
+		{
+			final List<OrderEntry> orderEntries = fileIndex.getOrderEntriesForFile(vFile);
+			if(orderEntries.isEmpty())
+			{
+				return null;
+			}
+			Set<Module> modules = new HashSet<Module>();
+			for(OrderEntry orderEntry : orderEntries)
+			{
+				modules.add(orderEntry.getOwnerModule());
+			}
+			final Module[] candidates = modules.toArray(new Module[modules.size()]);
+			Arrays.sort(candidates, ModuleManager.getInstance(project).moduleDependencyComparator());
+			return candidates[0];
+		}
+		return fileIndex.getModuleForFile(vFile);
+	}
 
-  @NotNull
-  protected PsiElement[] create(String newName, PsiDirectory directory) throws Exception {
-    final Project project = directory.getProject();
-    final Module module = getModule(directory);
+	@NotNull
+	protected PsiElement[] create(String newName, PsiDirectory directory) throws Exception
+	{
+		final Project project = directory.getProject();
+		final Module module = getModule(directory);
 
-    if (module != null) {
-      if (ModuleUtil.getExtension(module, PluginModuleExtension.class) != null) {
-        addPluginModule(module);
-      }
-      else {
-        final List<Module> candidateModules = PluginModuleUtil.getCandidateModules(module);
-        final Iterator<Module> it = candidateModules.iterator();
-        while (it.hasNext()) {
-          Module m = it.next();
-          if (PluginModuleUtil.getPluginXml(m) == null) it.remove();
-        }
+		if(module != null)
+		{
+			if(ModuleUtil.getExtension(module, PluginModuleExtension.class) != null)
+			{
+				addPluginModule(module);
+			}
+			else
+			{
+				final List<Module> candidateModules = PluginModuleUtil.getCandidateModules(module);
+				final Iterator<Module> it = candidateModules.iterator();
+				while(it.hasNext())
+				{
+					Module m = it.next();
+					if(PluginModuleUtil.getPluginXml(m) == null)
+					{
+						it.remove();
+					}
+				}
 
-        if (candidateModules.size() == 1) {
-          addPluginModule(candidateModules.get(0));
-        }
-        else {
-          final ChooseModulesDialog dialog = new ChooseModulesDialog(project, candidateModules, getTemplatePresentation().getDescription());
-          dialog.show();
-          if (!dialog.isOK()) {
-            // create() should return CANCELED now
-            return CANCELED;
-          }
-          else {
-            final List<Module> modules = dialog.getSelectedModules();
-            for (Module m : modules) {
-              addPluginModule(m);
-            }
-          }
-        }
-      }
-    }
+				if(candidateModules.size() == 1)
+				{
+					addPluginModule(candidateModules.get(0));
+				}
+				else
+				{
+					final ChooseModulesDialog dialog = new ChooseModulesDialog(project, candidateModules, getTemplatePresentation().getDescription());
+					dialog.show();
+					if(!dialog.isOK())
+					{
+						// create() should return CANCELED now
+						return CANCELED;
+					}
+					else
+					{
+						final List<Module> modules = dialog.getSelectedModules();
+						for(Module m : modules)
+						{
+							addPluginModule(m);
+						}
+					}
+				}
+			}
+		}
 
-    if (myFilesToPatch.size() == 0) {
-      throw new IncorrectOperationException(DevKitBundle.message("error.no.plugin.xml"));
-    }
-    if (myFilesToPatch.size() == 0) {
-      // user canceled module selection
-      return CANCELED;
-    }
+		if(myFilesToPatch.size() == 0)
+		{
+			throw new IncorrectOperationException(DevKitBundle.message("error.no.plugin.xml"));
+		}
+		if(myFilesToPatch.size() == 0)
+		{
+			// user canceled module selection
+			return CANCELED;
+		}
 
-    final PsiClass klass = JavaDirectoryService.getInstance().createClass(directory, newName, getClassTemplateName());
+		final PsiClass klass = JavaDirectoryService.getInstance().createClass(directory, newName, getClassTemplateName());
 
-    DescriptorUtil.patchPluginXml(this, klass, myFilesToPatch.toArray(new XmlFile[myFilesToPatch.size()]));
+		DescriptorUtil.patchPluginXml(this, klass, myFilesToPatch.toArray(new XmlFile[myFilesToPatch.size()]));
 
-    return new PsiElement[]{klass};
-  }
+		return new PsiElement[]{klass};
+	}
 
-  @NonNls
-  protected abstract String getClassTemplateName();
+	@NonNls
+	protected abstract String getClassTemplateName();
 }

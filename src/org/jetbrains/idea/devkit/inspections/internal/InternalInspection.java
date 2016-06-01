@@ -17,6 +17,7 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.util.PluginModuleUtil;
+import org.mustbe.consulo.RequiredReadAction;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.ApplicationManager;
@@ -35,6 +36,7 @@ public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 		};
 	}
 
+	@RequiredReadAction
 	private boolean isAllowed(ProblemsHolder holder)
 	{
 		if(PluginModuleUtil.isConsuloProject(holder.getProject()))
