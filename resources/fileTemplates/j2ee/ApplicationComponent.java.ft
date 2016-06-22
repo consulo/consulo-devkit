@@ -3,7 +3,7 @@ package ${PACKAGE_NAME};
 import com.intellij.openapi.components.ApplicationComponent;
 import org.jetbrains.annotations.NotNull;
 
-#parse("File Header.java")
+#parse("Java File Header.java")
 public class ${NAME} implements ApplicationComponent {
     public ${NAME}() {
     }
