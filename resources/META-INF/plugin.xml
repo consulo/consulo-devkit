@@ -17,9 +17,9 @@
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
 	<extensions defaultExtensionNs="org.consulo.java">
-		<coverageEngineExtension implementation="org.mustbe.consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
+		<coverageEngineExtension implementation="consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
 		<overrideImplementsAnnotationsHandler
-				implementation="org.mustbe.consulo.devkit.codeInsight.generation.XActionOverrideImplementsAnnotationsHandler"/>
+				implementation="consulo.devkit.codeInsight.generation.XActionOverrideImplementsAnnotationsHandler"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
@@ -27,12 +27,12 @@
 
 		<useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
 
-		<newModuleBuilder implementation="org.mustbe.consulo.devkit.newProjectOrModule.DevkitNewModuleBuilder"/>
+		<newModuleBuilder implementation="consulo.devkit.newProjectOrModule.DevkitNewModuleBuilder"/>
 
-		<programRunner implementation="org.mustbe.consulo.devkit.run.ConsuloDebuggerRunner"/>
+		<programRunner implementation="consulo.devkit.run.ConsuloDebuggerRunner"/>
 
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
-		<configurationType implementation="org.mustbe.consulo.devkit.run.ConsuloTestRunConfigurationType"/>
+		<configurationType implementation="consulo.devkit.run.ConsuloTestRunConfigurationType"/>
 
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
@@ -126,14 +126,14 @@
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
 						 displayName="Invocation state(read, write, dispatch) validate inspection"
-						 implementationClass="org.mustbe.consulo.devkit.inspections.RequiredXActionInspection"/>
+						 implementationClass="consulo.devkit.inspections.RequiredXActionInspection"/>
 		<localInspection language="JAVA"
 						 level="WARNING"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
 						 displayName="Invocation state(read, write, dispatch) annotation place inspection"
-						 implementationClass="org.mustbe.consulo.devkit.inspections.PlaceXActionAnnotationInspection"/>
+						 implementationClass="consulo.devkit.inspections.PlaceXActionAnnotationInspection"/>
 
 		<localInspection language="JAVA"
 						 level="ERROR"
@@ -193,7 +193,7 @@
 			<add-to-group anchor="last" group-id="NewGroup"/>
 		</action>
 
-		<action id="DevKit.GenerateIconsClassAction" class="org.mustbe.consulo.devkit.action.GenerateIconsClassAction" text="Generate Icons Class"
+		<action id="DevKit.GenerateIconsClassAction" class="consulo.devkit.action.GenerateIconsClassAction" text="Generate Icons Class"
 				icon="AllIcons.Nodes.Class" can-use-project-as-default="true"
 				require-module-extensions="consulo-plugin">
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
