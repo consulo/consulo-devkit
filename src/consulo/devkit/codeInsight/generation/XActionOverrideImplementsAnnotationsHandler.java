@@ -23,6 +23,7 @@ import org.mustbe.consulo.RequiredWriteAction;
 import com.intellij.codeInsight.generation.OverrideImplementsAnnotationsHandler;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ArrayUtil;
+import consulo.devkit.codeInsight.ConsuloUI;
 
 /**
  * @author VISTALL
@@ -33,7 +34,8 @@ public class XActionOverrideImplementsAnnotationsHandler implements OverrideImpl
 	private static final String[] ourAnnotations = new String[]{
 			RequiredReadAction.class.getName(),
 			RequiredWriteAction.class.getName(),
-			RequiredDispatchThread.class.getName()
+			RequiredDispatchThread.class.getName(),
+			ConsuloUI.RequiredUIAccess
 	};
 
 	@Override

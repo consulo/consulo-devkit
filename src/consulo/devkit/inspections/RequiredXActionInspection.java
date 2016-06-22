@@ -16,27 +16,15 @@
 
 package consulo.devkit.inspections;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.SwingUtilities;
-
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.RequiredWriteAction;
-import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.application.Application;
-import com.intellij.openapi.application.BaseActionRunnable;
-import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.ThrowableComputable;
@@ -45,11 +33,9 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.ArrayUtil;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.ThreeState;
 import com.intellij.util.ThrowableRunnable;
-import com.intellij.util.ui.UIUtil;
 
 /**
  * @author VISTALL
@@ -57,167 +43,9 @@ import com.intellij.util.ui.UIUtil;
  */
 public class RequiredXActionInspection extends LocalInspectionTool
 {
-	public static class AcceptableMethodCallCheck
-	{
-		private final Class<?> myParentClass;
-		private final String myMethodName;
-
-		public AcceptableMethodCallCheck(Class<?> parentClass, String methodName)
-		{
-			myParentClass = parentClass;
-			myMethodName = methodName;
-		}
-
-		public boolean accept(PsiElement parent)
-		{
-			if(parent instanceof PsiMethodCallExpression)
-			{
-				PsiMethod psiMethod = ((PsiMethodCallExpression) parent).resolveMethod();
-				if(psiMethod == null)
-				{
-					return false;
-				}
-
-				if(myMethodName.equals(psiMethod.getName()))
-				{
-					PsiClass containingClass = psiMethod.getContainingClass();
-					if(containingClass == null)
-					{
-						return false;
-					}
-
-					if(myParentClass.getName().equals(containingClass.getQualifiedName()))
-					{
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-	}
-
-	public static enum ActionType
-	{
-		NONE(null, null),
-		READ(RequiredReadAction.class, ReadAction.class, new AcceptableMethodCallCheck(Application.class, "runReadAction"))
-				{
-					@Override
-					public boolean isAcceptableActionType(@NotNull ActionType type)
-					{
-						return type == READ || type == DISPATCH_THREAD || type == WRITE;
-					}
-				},
-		WRITE(RequiredWriteAction.class, WriteAction.class, new AcceptableMethodCallCheck(Application.class, "runWriteAction")),
-		DISPATCH_THREAD(RequiredDispatchThread.class, null, new AcceptableMethodCallCheck(Application.class, "invokeLater"),
-				new AcceptableMethodCallCheck(Application.class, "invokeAndWait"),
-				new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),
-				new AcceptableMethodCallCheck(UIUtil.class, "invokeLaterIfNeeded"),
-				new AcceptableMethodCallCheck(SwingUtilities.class, "invokeAndWait"),
-				new AcceptableMethodCallCheck(SwingUtilities.class, "invokeLater")) {
-			@Override
-			public boolean isAcceptableActionType(@NotNull ActionType type)
-			{
-				// write actions required call from dispatch thread, and it inherit dispatch state
-				return type == DISPATCH_THREAD || type == WRITE;
-			}
-		};
-
-		@Nullable
-		private final Class<?> myActionClass;
-		@Nullable
-		private final Class<? extends BaseActionRunnable> myActionRunnable;
-		@NotNull
-		private final AcceptableMethodCallCheck[] myAcceptableMethodCallChecks;
-
-		ActionType(@Nullable Class<? extends Annotation> actionClass,
-				@Nullable Class<? extends BaseActionRunnable> actionRunnable,
-				@NotNull AcceptableMethodCallCheck... methodCallChecks)
-		{
-			myActionClass = actionClass;
-			myAcceptableMethodCallChecks = methodCallChecks;
-			myActionRunnable = actionRunnable;
-		}
-
-		@NotNull
-		public static ActionType findSelfActionType(@NotNull PsiMethod method)
-		{
-			for(ActionType actionType : values())
-			{
-				Class<?> actionClass = actionType.myActionClass;
-				if(actionClass == null)
-				{
-					continue;
-				}
-
-				if(AnnotationUtil.isAnnotated(method, actionClass.getName(), false))
-				{
-					return actionType;
-				}
-			}
-			return NONE;
-		}
-
-		@NotNull
-		public Class<?> getActionClass()
-		{
-			assert myActionClass != null;
-			return myActionClass;
-		}
-
-		@NotNull
-		public static ActionType findActionType(@NotNull PsiMethod method)
-		{
-			PsiClass baseActionRunnable = JavaPsiFacade.getInstance(method.getProject()).findClass(BaseActionRunnable.class.getName(),
-					method.getResolveScope());
-
-			PsiMethod baseRunMethod = null;
-			if(baseActionRunnable != null)
-			{
-				PsiMethod[] runMethods = baseActionRunnable.findMethodsByName("run", false);
-				baseRunMethod = ArrayUtil.getFirstElement(runMethods);
-			}
-
-			for(ActionType actionType : values())
-			{
-				Class<?> actionClass = actionType.myActionClass;
-				if(actionClass == null)
-				{
-					continue;
-				}
-
-				if(AnnotationUtil.isAnnotated(method, actionClass.getName(), false))
-				{
-					return actionType;
-				}
-
-				if(baseRunMethod != null && actionType.myActionRunnable != null)
-				{
-					PsiMethod[] superMethods = method.findSuperMethods(baseActionRunnable);
-					if(ArrayUtil.contains(baseRunMethod, superMethods))
-					{
-						PsiClass containingClass = method.getContainingClass();
-						if(containingClass != null)
-						{
-							if(InheritanceUtil.isInheritor(containingClass, actionType.myActionRunnable.getName()))
-							{
-								return actionType;
-							}
-						}
-					}
-				}
-			}
-			return NONE;
-		}
-
-		public boolean isAcceptableActionType(@NotNull ActionType type)
-		{
-			return type == this;
-		}
-	}
-
 	public static class RequiredXActionVisitor extends JavaElementVisitor
 	{
-		private static Map<String, Class[]> ourInterfacees = new HashMap<String, Class[]>()
+		private static Map<String, Class[]> ourInterfaces = new HashMap<String, Class[]>()
 		{
 			{
 				put("compute", new Class[]{
@@ -241,7 +69,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 		@Override
 		public void visitCallExpression(PsiCallExpression expression)
 		{
-			Pair<ThreeState, ActionType> handled = isHandled(expression);
+			Pair<ThreeState, CallStateType> handled = isHandled(expression);
 			switch(handled.getFirst())
 			{
 				case NO:
@@ -251,7 +79,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 		}
 
 		@NotNull
-		private Pair<ThreeState, ActionType> isHandled(PsiCall expression)
+		private Pair<ThreeState, CallStateType> isHandled(PsiCall expression)
 		{
 			PsiMethod psiMethod = expression.resolveMethod();
 			if(psiMethod == null)
@@ -259,8 +87,8 @@ public class RequiredXActionInspection extends LocalInspectionTool
 				return Pair.create(ThreeState.UNSURE, null);
 			}
 
-			ActionType actionType = ActionType.findActionType(psiMethod);
-			if(actionType == ActionType.NONE)
+			CallStateType actionType = CallStateType.findActionType(psiMethod);
+			if(actionType == CallStateType.NONE)
 			{
 				return Pair.create(ThreeState.UNSURE, null);
 			}
@@ -272,7 +100,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 			}
 
 			// method annotated by annotation
-			ActionType callMethodActionType = ActionType.findActionType(callMethod);
+			CallStateType callMethodActionType = CallStateType.findActionType(callMethod);
 			if(actionType.isAcceptableActionType(callMethodActionType))
 			{
 				return Pair.create(ThreeState.UNSURE, null);
@@ -280,7 +108,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 
 			if(callMethod.getParameterList().getParametersCount() == 0)
 			{
-				Class[] qualifiedNames = ourInterfacees.get(callMethod.getName());
+				Class[] qualifiedNames = ourInterfaces.get(callMethod.getName());
 				if(qualifiedNames == null)
 				{
 					return Pair.create(ThreeState.NO, actionType);
@@ -364,15 +192,15 @@ public class RequiredXActionInspection extends LocalInspectionTool
 			return Pair.create(ThreeState.NO, actionType);
 		}
 
-		private boolean acceptActionTypeFromCall(@NotNull PsiExpressionList expressionList, @NotNull ActionType actionType)
+		private boolean acceptActionTypeFromCall(@NotNull PsiExpressionList expressionList, @NotNull CallStateType actionType)
 		{
-			for(ActionType type : ActionType.values())
+			for(CallStateType type : CallStateType.values())
 			{
 				if(actionType.isAcceptableActionType(type))
 				{
 					PsiElement parent = expressionList.getParent();
 
-					for(AcceptableMethodCallCheck acceptableMethodCallCheck : type.myAcceptableMethodCallChecks)
+					for(AcceptableMethodCallCheck acceptableMethodCallCheck : type.getAcceptableMethodCallChecks())
 					{
 						if(acceptableMethodCallCheck.accept(parent))
 						{
@@ -384,19 +212,20 @@ public class RequiredXActionInspection extends LocalInspectionTool
 			return false;
 		}
 
-		private void reportError(@NotNull PsiCall expression, @NotNull ActionType type)
+		private void reportError(@NotNull PsiCall expression, @NotNull CallStateType type)
 		{
 			String text;
 			switch(type)
 			{
 				case READ:
 				case WRITE:
-					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run",
-							StringUtil.capitalize(type.name().toLowerCase()));
+					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run", StringUtil.capitalize(type.name().toLowerCase()));
 					break;
 				case DISPATCH_THREAD:
-					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.dispath",
-							StringUtil.capitalize(type.name().toLowerCase()));
+					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.dispath", StringUtil.capitalize(type.name().toLowerCase()));
+					break;
+				case UI_ACCESS:
+					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.ui", StringUtil.capitalize(type.name().toLowerCase()));
 					break;
 				default:
 					throw new IllegalArgumentException();

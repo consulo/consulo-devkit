@@ -23,6 +23,7 @@ import com.intellij.codeInspection.InspectionsBundle;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiIdentifier;
@@ -84,17 +85,16 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 					return;
 				}
 
-				RequiredXActionInspection.ActionType selfActionType = RequiredXActionInspection.ActionType.findSelfActionType(method);
-				if(selfActionType != RequiredXActionInspection.ActionType.NONE)
+				CallStateType selfActionType = CallStateType.findSelfActionType(method);
+				if(selfActionType != CallStateType.NONE)
 				{
 					Query<PsiMethod> query = OverridingMethodsSearch.search(method);
 					for(PsiMethod itMethod : query)
 					{
-						if(RequiredXActionInspection.ActionType.findSelfActionType(itMethod) == RequiredXActionInspection.ActionType.NONE)
+						if(CallStateType.findSelfActionType(itMethod) == CallStateType.NONE)
 						{
-							Class<?> actionClass = selfActionType.getActionClass();
-							holder.registerProblem(nameIdentifier, "Overriden methods are not annotated by @" + actionClass
-									.getSimpleName(), new MyAnnotateMethodFix(actionClass.getName()));
+							String actionClass = selfActionType.getActionClass();
+							holder.registerProblem(nameIdentifier, "Overriden methods are not annotated by @" + StringUtil.getShortName(actionClass), new MyAnnotateMethodFix(actionClass));
 							break;
 						}
 					}
@@ -104,12 +104,11 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 					PsiMethod[] superMethods = method.findSuperMethods();
 					for(PsiMethod superMethod : superMethods)
 					{
-						RequiredXActionInspection.ActionType superActionType = RequiredXActionInspection.ActionType.findSelfActionType(superMethod);
-						if(superActionType != RequiredXActionInspection.ActionType.NONE)
+						CallStateType superActionType = CallStateType.findSelfActionType(superMethod);
+						if(superActionType != CallStateType.NONE)
 						{
-							Class<?> actionClass = superActionType.getActionClass();
-							holder.registerProblem(nameIdentifier, "Missed annotation @" + actionClass.getSimpleName() + ", " +
-									"provided by super method", new AddAnnotationFix(actionClass.getName(), method));
+							String actionClass = superActionType.getActionClass();
+							holder.registerProblem(nameIdentifier, "Missed annotation @" + StringUtil.getShortName(actionClass) + ", provided by super method", new AddAnnotationFix(actionClass, method));
 						}
 					}
 				}
