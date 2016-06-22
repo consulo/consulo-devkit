@@ -37,7 +37,7 @@ public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 	}
 
 	@RequiredReadAction
-	private boolean isAllowed(ProblemsHolder holder)
+	protected boolean isAllowed(ProblemsHolder holder)
 	{
 		if(PluginModuleUtil.isConsuloProject(holder.getProject()))
 		{
