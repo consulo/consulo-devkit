@@ -22,7 +22,10 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
+import org.mustbe.consulo.RequiredDispatchThread;
+import com.intellij.codeInspection.AnnotateMethodFix;
 import com.intellij.codeInspection.LocalInspectionTool;
+import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.util.Computable;
@@ -36,6 +39,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.ThreeState;
 import com.intellij.util.ThrowableRunnable;
+import consulo.devkit.codeInsight.ConsuloUI;
 
 /**
  * @author VISTALL
@@ -214,6 +218,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 
 		private void reportError(@NotNull PsiCall expression, @NotNull CallStateType type)
 		{
+			LocalQuickFix[] quickFixes = LocalQuickFix.EMPTY_ARRAY;
 			String text;
 			switch(type)
 			{
@@ -223,14 +228,16 @@ public class RequiredXActionInspection extends LocalInspectionTool
 					break;
 				case DISPATCH_THREAD:
 					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.dispath", StringUtil.capitalize(type.name().toLowerCase()));
+					quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(RequiredDispatchThread.class.getName())};
 					break;
 				case UI_ACCESS:
 					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.ui", StringUtil.capitalize(type.name().toLowerCase()));
+					quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(ConsuloUI.RequiredUIAccess)};
 					break;
 				default:
 					throw new IllegalArgumentException();
 			}
-			myHolder.registerProblem(expression, text, ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
+			myHolder.registerProblem(expression, text, ProblemHighlightType.GENERIC_ERROR_OR_WARNING, quickFixes);
 		}
 	}
 
