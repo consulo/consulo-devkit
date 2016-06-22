@@ -15,6 +15,13 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import java.util.List;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
+import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import com.intellij.codeInsight.FileModificationService;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -28,15 +35,8 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
-import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
-import org.jetbrains.idea.devkit.util.DescriptorUtil;
-import org.jetbrains.idea.devkit.util.PluginModuleUtil;
-
-import java.util.List;
+import consulo.devkit.module.extension.PluginModuleExtension;
+import consulo.devkit.util.PluginModuleUtil;
 
 abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patcher {
   protected final PsiClass myClass;

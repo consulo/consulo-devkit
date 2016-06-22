@@ -29,7 +29,6 @@ import javax.swing.event.DocumentEvent;
 
 import org.consulo.module.extension.ui.ModuleExtensionSdkBoxBuilder;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.idea.devkit.module.extension.PluginMutableModuleExtension;
 import org.mustbe.consulo.RequiredDispatchThread;
 import com.intellij.ide.highlighter.JarArchiveFileType;
 import com.intellij.ide.plugins.IdeaPluginDescriptorImpl;

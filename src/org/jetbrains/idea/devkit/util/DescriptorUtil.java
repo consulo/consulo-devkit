@@ -18,7 +18,7 @@ package org.jetbrains.idea.devkit.util;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-import org.jetbrains.idea.devkit.module.extension.PluginModuleExtension;
+import consulo.devkit.module.extension.PluginModuleExtension;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
@@ -30,6 +30,7 @@ import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
+import consulo.devkit.util.PluginModuleUtil;
 
 /**
  * @author swr

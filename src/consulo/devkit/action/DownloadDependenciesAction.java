@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 must-be.org
+ * Copyright 2013-2016 must-be.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.jetbrains.idea.devkit.actions;
+package consulo.devkit.action;
 
 import java.io.File;
 import java.io.IOException;
@@ -170,7 +170,7 @@ public class DownloadDependenciesAction extends AnAction
 					}
 					catch(JDOMException e)
 					{
-						LOGGER.warn(e);
+						DownloadDependenciesAction.LOGGER.warn(e);
 					}
 					finally
 					{
@@ -189,7 +189,7 @@ public class DownloadDependenciesAction extends AnAction
 				}
 				catch(IOException e)
 				{
-					LOGGER.warn(e);
+					DownloadDependenciesAction.LOGGER.warn(e);
 				}
 			}
 		}.queue();

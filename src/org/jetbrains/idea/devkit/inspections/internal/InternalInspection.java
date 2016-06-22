@@ -16,7 +16,6 @@
 package org.jetbrains.idea.devkit.inspections.internal;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.util.PluginModuleUtil;
 import org.mustbe.consulo.RequiredReadAction;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -24,6 +23,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.PsiElementVisitor;
+import consulo.devkit.util.PluginModuleUtil;
 
 public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 {

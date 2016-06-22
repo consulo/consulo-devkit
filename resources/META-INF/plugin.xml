@@ -38,13 +38,13 @@
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 
-		<library.presentationProvider implementation="org.jetbrains.idea.devkit.module.library.PluginLibraryPresentationProvider"/>
+		<library.presentationProvider implementation="consulo.devkit.module.library.PluginLibraryPresentationProvider"/>
 		<moduleExtensionProvider key="consulo-plugin"
 								 parentKey="java"
 								 icon="/icon16.png"
 								 name="Consulo Plugin"
-								 immutableClass="org.jetbrains.idea.devkit.module.extension.PluginModuleExtension"
-								 mutableClass="org.jetbrains.idea.devkit.module.extension.PluginMutableModuleExtension"/>
+								 immutableClass="consulo.devkit.module.extension.PluginModuleExtension"
+								 mutableClass="consulo.devkit.module.extension.PluginMutableModuleExtension"/>
 		<localInspection language="XML" shortName="PluginXmlValidity" displayName="Plugin.xml Validity"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
@@ -213,7 +213,7 @@
 
 		<group id="DownloadDependenciesGroup">
 			<separator/>
-			<action id="DownloadDependencies" class="org.jetbrains.idea.devkit.actions.DownloadDependenciesAction" can-use-project-as-default="true"
+			<action id="DownloadDependencies" class="consulo.devkit.action.DownloadDependenciesAction" can-use-project-as-default="true"
 					require-module-extensions="consulo-plugin"/>
 			<add-to-group anchor="last" group-id="ProjectViewPopupMenuSettingsGroup"/>
 		</group>

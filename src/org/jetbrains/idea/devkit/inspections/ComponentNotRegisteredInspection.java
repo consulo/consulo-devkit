@@ -29,7 +29,7 @@ import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.inspections.quickfix.RegisterActionFix;
 import org.jetbrains.idea.devkit.inspections.quickfix.RegisterComponentFix;
 import org.jetbrains.idea.devkit.util.ComponentType;
-import org.jetbrains.idea.devkit.util.PluginModuleUtil;
+import consulo.devkit.util.PluginModuleUtil;
 import org.mustbe.consulo.RequiredReadAction;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;

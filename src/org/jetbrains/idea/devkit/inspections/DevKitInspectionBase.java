@@ -24,7 +24,7 @@ import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionType;
 import org.jetbrains.idea.devkit.util.ComponentType;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
-import org.jetbrains.idea.devkit.util.PluginModuleUtil;
+import consulo.devkit.util.PluginModuleUtil;
 import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.openapi.actionSystem.ActionGroup;
