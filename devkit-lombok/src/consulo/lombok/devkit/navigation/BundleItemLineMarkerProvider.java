@@ -20,7 +20,6 @@ import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.List;
 
-import org.consulo.lombok.annotations.Bundle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mustbe.consulo.RequiredDispatchThread;
@@ -49,6 +48,8 @@ import consulo.lombok.devkit.processor.impl.BundleAnnotationProcessor;
  */
 public class BundleItemLineMarkerProvider implements LineMarkerProvider
 {
+	private static final String ourBundleAnnotations = "consulo.lombok.annotations.Bundle";
+
 	@RequiredReadAction
 	@Nullable
 	@Override
@@ -72,7 +73,7 @@ public class BundleItemLineMarkerProvider implements LineMarkerProvider
 					continue;
 				}
 
-				PsiAnnotation annotation = AnnotationUtil.findAnnotation(psiClass, Bundle.class.getName());
+				PsiAnnotation annotation = AnnotationUtil.findAnnotation(psiClass, ourBundleAnnotations);
 				if(annotation != null)
 				{
 					LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(nameIdentifier, nameIdentifier.getTextRange(), PropertiesFileType.INSTANCE.getIcon(),
@@ -83,7 +84,7 @@ public class BundleItemLineMarkerProvider implements LineMarkerProvider
 						public void navigate(MouseEvent e, PsiElement elt)
 						{
 							PsiClass parent = (PsiClass) elt.getParent();
-							PsiAnnotation annotation = AnnotationUtil.findAnnotation(parent, Bundle.class.getName());
+							PsiAnnotation annotation = AnnotationUtil.findAnnotation(parent, ourBundleAnnotations);
 							if(annotation != null)
 							{
 								String filePath = BundleAnnotationProcessor.calcBundleMessageFilePath(annotation, parent);

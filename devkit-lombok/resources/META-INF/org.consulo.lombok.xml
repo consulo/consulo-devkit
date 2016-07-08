@@ -16,12 +16,12 @@
 
 <idea-plugin>
 	<extensions defaultExtensionNs="org.consulo.lombok">
-		<processor annotationClass="org.consulo.lombok.annotations.Logger" implementationClass="consulo.lombok.devkit.processor.impl.IdeaLoggerAnnotationProcessor"/>
-		<processor annotationClass="org.consulo.lombok.annotations.ModuleService" implementationClass="consulo.lombok.devkit.processor.impl.ModuleServiceAnnotationProcessor"/>
-		<processor annotationClass="org.consulo.lombok.annotations.ProjectService" implementationClass="consulo.lombok.devkit.processor.impl.ProjectServiceAnnotationProcessor"/>
-		<processor annotationClass="org.consulo.lombok.annotations.ApplicationService" implementationClass="consulo.lombok.devkit.processor.impl.ApplicationServiceAnnotationProcessor"/>
-		<processor annotationClass="org.consulo.lombok.annotations.ArrayFactoryFields" implementationClass="consulo.lombok.devkit.processor.impl.ArrayFactoryFieldsAnnotationProcessor"/>
-		<processor annotationClass="org.consulo.lombok.annotations.Bundle" implementationClass="consulo.lombok.devkit.processor.impl.BundleAnnotationProcessor"/>
+		<processor annotationClass="consulo.lombok.annotations.Logger" implementationClass="consulo.lombok.devkit.processor.impl.IdeaLoggerAnnotationProcessor"/>
+		<processor annotationClass="consulo.lombok.annotations.ModuleService" implementationClass="consulo.lombok.devkit.processor.impl.ModuleServiceAnnotationProcessor"/>
+		<processor annotationClass="consulo.lombok.annotations.ProjectService" implementationClass="consulo.lombok.devkit.processor.impl.ProjectServiceAnnotationProcessor"/>
+		<processor annotationClass="consulo.lombok.annotations.ApplicationService" implementationClass="consulo.lombok.devkit.processor.impl.ApplicationServiceAnnotationProcessor"/>
+		<processor annotationClass="consulo.lombok.annotations.ArrayFactoryFields" implementationClass="consulo.lombok.devkit.processor.impl.ArrayFactoryFieldsAnnotationProcessor"/>
+		<processor annotationClass="consulo.lombok.annotations.Bundle" implementationClass="consulo.lombok.devkit.processor.impl.BundleAnnotationProcessor"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">

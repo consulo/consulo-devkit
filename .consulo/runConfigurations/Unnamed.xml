@@ -6,7 +6,7 @@
     <option name="ALT_CONSULO_SDK_PATH" />
     <option name="INTERNAL_MODE" value="false" />
     <java-sdk name="1.6" />
-    <consulo-sdk name="Consulo 1.SNAPSHOT" />
+    <consulo-sdk name="Consulo 1346 (predefined)" />
     <artifact name="plugin" />
     <predefined_log_file id="IDEA_LOG" enabled="true" />
     <RunnerSettings RunnerId="ConsuloDebuggerRunner">
@@ -20,6 +20,7 @@
       <option name="LOCAL" value="true" />
     </RunnerSettings>
     <ConfigurationWrapper RunnerId="ConsuloDebuggerRunner" />
+    <ConfigurationWrapper RunnerId="Cover" />
     <ConfigurationWrapper RunnerId="Debug" />
     <ConfigurationWrapper RunnerId="Run" />
     <method>
