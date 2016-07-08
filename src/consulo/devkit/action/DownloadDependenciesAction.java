@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.consulo.lombok.annotations.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -51,6 +50,7 @@ import com.intellij.platform.templates.github.DownloadUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.io.ZipUtil;
 import com.intellij.util.net.HttpConfigurable;
+import consulo.lombok.annotations.Logger;
 
 /**
  * @author VISTALL

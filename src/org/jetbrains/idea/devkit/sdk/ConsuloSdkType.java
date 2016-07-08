@@ -24,7 +24,7 @@ import java.util.Collections;
 
 import javax.swing.Icon;
 
-import org.consulo.lombok.annotations.Logger;
+import consulo.lombok.annotations.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;

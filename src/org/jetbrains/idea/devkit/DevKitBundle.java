@@ -15,7 +15,7 @@
  */
 package org.jetbrains.idea.devkit;
 
-import org.consulo.lombok.annotations.Bundle;
+import consulo.lombok.annotations.Bundle;
 
 /**
  * User: anna
