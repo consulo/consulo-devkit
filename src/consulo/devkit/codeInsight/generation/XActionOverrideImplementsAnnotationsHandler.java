@@ -17,13 +17,13 @@
 package consulo.devkit.codeInsight.generation;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.RequiredWriteAction;
 import com.intellij.codeInsight.generation.OverrideImplementsAnnotationsHandler;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ArrayUtil;
-import consulo.devkit.codeInsight.ConsuloUI;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.annotations.RequiredReadAction;
+import consulo.annotations.RequiredWriteAction;
+import consulo.ui.RequiredUIAccess;
 
 /**
  * @author VISTALL
@@ -35,7 +35,7 @@ public class XActionOverrideImplementsAnnotationsHandler implements OverrideImpl
 			RequiredReadAction.class.getName(),
 			RequiredWriteAction.class.getName(),
 			RequiredDispatchThread.class.getName(),
-			ConsuloUI.RequiredUIAccess
+			RequiredUIAccess.class.getName()
 	};
 
 	@Override

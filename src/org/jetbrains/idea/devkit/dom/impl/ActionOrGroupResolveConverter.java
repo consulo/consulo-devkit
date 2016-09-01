@@ -29,7 +29,6 @@ import org.jetbrains.idea.devkit.dom.ActionOrGroup;
 import org.jetbrains.idea.devkit.dom.Actions;
 import org.jetbrains.idea.devkit.dom.Group;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-import org.mustbe.consulo.RequiredReadAction;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.module.Module;
@@ -49,6 +48,7 @@ import com.intellij.util.xml.DomUtil;
 import com.intellij.util.xml.ElementPresentationManager;
 import com.intellij.util.xml.ResolvingConverter;
 import com.intellij.util.xml.impl.DomImplUtil;
+import consulo.annotations.RequiredReadAction;
 
 public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGroup>
 {

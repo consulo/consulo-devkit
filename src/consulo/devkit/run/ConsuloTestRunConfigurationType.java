@@ -18,22 +18,22 @@ package consulo.devkit.run;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
-import consulo.devkit.module.extension.PluginModuleExtension;
 import org.jetbrains.idea.devkit.run.PluginConfigurationType;
-import consulo.devkit.ConsuloSandboxIcons;
 import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
-import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.IconDescriptor;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.Pair;
 import com.intellij.packaging.artifacts.Artifact;
+import consulo.devkit.ConsuloSandboxIcons;
+import consulo.devkit.module.extension.PluginModuleExtension;
+import consulo.ide.IconDescriptor;
+import consulo.module.extension.ModuleExtensionHelper;
 
 /**
  * @author VISTALL

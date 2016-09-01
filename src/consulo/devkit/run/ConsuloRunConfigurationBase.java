@@ -19,16 +19,10 @@ package consulo.devkit.run;
 import java.util.Collections;
 import java.util.Set;
 
-import org.consulo.sdk.SdkPointerManager;
-import org.consulo.util.pointers.NamedPointer;
-import org.consulo.util.pointers.NamedPointerManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.run.PluginRunXmlConfigurationUtil;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.sdk.SdkUtil;
 import com.intellij.debugger.impl.GenericDebugRunnerConfiguration;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -49,8 +43,13 @@ import com.intellij.openapi.util.NotNullFactory;
 import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.packaging.artifacts.Artifact;
-import com.intellij.packaging.artifacts.ArtifactPointerUtil;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
+import consulo.annotations.RequiredReadAction;
+import consulo.bundle.SdkPointerManager;
+import consulo.bundle.SdkUtil;
+import consulo.packaging.artifacts.ArtifactPointerUtil;
+import consulo.util.pointers.NamedPointer;
+import consulo.util.pointers.NamedPointerManager;
 
 /**
  * @author VISTALL

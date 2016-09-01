@@ -36,7 +36,6 @@ import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
-import com.intellij.openapi.roots.ui.configuration.SdkComboBox;
 import com.intellij.openapi.roots.ui.configuration.projectRoot.ProjectSdksModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
@@ -52,6 +51,7 @@ import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ObjectUtil;
 import com.intellij.util.ui.FormBuilder;
 import consulo.lombok.annotations.Logger;
+import consulo.roots.ui.configuration.SdkComboBox;
 
 @Logger
 public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConfigurationBase> extends SettingsEditor<T>

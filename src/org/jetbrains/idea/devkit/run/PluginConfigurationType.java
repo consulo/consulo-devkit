@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
-import org.mustbe.consulo.module.extension.ModuleExtensionHelper;
 import com.intellij.diagnostic.VMOptions;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
@@ -43,6 +42,7 @@ import com.intellij.packaging.impl.artifacts.PlainArtifactType;
 import consulo.devkit.ConsuloSandboxIcons;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.run.ConsuloRunConfiguration;
+import consulo.module.extension.ModuleExtensionHelper;
 
 public class PluginConfigurationType extends ConfigurationTypeBase
 {

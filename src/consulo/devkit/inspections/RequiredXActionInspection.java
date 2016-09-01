@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
-import org.mustbe.consulo.RequiredDispatchThread;
 import com.intellij.codeInspection.AnnotateMethodFix;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -39,7 +38,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.ThreeState;
 import com.intellij.util.ThrowableRunnable;
-import consulo.devkit.codeInsight.ConsuloUI;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.RequiredUIAccess;
 
 /**
  * @author VISTALL
@@ -232,7 +232,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 					break;
 				case UI_ACCESS:
 					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.ui", StringUtil.capitalize(type.name().toLowerCase()));
-					quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(ConsuloUI.RequiredUIAccess)};
+					quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(RequiredUIAccess.class.getName())};
 					break;
 				default:
 					throw new IllegalArgumentException();

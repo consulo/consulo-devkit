@@ -20,10 +20,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.intellij.lang.jflex.vfs.backgroundTask.JFlexBackgroundTaskByVfsChangeProvider;
 import org.jetbrains.annotations.NotNull;
 import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
-import org.mustbe.consulo.vfs.backgroundTask.BackgroundTaskByVfsParameters;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
@@ -38,6 +36,8 @@ import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import consulo.backgroundTaskByVfsChange.BackgroundTaskByVfsParameters;
+import consulo.jflex.vfs.backgroundTask.JFlexBackgroundTaskByVfsChangeProvider;
 
 /**
  * @author VISTALL

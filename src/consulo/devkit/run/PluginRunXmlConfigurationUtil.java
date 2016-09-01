@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 must-be.org
+ * Copyright 2013-2016 must-be.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.jetbrains.idea.devkit.run;
+package consulo.devkit.run;
 
-import org.consulo.util.pointers.Named;
-import org.consulo.util.pointers.NamedPointer;
-import org.consulo.util.pointers.NamedPointerManager;
 import org.jdom.Element;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.util.NotNullFactory;
+import consulo.util.pointers.Named;
+import consulo.util.pointers.NamedPointer;
+import consulo.util.pointers.NamedPointerManager;
 
 /**
  * @author VISTALL
@@ -32,7 +32,7 @@ public class PluginRunXmlConfigurationUtil
 	private static final String NAME = "name";
 
 	@Nullable
-	public static <T extends Named> org.consulo.util.pointers.NamedPointer<T> readPointer(String childName, Element parent, NotNullFactory<NamedPointerManager<T>> fun)
+	public static <T extends Named> NamedPointer<T> readPointer(String childName, Element parent, NotNullFactory<NamedPointerManager<T>> fun)
 	{
 		final NamedPointerManager<T> namedPointerManager = fun.create();
 

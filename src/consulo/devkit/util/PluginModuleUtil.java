@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package consulo.devkit.util;
 
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.build.PluginBuildUtil;
-import org.mustbe.consulo.RequiredReadAction;
 import org.mustbe.consulo.java.roots.SpecialDirUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -33,6 +33,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.HashSet;
+import consulo.annotations.RequiredReadAction;
 import consulo.devkit.module.extension.PluginModuleExtension;
 
 /**

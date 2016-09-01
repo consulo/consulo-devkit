@@ -27,11 +27,6 @@ import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredDispatchThread;
-import consulo.devkit.action.icons.GenerateDirNode;
-import consulo.devkit.action.icons.IconClassBuilder;
-import org.mustbe.consulo.roots.ContentFolderScopes;
-import org.mustbe.consulo.roots.impl.ProductionResourceContentFolderTypeProvider;
 import com.intellij.application.options.ModuleListCellRenderer;
 import com.intellij.ide.actions.OpenFileAction;
 import com.intellij.ide.highlighter.JavaFileType;
@@ -65,6 +60,11 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.ui.UIUtil;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.devkit.action.icons.GenerateDirNode;
+import consulo.devkit.action.icons.IconClassBuilder;
+import consulo.roots.ContentFolderScopes;
+import consulo.roots.impl.ProductionResourceContentFolderTypeProvider;
 
 /**
  * @author VISTALL

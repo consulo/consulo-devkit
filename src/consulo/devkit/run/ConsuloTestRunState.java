@@ -21,12 +21,8 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.consulo.compiler.ModuleCompilerPathsManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.application.ApplicationProperties;
-import org.mustbe.consulo.roots.impl.TestContentFolderTypeProvider;
 import com.intellij.execution.ConfigurationUtil;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
@@ -52,6 +48,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.application.ApplicationProperties;
+import consulo.compiler.ModuleCompilerPathsManager;
+import consulo.roots.impl.TestContentFolderTypeProvider;
 
 /**
  * @author VISTALL

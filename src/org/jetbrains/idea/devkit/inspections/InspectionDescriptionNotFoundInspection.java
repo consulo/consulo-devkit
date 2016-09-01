@@ -19,14 +19,12 @@ package org.jetbrains.idea.devkit.inspections;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.consulo.psi.PsiPackage;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
-import org.mustbe.consulo.roots.ContentFolderScopes;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.InspectionProfileEntry;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -47,6 +45,8 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.psi.PsiPackage;
+import consulo.roots.ContentFolderScopes;
 
 /**
  * @author Konstantin Bulenkov

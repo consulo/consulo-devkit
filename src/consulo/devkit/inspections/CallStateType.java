@@ -20,9 +20,6 @@ import javax.swing.SwingUtilities;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mustbe.consulo.RequiredDispatchThread;
-import org.mustbe.consulo.RequiredReadAction;
-import org.mustbe.consulo.RequiredWriteAction;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.BaseActionRunnable;
@@ -34,7 +31,11 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.UIUtil;
-import consulo.devkit.codeInsight.ConsuloUI;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.annotations.RequiredReadAction;
+import consulo.annotations.RequiredWriteAction;
+import consulo.ui.RequiredUIAccess;
+import consulo.ui.UIAccess;
 
 /**
  * @author VISTALL
@@ -53,7 +54,7 @@ public enum CallStateType
 			},
 	WRITE(RequiredWriteAction.class.getName(), WriteAction.class, new AcceptableMethodCallCheck(Application.class, "runWriteAction")),
 	// replacement for DISPATCH_THREAD
-	UI_ACCESS(ConsuloUI.RequiredUIAccess, null, new AcceptableMethodCallCheck(ConsuloUI.UIAccess, "give"))
+	UI_ACCESS(RequiredUIAccess.class.getName(), null, new AcceptableMethodCallCheck(UIAccess.class.getName(), "give"))
 			{
 				@Override
 				public boolean isAcceptableActionType(@NotNull CallStateType type)

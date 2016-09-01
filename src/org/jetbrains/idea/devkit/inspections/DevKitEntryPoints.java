@@ -15,7 +15,6 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import org.mustbe.consulo.Exported;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInsight.daemon.ImplicitUsageProvider;
 import com.intellij.psi.JavaPsiFacade;
@@ -23,6 +22,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
+import consulo.annotations.Exported;
 
 /**
  * User: anna
