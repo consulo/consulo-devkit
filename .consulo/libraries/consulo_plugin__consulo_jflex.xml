@@ -1,0 +1,7 @@
+<component name="libraryTable">
+  <library name="consulo-plugin: consulo.jflex">
+    <binaries>
+      <root url="jar://$PROJECT_DIR$/dep/consulo.jflex/lib/jflex.jar!/" />
+    </binaries>
+  </library>
+</component>

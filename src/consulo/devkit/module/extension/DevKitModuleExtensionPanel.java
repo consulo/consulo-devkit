@@ -18,9 +18,9 @@ package consulo.devkit.module.extension;
 
 import javax.swing.JPanel;
 
-import org.consulo.module.extension.ui.ModuleExtensionSdkBoxBuilder;
-import org.mustbe.consulo.RequiredDispatchThread;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import consulo.annotations.RequiredDispatchThread;
+import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
 
 /**
  * @author VISTALL

@@ -1,0 +1,7 @@
+<component name="libraryTable">
+  <library name="consulo-plugin: com.intellij.properties">
+    <binaries>
+      <root url="jar://$PROJECT_DIR$/dep/com.intellij.properties/lib/properties.jar!/" />
+    </binaries>
+  </library>
+</component>

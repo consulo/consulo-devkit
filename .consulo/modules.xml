@@ -4,7 +4,7 @@
     <modules>
       <module name="consulo-devkit" dirurl="file://$PROJECT_DIR$" current-layer="Default">
         <module-layer name="Default">
-          <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo SNAPSHOT" custom-plugin-dir-url="file://$MODULE_DIR$/dep" />
+          <extension id="consulo-plugin" sdk-module-name="" sdk-name="Consulo SNAPSHOT" />
           <extension id="java" sdk-module-name="" sdk-name="1.8" language-level-module-name="" language-level-name="JDK_1_8" special-dir-location="SOURCE_DIR" />
           <extension id="lombok" />
           <content url="file://$MODULE_DIR$">
@@ -23,68 +23,18 @@
             </library>
           </orderEntry>
           <orderEntry type="module" module-name="devkit-lombok" />
-          <orderEntry type="module-library">
-            <library name="consulo:XML">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/xml/lib/jsr173_1.0_api.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/xml/lib/resolver.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/xml/lib/xerces.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/xml/lib/xml.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library name="consulo:Properties Support">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/properties/lib/properties.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library name="consulo:JFlex Support">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/jflex/lib/jflex.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library name="consulo:JUnit">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/junit/lib/junit-rt.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/junit/lib/junit.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library name="consulo:UI Designer">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/ui-designer/lib/forms_compiler.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/ui-designer/lib/ui-designer.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library name="consulo:Java">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/dep/java/lib/asm-all.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/coverate_rt.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/instrumentation-util.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/jacocoant.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/java-i18n.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/java-manifest.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/java-rt.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/java.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/jdi.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/jdk-annotations.jar!/" />
-                <root url="jar://$MODULE_DIR$/dep/java/lib/jimage-jdk6.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
+          <orderEntry type="library" name="consulo-plugin: consulo.jflex" level="project" />
+          <orderEntry type="library" name="consulo-plugin: org.consulo.java" level="project" />
+          <orderEntry type="library" name="consulo-plugin: com.intellij.properties" level="project" />
+          <orderEntry type="library" name="consulo-plugin: com.intellij.xml" level="project" />
+          <orderEntry type="library" name="consulo-plugin: com.intellij.uiDesigner" level="project" />
+          <orderEntry type="library" name="consulo-plugin: com.intellij.junit" level="project" />
+          <orderEntry type="library" name="consulo-plugin: com.intellij.junit" level="project" />
         </module-layer>
       </module>
       <module name="devkit-lombok" dirurl="file://$PROJECT_DIR$/devkit-lombok" current-layer="Default">
         <module-layer name="Default">
-          <extension id="consulo-plugin" sdk-module-name="consulo-devkit" sdk-name="" custom-plugin-dir-url="file://$MODULE_DIR$/../dep" />
+          <extension id="consulo-plugin" sdk-module-name="consulo-devkit" sdk-name="" />
           <extension id="java" sdk-module-name="consulo-devkit" sdk-name="" language-level-module-name="consulo-devkit" language-level-name="" special-dir-location="SOURCE_DIR" />
           <content url="file://$MODULE_DIR$">
             <content-folder type="PRODUCTION_RESOURCE" url="file://$MODULE_DIR$/resources" />
@@ -93,29 +43,9 @@
           <orderEntry type="sourceFolder" />
           <orderEntry type="module-extension-sdk" extension-id="java" />
           <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
-          <orderEntry type="module-library">
-            <library name="consulo:Lombok Support">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/../dep/lombok-base/lib/lombok-base.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library name="consulo:Java">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/../dep/java/lib/java-rt.jar!/" />
-                <root url="jar://$MODULE_DIR$/../dep/java/lib/java.jar!/" />
-                <root url="jar://$MODULE_DIR$/../dep/java/lib/jdk-annotations.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
-          <orderEntry type="module-library">
-            <library name="consulo:Properties Support">
-              <binaries>
-                <root url="jar://$MODULE_DIR$/../dep/properties/lib/properties.jar!/" />
-              </binaries>
-            </library>
-          </orderEntry>
+          <orderEntry type="library" name="consulo-plugin: org.consulo.java" level="project" />
+          <orderEntry type="library" name="consulo-plugin: org.consulo.lombok" level="project" />
+          <orderEntry type="library" name="consulo-plugin: com.intellij.properties" level="project" />
         </module-layer>
       </module>
     </modules>
