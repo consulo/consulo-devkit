@@ -19,37 +19,41 @@ package consulo.devkit.action;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
-import com.intellij.ide.plugins.RepositoryHelper;
+import org.mustbe.consulo.RequiredDispatchThread;
+import com.google.gson.Gson;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.application.ex.ApplicationInfoEx;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.SdkTable;
+import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.impl.libraries.ProjectLibraryTable;
+import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.openapi.roots.types.BinariesOrderRootType;
 import com.intellij.openapi.updateSettings.impl.UpdateChecker;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.platform.templates.github.DownloadUtil;
-import com.intellij.util.containers.MultiMap;
+import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
+import com.intellij.util.ArrayUtil;
+import com.intellij.util.io.DownloadUtil;
 import com.intellij.util.io.ZipUtil;
-import com.intellij.util.net.HttpConfigurable;
 import consulo.lombok.annotations.Logger;
 
 /**
@@ -59,8 +63,18 @@ import consulo.lombok.annotations.Logger;
 @Logger
 public class DownloadDependenciesAction extends AnAction
 {
+	public static class PluginJson
+	{
+		public String id;
+		public String[] dependencies = ArrayUtil.EMPTY_STRING_ARRAY;
+	}
+
+	private static final String ourLibraryPrefix = "consulo-plugin: ";
+	private static final String ourDefaultPluginHost = "http://must-be.org/api/v2/consulo/plugins/";
+
+	@RequiredDispatchThread
 	@Override
-	public void update(AnActionEvent e)
+	public void update(@NotNull AnActionEvent e)
 	{
 		super.update(e);
 		if(e.getPresentation().isVisible())
@@ -71,14 +85,32 @@ public class DownloadDependenciesAction extends AnAction
 		}
 	}
 
+	@RequiredDispatchThread
 	@Override
-	public void actionPerformed(AnActionEvent e)
+	public void actionPerformed(@NotNull AnActionEvent e)
 	{
 		Project project = e.getData(PlatformDataKeys.PROJECT);
 		if(project == null)
 		{
 			return;
 		}
+
+		Library[] libraries = ProjectLibraryTable.getInstance(project).getLibraries();
+		Map<String, Library> librariesByPluginId = new HashMap<>();
+		for(Library library : libraries)
+		{
+			String name = library.getName();
+			if(name != null && name.startsWith(ourLibraryPrefix))
+			{
+				String pluginId = name.substring(ourLibraryPrefix.length(), name.length());
+
+				librariesByPluginId.put(pluginId, library);
+			}
+		}
+
+		final Sdk sdk = SdkTable.getInstance().findSdk("Consulo SNAPSHOT");
+
+		final String consuloVersion = sdk != null ? StringUtil.notNullize(sdk.getVersionString(), "SNAPSHOT") : "SNAPSHOT";
 
 		final File depDir = new File(project.getBasePath(), "dep");
 		depDir.mkdirs();
@@ -91,122 +123,119 @@ public class DownloadDependenciesAction extends AnAction
 				FileUtil.delete(depDir);
 				try
 				{
-					HttpURLConnection connection = HttpConfigurable.getInstance().openHttpConnection("http://must-be.org/vulcan/projects.jsp");
-					connection.connect();
-
-					InputStream inputStream = null;
+					progressIndicator.setText("Downloading plugin list...");
+					PluginJson[] plugins;
 					try
 					{
-						Document document = JDOMUtil.loadDocument(inputStream = connection.getInputStream());
+						InputStream inputStream = new URL(ourDefaultPluginHost + "list?channel=nightly&platformVersion=" + consuloVersion).openStream();
 
-						MultiMap<String, String> map = new MultiMap<String, String>();
-						for(Element element : document.getRootElement().getChildren())
-						{
-							String projectName = element.getChildText("name");
-							Element dependencies = element.getChild("dependencies");
-							if(dependencies != null)
-							{
-								for(Element dependencyElement : dependencies.getChildren())
-								{
-									String textTrim = dependencyElement.getTextTrim();
-									if(Comparing.equal(textTrim, "consulo"))
-									{
-										continue;
-									}
-									map.putValue(projectName, textTrim);
-								}
-							}
-						}
-
-						inputStream.close();
-
-						String projectName = getProject().getName();
-						if(!map.containsKey(projectName))
-						{
-							return;
-						}
-						progressIndicator.setText("Downloading plugin list...");
-						connection = HttpConfigurable.getInstance().openHttpConnection(ApplicationInfoEx.getInstanceEx().getPluginsListUrl());
-						connection.connect();
-
-						MultiMap<String, String> buildProjectToId = new MultiMap<String, String>();
-						document = JDOMUtil.loadDocument(inputStream = connection.getInputStream());
-
-						for(Element categoryElement : document.getRootElement().getChildren())
-						{
-							for(Element ideaPluginElement : categoryElement.getChildren())
-							{
-								String idText = ideaPluginElement.getChildText("id");
-								String buildProjectIdText = ideaPluginElement.getChildText("build-project");
-								if(StringUtil.isEmpty(idText) || StringUtil.isEmpty(buildProjectIdText))
-								{
-									continue;
-								}
-								buildProjectToId.putValue(buildProjectIdText, idText);
-							}
-						}
-
-						Set<String> toDownloadIds = new HashSet<String>();
-						collectDependencies(projectName, map, toDownloadIds, buildProjectToId);
-
-						String uuid = UpdateChecker.getInstallationUID(PropertiesComponent.getInstance());
-
-						for(String toDownloadId : toDownloadIds)
-						{
-							String url = RepositoryHelper.getDownloadUrl() + URLEncoder.encode(toDownloadId, "UTF8") +
-									"&build=SNAPSHOT&uuid=" + URLEncoder.encode(uuid, "UTF8");
-
-							File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
-							File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
-
-							progressIndicator.setText("Downloading plugin: " + toDownloadId);
-							DownloadUtil.downloadAtomically(progressIndicator, url, targetFileToDownload, tempTargetFileToDownload);
-
-							progressIndicator.setText("Extracting plugin: " + toDownloadId);
-							ZipUtil.extract(targetFileToDownload, depDir, null);
-						}
-
-						LocalFileSystem.getInstance().refreshIoFiles(Collections.singletonList(depDir), false, true, null);
+						plugins = new Gson().fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), PluginJson[].class);
 					}
-					catch(JDOMException e)
+					catch(IOException e)
 					{
-						DownloadDependenciesAction.LOGGER.warn(e);
+						LOGGER.warn(e);
+						return;
 					}
-					finally
+
+					progressIndicator.setText("Downloaded plugin list [" + plugins.length + "]");
+
+					Set<String> deepDependencies = new TreeSet<>();
+
+					progressIndicator.setText("Collected original dependencies: " + librariesByPluginId.keySet());
+
+					for(String pluginId : librariesByPluginId.keySet())
 					{
-						try
-						{
-							if(inputStream != null)
-							{
-								inputStream.close();
-							}
-						}
-						catch(IOException e1)
-						{
-							//
-						}
+						collectDependencies(pluginId, deepDependencies, plugins);
+					}
+
+					progressIndicator.setText("Collected deep dependencies: " + deepDependencies);
+
+					String uuid = UpdateChecker.getInstallationUID(PropertiesComponent.getInstance());
+
+					for(String deepDependency : deepDependencies)
+					{
+						String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode(deepDependency,
+								"UTF-8") + "&id=" + URLEncoder.encode(uuid, "UTF-8");
+
+						File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
+						File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
+
+						progressIndicator.setText("Downloading plugin: " + deepDependency);
+						DownloadUtil.downloadAtomically(progressIndicator, downloadUrl, targetFileToDownload, tempTargetFileToDownload);
+
+						progressIndicator.setText("Extracting plugin: " + deepDependency);
+						ZipUtil.extract(targetFileToDownload, depDir, null);
 					}
 				}
 				catch(IOException e)
 				{
-					DownloadDependenciesAction.LOGGER.warn(e);
+					LOGGER.warn(e);
+					return;
+				}
+
+				progressIndicator.setText("Updating libraries");
+				VirtualFile depVirtualDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(depDir.getPath());
+				if(depVirtualDir == null)
+				{
+					return;
+				}
+
+				for(Map.Entry<String, Library> entry : librariesByPluginId.entrySet())
+				{
+					VirtualFile libDir = depVirtualDir.findFileByRelativePath(entry.getKey() + "/lib");
+					if(libDir == null)
+					{
+						continue;
+					}
+
+					Library library = entry.getValue();
+
+					final Library.ModifiableModel modifiableModel = library.getModifiableModel();
+					for(OrderRootType orderRootType : OrderRootType.getAllTypes())
+					{
+						String[] urls = modifiableModel.getUrls(orderRootType);
+						for(String url : urls)
+						{
+							modifiableModel.removeRoot(url, orderRootType);
+						}
+					}
+
+					for(VirtualFile file : libDir.getChildren())
+					{
+						if(file.isDirectory())
+						{
+							continue;
+						}
+						VirtualFile localVirtualFileByPath = ArchiveVfsUtil.getArchiveRootForLocalFile(file);
+						if(localVirtualFileByPath == null)
+						{
+							continue;
+						}
+						modifiableModel.addRoot(localVirtualFileByPath, BinariesOrderRootType.getInstance());
+					}
+
+					WriteCommandAction.runWriteCommandAction(project, modifiableModel::commit);
 				}
 			}
 		}.queue();
 	}
 
-	private static void collectDependencies(
-			String projectName, MultiMap<String, String> dependenciesInBuild, Collection<String> make, MultiMap<String, String> buildProjectToId)
+	private void collectDependencies(String pluginId, Set<String> deps, PluginJson[] plugins)
 	{
-		Collection<String> dependencies = dependenciesInBuild.get(projectName);
-		for(String dependency : dependencies)
+		if(!deps.add(pluginId))
 		{
-			for(String id : buildProjectToId.get(dependency))
-			{
-				make.add(id);
-			}
+			return;
+		}
 
-			collectDependencies(dependency, dependenciesInBuild, make, buildProjectToId);
+		for(PluginJson plugin : plugins)
+		{
+			if(pluginId.equals(plugin.id))
+			{
+				for(String dependencyId : plugin.dependencies)
+				{
+					collectDependencies(dependencyId, deps, plugins);
+				}
+			}
 		}
 	}
 }
