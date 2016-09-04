@@ -17,14 +17,14 @@ package consulo.lombok.devkit.processor.impl;
 
 import java.util.List;
 
-import org.consulo.lombok.processors.LombokSelfClassProcessor;
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.java.util.JavaClassNames;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.light.LightMethodBuilder;
 import com.intellij.psi.impl.light.LightParameter;
+import consulo.java.module.util.JavaClassNames;
+import consulo.lombok.processors.LombokSelfClassProcessor;
 
 /**
  * @author VISTALL

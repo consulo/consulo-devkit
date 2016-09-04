@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
-import org.mustbe.consulo.java.util.JavaClassNames;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
@@ -37,6 +36,7 @@ import com.intellij.psi.PsiType;
 import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.ResolvingConverter;
 import com.intellij.util.xmlb.annotations.Attribute;
+import consulo.java.module.util.JavaClassNames;
 
 /**
  * @author yole

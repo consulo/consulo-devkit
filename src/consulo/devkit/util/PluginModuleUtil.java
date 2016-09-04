@@ -23,7 +23,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.build.PluginBuildUtil;
-import org.mustbe.consulo.java.roots.SpecialDirUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtil;
@@ -35,6 +34,7 @@ import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.HashSet;
 import consulo.annotations.RequiredReadAction;
 import consulo.devkit.module.extension.PluginModuleExtension;
+import consulo.java.roots.SpecialDirUtil;
 
 /**
  * @author VISTALL

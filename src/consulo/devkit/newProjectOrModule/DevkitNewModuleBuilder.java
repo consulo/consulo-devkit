@@ -25,7 +25,6 @@ import javax.swing.JPanel;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.run.PluginConfigurationType;
-import org.mustbe.consulo.java.module.extension.JavaMutableModuleExtension;
 import com.intellij.compiler.impl.javaCompiler.JavaCompilerConfiguration;
 import com.intellij.compiler.options.CompileStepBeforeRun;
 import com.intellij.execution.BeforeRunTask;
@@ -56,6 +55,7 @@ import consulo.devkit.run.ConsuloRunConfiguration;
 import consulo.ide.impl.NewModuleBuilder;
 import consulo.ide.impl.NewModuleContext;
 import consulo.ide.impl.UnzipNewModuleBuilderProcessor;
+import consulo.java.module.extension.JavaMutableModuleExtension;
 import consulo.module.extension.MutableModuleExtensionWithSdk;
 import consulo.packaging.artifacts.ArtifactPointerUtil;
 import consulo.packaging.impl.elements.ZipArchivePackagingElement;

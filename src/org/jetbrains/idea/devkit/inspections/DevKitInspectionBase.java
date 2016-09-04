@@ -24,8 +24,6 @@ import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionType;
 import org.jetbrains.idea.devkit.util.ComponentType;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
-import consulo.devkit.util.PluginModuleUtil;
-import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -50,6 +48,8 @@ import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlTagValue;
 import com.intellij.psi.xml.XmlToken;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.devkit.util.PluginModuleUtil;
+import consulo.java.module.extension.JavaModuleExtension;
 
 /**
  * @author swr

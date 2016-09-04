@@ -15,14 +15,15 @@
  */
 package consulo.lombok.devkit.processor.impl;
 
-import org.consulo.lombok.processors.impl.AbstractLoggerAnnotationProcessor;
 import org.jetbrains.annotations.NotNull;
+import consulo.lombok.processors.impl.AbstractLoggerAnnotationProcessor;
 
 /**
  * @author VISTALL
  * @since 20:08/03.06.13
  */
-public class IdeaLoggerAnnotationProcessor extends AbstractLoggerAnnotationProcessor {
+public class IdeaLoggerAnnotationProcessor extends AbstractLoggerAnnotationProcessor
+{
   public IdeaLoggerAnnotationProcessor(String annotationClass) {
     super(annotationClass);
   }

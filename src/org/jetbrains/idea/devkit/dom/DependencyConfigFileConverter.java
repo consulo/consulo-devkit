@@ -24,7 +24,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
-import org.mustbe.consulo.java.roots.SpecialDirUtil;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
@@ -51,6 +50,7 @@ import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomUtil;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.converters.PathReferenceConverter;
+import consulo.java.roots.SpecialDirUtil;
 
 public class DependencyConfigFileConverter extends PathReferenceConverter
 {

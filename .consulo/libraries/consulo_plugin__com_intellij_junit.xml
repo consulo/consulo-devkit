@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="consulo-plugin: com.intellij.junit">
     <binaries>
-      <root url="file://$PROJECT_DIR$/dep/com.intellij.junit/lib" />
+      <root url="jar://$PROJECT_DIR$/dep/com.intellij.junit/lib/junit.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dep/com.intellij.junit/lib/junit-rt.jar!/" />
     </binaries>
-    <jarDirectory url="file://$PROJECT_DIR$/dep/com.intellij.junit/lib" recursive="false" />
   </library>
 </component>

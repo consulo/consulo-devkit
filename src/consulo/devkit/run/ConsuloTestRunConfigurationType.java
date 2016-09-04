@@ -19,7 +19,6 @@ package consulo.devkit.run;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.run.PluginConfigurationType;
-import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -33,6 +32,7 @@ import com.intellij.packaging.artifacts.Artifact;
 import consulo.devkit.ConsuloSandboxIcons;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.ide.IconDescriptor;
+import consulo.java.module.extension.JavaModuleExtension;
 import consulo.module.extension.ModuleExtensionHelper;
 
 /**

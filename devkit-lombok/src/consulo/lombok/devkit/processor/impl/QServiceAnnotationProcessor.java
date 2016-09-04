@@ -17,7 +17,6 @@ package consulo.lombok.devkit.processor.impl;
 
 import java.util.List;
 
-import org.consulo.lombok.processors.LombokSelfClassProcessor;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -27,12 +26,14 @@ import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.impl.light.LightMethodBuilder;
 import com.intellij.psi.util.PsiTypesUtil;
+import consulo.lombok.processors.LombokSelfClassProcessor;
 
 /**
  * @author VISTALL
  * @since 20:20/03.06.13
  */
-public class QServiceAnnotationProcessor extends LombokSelfClassProcessor {
+public class QServiceAnnotationProcessor extends LombokSelfClassProcessor
+{
   public QServiceAnnotationProcessor(String annotationClass) {
     super(annotationClass);
   }

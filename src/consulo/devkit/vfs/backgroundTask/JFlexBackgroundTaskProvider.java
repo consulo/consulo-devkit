@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.java.module.extension.JavaModuleExtension;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
@@ -37,6 +36,7 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import consulo.backgroundTaskByVfsChange.BackgroundTaskByVfsParameters;
+import consulo.java.module.extension.JavaModuleExtension;
 import consulo.jflex.vfs.backgroundTask.JFlexBackgroundTaskByVfsChangeProvider;
 
 /**

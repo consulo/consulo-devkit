@@ -15,7 +15,7 @@
   -->
 
 <idea-plugin>
-	<extensions defaultExtensionNs="org.consulo.lombok">
+	<extensions defaultExtensionNs="consulo.lombok">
 		<processor annotationClass="consulo.lombok.annotations.Logger" implementationClass="consulo.lombok.devkit.processor.impl.IdeaLoggerAnnotationProcessor"/>
 		<processor annotationClass="consulo.lombok.annotations.ModuleService" implementationClass="consulo.lombok.devkit.processor.impl.ModuleServiceAnnotationProcessor"/>
 		<processor annotationClass="consulo.lombok.annotations.ProjectService" implementationClass="consulo.lombok.devkit.processor.impl.ProjectServiceAnnotationProcessor"/>

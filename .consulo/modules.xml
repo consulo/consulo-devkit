@@ -24,7 +24,7 @@
           </orderEntry>
           <orderEntry type="module" module-name="devkit-lombok" />
           <orderEntry type="library" name="consulo-plugin: consulo.jflex" level="project" />
-          <orderEntry type="library" name="consulo-plugin: org.consulo.java" level="project" />
+          <orderEntry type="library" name="consulo-plugin: consulo.java" level="project" />
           <orderEntry type="library" name="consulo-plugin: com.intellij.properties" level="project" />
           <orderEntry type="library" name="consulo-plugin: com.intellij.xml" level="project" />
           <orderEntry type="library" name="consulo-plugin: com.intellij.uiDesigner" level="project" />
@@ -43,8 +43,8 @@
           <orderEntry type="sourceFolder" />
           <orderEntry type="module-extension-sdk" extension-id="java" />
           <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
-          <orderEntry type="library" name="consulo-plugin: org.consulo.java" level="project" />
-          <orderEntry type="library" name="consulo-plugin: org.consulo.lombok" level="project" />
+          <orderEntry type="library" name="consulo-plugin: consulo.java" level="project" />
+          <orderEntry type="library" name="consulo-plugin: consulo.lombok" level="project" />
           <orderEntry type="library" name="consulo-plugin: com.intellij.properties" level="project" />
         </module-layer>
       </module>

@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-import org.mustbe.consulo.java.util.JavaClassNames;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -43,6 +42,7 @@ import com.intellij.util.SmartList;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomService;
 import com.intellij.util.xml.DomUtil;
+import consulo.java.module.util.JavaClassNames;
 
 public class ExtensionPointLocator
 {

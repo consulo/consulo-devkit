@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.mustbe.consulo.java.util.JavaClassNames;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.GlobalInspectionTool;
 import com.intellij.codeInspection.InspectionEP;
@@ -39,6 +38,7 @@ import com.intellij.psi.search.PsiSearchHelper;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.xml.XmlTag;
+import consulo.java.module.util.JavaClassNames;
 
 /**
  * @author Dmitry Avdeev

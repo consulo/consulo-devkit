@@ -18,7 +18,6 @@ package consulo.devkit.run;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.debugger.impl.GenericDebugRunnerConfiguration;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -31,6 +30,7 @@ import com.intellij.openapi.options.SettingsEditorGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.packaging.artifacts.Artifact;
+import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
 
 public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase implements GenericDebugRunnerConfiguration
 {

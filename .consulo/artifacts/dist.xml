@@ -2,7 +2,7 @@
   <artifact build-on-make="true" name="dist">
     <output-path>$PROJECT_DIR$/out/artifacts/dist</output-path>
     <root id="root">
-      <element id="directory" name="devkit">
+      <element id="directory" name="consulo.devkit">
         <element id="directory" name="lib">
           <element id="file-copy" path="$PROJECT_DIR$/lib/dtdparser113.jar" />
           <element id="zip-archive" name="devkit.jar">

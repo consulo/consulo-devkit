@@ -17,7 +17,6 @@ package consulo.lombok.devkit.processor.impl;
 
 import java.util.List;
 
-import org.consulo.lombok.processors.LombokSelfClassProcessor;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
@@ -30,6 +29,7 @@ import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.impl.light.LightFieldBuilder;
 import com.intellij.util.ArrayFactory;
+import consulo.lombok.processors.LombokSelfClassProcessor;
 
 /**
  * @author VISTALL
