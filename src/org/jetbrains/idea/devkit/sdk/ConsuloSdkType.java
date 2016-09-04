@@ -24,7 +24,6 @@ import java.util.Collections;
 
 import javax.swing.Icon;
 
-import consulo.lombok.annotations.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
@@ -48,6 +47,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.util.ArchiveVfsUtil;
+import consulo.lombok.annotations.Logger;
 
 /**
  * User: anna
@@ -68,24 +68,14 @@ public class ConsuloSdkType extends SdkType
 		super(DevKitBundle.message("sdk.title"));
 	}
 
-	@Nullable
-	private static File getJarFromLibs(String home, String jarName)
+	@NotNull
+	private static VirtualFile[] getIdeaLibraries(VirtualFile home)
 	{
-		final File libDir = new File(home, LIB_DIR_NAME);
-		File f = new File(libDir, jarName);
-		if(f.exists())
-		{
-			return f;
-		}
+		String homePath = home.getPath();
 
-		return null;
-	}
-
-	private static VirtualFile[] getIdeaLibrary(String home)
-	{
-		String plugins = home + File.separator + PLUGINS_DIR + File.separator;
+		String plugins = homePath + File.separator + PLUGINS_DIR + File.separator;
 		ArrayList<VirtualFile> result = new ArrayList<VirtualFile>();
-		appendIdeaLibrary(home, result, "junit.jar");
+		appendIdeaLibrary(homePath, result, "junit.jar");
 		appendIdeaLibrary(plugins + "core", result);
 		return VfsUtilCore.toVirtualFileArray(result);
 	}
@@ -190,8 +180,7 @@ public class ConsuloSdkType extends SdkType
 	@Override
 	public boolean isValidSdkHome(String path)
 	{
-		File home = new File(path);
-		return home.exists() && getJarFromLibs(path, "idea.jar") != null;
+		return getBuildNumber(path) != null;
 	}
 
 	@Nullable
@@ -202,15 +191,21 @@ public class ConsuloSdkType extends SdkType
 	}
 
 	@Nullable
-	private String getBuildNumber(String sdkHome)
+	private static String getBuildNumber(String sdkHome)
 	{
-		File mainJar = getJarFromLibs(sdkHome, "resources.jar");
-		if(mainJar == null)
+		File targetJar = new File(sdkHome, "/lib/resources.jar");
+
+		if(!targetJar.exists())
+		{
+			targetJar = new File(sdkHome, "/lib/modules/consulo-resources.jar");
+		}
+
+		if(!targetJar.exists())
 		{
 			return null;
 		}
 
-		VirtualFile ideaJarFile = LocalFileSystem.getInstance().findFileByIoFile(mainJar);
+		VirtualFile ideaJarFile = LocalFileSystem.getInstance().findFileByIoFile(targetJar);
 		if(ideaJarFile == null)
 		{
 			return null;
@@ -251,18 +246,33 @@ public class ConsuloSdkType extends SdkType
 	@Override
 	public void setupSdkPaths(Sdk sdk)
 	{
-		final SdkModificator sdkModificator = sdk.getSdkModificator();
-		final String sdkHome = sdk.getHomePath();
-
-		final VirtualFile[] ideaLib = getIdeaLibrary(sdkHome);
-		if(ideaLib != null)
+		VirtualFile homeDirectory = sdk.getHomeDirectory();
+		if(homeDirectory == null)
 		{
-			for(VirtualFile aIdeaLib : ideaLib)
+			return;
+		}
+
+		final SdkModificator sdkModificator = sdk.getSdkModificator();
+
+		for(VirtualFile virtualFile : getIdeaLibraries(homeDirectory))
+		{
+			sdkModificator.addRoot(virtualFile, BinariesOrderRootType.getInstance());
+		}
+
+		VirtualFile modulesDir = homeDirectory.findFileByRelativePath("lib/modules");
+		if(modulesDir != null)
+		{
+			for(VirtualFile child : modulesDir.getChildren())
 			{
-				sdkModificator.addRoot(aIdeaLib, BinariesOrderRootType.getInstance());
+				VirtualFile archiveChild = ArchiveVfsUtil.getArchiveRootForLocalFile(child);
+				if(archiveChild != null)
+				{
+					sdkModificator.addRoot(archiveChild, BinariesOrderRootType.getInstance());
+				}
 			}
 		}
-		addSources(new File(sdkHome), sdkModificator);
+
+		addSources(VfsUtilCore.virtualToIoFile(homeDirectory), sdkModificator);
 
 		sdkModificator.commitChanges();
 	}
