@@ -52,9 +52,9 @@ import com.intellij.packaging.impl.elements.moduleContent.ProductionModuleOutput
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.uiDesigner.GuiDesignerConfiguration;
 import consulo.devkit.run.ConsuloRunConfiguration;
-import consulo.ide.impl.NewModuleBuilder;
-import consulo.ide.impl.NewModuleContext;
 import consulo.ide.impl.UnzipNewModuleBuilderProcessor;
+import consulo.ide.newProject.NewModuleBuilder;
+import consulo.ide.newProject.NewModuleContext;
 import consulo.java.module.extension.JavaMutableModuleExtension;
 import consulo.module.extension.MutableModuleExtensionWithSdk;
 import consulo.packaging.artifacts.ArtifactPointerUtil;
@@ -78,13 +78,8 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 	@Override
 	public void setupContext(@NotNull NewModuleContext context)
 	{
-		context.addItem("#ConsuloDevkit", "Consulo Plugin", AllIcons.Icon16);
-		context.addItem("#ConsuloDevkitSimplePlugin", "Simple Plugin", AllIcons.Nodes.Plugin);
-
-		context.setupItem(new String[]{
-				"#ConsuloDevkit",
-				"#ConsuloDevkitSimplePlugin"
-		}, new UnzipNewModuleBuilderProcessor("/moduleTemplates/#ConsuloDevkitSimplePlugin.zip")
+		NewModuleContext.Group group = context.createGroup("consulo-plugin", "Consulo Plugin");
+		group.add("Simple Plugin", AllIcons.Nodes.Plugin, new UnzipNewModuleBuilderProcessor("/moduleTemplates/#ConsuloDevkitSimplePlugin.zip")
 		{
 			@NotNull
 			@Override
