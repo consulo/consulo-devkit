@@ -78,9 +78,9 @@ public interface IdeaPlugin extends DomElement
 
 
 	@NotNull
-	List<IdeaVersion> getIdeaVersions();
+	List<GenericDomValue<String>> getPlatformVersions();
 
-	IdeaVersion addIdeaVersion();
+	GenericDomValue<String> addPlatformVersion();
 
 
 	@NotNull
