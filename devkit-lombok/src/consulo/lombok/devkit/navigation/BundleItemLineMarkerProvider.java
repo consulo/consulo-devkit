@@ -76,8 +76,8 @@ public class BundleItemLineMarkerProvider implements LineMarkerProvider
 				PsiAnnotation annotation = AnnotationUtil.findAnnotation(psiClass, ourBundleAnnotations);
 				if(annotation != null)
 				{
-					LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(nameIdentifier, nameIdentifier.getTextRange(), PropertiesFileType.INSTANCE.getIcon(),
-							Pass.UPDATE_OVERRIDEN_MARKERS, new ConstantFunction<PsiElement, String>("Navigate to bundle"), new GutterIconNavigationHandler<PsiElement>()
+					LineMarkerInfo<PsiElement> markerInfo = new LineMarkerInfo<PsiElement>(nameIdentifier, nameIdentifier.getTextRange(), PropertiesFileType.INSTANCE.getIcon(), Pass.LINE_MARKERS,
+							new ConstantFunction<PsiElement, String>("Navigate to bundle"), new GutterIconNavigationHandler<PsiElement>()
 					{
 						@RequiredDispatchThread
 						@Override
