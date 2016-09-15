@@ -1,1 +1,1 @@
-![Build Status](http://must-be.org/vulcan/statusImage?name=consulo-devkit)
+[![Build Status](http://must-be.org/jenkins/job/consulo-devkit/badge/icon)](http://must-be.org/jenkins/job/consulo-devkit/)
