@@ -34,106 +34,107 @@ import com.intellij.util.xml.SubTagList;
  * plugin.dtd:idea-plugin interface.
  */
 @DefinesXml
-public interface IdeaPlugin extends DomElement {
-  @Nullable
-  String getPluginId();
+public interface IdeaPlugin extends DomElement
+{
+	@Nullable
+	String getPluginId();
 
-  @NotNull
-  @NameValue
-  GenericDomValue<String> getId();
+	@NotNull
+	@NameValue
+	GenericDomValue<String> getId();
 
-  @NotNull
-  GenericAttributeValue<String> getVersion();
+	@NotNull
+	GenericAttributeValue<String> getVersion();
 
-  @NotNull
-  GenericAttributeValue<String> getUrl();
+	@NotNull
+	GenericAttributeValue<String> getUrl();
 
-  @NotNull
-  GenericDomValue<String> getName();
-
-
-  @NotNull
-  List<GenericDomValue<String>> getDescriptions();
-
-  GenericDomValue<String> addDescription();
+	@NotNull
+	GenericDomValue<String> getName();
 
 
-  @NotNull
-  List<GenericDomValue<String>> getVersions();
+	@NotNull
+	List<GenericDomValue<String>> getDescriptions();
 
-  GenericDomValue<String> addVersion();
-
-
-  @NotNull
-  List<Vendor> getVendors();
-
-  Vendor addVendor();
+	GenericDomValue<String> addDescription();
 
 
-  @NotNull
-  List<GenericDomValue<String>> getChangeNotess();
+	@NotNull
+	List<GenericDomValue<String>> getVersions();
 
-  GenericDomValue<String> addChangeNotes();
-
-
-  @NotNull
-  List<IdeaVersion> getIdeaVersions();
-
-  IdeaVersion addIdeaVersion();
+	GenericDomValue<String> addVersion();
 
 
-  @NotNull
-  List<GenericDomValue<String>> getCategories();
+	@NotNull
+	List<Vendor> getVendors();
 
-  GenericDomValue<String> addCategory();
-
-
-  @NotNull
-  @SubTagList("resource-bundle")
-  List<GenericDomValue<String>> getResourceBundles();
-
-  GenericDomValue<String> addResourceBundle();
+	Vendor addVendor();
 
 
-  @NotNull
-  @SubTagList("depends")
-  List<Dependency> getDependencies();
+	@NotNull
+	List<GenericDomValue<String>> getChangeNotess();
 
-  @SubTagList("depends")
-  Dependency addDependency();
-
-  @NotNull
-  @SubTagList("extensions")
-  List<Extensions> getExtensions();
-
-  Extensions addExtensions();
-
-  @NotNull
-  @SubTagList("extensionPoints")
-  List<ExtensionPoints> getExtensionPoints();
-
-  ExtensionPoints addExtensionPoints();
+	GenericDomValue<String> addChangeNotes();
 
 
-  @NotNull
-  ApplicationComponents getApplicationComponents();
+	@NotNull
+	List<IdeaVersion> getIdeaVersions();
 
-  @NotNull
-  ProjectComponents getProjectComponents();
-
-  @NotNull
-  ModuleComponents getModuleComponents();
+	IdeaVersion addIdeaVersion();
 
 
-  @NotNull
-  @SubTagList("actions")
-  List<Actions> getActions();
+	@NotNull
+	List<GenericDomValue<String>> getCategories();
 
-  Actions addActions();
+	GenericDomValue<String> addCategory();
 
 
-  @NotNull
-  List<Helpset> getHelpsets();
+	@NotNull
+	@SubTagList("resource-bundle")
+	List<GenericDomValue<String>> getResourceBundles();
 
-  Helpset addHelpset();
+	GenericDomValue<String> addResourceBundle();
+
+
+	@NotNull
+	@SubTagList("depends")
+	List<Dependency> getDependencies();
+
+	@SubTagList("depends")
+	Dependency addDependency();
+
+	@NotNull
+	@SubTagList("extensions")
+	List<Extensions> getExtensions();
+
+	Extensions addExtensions();
+
+	@NotNull
+	@SubTagList("extensionPoints")
+	List<ExtensionPoints> getExtensionPoints();
+
+	ExtensionPoints addExtensionPoints();
+
+
+	@NotNull
+	ApplicationComponents getApplicationComponents();
+
+	@NotNull
+	ProjectComponents getProjectComponents();
+
+	@NotNull
+	ModuleComponents getModuleComponents();
+
+
+	@NotNull
+	@SubTagList("actions")
+	List<Actions> getActions();
+
+	Actions addActions();
+
+
+	@NotNull
+	List<Helpset> getHelpsets();
+
+	Helpset addHelpset();
 }
