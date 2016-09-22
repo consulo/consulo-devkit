@@ -47,22 +47,21 @@ public interface IdeaPlugin extends DomElement
 	GenericAttributeValue<String> getVersion();
 
 	@NotNull
+	GenericDomValue<String> getPlatformVersion();
+
+	@NotNull
 	GenericAttributeValue<String> getUrl();
 
 	@NotNull
-	GenericDomValue<String> getName();
+	GenericDomValue<String> getCategory();
 
+	@NotNull
+	GenericDomValue<String> getName();
 
 	@NotNull
 	List<GenericDomValue<String>> getDescriptions();
 
 	GenericDomValue<String> addDescription();
-
-
-	@NotNull
-	List<GenericDomValue<String>> getVersions();
-
-	GenericDomValue<String> addVersion();
 
 
 	@NotNull
@@ -75,19 +74,6 @@ public interface IdeaPlugin extends DomElement
 	List<GenericDomValue<String>> getChangeNotess();
 
 	GenericDomValue<String> addChangeNotes();
-
-
-	@NotNull
-	List<GenericDomValue<String>> getPlatformVersions();
-
-	GenericDomValue<String> addPlatformVersion();
-
-
-	@NotNull
-	List<GenericDomValue<String>> getCategories();
-
-	GenericDomValue<String> addCategory();
-
 
 	@NotNull
 	@SubTagList("resource-bundle")

@@ -28,7 +28,6 @@ import com.intellij.util.xml.GenericAttributeValue;
  * Type vendor documentation
  * <pre>
  *     <vendor> tag now could have 'url', 'email' and 'logo' attributes;
- *     'logo' should contain path to a 16 x 16 icon that will appear near the plugin name in the IDEA Welcome Screen
  * </pre>
  */
 public interface Vendor extends DomElement {
