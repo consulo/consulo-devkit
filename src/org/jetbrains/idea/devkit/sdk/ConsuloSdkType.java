@@ -197,7 +197,7 @@ public class ConsuloSdkType extends SdkType
 
 		if(!targetJar.exists())
 		{
-			targetJar = new File(sdkHome, "/lib/modules/consulo-resources.jar");
+			targetJar = new File(sdkHome, "/lib/consulo-resources.jar");
 		}
 
 		if(!targetJar.exists())
@@ -257,19 +257,6 @@ public class ConsuloSdkType extends SdkType
 		for(VirtualFile virtualFile : getIdeaLibraries(homeDirectory))
 		{
 			sdkModificator.addRoot(virtualFile, BinariesOrderRootType.getInstance());
-		}
-
-		VirtualFile modulesDir = homeDirectory.findFileByRelativePath("lib/modules");
-		if(modulesDir != null)
-		{
-			for(VirtualFile child : modulesDir.getChildren())
-			{
-				VirtualFile archiveChild = ArchiveVfsUtil.getArchiveRootForLocalFile(child);
-				if(archiveChild != null)
-				{
-					sdkModificator.addRoot(archiveChild, BinariesOrderRootType.getInstance());
-				}
-			}
 		}
 
 		addSources(VfsUtilCore.virtualToIoFile(homeDirectory), sdkModificator);
