@@ -44,9 +44,10 @@ public interface IdeaPlugin extends DomElement
 	GenericDomValue<String> getId();
 
 	@NotNull
-	GenericAttributeValue<String> getVersion();
+	GenericDomValue<String> getVersion();
 
 	@NotNull
+	@SubTagList("platformVersion")
 	GenericDomValue<String> getPlatformVersion();
 
 	@NotNull
