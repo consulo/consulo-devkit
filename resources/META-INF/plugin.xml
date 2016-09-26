@@ -137,7 +137,7 @@
 						 level="ERROR"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
+						 enabledByDefault="false"
 						 displayName="AWT &amp; Swing implementation error reporting"
 						 implementationClass="consulo.devkit.inspections.internal.AWTErrorInspection"/>
 
