@@ -1,8 +1,7 @@
 <component name="libraryTable">
   <library name="consulo-plugin: consulo.lombok">
     <binaries>
-      <root url="file://$PROJECT_DIR$/dep/consulo.lombok/lib" />
+      <root url="jar://$PROJECT_DIR$/dep/consulo.lombok/lib/lombok-base.jar!/" />
     </binaries>
-    <jarDirectory url="file://$PROJECT_DIR$/dep/consulo.lombok/lib" recursive="false" />
   </library>
 </component>

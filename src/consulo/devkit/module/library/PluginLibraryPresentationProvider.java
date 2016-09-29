@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.roots.libraries.DummyLibraryProperties;
-import com.intellij.openapi.roots.libraries.LibraryKind;
 import com.intellij.openapi.roots.libraries.LibraryPresentationProvider;
 import com.intellij.openapi.vfs.VirtualFile;
 
@@ -32,32 +31,37 @@ import com.intellij.openapi.vfs.VirtualFile;
  * @author VISTALL
  * @since 14:59/13.06.13
  */
-public class PluginLibraryPresentationProvider extends LibraryPresentationProvider<DummyLibraryProperties> {
-  public static final LibraryKind KIND = LibraryKind.create("consulo-plugin");
+public class PluginLibraryPresentationProvider extends LibraryPresentationProvider<DummyLibraryProperties>
+{
+	public PluginLibraryPresentationProvider()
+	{
+		super(ConsuloPluginLibraryType.KIND);
+	}
 
-  public PluginLibraryPresentationProvider() {
-    super(KIND);
-  }
+	@Nullable
+	@Override
+	public Icon getIcon()
+	{
+		return AllIcons.Icon16;
+	}
 
-  @Nullable
-  @Override
-  public Icon getIcon() {
-    return AllIcons.Icon16;
-  }
+	@Nullable
+	@Override
+	public DummyLibraryProperties detect(@NotNull List<VirtualFile> classesRoots)
+	{
+		if(classesRoots.isEmpty())
+		{
+			return null;
+		}
 
-  @Nullable
-  @Override
-  public DummyLibraryProperties detect(@NotNull List<VirtualFile> classesRoots) {
-    if (classesRoots.isEmpty()) {
-      return null;
-    }
-
-    for (VirtualFile virtualFile : classesRoots) {
-      final VirtualFile fileByRelativePath = virtualFile.findFileByRelativePath("META-INF/plugin.xml");
-      if (fileByRelativePath != null) {
-        return DummyLibraryProperties.INSTANCE;
-      }
-    }
-    return null;
-  }
+		for(VirtualFile virtualFile : classesRoots)
+		{
+			final VirtualFile fileByRelativePath = virtualFile.findFileByRelativePath("META-INF/plugin.xml");
+			if(fileByRelativePath != null)
+			{
+				return DummyLibraryProperties.INSTANCE;
+			}
+		}
+		return null;
+	}
 }

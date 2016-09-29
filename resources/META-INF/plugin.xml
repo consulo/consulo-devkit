@@ -36,6 +36,7 @@
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 
+		<library.type implementation="consulo.devkit.module.library.ConsuloPluginLibraryType" />
 		<library.presentationProvider implementation="consulo.devkit.module.library.PluginLibraryPresentationProvider"/>
 		<moduleExtensionProvider key="consulo-plugin"
 								 parentKey="java"
