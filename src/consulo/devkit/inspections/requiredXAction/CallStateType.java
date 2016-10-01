@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package consulo.devkit.inspections;
+package consulo.devkit.inspections.requiredXAction;
 
 import javax.swing.SwingUtilities;
 

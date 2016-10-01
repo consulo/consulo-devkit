@@ -31,6 +31,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.searches.OverridingMethodsSearch;
 import com.intellij.psi.util.ClassUtil;
 import com.intellij.util.Query;
+import consulo.devkit.inspections.requiredXAction.CallStateType;
 
 /**
  * @author VISTALL

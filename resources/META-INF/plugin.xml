@@ -125,7 +125,7 @@
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
 						 displayName="Invocation state(read, write, dispatch) validate inspection"
-						 implementationClass="consulo.devkit.inspections.RequiredXActionInspection"/>
+						 implementationClass="consulo.devkit.inspections.requiredXAction.RequiredXActionInspection"/>
 		<localInspection language="JAVA"
 						 level="WARNING"
 						 bundle="messages.DevKitBundle"

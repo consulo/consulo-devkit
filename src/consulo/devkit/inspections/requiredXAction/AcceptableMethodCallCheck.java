@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package consulo.devkit.inspections;
+package consulo.devkit.inspections.requiredXAction;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
