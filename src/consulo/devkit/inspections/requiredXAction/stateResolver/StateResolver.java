@@ -16,17 +16,22 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.ThrowableComputable;
-import com.intellij.psi.PsiCall;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiExpressionList;
-import com.intellij.util.ThreeState;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiReferenceExpression;
+import com.intellij.psi.PsiVariable;
+import com.intellij.psi.search.searches.ReferencesSearch;
+import com.intellij.util.CommonProcessors;
 import com.intellij.util.ThrowableRunnable;
 import consulo.devkit.inspections.requiredXAction.AcceptableMethodCallCheck;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
@@ -37,8 +42,8 @@ import consulo.devkit.inspections.requiredXAction.CallStateType;
  */
 public abstract class StateResolver
 {
-	@NotNull
-	public abstract Pair<ThreeState, CallStateType> resolveState(CallStateType actionType, PsiCall expression);
+	@Nullable
+	public abstract Boolean resolveState(CallStateType actionType, PsiExpression expression);
 
 	protected static Map<String, Class[]> ourInterfaces = new HashMap<String, Class[]>()
 	{
@@ -53,6 +58,54 @@ public abstract class StateResolver
 			});
 		}
 	};
+
+	protected static boolean resolveByMaybeParameterListOrVariable(PsiElement maybeParameterListOrVariable, CallStateType actionType)
+	{
+		// Runnable run = new Runnable() {};
+		// ApplicationManager.getApplication().runReadAction(run);
+		if(maybeParameterListOrVariable instanceof PsiVariable)
+		{
+			CommonProcessors.CollectProcessor<PsiReference> processor = new CommonProcessors.CollectProcessor<>();
+			ReferencesSearch.search(maybeParameterListOrVariable).forEach(processor);
+
+			Collection<PsiReference> results = processor.getResults();
+			if(results.isEmpty())
+			{
+				return false;
+			}
+
+			boolean weFoundRunAction = false;
+			for(PsiReference result : results)
+			{
+				if(result instanceof PsiReferenceExpression)
+				{
+					PsiElement maybeExpressionList = ((PsiReferenceExpression) result).getParent();
+					if(maybeExpressionList instanceof PsiExpressionList)
+					{
+						if(acceptActionTypeFromCall((PsiExpressionList) maybeExpressionList, actionType))
+						{
+							weFoundRunAction = true;
+							break;
+						}
+					}
+				}
+			}
+
+			if(weFoundRunAction)
+			{
+				return true;
+			}
+		}
+		// ApplicationManager.getApplication().runReadAction(new Runnable() {});
+		else if(maybeParameterListOrVariable instanceof PsiExpressionList)
+		{
+			if(acceptActionTypeFromCall((PsiExpressionList) maybeParameterListOrVariable, actionType))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
 	protected static boolean acceptActionTypeFromCall(@NotNull PsiExpressionList expressionList, @NotNull CallStateType actionType)
 	{

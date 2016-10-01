@@ -23,17 +23,18 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiCall;
 import com.intellij.psi.PsiCallExpression;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiMethod;
-import com.intellij.util.ThreeState;
+import com.intellij.psi.PsiMethodReferenceExpression;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.inspections.requiredXAction.stateResolver.AnonymousClassStateResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.LambdaStateResolver;
+import consulo.devkit.inspections.requiredXAction.stateResolver.MethodReferenceResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.StateResolver;
 import consulo.ui.RequiredUIAccess;
 
@@ -45,16 +46,23 @@ public class RequiredXActionInspection extends LocalInspectionTool
 {
 	public static class RequiredXActionVisitor extends JavaElementVisitor
 	{
-		private static StateResolver[] ourStateResolvers = new StateResolver[]{
-				new AnonymousClassStateResolver(),
-				new LambdaStateResolver()
-		};
-
 		private final ProblemsHolder myHolder;
 
 		public RequiredXActionVisitor(ProblemsHolder holder)
 		{
 			myHolder = holder;
+		}
+
+		@Override
+		public void visitMethodReferenceExpression(PsiMethodReferenceExpression expression)
+		{
+			PsiElement psiElement = expression.resolve();
+			if(!(psiElement instanceof PsiMethod))
+			{
+				return;
+			}
+
+			reportError(expression, (PsiMethod) psiElement, MethodReferenceResolver.INSTANCE);
 		}
 
 		@Override
@@ -66,25 +74,36 @@ public class RequiredXActionInspection extends LocalInspectionTool
 				return;
 			}
 
+			reportError(expression, psiMethod, LambdaStateResolver.INSTANCE, AnonymousClassStateResolver.INSTANCE);
+		}
+
+		private void reportError(PsiExpression expression, PsiMethod psiMethod, StateResolver... stateResolvers)
+		{
 			CallStateType actionType = CallStateType.findActionType(psiMethod);
 			if(actionType == CallStateType.NONE)
 			{
 				return;
 			}
 
-			for(StateResolver stateResolver : ourStateResolvers)
+			for(StateResolver stateResolver : stateResolvers)
 			{
-				Pair<ThreeState, CallStateType> handled = stateResolver.resolveState(actionType, expression);
-				if(handled.getFirst() != ThreeState.NO)
+				Boolean state = stateResolver.resolveState(actionType, expression);
+				if(state == null)
 				{
-					return;
+					continue;
 				}
-			}
 
-			reportError(expression, actionType);
+				if(state)
+				{
+					break;
+				}
+
+				reportError(expression, actionType);
+				break;
+			}
 		}
 
-		private void reportError(@NotNull PsiCall expression, @NotNull CallStateType type)
+		private void reportError(@NotNull PsiExpression expression, @NotNull CallStateType type)
 		{
 			LocalQuickFix[] quickFixes = LocalQuickFix.EMPTY_ARRAY;
 			String text;

@@ -16,16 +16,15 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
-import java.util.Collection;
-
-import org.jetbrains.annotations.NotNull;
-import com.intellij.openapi.util.Pair;
-import com.intellij.psi.*;
-import com.intellij.psi.search.searches.ReferencesSearch;
+import org.jetbrains.annotations.Nullable;
+import com.intellij.psi.PsiAnonymousClass;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiExpression;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.CommonProcessors;
-import com.intellij.util.ThreeState;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 
 /**
@@ -34,21 +33,23 @@ import consulo.devkit.inspections.requiredXAction.CallStateType;
  */
 public class AnonymousClassStateResolver extends StateResolver
 {
+	public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
+
 	@Override
-	@NotNull
-	public Pair<ThreeState, CallStateType> resolveState(CallStateType actionType, PsiCall expression)
+	@Nullable
+	public Boolean resolveState(CallStateType actionType, PsiExpression expression)
 	{
 		PsiMethod callMethod = PsiTreeUtil.getParentOfType(expression, PsiMethod.class);
 		if(callMethod == null)
 		{
-			return Pair.create(ThreeState.UNSURE, null);
+			return null;
 		}
 
 		// method annotated by annotation
 		CallStateType callMethodActionType = CallStateType.findActionType(callMethod);
 		if(actionType.isAcceptableActionType(callMethodActionType))
 		{
-			return Pair.create(ThreeState.UNSURE, null);
+			return true;
 		}
 
 		if(callMethod.getParameterList().getParametersCount() == 0)
@@ -56,13 +57,13 @@ public class AnonymousClassStateResolver extends StateResolver
 			Class[] qualifiedNames = ourInterfaces.get(callMethod.getName());
 			if(qualifiedNames == null)
 			{
-				return Pair.create(ThreeState.NO, actionType);
+				return false;
 			}
 
 			PsiClass containingClass = callMethod.getContainingClass();
 			if(containingClass == null)
 			{
-				return Pair.create(ThreeState.NO, actionType);
+				return false;
 			}
 
 			boolean inherit = false;
@@ -80,60 +81,18 @@ public class AnonymousClassStateResolver extends StateResolver
 				// non anonym class - cant handle
 				if(!(containingClass instanceof PsiAnonymousClass))
 				{
-					return Pair.create(ThreeState.NO, actionType);
+					return false;
 				}
 
 				PsiElement parent = containingClass.getParent();
 				if(parent instanceof PsiNewExpression)
 				{
 					PsiElement maybeParameterListOrVariable = parent.getParent();
-					// Runnable run = new Runnable() {};
-					// ApplicationManager.getApplication().runReadAction(run);
-					if(maybeParameterListOrVariable instanceof PsiVariable)
-					{
-						CommonProcessors.CollectProcessor<PsiReference> processor = new CommonProcessors.CollectProcessor<PsiReference>();
-						ReferencesSearch.search(maybeParameterListOrVariable).forEach(processor);
-
-						Collection<PsiReference> results = processor.getResults();
-						if(results.isEmpty())
-						{
-							return Pair.create(ThreeState.NO, actionType);
-						}
-
-						boolean weFoundRunAction = false;
-						for(PsiReference result : results)
-						{
-							if(result instanceof PsiReferenceExpression)
-							{
-								PsiElement maybeExpressionList = ((PsiReferenceExpression) result).getParent();
-								if(maybeExpressionList instanceof PsiExpressionList)
-								{
-									if(acceptActionTypeFromCall((PsiExpressionList) maybeExpressionList, actionType))
-									{
-										weFoundRunAction = true;
-										break;
-									}
-								}
-							}
-						}
-
-						if(weFoundRunAction)
-						{
-							return Pair.create(ThreeState.YES, actionType);
-						}
-					}
-					// ApplicationManager.getApplication().runReadAction(new Runnable() {});
-					else if(maybeParameterListOrVariable instanceof PsiExpressionList)
-					{
-						if(acceptActionTypeFromCall((PsiExpressionList) maybeParameterListOrVariable, actionType))
-						{
-							return Pair.create(ThreeState.YES, actionType);
-						}
-					}
+					return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
 				}
 			}
 		}
 
-		return Pair.create(ThreeState.NO, actionType);
+		return false;
 	}
 }

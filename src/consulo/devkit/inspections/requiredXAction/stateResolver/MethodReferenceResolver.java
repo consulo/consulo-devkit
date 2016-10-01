@@ -17,31 +17,23 @@
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
 import org.jetbrains.annotations.Nullable;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiLambdaExpression;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.PsiMethodReferenceExpression;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 
 /**
  * @author VISTALL
  * @since 01-Oct-16
  */
-public class LambdaStateResolver extends StateResolver
+public class MethodReferenceResolver extends StateResolver
 {
-	public static final StateResolver INSTANCE = new LambdaStateResolver();
+	public static final StateResolver INSTANCE = new MethodReferenceResolver();
 
 	@Nullable
 	@Override
 	public Boolean resolveState(CallStateType actionType, PsiExpression expression)
 	{
-		PsiLambdaExpression lambdaExpression = PsiTreeUtil.getParentOfType(expression, PsiLambdaExpression.class);
-		if(lambdaExpression == null)
-		{
-			return null;
-		}
-
-		PsiElement maybeParameterListOrVariable = lambdaExpression.getParent();
-		return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
+		PsiMethodReferenceExpression methodReferenceExpression = (PsiMethodReferenceExpression) expression;
+		return resolveByMaybeParameterListOrVariable(methodReferenceExpression.getParent(), actionType);
 	}
 }
