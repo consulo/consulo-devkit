@@ -59,6 +59,7 @@ import consulo.vfs.util.ArchiveVfsUtil;
 public class ConsuloPluginLibraryType extends LibraryType<DummyLibraryProperties>
 {
 	public static final String LIBRARY_PREFIX = "consulo-plugin: ";
+	public static final String DEP_LIBRARY = "dep";
 
 	public static final PersistentLibraryKind<DummyLibraryProperties> KIND = new PersistentLibraryKind<DummyLibraryProperties>("consulo-plugin")
 	{
@@ -122,7 +123,7 @@ public class ConsuloPluginLibraryType extends LibraryType<DummyLibraryProperties
 
 					HttpRequests.request(url).saveToFile(tempFile, progressIndicator);
 
-					File depDir = new File(project.getBasePath(), "dep");
+					File depDir = new File(project.getBasePath(), DEP_LIBRARY);
 					depDir.mkdir();
 
 					ZipUtil.extract(tempFile, depDir, null);

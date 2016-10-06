@@ -107,7 +107,7 @@ public class DownloadDependenciesAction extends AnAction
 
 		final String consuloVersion = sdk != null ? StringUtil.notNullize(sdk.getVersionString(), "SNAPSHOT") : "SNAPSHOT";
 
-		final File depDir = new File(project.getBasePath(), "dep");
+		final File depDir = new File(project.getBasePath(), ConsuloPluginLibraryType.DEP_LIBRARY);
 		depDir.mkdirs();
 
 		new Task.Backgroundable(project, "Downloading build project info...")

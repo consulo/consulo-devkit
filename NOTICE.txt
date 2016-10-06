@@ -1,0 +1,1 @@
+* package_root.png from https://github.com/JetBrains/intellij-plugins/tree/master/Dart/resources/icons AL2

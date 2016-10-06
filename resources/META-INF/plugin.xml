@@ -36,7 +36,7 @@
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 
-		<library.type implementation="consulo.devkit.module.library.ConsuloPluginLibraryType" />
+		<library.type implementation="consulo.devkit.module.library.ConsuloPluginLibraryType"/>
 		<library.presentationProvider implementation="consulo.devkit.module.library.PluginLibraryPresentationProvider"/>
 		<moduleExtensionProvider key="consulo-plugin"
 								 parentKey="java"
@@ -169,6 +169,8 @@
 										implementationClass="org.jetbrains.idea.devkit.navigation.DescriptionTypeRelatedItemLineMarkerProvider"/>
 		<codeInsight.lineMarkerProvider language="JAVA"
 										implementationClass="org.jetbrains.idea.devkit.navigation.ExtensionPointDeclarationRelatedItemLineMarkerProvider"/>
+
+		<iconDescriptorUpdater implementation="consulo.devkit.ConsuloDevkitIconDescriptorUpdater" order="last"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij.xml.dom">
