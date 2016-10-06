@@ -28,6 +28,7 @@ import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.GenericDomValue;
 import com.intellij.util.xml.NameValue;
+import com.intellij.util.xml.SubTag;
 import com.intellij.util.xml.SubTagList;
 
 /**
@@ -47,7 +48,7 @@ public interface IdeaPlugin extends DomElement
 	GenericDomValue<String> getVersion();
 
 	@NotNull
-	@SubTagList("platformVersion")
+	@SubTag("platformVersion")
 	GenericDomValue<String> getPlatformVersion();
 
 	@NotNull

@@ -1,9 +1,9 @@
-<idea-plugin version="2">
+<idea-plugin>
 	<id>consulo.devkit</id>
 	<name>Consulo Plugin DevKit</name>
 	<version>SNAPSHOT</version>
 	<category>IDE Frameworks</category>
-	<vendor>JetBrains</vendor>
+	<vendor>JetBrains &amp; consulo.io</vendor>
 
 	<depends>consulo.java</depends>
 	<depends>com.intellij.properties</depends>
