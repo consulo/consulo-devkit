@@ -18,23 +18,24 @@ package consulo.devkit.action;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.jetbrains.annotations.NotNull;
-import com.google.gson.Gson;
-import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.ide.plugins.RepositoryHelper;
+import com.intellij.notification.NotificationDisplayType;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
@@ -43,15 +44,16 @@ import com.intellij.openapi.projectRoots.SdkTable;
 import com.intellij.openapi.roots.OrderRootType;
 import com.intellij.openapi.roots.impl.libraries.ProjectLibraryTable;
 import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.updateSettings.impl.UpdateChecker;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.ArrayUtil;
 import com.intellij.util.io.DownloadUtil;
 import com.intellij.util.io.ZipUtil;
 import consulo.annotations.RequiredDispatchThread;
+import consulo.devkit.module.library.ConsuloPluginLibraryType;
+import consulo.ide.updateSettings.UpdateChannel;
+import consulo.ide.webService.WebServiceApi;
 import consulo.lombok.annotations.Logger;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.vfs.util.ArchiveVfsUtil;
@@ -63,14 +65,7 @@ import consulo.vfs.util.ArchiveVfsUtil;
 @Logger
 public class DownloadDependenciesAction extends AnAction
 {
-	public static class PluginJson
-	{
-		public String id;
-		public String[] dependencies = ArrayUtil.EMPTY_STRING_ARRAY;
-	}
-
-	private static final String ourLibraryPrefix = "consulo-plugin: ";
-	private static final String ourDefaultPluginHost = "http://must-be.org/api/v2/consulo/plugins/";
+	private static NotificationGroup ourNotificationGroup = new NotificationGroup("consulo-dev-plugin", NotificationDisplayType.BALLOON, true);
 
 	@RequiredDispatchThread
 	@Override
@@ -96,15 +91,15 @@ public class DownloadDependenciesAction extends AnAction
 		}
 
 		Library[] libraries = ProjectLibraryTable.getInstance(project).getLibraries();
-		Map<String, Library> librariesByPluginId = new HashMap<>();
+		Map<PluginId, Library> librariesByPluginId = new HashMap<>();
 		for(Library library : libraries)
 		{
 			String name = library.getName();
-			if(name != null && name.startsWith(ourLibraryPrefix))
+			if(name != null && name.startsWith(ConsuloPluginLibraryType.LIBRARY_PREFIX))
 			{
-				String pluginId = name.substring(ourLibraryPrefix.length(), name.length());
+				String pluginId = name.substring(ConsuloPluginLibraryType.LIBRARY_PREFIX.length(), name.length());
 
-				librariesByPluginId.put(pluginId, library);
+				librariesByPluginId.put(PluginId.getId(pluginId), library);
 			}
 		}
 
@@ -121,41 +116,41 @@ public class DownloadDependenciesAction extends AnAction
 			public void run(@NotNull ProgressIndicator progressIndicator)
 			{
 				FileUtil.delete(depDir);
+				progressIndicator.setText("Downloading plugin list...");
+				List<IdeaPluginDescriptor> plugins;
 				try
 				{
-					progressIndicator.setText("Downloading plugin list...");
-					PluginJson[] plugins;
+					plugins = RepositoryHelper.loadPluginsFromRepository(progressIndicator, UpdateChannel.nightly);
+				}
+				catch(Exception e)
+				{
+					ourNotificationGroup.createNotification("Plugin repository is down", NotificationType.ERROR).notify(project);
+					LOGGER.warn(e);
+					return;
+				}
+
+				progressIndicator.setText("Downloaded plugin list [" + plugins.size() + "]");
+
+				Set<PluginId> deepDependencies = new TreeSet<>();
+
+				progressIndicator.setText("Collected original dependencies: " + librariesByPluginId.keySet());
+
+				for(PluginId pluginId : librariesByPluginId.keySet())
+				{
+					collectDependencies(pluginId, deepDependencies, plugins);
+				}
+
+				progressIndicator.setText("Collected deep dependencies: " + deepDependencies);
+
+				// use cold id for don't store statistics
+				String uuid = "cold";
+
+				for(PluginId deepDependency : deepDependencies)
+				{
 					try
 					{
-						InputStream inputStream = new URL(ourDefaultPluginHost + "list?channel=nightly&platformVersion=" + consuloVersion).openStream();
-
-						plugins = new Gson().fromJson(new InputStreamReader(inputStream, StandardCharsets.UTF_8), PluginJson[].class);
-					}
-					catch(IOException e)
-					{
-						LOGGER.warn(e);
-						return;
-					}
-
-					progressIndicator.setText("Downloaded plugin list [" + plugins.length + "]");
-
-					Set<String> deepDependencies = new TreeSet<>();
-
-					progressIndicator.setText("Collected original dependencies: " + librariesByPluginId.keySet());
-
-					for(String pluginId : librariesByPluginId.keySet())
-					{
-						collectDependencies(pluginId, deepDependencies, plugins);
-					}
-
-					progressIndicator.setText("Collected deep dependencies: " + deepDependencies);
-
-					String uuid = UpdateChecker.getInstallationUID(PropertiesComponent.getInstance());
-
-					for(String deepDependency : deepDependencies)
-					{
-						String downloadUrl = ourDefaultPluginHost + "download?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode(deepDependency,
-								"UTF-8") + "&id=" + URLEncoder.encode(uuid, "UTF-8");
+						String downloadUrl = WebServiceApi.PLUGINS_API.buildUrl("download") + "?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode(deepDependency
+								.getIdString(), "UTF-8") + "&id=" + uuid;
 
 						File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
 						File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
@@ -166,21 +161,23 @@ public class DownloadDependenciesAction extends AnAction
 						progressIndicator.setText("Extracting plugin: " + deepDependency);
 						ZipUtil.extract(targetFileToDownload, depDir, null);
 					}
-				}
-				catch(IOException e)
-				{
-					LOGGER.warn(e);
-					return;
+					catch(IOException e)
+					{
+						ourNotificationGroup.createNotification("Failed to download plugin: " + deepDependency, NotificationType.WARNING).notify(project);
+
+						LOGGER.warn(e);
+					}
 				}
 
 				progressIndicator.setText("Updating libraries");
-				VirtualFile depVirtualDir = LocalFileSystem.getInstance().refreshAndFindFileByPath(depDir.getPath());
+				VirtualFile depVirtualDir = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(depDir);
 				if(depVirtualDir == null)
 				{
 					return;
 				}
+				depVirtualDir.refresh(false, true);
 
-				for(Map.Entry<String, Library> entry : librariesByPluginId.entrySet())
+				for(Map.Entry<PluginId, Library> entry : librariesByPluginId.entrySet())
 				{
 					VirtualFile libDir = depVirtualDir.findFileByRelativePath(entry.getKey() + "/lib");
 					if(libDir == null)
@@ -220,18 +217,18 @@ public class DownloadDependenciesAction extends AnAction
 		}.queue();
 	}
 
-	private void collectDependencies(String pluginId, Set<String> deps, PluginJson[] plugins)
+	private void collectDependencies(PluginId pluginId, Set<PluginId> deps, List<IdeaPluginDescriptor> plugins)
 	{
 		if(!deps.add(pluginId))
 		{
 			return;
 		}
 
-		for(PluginJson plugin : plugins)
+		for(IdeaPluginDescriptor plugin : plugins)
 		{
-			if(pluginId.equals(plugin.id))
+			if(pluginId.equals(plugin.getPluginId()))
 			{
-				for(String dependencyId : plugin.dependencies)
+				for(PluginId dependencyId : plugin.getDependentPluginIds())
 				{
 					collectDependencies(dependencyId, deps, plugins);
 				}

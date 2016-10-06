@@ -42,6 +42,8 @@ import consulo.vfs.util.ArchiveVfsUtil;
  */
 public class ConsuloPluginLibraryType extends LibraryType<DummyLibraryProperties>
 {
+	public static final String LIBRARY_PREFIX = "consulo-plugin: ";
+
 	public static final PersistentLibraryKind<DummyLibraryProperties> KIND = new PersistentLibraryKind<DummyLibraryProperties>("consulo-plugin")
 	{
 		@NotNull
@@ -127,7 +129,7 @@ public class ConsuloPluginLibraryType extends LibraryType<DummyLibraryProperties
 			return null;
 		}
 
-		return new NewLibraryConfiguration("consulo-plugin: " + pluginId, this, DummyLibraryProperties.INSTANCE)
+		return new NewLibraryConfiguration(LIBRARY_PREFIX + pluginId, this, DummyLibraryProperties.INSTANCE)
 		{
 			@Override
 			public void addRoots(@NotNull LibraryEditor libraryEditor)
