@@ -149,8 +149,8 @@ public class DownloadDependenciesAction extends AnAction
 				{
 					try
 					{
-						String downloadUrl = WebServiceApi.PLUGINS_API.buildUrl("download") + "?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode(deepDependency
-								.getIdString(), "UTF-8") + "&id=" + uuid;
+						String downloadUrl = WebServiceApi.REPOSITORY_API.buildUrl("download") + "?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode
+								(deepDependency.getIdString(), "UTF-8") + "&id=" + uuid;
 
 						File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
 						File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
