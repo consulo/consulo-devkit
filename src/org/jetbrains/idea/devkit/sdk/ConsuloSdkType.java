@@ -16,11 +16,11 @@
 package org.jetbrains.idea.devkit.sdk;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.Icon;
 
@@ -43,9 +43,10 @@ import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.ArrayUtil;
+import com.intellij.util.containers.ContainerUtil;
 import consulo.lombok.annotations.Logger;
 import consulo.roots.types.BinariesOrderRootType;
-import consulo.roots.types.SourcesOrderRootType;
 import consulo.vfs.ArchiveFileSystem;
 import consulo.vfs.util.ArchiveVfsUtil;
 
@@ -59,8 +60,6 @@ public class ConsuloSdkType extends SdkType
 	@NonNls
 	private static final String LIB_DIR_NAME = "lib";
 	@NonNls
-	private static final String SRC_DIR_NAME = "src";
-	@NonNls
 	private static final String PLUGINS_DIR = "plugins";
 
 	public ConsuloSdkType()
@@ -69,18 +68,18 @@ public class ConsuloSdkType extends SdkType
 	}
 
 	@NotNull
-	private static VirtualFile[] getIdeaLibraries(VirtualFile home)
+	private static VirtualFile[] getLibraries(VirtualFile home)
 	{
-		String homePath = home.getPath();
+		String selectSdkHome = selectBuild(home.getPath());
 
-		String plugins = homePath + File.separator + PLUGINS_DIR + File.separator;
-		ArrayList<VirtualFile> result = new ArrayList<VirtualFile>();
-		appendIdeaLibrary(homePath, result, "junit.jar");
-		appendIdeaLibrary(plugins + "core", result);
+		String plugins = selectSdkHome + File.separator + PLUGINS_DIR + File.separator;
+		List<VirtualFile> result = new ArrayList<>();
+		appendLibraries(selectSdkHome, result, "junit.jar");
+		appendLibraries(plugins + "core", result);
 		return VfsUtilCore.toVirtualFileArray(result);
 	}
 
-	private static void appendIdeaLibrary(final String libDirPath, final ArrayList<VirtualFile> result, @NonNls final String... forbidden)
+	private static void appendLibraries(final String libDirPath, final List<VirtualFile> result, @NonNls final String... forbidden)
 	{
 		final String path = libDirPath + File.separator + LIB_DIR_NAME;
 		ArchiveFileSystem fileSystem = JarArchiveFileType.INSTANCE.getFileSystem();
@@ -103,37 +102,6 @@ public class ConsuloSdkType extends SdkType
 						result.add(virtualFile);
 					}
 				}
-			}
-		}
-	}
-
-	private static void addSources(File file, SdkModificator sdkModificator)
-	{
-		final File src = new File(new File(file, LIB_DIR_NAME), SRC_DIR_NAME);
-		if(!src.exists())
-		{
-			return;
-		}
-		File[] srcs = src.listFiles(new FileFilter()
-		{
-			@Override
-			public boolean accept(File pathname)
-			{
-				@NonNls final String path = pathname.getPath();
-
-				return path.endsWith(".jar") || path.endsWith(".zip");
-			}
-		});
-		for(int i = 0; srcs != null && i < srcs.length; i++)
-		{
-			File jarFile = srcs[i];
-			if(jarFile.exists())
-			{
-				ArchiveFileSystem fileSystem = JarArchiveFileType.INSTANCE.getFileSystem();
-				String path = jarFile.getAbsolutePath().replace(File.separatorChar, '/') + ArchiveFileSystem.ARCHIVE_SEPARATOR;
-				fileSystem.addNoCopyArchiveForPath(path);
-				VirtualFile vFile = fileSystem.findFileByPath(path);
-				sdkModificator.addRoot(vFile, SourcesOrderRootType.getInstance());
 			}
 		}
 	}
@@ -168,7 +136,7 @@ public class ConsuloSdkType extends SdkType
 	@Override
 	public Collection<String> suggestHomePaths()
 	{
-		return Collections.singletonList(PathManager.getHomePath().replace(File.separatorChar, '/'));
+		return Collections.singletonList(PathManager.getDistributionDirectory().getPath());
 	}
 
 	@Override
@@ -191,7 +159,44 @@ public class ConsuloSdkType extends SdkType
 	}
 
 	@Nullable
+	public static String selectBuild(@NotNull String sdkHome)
+	{
+		File platformDirectory = new File(sdkHome, "platform");
+		if(!platformDirectory.exists())
+		{
+			String oldSdkNumber = getBuildNumberImpl(new File(sdkHome));
+			if(oldSdkNumber != null)
+			{
+				return sdkHome;
+			}
+
+			return null;
+		}
+
+		String[] child = platformDirectory.list();
+		if(child.length == 0)
+		{
+			return null;
+		}
+
+		ContainerUtil.sort(child);
+
+		return new File(platformDirectory, ArrayUtil.getLastElement(child)).getPath();
+	}
+
+	@Nullable
 	private static String getBuildNumber(String sdkHome)
+	{
+		String home = selectBuild(sdkHome);
+		if(home == null)
+		{
+			return null;
+		}
+		return getBuildNumberImpl(new File(home));
+	}
+
+	@Nullable
+	private static String getBuildNumberImpl(File sdkHome)
 	{
 		File targetJar = new File(sdkHome, "/lib/resources.jar");
 
@@ -254,12 +259,10 @@ public class ConsuloSdkType extends SdkType
 
 		final SdkModificator sdkModificator = sdk.getSdkModificator();
 
-		for(VirtualFile virtualFile : getIdeaLibraries(homeDirectory))
+		for(VirtualFile virtualFile : getLibraries(homeDirectory))
 		{
 			sdkModificator.addRoot(virtualFile, BinariesOrderRootType.getInstance());
 		}
-
-		addSources(VfsUtilCore.virtualToIoFile(homeDirectory), sdkModificator);
 
 		sdkModificator.commitChanges();
 	}

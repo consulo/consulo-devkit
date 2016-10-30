@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.CommandLineState;
@@ -76,8 +77,15 @@ public class ConsuloSandboxRunState extends CommandLineState
 		vm.addParametersString(profile.VM_PARAMETERS);
 		params.getProgramParametersList().addParametersString(profile.PROGRAM_PARAMETERS);
 
+		String selectedBuild = ConsuloSdkType.selectBuild(consuloSdkHome);
+		if(selectedBuild == null)
+		{
+			throw new ExecutionException("Build is not found");
+		}
+
 		vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + "/config");
 		vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + "/system");
+		vm.defineProperty(PathManager.PROPERTY_HOME_PATH, selectedBuild);
 
 		if(artifact != null)
 		{
@@ -105,11 +113,11 @@ public class ConsuloSandboxRunState extends CommandLineState
 		{
 			vm.defineProperty(ApplicationProperties.IDEA_IS_INTERNAL, "true");
 		}
-		params.setWorkingDirectory(consuloSdkHome + File.separator + "bin" + File.separator);
+		params.setWorkingDirectory(consuloSdkHome);
 
 		params.setJdk(javaSdk);
 
-		addConsuloLibs(consuloSdkHome, params);
+		addConsuloLibs(selectedBuild, params);
 
 		params.setMainClass(getMainClass());
 		for(RunConfigurationExtension ext : Extensions.getExtensions(RunConfigurationExtension.EP_NAME))

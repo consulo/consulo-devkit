@@ -15,8 +15,6 @@
  */
 package org.jetbrains.idea.devkit.run;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -27,13 +25,11 @@ import com.intellij.diagnostic.VMOptions;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.impl.artifacts.ArtifactUtil;
@@ -130,7 +126,7 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 					PluginModuleExtension extension = ModuleUtilCore.getExtension(module, PluginModuleExtension.class);
 					if(extension != null)
 					{
-						return new Pair<Module, Artifact>(module, artifact);
+						return Pair.create(module, artifact);
 					}
 				}
 			}
@@ -143,15 +139,7 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 	{
 		if(myVmParameters == null)
 		{
-			String vmOptions;
-			try
-			{
-				vmOptions = FileUtil.loadFile(new File(PathManager.getBinPath(), "idea.plugins.vmoptions")).replaceAll("\\s+", " ");
-			}
-			catch(IOException e)
-			{
-				vmOptions = VMOptions.read();
-			}
+			String vmOptions = VMOptions.read();
 			myVmParameters = vmOptions != null ? vmOptions.trim() : "";
 		}
 
