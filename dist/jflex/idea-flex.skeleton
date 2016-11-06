@@ -117,7 +117,7 @@
     myTokenType = null;
   }
 
-   private void locateToken() {
+   protected void locateToken() {
      if (myTokenType != null) return;
      try {
        myState = yystate();
