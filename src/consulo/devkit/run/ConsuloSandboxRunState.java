@@ -146,6 +146,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 		params.getClassPath().addFirst(libPath + "/extensions.jar");
 		params.getClassPath().addFirst(libPath + "/bootstrap.jar");
 		params.getClassPath().addFirst(libPath + "/jna.jar");
+		params.getClassPath().addFirst(libPath + "/jna-platform.jar");
 	}
 
 	public JavaParameters getJavaParameters()
