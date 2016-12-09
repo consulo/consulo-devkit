@@ -20,6 +20,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.util.ExtensionPointLocator;
+import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -33,6 +34,7 @@ import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.lombok.annotations.ProjectService;
 
 public class StatefulEpInspection extends DevKitInspectionBase
 {
@@ -49,7 +51,7 @@ public class StatefulEpInspection extends DevKitInspectionBase
 		final boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
 		if(isQuickFix || ExtensionPointLocator.isRegisteredExtension(psiClass))
 		{
-			final boolean isProjectComponent = InheritanceUtil.isInheritor(psiClass, ProjectComponent.class.getCanonicalName());
+			final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
 
 			List<ProblemDescriptor> result = ContainerUtil.newArrayList();
 			for(final PsiField field : fields)
@@ -64,8 +66,9 @@ public class StatefulEpInspection extends DevKitInspectionBase
 					{
 						continue;
 					}
-					String message = c == PsiElement.class ? "Potential memory leak: don't hold PsiElement, use SmartPsiElementPointer instead" + (isQuickFix ? "; also see LocalQuickFixOnPsiElement"
-							: "") : "Don't use " + c.getSimpleName() + " as a field in extension";
+					String message = c == PsiElement.class ? "Potential memory leak: don't hold PsiElement, use SmartPsiElementPointer instead" +
+							(isQuickFix ? "; also see LocalQuickFixOnPsiElement" : "") : "Don't use " + c.getSimpleName() + " as a field in " +
+							"extension";
 					if(InheritanceUtil.isInheritor(field.getType(), c.getCanonicalName()))
 					{
 						result.add(manager.createProblemDescriptor(field, message, true, ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly));
@@ -75,5 +78,15 @@ public class StatefulEpInspection extends DevKitInspectionBase
 			return result.toArray(new ProblemDescriptor[result.size()]);
 		}
 		return super.checkClass(psiClass, manager, isOnTheFly);
+	}
+
+	private static boolean isProjectServiceOrComponent(PsiClass psiClass)
+	{
+		if(InheritanceUtil.isInheritor(psiClass, ProjectComponent.class.getCanonicalName()))
+		{
+			return true;
+		}
+
+		return AnnotationUtil.isAnnotated(psiClass, ProjectService.class.getName(), true);
 	}
 }
