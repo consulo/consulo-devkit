@@ -17,10 +17,12 @@
 package consulo.devkit;
 
 import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import consulo.annotations.RequiredReadAction;
+import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.ide.IconDescriptor;
 import consulo.ide.IconDescriptorUpdater;
 
@@ -42,7 +44,11 @@ public class ConsuloDevkitIconDescriptorUpdater implements IconDescriptorUpdater
 				PsiDirectory parentDirectory = ((PsiDirectory) psiElement).getParentDirectory();
 				if(parentDirectory != null && Comparing.equal(parentDirectory.getVirtualFile(), psiElement.getProject().getBaseDir()))
 				{
-					iconDescriptor.setMainIcon(ConsuloSandboxIcons.Package);
+					PluginModuleExtension extension = ModuleUtilCore.getExtension(psiElement, PluginModuleExtension.class);
+					if(extension != null)
+					{
+						iconDescriptor.setMainIcon(ConsuloSandboxIcons.Package);
+					}
 				}
 			}
 		}

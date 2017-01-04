@@ -28,6 +28,7 @@ import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.NameValue;
 import com.intellij.util.xml.SubTagList;
+import consulo.annotations.DeprecationInfo;
 
 /**
  * @author mike
@@ -37,8 +38,15 @@ public interface ExtensionPoint extends DomElement
 {
 	enum Area
 	{
+		@Deprecated
+		@DeprecationInfo("Use without 'CONSULO_' prefix")
 		CONSULO_PROJECT,
-		CONSULO_MODULE
+		@Deprecated
+		@DeprecationInfo("Use without 'CONSULO_' prefix")
+		CONSULO_MODULE,
+
+		PROJECT,
+		MODULE
 	}
 
 	@NotNull

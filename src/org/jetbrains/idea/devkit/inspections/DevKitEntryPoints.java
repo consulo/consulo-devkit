@@ -40,7 +40,7 @@ public class DevKitEntryPoints implements ImplicitUsageProvider
 				return true;
 			}
 		}
-		if(element instanceof PsiField || element instanceof PsiMethod)
+		if(element instanceof PsiField || element instanceof PsiMethod || element instanceof PsiClass)
 		{
 			return AnnotationUtil.isAnnotated((com.intellij.psi.PsiModifierListOwner) element, Exported.class.getName(), false);
 		}
