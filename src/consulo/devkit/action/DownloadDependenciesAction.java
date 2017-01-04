@@ -142,15 +142,12 @@ public class DownloadDependenciesAction extends AnAction
 
 				progressIndicator.setText("Collected deep dependencies: " + deepDependencies);
 
-				// use cold id for don't store statistics
-				String uuid = "cold";
-
 				for(PluginId deepDependency : deepDependencies)
 				{
 					try
 					{
 						String downloadUrl = WebServiceApi.REPOSITORY_API.buildUrl("download") + "?channel=nightly&platformVersion=" + consuloVersion + "&pluginId=" + URLEncoder.encode
-								(deepDependency.getIdString(), "UTF-8") + "&id=" + uuid;
+								(deepDependency.getIdString(), "UTF-8") + "&noTracking=true";
 
 						File targetFileToDownload = FileUtil.createTempFile("download_target", ".zip");
 						File tempTargetFileToDownload = FileUtil.createTempFile("temp_download_target", ".zip");
