@@ -115,7 +115,7 @@ public class ConsuloPluginLibraryType extends LibraryType<DummyLibraryProperties
 			@Override
 			public void run(@NotNull ProgressIndicator progressIndicator)
 			{
-				String url = RepositoryHelper.buildUrlForDownload(UpdateSettings.getInstance().getChannel(), pluginId, null, false);
+				String url = RepositoryHelper.buildUrlForDownload(UpdateSettings.getInstance().getChannel(), pluginId, null, true, false);
 
 				try
 				{
