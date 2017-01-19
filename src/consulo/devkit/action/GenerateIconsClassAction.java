@@ -34,8 +34,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.impl.DirectoryIndex;
@@ -56,7 +58,6 @@ import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.QualifiedName;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ExceptionUtil;
-import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.ui.UIUtil;
@@ -75,22 +76,16 @@ public class GenerateIconsClassAction extends AnAction
 	public static class SettingsDialog extends DialogWrapper
 	{
 		private JPanel myRootPanel;
-		private ComboBox myModuleComboBox;
+		private ComboBox<Module> myModuleComboBox;
 		private JBTextField myClassTextField;
 
+		@RequiredDispatchThread
 		public SettingsDialog(@NotNull final Project project)
 		{
 			super(project);
 			setTitle("Generate Icons Class");
 			myRootPanel = new JPanel(new VerticalFlowLayout());
-			myModuleComboBox = new ComboBox(ApplicationManager.getApplication().runReadAction(new Computable<Module[]>()
-			{
-				@Override
-				public Module[] compute()
-				{
-					return ModuleManager.getInstance(project).getSortedModules();
-				}
-			}));
+			myModuleComboBox = new ComboBox<>(ModuleManager.getInstance(project).getSortedModules());
 			myModuleComboBox.setRenderer(new ModuleListCellRenderer());
 			myRootPanel.add(LabeledComponent.left(myModuleComboBox, "Module"));
 			myClassTextField = new JBTextField("org.unknown.SomeIcons");
@@ -142,40 +137,23 @@ public class GenerateIconsClassAction extends AnAction
 			return;
 		}
 
-		UIUtil.invokeAndWaitIfNeeded(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				addFile(settingsDialog.getModule(), settingsDialog.getClassQName());
-			}
-		});
+		Task.Backgroundable.queue(project, "Generating class file...", indicator -> addFile(settingsDialog.getModule(), settingsDialog.getClassQName()));
 	}
 
-	@RequiredDispatchThread
 	private static void addFile(final Module module, final String classQName)
 	{
 		final Project project = module.getProject();
 		try
 		{
-
 			DirectoryIndex directoryIndex = DirectoryIndex.getInstance(module.getProject());
 
 			ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
 
-			VirtualFile[] contentFolderFiles = moduleRootManager.getContentFolderFiles(ContentFolderScopes.of
-					(ProductionResourceContentFolderTypeProvider.getInstance()));
+			VirtualFile[] contentFolderFiles = moduleRootManager.getContentFolderFiles(ContentFolderScopes.of(ProductionResourceContentFolderTypeProvider.getInstance()));
 
-			List<VirtualFile> iconsDirs = ContainerUtil.map(contentFolderFiles, new Function<VirtualFile, VirtualFile>()
-			{
-				@Override
-				public VirtualFile fun(VirtualFile virtualFile)
-				{
-					return virtualFile.findChild(ourIconsDirName);
-				}
-			});
+			List<VirtualFile> iconsDirs = ContainerUtil.map(contentFolderFiles, virtualFile -> virtualFile.findChild(ourIconsDirName));
 
-			final List<VirtualFile> icons = new ArrayList<VirtualFile>();
+			final List<VirtualFile> icons = new ArrayList<>();
 			for(VirtualFile iconDir : iconsDirs)
 			{
 				VfsUtil.visitChildrenRecursively(iconDir, new VirtualFileVisitor()
@@ -192,7 +170,7 @@ public class GenerateIconsClassAction extends AnAction
 				});
 			}
 
-			MultiMap<String, VirtualFile> map = new MultiMap<String, VirtualFile>();
+			MultiMap<String, VirtualFile> map = new MultiMap<>();
 
 			for(VirtualFile iconFile : icons)
 			{
@@ -233,15 +211,8 @@ public class GenerateIconsClassAction extends AnAction
 			String classText = iconClassBuilder.build().toString();
 
 			String fileName = className + JavaFileType.DOT_DEFAULT_EXTENSION;
-			final PsiFile psiFile = PsiFileFactory.getInstance(project).createFileFromText(fileName, JavaFileType.INSTANCE, classText);
-			ApplicationManager.getApplication().runWriteAction(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					CodeStyleManager.getInstance(project).reformat(psiFile);
-				}
-			});
+			final PsiFile psiFile = ApplicationManager.getApplication().runReadAction((Computable<PsiFile>) () -> PsiFileFactory.getInstance(project).createFileFromText(fileName, JavaFileType.INSTANCE, classText));
+			WriteCommandAction.runWriteCommandAction(project, (Runnable) () -> CodeStyleManager.getInstance(project).reformat(psiFile));
 
 			contentFolderFiles = moduleRootManager.getContentFolderFiles(ContentFolderScopes.onlyProduction());
 
@@ -260,35 +231,25 @@ public class GenerateIconsClassAction extends AnAction
 
 				if(temp == null || !temp.isDirectory())
 				{
-					temp = ApplicationManager.getApplication().runWriteAction(new ThrowableComputable<VirtualFile, Throwable>()
-					{
-						@Override
-						public VirtualFile compute() throws IOException
-						{
-							return finalDirectoryForAdd.createChildDirectory(null, part);
-						}
-					});
+					temp = WriteCommandAction.runWriteCommandAction(project, (ThrowableComputable<VirtualFile, IOException>) () -> finalDirectoryForAdd.createChildDirectory(null, part));
 				}
 				directoryForAdd = temp;
 			}
 
 			final VirtualFile temp = directoryForAdd;
-			VirtualFile file = ApplicationManager.getApplication().runWriteAction(new ThrowableComputable<VirtualFile, Throwable>()
+			VirtualFile file = WriteCommandAction.runWriteCommandAction(project, (ThrowableComputable<VirtualFile, IOException>)() ->
 			{
-				@Override
-				public VirtualFile compute() throws IOException
-				{
-					VirtualFile child = temp.findOrCreateChildData(null, psiFile.getName());
+				VirtualFile child = temp.findOrCreateChildData(null, psiFile.getName());
 
-					child.setBinaryContent(psiFile.getText().getBytes(CharsetToolkit.UTF8_CHARSET));
-					return child;
-				}
+				child.setBinaryContent(psiFile.getText().getBytes(CharsetToolkit.UTF8_CHARSET));
+				return child;
 			});
-			OpenFileAction.openFile(file, project);
+
+			UIUtil.invokeLaterIfNeeded(() -> OpenFileAction.openFile(file, project));
 		}
 		catch(Throwable throwable)
 		{
-			Messages.showErrorDialog(project, ExceptionUtil.getThrowableText(throwable), "Error");
+			UIUtil.invokeLaterIfNeeded(() -> Messages.showErrorDialog(project, ExceptionUtil.getThrowableText(throwable), "Error"));
 		}
 	}
 }

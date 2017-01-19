@@ -35,7 +35,7 @@ public class IconClassBuilder
 	{
 		myBuilder.append("package ").append(packageName).append(";\n\n");
 		myBuilder.append("import com.intellij.openapi.util.IconLoader;\n");
-		myBuilder.append("import javax.swing.*;\n\n");
+		myBuilder.append("import consulo.ui.migration.SwingImageRef;\n\n");
 
 		myBuilder.append("// Generated Consulo DevKit plugin \n");
 		myBuilder.append("public interface ").append(name).append(" {\n");
@@ -63,7 +63,7 @@ public class IconClassBuilder
 		for(GenerateIconNode iconNode : node.getFiles().values())
 		{
 			Icon icon = iconNode.getIcon();
-			indent(indentSize).append("Icon ").append(iconNode.getName()).append(" = IconLoader.getIcon(\"").append(iconNode
+			indent(indentSize).append("SwingImageRef ").append(iconNode.getName()).append(" = IconLoader.getIcon(\"").append(iconNode
 					.getPath()).append("\"); ").append(" // ").append(icon.getIconWidth()).append("x").append(icon.getIconHeight()).append("\n");
 		}
 	}

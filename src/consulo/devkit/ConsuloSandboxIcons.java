@@ -16,9 +16,8 @@
 
 package consulo.devkit;
 
-import javax.swing.Icon;
-
 import com.intellij.openapi.util.IconLoader;
+import consulo.ui.migration.SwingImageRef;
 
 /**
  * @author VISTALL
@@ -26,6 +25,6 @@ import com.intellij.openapi.util.IconLoader;
  */
 public interface ConsuloSandboxIcons
 {
-	Icon Icon16_Sandbox = IconLoader.findIcon("/icon16-sandbox.png");
-	Icon Package = IconLoader.findIcon("/icons/package_root.png");
+	SwingImageRef Icon16_Sandbox = IconLoader.findIcon("/icon16-sandbox.png");
+	SwingImageRef Package = IconLoader.findIcon("/icons/package_root.png");
 }
