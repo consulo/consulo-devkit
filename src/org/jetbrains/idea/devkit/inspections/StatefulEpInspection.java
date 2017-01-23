@@ -20,12 +20,12 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.util.ExtensionPointLocator;
-import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -34,10 +34,15 @@ import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.util.containers.ContainerUtil;
-import consulo.lombok.annotations.ProjectService;
 
 public class StatefulEpInspection extends DevKitInspectionBase
 {
+	@NotNull
+	public static StatefulEpInspection getInstance(@NotNull Project project)
+	{
+		return ServiceManager.getService(project, StatefulEpInspection.class);
+	}
+
 	@Nullable
 	@Override
 	public ProblemDescriptor[] checkClass(@NotNull PsiClass psiClass, @NotNull InspectionManager manager, boolean isOnTheFly)
@@ -87,6 +92,6 @@ public class StatefulEpInspection extends DevKitInspectionBase
 			return true;
 		}
 
-		return AnnotationUtil.isAnnotated(psiClass, ProjectService.class.getName(), true);
+		return true;
 	}
 }

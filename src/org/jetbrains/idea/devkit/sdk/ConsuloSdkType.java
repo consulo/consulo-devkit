@@ -34,6 +34,7 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
@@ -45,7 +46,6 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.ContainerUtil;
-import consulo.lombok.annotations.Logger;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.vfs.ArchiveFileSystem;
 import consulo.vfs.util.ArchiveVfsUtil;
@@ -54,9 +54,10 @@ import consulo.vfs.util.ArchiveVfsUtil;
  * User: anna
  * Date: Nov 22, 2004
  */
-@Logger
 public class ConsuloSdkType extends SdkType
 {
+	private static final Logger LOGGER = Logger.getInstance(ConsuloSdkType.class);
+
 	@NonNls
 	private static final String LIB_DIR_NAME = "lib";
 	@NonNls

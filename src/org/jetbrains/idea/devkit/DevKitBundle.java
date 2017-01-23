@@ -15,12 +15,29 @@
  */
 package org.jetbrains.idea.devkit;
 
-import consulo.lombok.annotations.Bundle;
+import org.jetbrains.annotations.PropertyKey;
+import com.intellij.AbstractBundle;
 
 /**
  * User: anna
  * Date: Aug 11, 2005
  */
-@Bundle("messages.DevKitBundle")
-public class DevKitBundle {
+public class DevKitBundle extends AbstractBundle
+{
+	private static final DevKitBundle ourInstance = new DevKitBundle();
+
+	private DevKitBundle()
+	{
+		super("messages.DevKitBundle");
+	}
+
+	public static String message(@PropertyKey(resourceBundle = "messages.DevKitBundle") String key)
+	{
+		return ourInstance.getMessage(key);
+	}
+
+	public static String message(@PropertyKey(resourceBundle = "messages.DevKitBundle") String key, Object... params)
+	{
+		return ourInstance.getMessage(key, params);
+	}
 }

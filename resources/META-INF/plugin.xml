@@ -12,7 +12,6 @@
 	<depends>com.intellij.uiDesigner</depends>
 	<!--This depend is not used, but it needed for developing, and it required-->
 	<depends optional="true" config-file="consulo.jflex.xml">consulo.jflex</depends>
-	<depends optional="true" config-file="consulo.lombok.xml">consulo.lombok</depends>
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 

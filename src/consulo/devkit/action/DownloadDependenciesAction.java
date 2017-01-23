@@ -35,6 +35,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -54,7 +55,6 @@ import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.module.library.ConsuloPluginLibraryType;
 import consulo.ide.updateSettings.UpdateChannel;
 import consulo.ide.webService.WebServiceApi;
-import consulo.lombok.annotations.Logger;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.vfs.util.ArchiveVfsUtil;
 
@@ -62,9 +62,10 @@ import consulo.vfs.util.ArchiveVfsUtil;
  * @author VISTALL
  * @since 16.02.14
  */
-@Logger
 public class DownloadDependenciesAction extends AnAction
 {
+	private static final Logger LOGGER = Logger.getInstance(DownloadDependenciesAction.class);
+
 	private static NotificationGroup ourNotificationGroup = new NotificationGroup("consulo-dev-plugin", NotificationDisplayType.BALLOON, true);
 
 	@RequiredDispatchThread

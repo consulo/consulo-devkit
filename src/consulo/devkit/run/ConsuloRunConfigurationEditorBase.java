@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
@@ -50,12 +51,12 @@ import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.util.ObjectUtil;
 import com.intellij.util.ui.FormBuilder;
-import consulo.lombok.annotations.Logger;
 import consulo.roots.ui.configuration.SdkComboBox;
 
-@Logger
 public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConfigurationBase> extends SettingsEditor<T>
 {
+	private static final Logger LOGGER = Logger.getInstance(ConsuloRunConfigurationEditorBase.class);
+
 	private static class ArtifactItem
 	{
 		private final String myName;

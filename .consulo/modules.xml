@@ -22,7 +22,6 @@
               </binaries>
             </library>
           </orderEntry>
-          <orderEntry type="module" module-name="devkit-lombok" />
           <orderEntry type="library" name="consulo-plugin: consulo.jflex" level="project" />
           <orderEntry type="library" name="consulo-plugin: consulo.java" level="project" />
           <orderEntry type="library" name="consulo-plugin: com.intellij.properties" level="project" />
@@ -30,22 +29,6 @@
           <orderEntry type="library" name="consulo-plugin: com.intellij.uiDesigner" level="project" />
           <orderEntry type="library" name="consulo-plugin: com.intellij.junit" level="project" />
           <orderEntry type="library" name="consulo-plugin: com.intellij.junit" level="project" />
-        </module-layer>
-      </module>
-      <module name="devkit-lombok" dirurl="file://$PROJECT_DIR$/devkit-lombok" current-layer="Default">
-        <module-layer name="Default">
-          <extension id="consulo-plugin" sdk-module-name="consulo-devkit" />
-          <extension id="java" sdk-module-name="consulo-devkit" language-level-module-name="consulo-devkit" />
-          <content url="file://$MODULE_DIR$">
-            <content-folder type="PRODUCTION_RESOURCE" url="file://$MODULE_DIR$/resources" />
-            <content-folder type="PRODUCTION" url="file://$MODULE_DIR$/src" />
-          </content>
-          <orderEntry type="sourceFolder" />
-          <orderEntry type="module-extension-sdk" extension-id="java" />
-          <orderEntry type="module-extension-sdk" extension-id="consulo-plugin" />
-          <orderEntry type="library" name="consulo-plugin: consulo.java" level="project" />
-          <orderEntry type="library" name="consulo-plugin: consulo.lombok" level="project" />
-          <orderEntry type="library" name="consulo-plugin: com.intellij.properties" level="project" />
         </module-layer>
       </module>
     </modules>
