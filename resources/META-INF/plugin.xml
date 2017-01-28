@@ -193,12 +193,6 @@
 			<add-to-group anchor="last" group-id="NewGroup"/>
 		</action>
 
-		<action id="DevKit.GenerateIconsClassAction" class="consulo.devkit.action.GenerateIconsClassAction" text="Generate Icons Class"
-				icon="AllIcons.Nodes.Class" can-use-project-as-default="true"
-				require-module-extensions="consulo-plugin">
-			<add-to-group anchor="last" group-id="ToolsMenu"/>
-		</action>
-
 		<action class="org.jetbrains.idea.devkit.actions.NewProjectComponentAction" text="Project Component" id="NewProjectComponent">
 			<add-to-group anchor="last" group-id="NewGroup"/>
 		</action>
@@ -223,21 +217,24 @@
 			<add-to-group anchor="last" group-id="GenerateGroup"/>
 		</action>
 
-		<group id="Internal.DevKit" internal="true" text="DevKit" popup="true">
-			<action internal="true" class="org.jetbrains.idea.devkit.actions.ToggleHighlightingMarkupAction"
+		<group id="Internal.DevKit" class="consulo.devkit.action.InternalGroup" text="DevKit" popup="true">
+			<action class="org.jetbrains.idea.devkit.actions.ToggleHighlightingMarkupAction"
 					text="Toggle Expected Highlighting Markup"
 					id="ToggleHighlightingMarkup"/>
 
-			<action internal="true" class="org.jetbrains.idea.devkit.actions.ShuffleNamesAction" text="Shuffle Names"
+			<action class="org.jetbrains.idea.devkit.actions.ShuffleNamesAction" text="Shuffle Names"
 					id="ShuffleNamesAction"/>
 
-			<action internal="true" class="org.jetbrains.idea.devkit.actions.ShowSerializedXmlAction" text="Show Serialized XML for Class"
+			<action class="org.jetbrains.idea.devkit.actions.ShowSerializedXmlAction" text="Show Serialized XML for Class"
 					id="ShowSerializedXml"/>
 
-			<action internal="true" class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
+			<action class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
 					id="GenerateDomModel"/>
 
-			<add-to-group group-id="Internal" anchor="last"/>
+			<action id="DevKit.GenerateIconsClassAction" class="consulo.devkit.action.GenerateIconsClassAction" text="Generate Icons Class"
+					icon="AllIcons.Nodes.Class" />
+
+			<add-to-group group-id="ToolsMenu" anchor="last"/>
 		</group>
 
 	</actions>

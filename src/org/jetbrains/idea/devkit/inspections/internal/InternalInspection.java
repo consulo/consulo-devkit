@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.PsiElementVisitor;
 import consulo.annotations.RequiredReadAction;
@@ -29,6 +28,7 @@ public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 {
 	@NotNull
 	@Override
+	@RequiredReadAction
 	public final PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return isAllowed(holder) ? buildInternalVisitor(holder, isOnTheFly) : new PsiElementVisitor()
@@ -39,20 +39,9 @@ public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 	@RequiredReadAction
 	protected boolean isAllowed(ProblemsHolder holder)
 	{
-		if(PluginModuleUtil.isConsuloProject(holder.getProject()))
-		{
-			return true;
-		}
-
-		Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
-		if(PluginModuleUtil.isPluginModuleOrDependency(module))
-		{
-			return true;
-		}
-
 		//seems that internal inspection tests should test in most cases the inspection
 		//and not that internal inspections are not available in non-idea non-plugin projects
-		return isAllowedByDefault();
+		return isAllowedByDefault() || PluginModuleUtil.isConsuloOrPluginProject(holder.getProject(), ModuleUtilCore.findModuleForPsiElement(holder.getFile()));
 	}
 
 	protected boolean isAllowedByDefault()

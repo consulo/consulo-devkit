@@ -133,4 +133,30 @@ public class PluginModuleUtil
 	{
 		return project.getName().equals("consulo");
 	}
+
+	@RequiredReadAction
+	public static boolean isConsuloOrPluginProject(@NotNull Project project, @Nullable Module module)
+	{
+		if(PluginModuleUtil.isConsuloProject(project))
+		{
+			return true;
+		}
+
+		if(module != null)
+		{
+			if(PluginModuleUtil.isPluginModuleOrDependency(module))
+			{
+				return true;
+			}
+		}
+
+		for(Module temp : ModuleManager.getInstance(project).getModules())
+		{
+			if(PluginModuleUtil.isPluginModuleOrDependency(temp))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 }

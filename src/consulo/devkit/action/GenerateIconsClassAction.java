@@ -30,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 import com.intellij.application.options.ModuleListCellRenderer;
 import com.intellij.ide.actions.OpenFileAction;
 import com.intellij.ide.highlighter.JavaFileType;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
@@ -71,7 +70,7 @@ import consulo.roots.impl.ProductionResourceContentFolderTypeProvider;
  * @author VISTALL
  * @since 02.02.15
  */
-public class GenerateIconsClassAction extends AnAction
+public class GenerateIconsClassAction extends InternalAction
 {
 	public static class SettingsDialog extends DialogWrapper
 	{

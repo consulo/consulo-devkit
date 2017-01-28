@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx;
 import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.lang.annotation.HighlightSeverity;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.WriteAction;
@@ -37,11 +36,12 @@ import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
+import consulo.devkit.action.InternalAction;
 
 /**
  * @author gregsh
  */
-public class ToggleHighlightingMarkupAction extends AnAction
+public class ToggleHighlightingMarkupAction extends InternalAction
 {
 	@Override
 	public void update(AnActionEvent e)

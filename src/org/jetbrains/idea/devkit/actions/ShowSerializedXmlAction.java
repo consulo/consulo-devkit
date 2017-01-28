@@ -38,7 +38,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.OrderEnumerator;
 import com.intellij.openapi.ui.Messages;
@@ -53,22 +53,25 @@ import com.intellij.util.lang.UrlClassLoader;
 import com.intellij.util.xmlb.Accessor;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import consulo.devkit.action.InternalAction;
 
 /**
  * @author nik
  */
-public class ShowSerializedXmlAction extends DumbAwareAction {
-  private static final Logger LOG = Logger.getInstance("#org.jetbrains.idea.devkit.actions.ShowSerializedXmlAction");
+public class ShowSerializedXmlAction extends InternalAction implements DumbAware
+{
+	private static final Logger LOG = Logger.getInstance("#org.jetbrains.idea.devkit.actions.ShowSerializedXmlAction");
 
-  @Override
-  public void update(AnActionEvent e) {
-    e.getPresentation()
-      .setEnabled(getEventProject(e) != null && e.getData(LangDataKeys.PSI_FILE) != null && e.getData(PlatformDataKeys.EDITOR) != null);
-  }
+	@Override
+	public void update(AnActionEvent e)
+	{
+		e.getPresentation().setEnabled(getEventProject(e) != null && e.getData(LangDataKeys.PSI_FILE) != null && e.getData(PlatformDataKeys.EDITOR) != null);
+	}
 
-  @Override
-  public void actionPerformed(AnActionEvent e) {
-    /*final PsiClass psiClass = getPsiClass(e);
+	@Override
+	public void actionPerformed(AnActionEvent e)
+	{
+	/*final PsiClass psiClass = getPsiClass(e);
     if (psiClass == null) return;
 
     final VirtualFile virtualFile = psiClass.getContainingFile().getVirtualFile();
@@ -85,164 +88,194 @@ public class ShowSerializedXmlAction extends DumbAwareAction {
         generateAndShowXml(module, className);
       }
     });  */
-  }
+	}
 
-  private static void generateAndShowXml(final Module module, final String className) {
-    final List<URL> urls = new ArrayList<URL>();
-    final List<String> list = OrderEnumerator.orderEntries(module).recursively().runtimeOnly().getPathsList().getPathList();
-    for (String path : list) {
-      try {
-        urls.add(new File(FileUtil.toSystemIndependentName(path)).toURI().toURL());
-      }
-      catch (MalformedURLException e1) {
-        LOG.info(e1);
-      }
-    }
+	private static void generateAndShowXml(final Module module, final String className)
+	{
+		final List<URL> urls = new ArrayList<URL>();
+		final List<String> list = OrderEnumerator.orderEntries(module).recursively().runtimeOnly().getPathsList().getPathList();
+		for(String path : list)
+		{
+			try
+			{
+				urls.add(new File(FileUtil.toSystemIndependentName(path)).toURI().toURL());
+			}
+			catch(MalformedURLException e1)
+			{
+				LOG.info(e1);
+			}
+		}
 
-    final Project project = module.getProject();
-    UrlClassLoader loader = UrlClassLoader.build().urls(urls).parent(XmlSerializer.class.getClassLoader()).get();
-    final Class<?> aClass;
-    try {
-      aClass = Class.forName(className, true, loader);
-    }
-    catch (ClassNotFoundException e) {
-      Messages.showErrorDialog(project, "Cannot find class '" + className + "'", CommonBundle.getErrorTitle());
-      LOG.info(e);
-      return;
-    }
+		final Project project = module.getProject();
+		UrlClassLoader loader = UrlClassLoader.build().urls(urls).parent(XmlSerializer.class.getClassLoader()).get();
+		final Class<?> aClass;
+		try
+		{
+			aClass = Class.forName(className, true, loader);
+		}
+		catch(ClassNotFoundException e)
+		{
+			Messages.showErrorDialog(project, "Cannot find class '" + className + "'", CommonBundle.getErrorTitle());
+			LOG.info(e);
+			return;
+		}
 
-    final Object o;
-    try {
-      o = new SampleObjectGenerator().createValue(aClass, FList.<Type>emptyList());
-    }
-    catch (Exception e) {
-      Messages.showErrorDialog(project, "Cannot generate class '" + className + "': " + e.getMessage(), CommonBundle.getErrorTitle());
-      LOG.info(e);
-      return;
-    }
+		final Object o;
+		try
+		{
+			o = new SampleObjectGenerator().createValue(aClass, FList.<Type>emptyList());
+		}
+		catch(Exception e)
+		{
+			Messages.showErrorDialog(project, "Cannot generate class '" + className + "': " + e.getMessage(), CommonBundle.getErrorTitle());
+			LOG.info(e);
+			return;
+		}
 
-    final Element element = XmlSerializer.serialize(o);
-    final String text = JDOMUtil.writeElement(element, "\n");
-    Messages.showIdeaMessageDialog(project, text, "Serialized XML for '" + className + "'", new String[]{CommonBundle.getOkButtonText()}, 0,
-                                   Messages.getInformationIcon(), null);
-  }
+		final Element element = XmlSerializer.serialize(o);
+		final String text = JDOMUtil.writeElement(element, "\n");
+		Messages.showIdeaMessageDialog(project, text, "Serialized XML for '" + className + "'", new String[]{CommonBundle.getOkButtonText()}, 0, Messages.getInformationIcon(), null);
+	}
 
-  @Nullable
-  private static PsiClass getPsiClass(AnActionEvent e) {
-    final PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-    final Editor editor = e.getData(PlatformDataKeys.EDITOR);
-    if (editor == null || psiFile == null) return null;
-    final PsiElement element = psiFile.findElementAt(editor.getCaretModel().getOffset());
-    return PsiTreeUtil.getParentOfType(element, PsiClass.class);
-  }
+	@Nullable
+	private static PsiClass getPsiClass(AnActionEvent e)
+	{
+		final PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+		final Editor editor = e.getData(PlatformDataKeys.EDITOR);
+		if(editor == null || psiFile == null)
+		{
+			return null;
+		}
+		final PsiElement element = psiFile.findElementAt(editor.getCaretModel().getOffset());
+		return PsiTreeUtil.getParentOfType(element, PsiClass.class);
+	}
 
-  private static class SampleObjectGenerator {
-    private int myNum;
+	private static class SampleObjectGenerator
+	{
+		private int myNum;
 
-    @Nullable
-    public Object createValue(Type type, final FList<Type> types) throws Exception {
-      if (types.contains(type)) return null;
-      FList<Type> processedTypes = types.prepend(type);
-      final Class<?> valueClass = type instanceof Class ? (Class<Object>)type : (Class<Object>)((ParameterizedType)type).getRawType();
-      if (String.class.isAssignableFrom(valueClass)) {
-        return "value" + (myNum++);
-      }
-      else if (byte.class.isAssignableFrom(valueClass) ||
-               Byte.class.isAssignableFrom(valueClass) ||
-               short.class.isAssignableFrom(valueClass) ||
-               Short.class.isAssignableFrom(valueClass) ||
-               int.class.isAssignableFrom(valueClass) ||
-               Integer.class.isAssignableFrom(valueClass) ||
-               long.class.isAssignableFrom(valueClass) ||
-               Long.class.isAssignableFrom(valueClass)) {
-        return myNum++ % 127;
-      }
-      else if (double.class.isAssignableFrom(valueClass) ||
-               Double.class.isAssignableFrom(valueClass) ||
-               float.class.isAssignableFrom(valueClass) ||
-               Float.class.isAssignableFrom(valueClass)) {
-        return 0.5 + myNum++;
-      }
-      else if (boolean.class.isAssignableFrom(valueClass) || Boolean.class.isAssignableFrom(valueClass)) {
-        return (myNum++ % 2) == 0;
-      }
-      else if (valueClass.isEnum()) {
-        final Object[] constants = valueClass.getEnumConstants();
-        return constants[(myNum++) % constants.length];
-      }
-      else if (Collection.class.isAssignableFrom(valueClass) && type instanceof ParameterizedType) {
-        return createCollection(valueClass, (ParameterizedType)type, processedTypes);
-      }
-      else if (Map.class.isAssignableFrom(valueClass) && type instanceof ParameterizedType) {
-        return createMap((ParameterizedType)type, processedTypes);
-      }
-      else if (valueClass.isArray()) {
-        return createArray(valueClass, processedTypes);
-      }
-      else if (Element.class.isAssignableFrom(valueClass)) {
-        return new Element("customElement" + (myNum++)).setAttribute("attribute", "value" + (myNum++))
-          .addContent(new Element("child" + (myNum++)));
-      }
-      else {
-        return createObject(valueClass, processedTypes);
-      }
-    }
+		@Nullable
+		public Object createValue(Type type, final FList<Type> types) throws Exception
+		{
+			if(types.contains(type))
+			{
+				return null;
+			}
+			FList<Type> processedTypes = types.prepend(type);
+			final Class<?> valueClass = type instanceof Class ? (Class<Object>) type : (Class<Object>) ((ParameterizedType) type).getRawType();
+			if(String.class.isAssignableFrom(valueClass))
+			{
+				return "value" + (myNum++);
+			}
+			else if(byte.class.isAssignableFrom(valueClass) || Byte.class.isAssignableFrom(valueClass) || short.class.isAssignableFrom(valueClass) || Short.class.isAssignableFrom(valueClass) || int
+					.class.isAssignableFrom(valueClass) || Integer.class.isAssignableFrom(valueClass) || long.class.isAssignableFrom(valueClass) || Long.class.isAssignableFrom(valueClass))
+			{
+				return myNum++ % 127;
+			}
+			else if(double.class.isAssignableFrom(valueClass) || Double.class.isAssignableFrom(valueClass) || float.class.isAssignableFrom(valueClass) || Float.class.isAssignableFrom(valueClass))
+			{
+				return 0.5 + myNum++;
+			}
+			else if(boolean.class.isAssignableFrom(valueClass) || Boolean.class.isAssignableFrom(valueClass))
+			{
+				return (myNum++ % 2) == 0;
+			}
+			else if(valueClass.isEnum())
+			{
+				final Object[] constants = valueClass.getEnumConstants();
+				return constants[(myNum++) % constants.length];
+			}
+			else if(Collection.class.isAssignableFrom(valueClass) && type instanceof ParameterizedType)
+			{
+				return createCollection(valueClass, (ParameterizedType) type, processedTypes);
+			}
+			else if(Map.class.isAssignableFrom(valueClass) && type instanceof ParameterizedType)
+			{
+				return createMap((ParameterizedType) type, processedTypes);
+			}
+			else if(valueClass.isArray())
+			{
+				return createArray(valueClass, processedTypes);
+			}
+			else if(Element.class.isAssignableFrom(valueClass))
+			{
+				return new Element("customElement" + (myNum++)).setAttribute("attribute", "value" + (myNum++)).addContent(new Element("child" + (myNum++)));
+			}
+			else
+			{
+				return createObject(valueClass, processedTypes);
+			}
+		}
 
-    public Object createObject(Class<?> aClass, FList<Type> processedTypes) throws Exception {
-      final Object o = aClass.newInstance();
-      for (Accessor accessor : XmlSerializerUtil.getAccessors(aClass)) {
-        final Type type = accessor.getGenericType();
-        Object value = createValue(type, processedTypes);
-        if (value != null) {
-          accessor.write(o, value);
-        }
-      }
-      return o;
-    }
+		public Object createObject(Class<?> aClass, FList<Type> processedTypes) throws Exception
+		{
+			final Object o = aClass.newInstance();
+			for(Accessor accessor : XmlSerializerUtil.getAccessors(aClass))
+			{
+				final Type type = accessor.getGenericType();
+				Object value = createValue(type, processedTypes);
+				if(value != null)
+				{
+					accessor.write(o, value);
+				}
+			}
+			return o;
+		}
 
-    @Nullable
-    private Object createArray(Class<?> valueClass, FList<Type> processedTypes) throws Exception {
-      final Object[] array = (Object[])Array.newInstance(valueClass.getComponentType(), 2);
-      for (int i = 0; i < array.length; i++) {
-        array[i] = createValue(valueClass.getComponentType(), processedTypes);
-      }
-      return array;
-    }
+		@Nullable
+		private Object createArray(Class<?> valueClass, FList<Type> processedTypes) throws Exception
+		{
+			final Object[] array = (Object[]) Array.newInstance(valueClass.getComponentType(), 2);
+			for(int i = 0; i < array.length; i++)
+			{
+				array[i] = createValue(valueClass.getComponentType(), processedTypes);
+			}
+			return array;
+		}
 
-    private Object createMap(ParameterizedType type, FList<Type> processedTypes) throws Exception {
-      Type keyType = type.getActualTypeArguments()[0];
-      Type valueType = type.getActualTypeArguments()[1];
-      final HashMap<Object, Object> map = new HashMap<Object, Object>();
-      for (int i = 0; i < 2; i++) {
-        Object key = createValue(keyType, processedTypes);
-        Object value = createValue(valueType, processedTypes);
-        if (key != null && value != null) {
-          map.put(key, value);
-        }
-      }
-      return map;
-    }
+		private Object createMap(ParameterizedType type, FList<Type> processedTypes) throws Exception
+		{
+			Type keyType = type.getActualTypeArguments()[0];
+			Type valueType = type.getActualTypeArguments()[1];
+			final HashMap<Object, Object> map = new HashMap<Object, Object>();
+			for(int i = 0; i < 2; i++)
+			{
+				Object key = createValue(keyType, processedTypes);
+				Object value = createValue(valueType, processedTypes);
+				if(key != null && value != null)
+				{
+					map.put(key, value);
+				}
+			}
+			return map;
+		}
 
-    @Nullable
-    private Object createCollection(Class<?> aClass, ParameterizedType genericType, FList<Type> processedTypes) throws Exception {
-      final Type elementClass = genericType.getActualTypeArguments()[0];
-      Collection<Object> o;
-      if (List.class.isAssignableFrom(aClass)) {
-        o = new ArrayList<Object>();
-      }
-      else if (Set.class.isAssignableFrom(aClass)) {
-        o = new HashSet<Object>();
-      }
-      else {
-        return null;
-      }
-      for (int i = 0; i < 2; i++) {
-        final Object item = createValue(elementClass, processedTypes);
-        if (item != null) {
-          o.add(item);
-        }
-      }
-      return o;
-    }
-  }
+		@Nullable
+		private Object createCollection(Class<?> aClass, ParameterizedType genericType, FList<Type> processedTypes) throws Exception
+		{
+			final Type elementClass = genericType.getActualTypeArguments()[0];
+			Collection<Object> o;
+			if(List.class.isAssignableFrom(aClass))
+			{
+				o = new ArrayList<Object>();
+			}
+			else if(Set.class.isAssignableFrom(aClass))
+			{
+				o = new HashSet<Object>();
+			}
+			else
+			{
+				return null;
+			}
+			for(int i = 0; i < 2; i++)
+			{
+				final Object item = createValue(elementClass, processedTypes);
+				if(item != null)
+				{
+					o.add(item);
+				}
+			}
+			return o;
+		}
+	}
 }
