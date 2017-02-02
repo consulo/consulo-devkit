@@ -44,7 +44,11 @@ import consulo.ui.UIAccess;
 public enum CallStateType
 {
 	NONE(null, null),
-	READ(RequiredReadAction.class.getName(), ReadAction.class, new AcceptableMethodCallCheck(Application.class, "runReadAction"))
+	READ(RequiredReadAction.class.getName(), ReadAction.class, new AcceptableMethodCallCheck[]{
+			new AcceptableMethodCallCheck(Application.class, "runReadAction"),
+			new AcceptableMethodCallCheck(ReadAction.class, "run"),
+			new AcceptableMethodCallCheck(ReadAction.class, "compute")
+	})
 			{
 				@Override
 				public boolean isAcceptableActionType(@NotNull CallStateType type)
@@ -52,7 +56,11 @@ public enum CallStateType
 					return type == READ || type == DISPATCH_THREAD || type == UI_ACCESS || type == WRITE;
 				}
 			},
-	WRITE(RequiredWriteAction.class.getName(), WriteAction.class, new AcceptableMethodCallCheck(Application.class, "runWriteAction")),
+	WRITE(RequiredWriteAction.class.getName(), WriteAction.class, new AcceptableMethodCallCheck[]{
+			new AcceptableMethodCallCheck(Application.class, "runWriteAction"),
+			new AcceptableMethodCallCheck(WriteAction.class, "run"),
+			new AcceptableMethodCallCheck(WriteAction.class, "compute")
+	}),
 	// replacement for DISPATCH_THREAD
 	UI_ACCESS(RequiredUIAccess.class.getName(), null, new AcceptableMethodCallCheck(UIAccess.class.getName(), "give"))
 			{
