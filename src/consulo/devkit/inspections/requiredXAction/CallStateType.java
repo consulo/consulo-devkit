@@ -25,6 +25,7 @@ import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.BaseActionRunnable;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -59,7 +60,8 @@ public enum CallStateType
 	WRITE(RequiredWriteAction.class.getName(), WriteAction.class, new AcceptableMethodCallCheck[]{
 			new AcceptableMethodCallCheck(Application.class, "runWriteAction"),
 			new AcceptableMethodCallCheck(WriteAction.class, "run"),
-			new AcceptableMethodCallCheck(WriteAction.class, "compute")
+			new AcceptableMethodCallCheck(WriteAction.class, "compute"),
+			new AcceptableMethodCallCheck(WriteCommandAction.class, "runWriteCommandAction")
 	}),
 	// replacement for DISPATCH_THREAD
 	UI_ACCESS(RequiredUIAccess.class.getName(), null, new AcceptableMethodCallCheck(UIAccess.class.getName(), "give"))
