@@ -124,7 +124,7 @@ public class ConsuloTestRunState extends ConsuloSandboxRunState
 						globalSearchScope = globalSearchScope.union(module.getModuleWithDependenciesAndLibrariesScope(true));
 					}
 					TestClassFilter testClassFilter = new TestClassFilter(JUnitUtil.getTestCaseClass(SourceScope.modules(modules)), globalSearchScope);
-					Set<PsiClass> psiClasses = new LinkedHashSet<PsiClass>();
+					Set<PsiClass> psiClasses = new LinkedHashSet<>();
 					ConfigurationUtil.findAllTestClasses(testClassFilter, psiClasses);
 					String packageName = StringUtil.notNullize(runProfile.PACKAGE_NAME);
 					for(PsiClass psiClass : psiClasses)
