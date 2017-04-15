@@ -43,13 +43,13 @@ import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferen
 import com.intellij.psi.xml.XmlElement;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.NullableFunction;
-import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomUtil;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.converters.PathReferenceConverter;
+import consulo.annotations.RequiredReadAction;
 import consulo.java.roots.SpecialDirUtil;
 
 public class DependencyConfigFileConverter extends PathReferenceConverter
@@ -59,23 +59,13 @@ public class DependencyConfigFileConverter extends PathReferenceConverter
 	{
 
 		@Override
-		public boolean createReferences(
-				@NotNull final PsiElement psiElement, int offset, String text, @NotNull List<PsiReference> references, boolean soft)
+		public boolean createReferences(@NotNull final PsiElement psiElement, int offset, String text, @NotNull List<PsiReference> references, boolean soft)
 		{
 			FileReferenceSet set = new FileReferenceSet(text, psiElement, offset, null, true, true, new FileType[]{XmlFileType.INSTANCE})
 			{
 
-				private final Condition<PsiFileSystemItem> PLUGIN_XML_CONDITION = new Condition<PsiFileSystemItem>()
-				{
-					@Override
-					public boolean value(PsiFileSystemItem item)
-					{
-						return !item.isDirectory() &&
-								!item.equals(getContainingFile()) &&
-								(item instanceof XmlFile && DescriptorUtil.isPluginXml((PsiFile) item)) &&
-								!isAlreadyUsed((XmlFile) item);
-					}
-				};
+				private final Condition<PsiFileSystemItem> PLUGIN_XML_CONDITION = item -> !item.isDirectory() && !item.equals(getContainingFile()) && (item instanceof XmlFile && DescriptorUtil
+						.isPluginXml((PsiFile) item)) && !isAlreadyUsed((XmlFile) item);
 
 				private boolean isAlreadyUsed(final XmlFile xmlFile)
 				{
@@ -89,28 +79,25 @@ public class DependencyConfigFileConverter extends PathReferenceConverter
 					{
 						return false;
 					}
-					return !ContainerUtil.process(ideaPlugin.getRootElement().getDependencies(), new Processor<Dependency>()
+					return !ContainerUtil.process(ideaPlugin.getRootElement().getDependencies(), dependency ->
 					{
-						@Override
-						public boolean process(Dependency dependency)
+						final GenericAttributeValue<PathReference> configFileAttribute = dependency.getConfigFile();
+						if(!DomUtil.hasXml(configFileAttribute))
 						{
-							final GenericAttributeValue<PathReference> configFileAttribute = dependency.getConfigFile();
-							if(!DomUtil.hasXml(configFileAttribute))
-							{
-								return true;
-							}
-							final PathReference pathReference = configFileAttribute.getValue();
-							if(pathReference == null)
-							{
-								return true;
-							}
-							return !xmlFile.equals(pathReference.resolve());
+							return true;
 						}
+						final PathReference pathReference = configFileAttribute.getValue();
+						if(pathReference == null)
+						{
+							return true;
+						}
+						return !xmlFile.equals(pathReference.resolve());
 					});
 				}
 
 				@NotNull
 				@Override
+				@RequiredReadAction
 				public Collection<PsiFileSystemItem> computeDefaultContexts()
 				{
 					final PsiFile containingFile = getContainingFile();
@@ -133,18 +120,12 @@ public class DependencyConfigFileConverter extends PathReferenceConverter
 					return toFileSystemItems(roots);
 				}
 
+				@Override
 				@NotNull
 				protected Collection<PsiFileSystemItem> toFileSystemItems(@NotNull Collection<VirtualFile> files)
 				{
 					final PsiManager manager = getElement().getManager();
-					return ContainerUtil.mapNotNull(files, new NullableFunction<VirtualFile, PsiFileSystemItem>()
-					{
-						@Override
-						public PsiFileSystemItem fun(VirtualFile file)
-						{
-							return file != null ? manager.findDirectory(file) : null;
-						}
-					});
+					return ContainerUtil.mapNotNull(files, (NullableFunction<VirtualFile, PsiFileSystemItem>) file -> file != null ? manager.findDirectory(file) : null);
 				}
 
 				@Override
