@@ -56,11 +56,10 @@ import consulo.util.pointers.NamedPointerManager;
  * @since 12.04.2015
  */
 public abstract class ConsuloRunConfigurationBase extends LocatableConfigurationBase implements GenericDebugRunnerConfiguration
-
 {
-	public static final PredefinedLogFile IDEA_LOG = new PredefinedLogFile("IDEA_LOG", true);
+	public static final PredefinedLogFile CONSULO_LOG = new PredefinedLogFile("CONSULO_LOG", true);
 
-	public static final String LOG_FILE = "/system/log/idea.log";
+	public static final String LOG_FILE = "/system/log/consulo.log";
 	private static final String JAVA_SDK = "java-sdk";
 	private static final String CONSULO_SDK = "consulo-sdk";
 	private static final String ARTIFACT = "artifact";
@@ -89,10 +88,10 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 	@Override
 	public LogFileOptions getOptionsForPredefinedLogFile(PredefinedLogFile predefinedLogFile)
 	{
-		if(IDEA_LOG.equals(predefinedLogFile))
+		if(CONSULO_LOG.equals(predefinedLogFile))
 		{
 			String sandboxPath = getSandboxPath();
-			return new LogFileOptions("idea.log", sandboxPath + LOG_FILE, true, false, true);
+			return new LogFileOptions("consulo.log", sandboxPath + LOG_FILE, true, false, true);
 		}
 		else
 		{

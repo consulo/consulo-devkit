@@ -83,7 +83,7 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 			{
 				ConsuloRunConfiguration runConfiguration = (ConsuloRunConfiguration) configuration;
 
-				runConfiguration.addPredefinedLogFile(ConsuloRunConfiguration.IDEA_LOG);
+				runConfiguration.addPredefinedLogFile(ConsuloRunConfiguration.CONSULO_LOG);
 
 				Pair<Module, Artifact> pair = findArtifact(configuration.getProject());
 				if(pair != null)
