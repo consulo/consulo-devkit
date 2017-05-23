@@ -18,15 +18,28 @@ package consulo.devkit.run;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.debugger.DebugEnvironment;
+import com.intellij.debugger.DebuggerManagerEx;
+import com.intellij.debugger.engine.DebugProcessImpl;
 import com.intellij.debugger.engine.DebuggerUtils;
+import com.intellij.debugger.engine.JavaDebugProcess;
+import com.intellij.debugger.impl.DebuggerSession;
 import com.intellij.debugger.impl.GenericDebuggerRunner;
 import com.intellij.debugger.settings.DebuggerSettings;
+import com.intellij.debugger.ui.tree.render.BatchEvaluator;
+import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
+import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.configurations.RemoteConnection;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
+import com.intellij.xdebugger.XDebugProcess;
+import com.intellij.xdebugger.XDebugProcessStarter;
+import com.intellij.xdebugger.XDebugSession;
+import com.intellij.xdebugger.XDebuggerManager;
+import com.intellij.xdebugger.impl.XDebugSessionImpl;
 
 /**
  * @author VISTALL
@@ -49,8 +62,7 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 
 	@Nullable
 	@Override
-	protected RunContentDescriptor createContentDescriptor(@NotNull RunProfileState state, @NotNull ExecutionEnvironment env) throws
-			ExecutionException
+	protected RunContentDescriptor createContentDescriptor(@NotNull RunProfileState state, @NotNull ExecutionEnvironment env) throws ExecutionException
 	{
 		String address = DebuggerUtils.getInstance().findAvailableDebugAddress(DebuggerSettings.SOCKET_TRANSPORT).address();
 		RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", address, false);
@@ -58,6 +70,53 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 		ConsuloSandboxRunState consuloSandboxRunState = (ConsuloSandboxRunState) state;
 
 		consuloSandboxRunState.getJavaParameters().getVMParametersList().addParametersString(connection.getLaunchCommandLine());
-		return attachVirtualMachine(state, env, connection, true);
+		return attachVirtualMachine(consuloSandboxRunState, env, connection, true);
+	}
+
+	@Override
+	@Nullable
+	protected RunContentDescriptor attachVirtualMachine(RunProfileState state, @NotNull ExecutionEnvironment env, RemoteConnection connection, boolean pollConnection) throws ExecutionException
+	{
+		DebugEnvironment environment = new ConsuloDebugEnvironment(env, (ConsuloSandboxRunState) state, connection, pollConnection);
+		final DebuggerSession debuggerSession = DebuggerManagerEx.getInstanceEx(env.getProject()).attachVirtualMachine(environment);
+		if(debuggerSession == null)
+		{
+			return null;
+		}
+		else
+		{
+			final DebugProcessImpl debugProcess = debuggerSession.getProcess();
+			if(!debugProcess.isDetached() && !debugProcess.isDetaching())
+			{
+				if(environment.isRemote())
+				{
+					debugProcess.putUserData(BatchEvaluator.REMOTE_SESSION_KEY, Boolean.TRUE);
+				}
+
+				return XDebuggerManager.getInstance(env.getProject()).startSession(env, new XDebugProcessStarter()
+				{
+					@NotNull
+					@Override
+					public XDebugProcess start(@NotNull XDebugSession session)
+					{
+						XDebugSessionImpl sessionImpl = (XDebugSessionImpl) session;
+						ExecutionResult executionResult = debugProcess.getExecutionResult();
+						sessionImpl.addExtraActions(executionResult.getActions());
+						if(executionResult instanceof DefaultExecutionResult)
+						{
+							sessionImpl.addRestartActions(((DefaultExecutionResult) executionResult).getRestartActions());
+							sessionImpl.addExtraStopActions(((DefaultExecutionResult) executionResult).getAdditionalStopActions());
+						}
+
+						return JavaDebugProcess.create(session, debuggerSession);
+					}
+				}).getRunContentDescriptor();
+			}
+			else
+			{
+				debuggerSession.dispose();
+				return null;
+			}
+		}
 	}
 }
