@@ -137,7 +137,7 @@ public class ConsuloSdkType extends SdkType
 	@Override
 	public Collection<String> suggestHomePaths()
 	{
-		return Collections.singletonList(PathManager.getAppHomeDirectory().getPath());
+		return Collections.singletonList(PathManager.getDistributionDirectory().getPath());
 	}
 
 	@Override
