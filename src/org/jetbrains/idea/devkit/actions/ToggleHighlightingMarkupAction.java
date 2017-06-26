@@ -36,6 +36,7 @@ import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
+import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.action.InternalAction;
 
 /**
@@ -43,6 +44,7 @@ import consulo.devkit.action.InternalAction;
  */
 public class ToggleHighlightingMarkupAction extends InternalAction
 {
+	@RequiredDispatchThread
 	@Override
 	public void update(AnActionEvent e)
 	{

@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.util.PluginModuleUtil;
@@ -56,8 +55,7 @@ public abstract class InternalAction extends AnAction
 	@Override
 	public void update(@NotNull AnActionEvent e)
 	{
-		Project project = e.getRequiredData(CommonDataKeys.PROJECT);
-
-		e.getPresentation().setEnabledAndVisible(PluginModuleUtil.isConsuloOrPluginProject(project, null));
+		Project project = e.getProject();
+		e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
 	}
 }

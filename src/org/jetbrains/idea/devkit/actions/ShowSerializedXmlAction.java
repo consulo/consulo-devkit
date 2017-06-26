@@ -53,6 +53,7 @@ import com.intellij.util.lang.UrlClassLoader;
 import com.intellij.util.xmlb.Accessor;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.action.InternalAction;
 
 /**
@@ -62,6 +63,7 @@ public class ShowSerializedXmlAction extends InternalAction implements DumbAware
 {
 	private static final Logger LOG = Logger.getInstance("#org.jetbrains.idea.devkit.actions.ShowSerializedXmlAction");
 
+	@RequiredDispatchThread
 	@Override
 	public void update(AnActionEvent e)
 	{

@@ -37,6 +37,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.action.InternalAction;
 
 /**
@@ -44,6 +45,7 @@ import consulo.devkit.action.InternalAction;
  */
 public class ShuffleNamesAction extends InternalAction
 {
+	@RequiredDispatchThread
 	@Override
 	public void update(AnActionEvent e)
 	{
