@@ -72,8 +72,8 @@ import consulo.util.pointers.NamedPointer;
  */
 public class DevkitNewModuleBuilder implements NewModuleBuilder
 {
-	private static final String DEFAULT_JAVA_SDK_NAME = "1.6";
-	private static final String DEFAULT_CONSULO_SDK_NAME = "Consulo 1.SNAPSHOT";
+	private static final String DEFAULT_JAVA_SDK_NAME = "1.8";
+	private static final String DEFAULT_CONSULO_SDK_NAME = "Consulo SNAPSHOT";
 
 	@Override
 	public void setupContext(@NotNull NewModuleContext context)
@@ -153,7 +153,7 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 				configuration.setJavaSdkName(DEFAULT_JAVA_SDK_NAME);
 				configuration.setConsuloSdkName(DEFAULT_CONSULO_SDK_NAME);
 
-				List<BeforeRunTask> tasks = new ArrayList<BeforeRunTask>(2);
+				List<BeforeRunTask> tasks = new ArrayList<>(2);
 				tasks.add(BeforeRunTaskProvider.getProvider(project, CompileStepBeforeRun.ID).createTask(configuration));
 
 				BuildArtifactsBeforeRunTask artifactsBeforeRunTask = BeforeRunTaskProvider.getProvider(project,
