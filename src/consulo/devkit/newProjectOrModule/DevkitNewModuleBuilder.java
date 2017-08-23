@@ -17,8 +17,7 @@
 package consulo.devkit.newProjectOrModule;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -26,9 +25,6 @@ import javax.swing.JPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.run.PluginConfigurationType;
 import com.intellij.compiler.impl.javaCompiler.JavaCompilerConfiguration;
-import com.intellij.compiler.options.CompileStepBeforeRun;
-import com.intellij.execution.BeforeRunTask;
-import com.intellij.execution.BeforeRunTaskProvider;
 import com.intellij.execution.RunManagerEx;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.icons.AllIcons;
@@ -60,7 +56,6 @@ import consulo.module.extension.MutableModuleExtensionWithSdk;
 import consulo.packaging.artifacts.ArtifactPointerUtil;
 import consulo.packaging.impl.elements.ZipArchivePackagingElement;
 import consulo.packaging.impl.elements.moduleContent.ProductionResourceModuleOutputElementType;
-import consulo.packaging.impl.run.BuildArtifactsBeforeRunTask;
 import consulo.packaging.impl.run.BuildArtifactsBeforeRunTaskProvider;
 import consulo.roots.impl.ProductionContentFolderTypeProvider;
 import consulo.roots.impl.ProductionResourceContentFolderTypeProvider;
@@ -136,47 +131,35 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 
 				GuiDesignerConfiguration.getInstance(project).COPY_FORMS_RUNTIME_TO_OUTPUT = false;
 
-				Artifact distArtifact = ArtifactManager.getInstance(project).addArtifact("dist", PlainArtifactType.getInstance(),
-						createDistRootElement(modifiableRootModel));
+				Artifact distArtifact = ArtifactManager.getInstance(project).addArtifact("dist", PlainArtifactType.getInstance(), createDistRootElement(modifiableRootModel));
 
-				Artifact pluginArtifact = ArtifactManager.getInstance(project).addArtifact("plugin", PlainArtifactType.getInstance(),
-						createPluginRootElement(modifiableRootModel, distArtifact));
+				Artifact pluginArtifact = ArtifactManager.getInstance(project).addArtifact("plugin", PlainArtifactType.getInstance(), createPluginRootElement(modifiableRootModel, distArtifact));
 
 				RunManagerEx runManager = RunManagerEx.getInstanceEx(project);
 
-				RunnerAndConfigurationSettings runConfiguration = runManager.createRunConfiguration("Run Consulo In Sandbox",
-						PluginConfigurationType.getInstance().getConfigurationFactories()[0]);
-
+				RunnerAndConfigurationSettings runConfiguration = runManager.createRunConfiguration("Run Consulo In Sandbox", PluginConfigurationType.getInstance().getConfigurationFactories()[0]);
 
 				ConsuloRunConfiguration configuration = (ConsuloRunConfiguration) runConfiguration.getConfiguration();
 				configuration.setArtifactName("plugin");
 				configuration.setJavaSdkName(DEFAULT_JAVA_SDK_NAME);
 				configuration.setConsuloSdkName(DEFAULT_CONSULO_SDK_NAME);
 
-				List<BeforeRunTask> tasks = new ArrayList<>(2);
-				tasks.add(BeforeRunTaskProvider.getProvider(project, CompileStepBeforeRun.ID).createTask(configuration));
-
-				BuildArtifactsBeforeRunTask artifactsBeforeRunTask = BeforeRunTaskProvider.getProvider(project,
-						BuildArtifactsBeforeRunTaskProvider.ID).createTask(configuration);
-
-				artifactsBeforeRunTask.addArtifact(distArtifact);
-				artifactsBeforeRunTask.addArtifact(pluginArtifact);
-
-				tasks.add(artifactsBeforeRunTask);
-
 				runConfiguration.setSingleton(true);
-				runManager.addConfiguration(runConfiguration, true, tasks, true);
+				runManager.addConfiguration(runConfiguration, true, Collections.emptyList(), true);
 
 				runManager.makeStable(runConfiguration);
 				runManager.setSelectedConfiguration(runConfiguration);
+
+				BuildArtifactsBeforeRunTaskProvider.setBuildArtifactBeforeRun(project, configuration, distArtifact);
+				BuildArtifactsBeforeRunTaskProvider.setBuildArtifactBeforeRun(project, configuration, pluginArtifact);
 			}
 
 			@NotNull
 			private ArtifactRootElement<?> createPluginRootElement(ModifiableRootModel modifiableRootModel, Artifact distArtifact)
 			{
 				ArtifactRootElementImpl rootElement = new ArtifactRootElementImpl();
-				rootElement.addFirstChild(new ArtifactPackagingElement(modifiableRootModel.getProject(),
-						ArtifactPointerUtil.getPointerManager(modifiableRootModel.getProject()).create(distArtifact)));
+				rootElement.addFirstChild(new ArtifactPackagingElement(modifiableRootModel.getProject(), ArtifactPointerUtil.getPointerManager(modifiableRootModel.getProject()).create
+						(distArtifact)));
 				rootElement.addFirstChild(new DirectoryCopyPackagingElement(modifiableRootModel.getModule().getModuleDirPath() + "/dep"));
 				return rootElement;
 			}
@@ -195,10 +178,10 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 				modulePluginDirElement.addFirstChild(libPluginDir);
 
 				ZipArchivePackagingElement zipArchivePackagingElement = new ZipArchivePackagingElement(moduleName + ".jar");
-				zipArchivePackagingElement.addFirstChild(new ModuleOutputPackagingElementImpl(ProductionModuleOutputElementType.getInstance(),
-						modifiableRootModel.getProject(), pointer, ProductionContentFolderTypeProvider.getInstance()));
-				zipArchivePackagingElement.addFirstChild(new ModuleOutputPackagingElementImpl(ProductionResourceModuleOutputElementType.getInstance
-						(), modifiableRootModel.getProject(), pointer, ProductionResourceContentFolderTypeProvider.getInstance()));
+				zipArchivePackagingElement.addFirstChild(new ModuleOutputPackagingElementImpl(ProductionModuleOutputElementType.getInstance(), modifiableRootModel.getProject(), pointer,
+						ProductionContentFolderTypeProvider.getInstance()));
+				zipArchivePackagingElement.addFirstChild(new ModuleOutputPackagingElementImpl(ProductionResourceModuleOutputElementType.getInstance(), modifiableRootModel.getProject(), pointer,
+						ProductionResourceContentFolderTypeProvider.getInstance()));
 				libPluginDir.addFirstChild(zipArchivePackagingElement);
 				return rootElement;
 			}
