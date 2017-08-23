@@ -141,6 +141,14 @@
 						 displayName="AWT &amp; Swing implementation error reporting"
 						 implementationClass="consulo.devkit.inspections.internal.AWTErrorInspection"/>
 
+		<localInspection language="JAVA"
+						 level="ERROR"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
+						 displayName="Platform method specific restriction"
+						 implementationClass="consulo.devkit.inspections.internal.PlatformErrorInspection"/>
+
 		<localInspection language="JAVA" shortName="UndesirableClassUsage" displayName="Undesirable class usage"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
