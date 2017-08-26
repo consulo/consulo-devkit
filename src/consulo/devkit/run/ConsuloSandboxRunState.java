@@ -86,10 +86,17 @@ public class ConsuloSandboxRunState extends CommandLineState
 		vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + "/config");
 		vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + "/system");
 		vm.defineProperty(PathManager.PROPERTY_HOME_PATH, selectedBuild);
+		// define plugin installation to default path
+		String installPluginPath = dataPath + "/config/plugins";
+		vm.defineProperty(ApplicationProperties.CONSULO_INSTALL_PLUGINS_PATH, installPluginPath);
 
 		if(artifact != null)
 		{
-			vm.defineProperty(PathManager.PROPERTY_PLUGINS_PATH, artifact.getOutputPath());
+			vm.defineProperty(ApplicationProperties.CONSULO_PLUGINS_PATHS, artifact.getOutputPath() + File.pathSeparator + installPluginPath);
+		}
+		else
+		{
+			vm.defineProperty(ApplicationProperties.CONSULO_PLUGINS_PATHS, installPluginPath);
 		}
 
 		File logFile = new File(dataPath, ConsuloRunConfigurationBase.LOG_FILE);
@@ -105,14 +112,13 @@ public class ConsuloSandboxRunState extends CommandLineState
 		{
 			if(profile.VM_PARAMETERS == null || !profile.VM_PARAMETERS.contains("-Dsun.awt.disablegrab"))
 			{
-				vm.defineProperty("sun.awt.disablegrab", "true"); // See http://devnet.jetbrains.net/docs/DOC-1142
+				vm.defineProperty("sun.awt.disablegrab", "true");
 			}
 		}
 		vm.defineProperty(ApplicationProperties.CONSULO_IN_SANDBOX, "true");
-		if(profile.INTERNAL_MODE)
-		{
-			vm.defineProperty(ApplicationProperties.IDEA_IS_INTERNAL, "true");
-		}
+		// always define internal as sandbox, later just drop this flag
+		vm.defineProperty(ApplicationProperties.IDEA_IS_INTERNAL, "true");
+
 		params.setWorkingDirectory(consuloSdkHome);
 
 		params.setJdk(javaSdk);

@@ -73,7 +73,6 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 	private SdkComboBox myConsuloSdkComboBox;
 	private RawCommandLineEditor myProgramParameters;
 	private RawCommandLineEditor myVMParameters;
-	private JBCheckBox myInternalModeBox;
 
 	private JComboBox myArtifactComboBox;
 	private JPanel myRoot;
@@ -188,8 +187,6 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		builder.addLabeledComponent("Program Parameters", myProgramParameters);
 		myVMParameters = new RawCommandLineEditor();
 		builder.addLabeledComponent("VM Parameters", myVMParameters);
-		myInternalModeBox = new JBCheckBox("Internal Mode");
-		builder.addComponent(myInternalModeBox);
 	}
 
 	@Override
@@ -247,7 +244,6 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 
 		myJavaSdkComboBox.setSelectedSdk(prc.getJavaSdkName());
 		myConsuloSdkComboBox.setSelectedSdk(prc.getConsuloSdkName());
-		myInternalModeBox.setSelected(prc.INTERNAL_MODE);
 	}
 
 	@Override
@@ -262,7 +258,6 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		prc.PROGRAM_PARAMETERS = myProgramParameters.getText();
 		prc.ALT_CONSULO_SDK_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myAltConsuloSdkTextField.getText()));
 		prc.USE_ALT_CONSULO_SDK = myAlternativeConsuloSdkCheckBox.isSelected();
-		prc.INTERNAL_MODE = myInternalModeBox.isSelected();
 	}
 
 	@Override
