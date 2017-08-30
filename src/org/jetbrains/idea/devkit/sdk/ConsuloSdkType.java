@@ -199,14 +199,22 @@ public class ConsuloSdkType extends SdkType
 	@Nullable
 	private static String getBuildNumberImpl(File sdkHome)
 	{
-		File targetJar = new File(sdkHome, "/lib/resources.jar");
+		// 1.0 resource path
+		// pre-maven resource path
+		// maven resource path
+		String[] resourceFiles = new String[] {"/lib/resources.jar", "/lib/consulo-resources.jar", "/lib/consulo-platform-resources.jar"};
+		File targetJar = null;
 
-		if(!targetJar.exists())
+		for(String file : resourceFiles)
 		{
-			targetJar = new File(sdkHome, "/lib/consulo-resources.jar");
+			File temp = new File(sdkHome, file);
+			if(temp.exists())
+			{
+				targetJar = temp;
+			}
 		}
 
-		if(!targetJar.exists())
+		if(targetJar == null)
 		{
 			return null;
 		}
