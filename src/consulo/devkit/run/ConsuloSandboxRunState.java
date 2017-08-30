@@ -143,16 +143,34 @@ public class ConsuloSandboxRunState extends CommandLineState
 	{
 		String libPath = consuloHomePath + "/lib";
 
-		params.getVMParametersList().add("-Xbootclasspath/a:" + libPath + "/boot.jar");
+		boolean isMavenDistribution = new File(libPath, "consulo-desktop-boot.jar").exists();
 
-		params.getClassPath().addFirst(libPath + "/log4j.jar");
-		params.getClassPath().addFirst(libPath + "/jdom.jar");
-		params.getClassPath().addFirst(libPath + "/trove4j.jar");
-		params.getClassPath().addFirst(libPath + "/util.jar");
-		params.getClassPath().addFirst(libPath + "/extensions.jar");
-		params.getClassPath().addFirst(libPath + "/bootstrap.jar");
-		params.getClassPath().addFirst(libPath + "/jna.jar");
-		params.getClassPath().addFirst(libPath + "/jna-platform.jar");
+		if(isMavenDistribution)
+		{
+			params.getVMParametersList().add("-Xbootclasspath/a:" + libPath + "/consulo-desktop-boot.jar");
+
+			params.getClassPath().addFirst(libPath + "/consulo-desktop-bootstrap.jar");
+			params.getClassPath().addFirst(libPath + "/consulo-extensions.jar");
+			params.getClassPath().addFirst(libPath + "/consulo-util.jar");
+			params.getClassPath().addFirst(libPath + "/consulo-util-rt.jar");
+			params.getClassPath().addFirst(libPath + "/jdom.jar");
+			params.getClassPath().addFirst(libPath + "/trove4j.jar");
+			params.getClassPath().addFirst(libPath + "/jna.jar");
+			params.getClassPath().addFirst(libPath + "/jna-platform.jar");
+		}
+		else
+		{
+			params.getVMParametersList().add("-Xbootclasspath/a:" + libPath + "/boot.jar");
+
+			params.getClassPath().addFirst(libPath + "/log4j.jar");
+			params.getClassPath().addFirst(libPath + "/jdom.jar");
+			params.getClassPath().addFirst(libPath + "/trove4j.jar");
+			params.getClassPath().addFirst(libPath + "/util.jar");
+			params.getClassPath().addFirst(libPath + "/extensions.jar");
+			params.getClassPath().addFirst(libPath + "/bootstrap.jar");
+			params.getClassPath().addFirst(libPath + "/jna.jar");
+			params.getClassPath().addFirst(libPath + "/jna-platform.jar");
+		}
 	}
 
 	public JavaParameters getJavaParameters()
