@@ -19,17 +19,14 @@ package consulo.devkit.inspections;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.codeInsight.intention.AddAnnotationFix;
 import com.intellij.codeInspection.AnnotateMethodFix;
-import com.intellij.codeInspection.InspectionsBundle;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.searches.OverridingMethodsSearch;
-import com.intellij.psi.util.ClassUtil;
 import com.intellij.util.Query;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 
@@ -46,6 +43,13 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 			super(fqn, annotationsToRemove);
 		}
 
+		@NotNull
+		@Override
+		protected String getPreposition()
+		{
+			return "as";
+		}
+
 		@Override
 		protected boolean annotateOverriddenMethods()
 		{
@@ -53,16 +57,9 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 		}
 
 		@Override
-		public int shouldAnnotateBaseMethod(PsiMethod method, PsiMethod superMethod, Project project)
+		protected boolean annotateSelf()
 		{
-			return 1;
-		}
-
-		@Override
-		@NotNull
-		public String getName()
-		{
-			return InspectionsBundle.message("annotate.overridden.methods.as.notnull", ClassUtil.extractClassName(myAnnotation));
+			return false;
 		}
 	}
 
@@ -109,7 +106,8 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 						if(superActionType != CallStateType.NONE)
 						{
 							String actionClass = superActionType.getActionClass();
-							holder.registerProblem(nameIdentifier, "Missed annotation @" + StringUtil.getShortName(actionClass) + ", provided by super method", new AddAnnotationFix(actionClass, method));
+							holder.registerProblem(nameIdentifier, "Missed annotation @" + StringUtil.getShortName(actionClass) + ", provided by super method", new AddAnnotationFix(actionClass,
+									method));
 						}
 					}
 				}
