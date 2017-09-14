@@ -42,6 +42,6 @@ public class LambdaStateResolver extends StateResolver
 		}
 
 		PsiElement maybeParameterListOrVariable = lambdaExpression.getParent();
-		return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
+		return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType) || isAllowedFunctionCall(lambdaExpression, actionType);
 	}
 }

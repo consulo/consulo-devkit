@@ -34,6 +34,6 @@ public class MethodReferenceResolver extends StateResolver
 	public Boolean resolveState(CallStateType actionType, PsiExpression expression)
 	{
 		PsiMethodReferenceExpression methodReferenceExpression = (PsiMethodReferenceExpression) expression;
-		return resolveByMaybeParameterListOrVariable(methodReferenceExpression.getParent(), actionType);
+		return resolveByMaybeParameterListOrVariable(methodReferenceExpression.getParent(), actionType) || isAllowedFunctionCall(methodReferenceExpression, actionType);
 	}
 }

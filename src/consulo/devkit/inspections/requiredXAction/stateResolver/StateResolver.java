@@ -22,17 +22,15 @@ import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.ThrowableComputable;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiExpressionList;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceExpression;
-import com.intellij.psi.PsiVariable;
+import com.intellij.psi.*;
 import com.intellij.psi.search.searches.ReferencesSearch;
+import com.intellij.util.ArrayUtil;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.ThrowableRunnable;
+import consulo.annotations.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.AcceptableMethodCallCheck;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 
@@ -121,6 +119,48 @@ public abstract class StateResolver
 					{
 						return true;
 					}
+				}
+			}
+		}
+		return false;
+	}
+
+	@RequiredReadAction
+	protected static boolean isAllowedFunctionCall(@NotNull PsiFunctionalExpression functionalExpression, @NotNull CallStateType actionType)
+	{
+		PsiElement superParent = functionalExpression.getParent();
+		if(!(superParent instanceof PsiExpressionList))
+		{
+			return false;
+		}
+
+		if(!(superParent.getParent() instanceof PsiMethodCallExpression))
+		{
+			return false;
+		}
+
+		PsiExpression[] expressions = ((PsiExpressionList) superParent).getExpressions();
+		int i = ArrayUtil.indexOf(expressions, functionalExpression);
+		if(i == -1)
+		{
+			return false;
+		}
+
+		PsiElement target = ((PsiMethodCallExpression) superParent.getParent()).getMethodExpression().resolve();
+		if(!(target instanceof PsiParameterListOwner))
+		{
+			return false;
+		}
+
+		PsiParameter parameter = ((PsiParameterListOwner) target).getParameterList().getParameters()[i];
+
+		for(CallStateType type : CallStateType.values())
+		{
+			if(actionType.isAcceptableActionType(type))
+			{
+				if(AnnotationUtil.isAnnotated(parameter, type.getActionClass(), false))
+				{
+					return true;
 				}
 			}
 		}
