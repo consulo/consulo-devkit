@@ -152,7 +152,13 @@ public abstract class StateResolver
 			return false;
 		}
 
-		PsiParameter parameter = ((PsiParameterListOwner) target).getParameterList().getParameters()[i];
+		PsiParameter[] parameters = ((PsiParameterListOwner) target).getParameterList().getParameters();
+		if(i >= parameters.length)
+		{
+			return false;
+		}
+
+		PsiParameter parameter = parameters[i];
 
 		for(CallStateType type : CallStateType.values())
 		{
