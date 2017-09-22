@@ -21,6 +21,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiLambdaExpression;
 import com.intellij.psi.util.PsiTreeUtil;
+import consulo.annotations.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 
 /**
@@ -31,6 +32,7 @@ public class LambdaStateResolver extends StateResolver
 {
 	public static final StateResolver INSTANCE = new LambdaStateResolver();
 
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public Boolean resolveState(CallStateType actionType, PsiExpression expression)

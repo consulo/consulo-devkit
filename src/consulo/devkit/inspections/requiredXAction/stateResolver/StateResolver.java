@@ -18,6 +18,7 @@ package consulo.devkit.inspections.requiredXAction.stateResolver;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +42,7 @@ import consulo.devkit.inspections.requiredXAction.CallStateType;
 public abstract class StateResolver
 {
 	@Nullable
+	@RequiredReadAction
 	public abstract Boolean resolveState(CallStateType actionType, PsiExpression expression);
 
 	protected static Map<String, Class[]> ourInterfaces = new HashMap<String, Class[]>()
@@ -160,13 +162,29 @@ public abstract class StateResolver
 
 		PsiParameter parameter = parameters[i];
 
-		for(CallStateType type : CallStateType.values())
+		PsiType type = parameter.getType();
+		if(type instanceof PsiClassType)
 		{
-			if(actionType.isAcceptableActionType(type))
+			PsiClass psiClass = ((PsiClassType) type).resolve();
+			if(psiClass != null && psiClass.isInterface())
 			{
-				if(AnnotationUtil.isAnnotated(parameter, type.getActionClass(), false))
+				// check if target parameter type can use lambda
+				List<HierarchicalMethodSignature> signatureList = LambdaUtil.findFunctionCandidates(psiClass);
+				if(signatureList != null && signatureList.size() == 1)
 				{
-					return true;
+					HierarchicalMethodSignature signature = signatureList.get(0);
+
+					for(CallStateType callStateType : CallStateType.values())
+					{
+						if(actionType.isAcceptableActionType(callStateType))
+						{
+							// if parameter of method is annotated - or annotated lambda abstract method
+							if(AnnotationUtil.isAnnotated(parameter, callStateType.getActionClass(), false) || AnnotationUtil.isAnnotated(signature.getMethod(), callStateType.getActionClass(), false))
+							{
+								return true;
+							}
+						}
+					}
 				}
 			}
 		}

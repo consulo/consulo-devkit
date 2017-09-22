@@ -25,6 +25,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
+import consulo.annotations.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 
 /**
@@ -35,6 +36,7 @@ public class AnonymousClassStateResolver extends StateResolver
 {
 	public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
 
+	@RequiredReadAction
 	@Override
 	@Nullable
 	public Boolean resolveState(CallStateType actionType, PsiExpression expression)

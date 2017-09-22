@@ -19,6 +19,7 @@ package consulo.devkit.inspections.requiredXAction.stateResolver;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiMethodReferenceExpression;
+import consulo.annotations.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 
 /**
@@ -29,6 +30,7 @@ public class MethodReferenceResolver extends StateResolver
 {
 	public static final StateResolver INSTANCE = new MethodReferenceResolver();
 
+	@RequiredReadAction
 	@Nullable
 	@Override
 	public Boolean resolveState(CallStateType actionType, PsiExpression expression)
