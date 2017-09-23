@@ -16,8 +16,7 @@
 
 package consulo.devkit.inspections.internal;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
@@ -29,6 +28,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodCallExpression;
+import com.intellij.util.containers.MultiMap;
 import consulo.annotations.RequiredReadAction;
 
 /**
@@ -37,17 +37,21 @@ import consulo.annotations.RequiredReadAction;
  */
 public class PlatformErrorInspection extends InternalInspection
 {
-	private Set<String> mySystemRestrictedMethods = new HashSet<>();
+	private final MultiMap<String, String> myRestrictedMethodList = MultiMap.create();
 
 	public PlatformErrorInspection()
 	{
-		mySystemRestrictedMethods.add("getProperties");
-		mySystemRestrictedMethods.add("getProperty");
-		mySystemRestrictedMethods.add("getenv");
-		mySystemRestrictedMethods.add("lineSeparator");
-		mySystemRestrictedMethods.add("setProperties");
-		mySystemRestrictedMethods.add("setProperty");
-		mySystemRestrictedMethods.add("clearProperty");
+		myRestrictedMethodList.putValue(System.class.getName(), "getProperties");
+		myRestrictedMethodList.putValue(System.class.getName(), "getProperty");
+		myRestrictedMethodList.putValue(System.class.getName(), "getenv");
+		myRestrictedMethodList.putValue(System.class.getName(), "lineSeparator");
+		myRestrictedMethodList.putValue(System.class.getName(), "setProperties");
+		myRestrictedMethodList.putValue(System.class.getName(), "setProperty");
+		myRestrictedMethodList.putValue(System.class.getName(), "clearProperty");
+
+		myRestrictedMethodList.putValue(Boolean.class.getName(), "getBoolean");
+		myRestrictedMethodList.putValue(Integer.class.getName(), "getInteger");
+		myRestrictedMethodList.putValue(Long.class.getName(), "getLong");
 	}
 
 	@Override
@@ -60,13 +64,18 @@ public class PlatformErrorInspection extends InternalInspection
 			public void visitMethodCallExpression(PsiMethodCallExpression expression)
 			{
 				PsiMethod method = expression.resolveMethod();
-				if(method != null && mySystemRestrictedMethods.contains(method.getName()))
+				if(method != null && myRestrictedMethodList.containsScalarValue(method.getName()))
 				{
 					PsiClass containingClass = method.getContainingClass();
-					if(containingClass != null && System.class.getName().equals(containingClass.getQualifiedName()))
+					if(containingClass != null)
 					{
-						TextRange range = expression.getMethodExpression().getRangeInElement();
-						holder.registerProblem(expression, "Platform call restricted. Use 'consulo.platform.Platform.current()'", ProblemHighlightType.GENERIC_ERROR, range);
+						Collection<String> strings = myRestrictedMethodList.get(containingClass.getQualifiedName());
+						if(strings.contains(method.getName()))
+						{
+							TextRange range = expression.getMethodExpression().getRangeInElement();
+							holder.registerProblem(expression, "Platform call restricted. Use 'consulo.platform.Platform.current()'", ProblemHighlightType.GENERIC_ERROR, range);
+
+						}
 					}
 				}
 			}
