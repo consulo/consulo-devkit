@@ -74,7 +74,6 @@ public class PlatformErrorInspection extends InternalInspection
 						{
 							TextRange range = expression.getMethodExpression().getRangeInElement();
 							holder.registerProblem(expression, "Platform call restricted. Use 'consulo.platform.Platform.current()'", ProblemHighlightType.GENERIC_ERROR, range);
-
 						}
 					}
 				}
