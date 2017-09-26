@@ -34,6 +34,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.packaging.artifacts.Artifact;
+import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
 
 /**
@@ -77,15 +78,11 @@ public class ConsuloSandboxRunState extends CommandLineState
 		vm.addParametersString(profile.VM_PARAMETERS);
 		params.getProgramParametersList().addParametersString(profile.PROGRAM_PARAMETERS);
 
-		String selectedBuild = ConsuloSdkType.selectBuild(consuloSdkHome);
-		if(selectedBuild == null)
-		{
-			throw new ExecutionException("Build is not found");
-		}
+		String selectedBuildPath = ObjectUtil.notNull(ConsuloSdkType.selectBuild(consuloSdkHome), consuloSdkHome);
 
 		vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + "/config");
 		vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + "/system");
-		vm.defineProperty(PathManager.PROPERTY_HOME_PATH, selectedBuild);
+		vm.defineProperty(PathManager.PROPERTY_HOME_PATH, selectedBuildPath);
 		// define plugin installation to default path
 		String installPluginPath = dataPath + "/config/plugins";
 		vm.defineProperty(ApplicationProperties.CONSULO_INSTALL_PLUGINS_PATH, installPluginPath);
@@ -123,7 +120,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		params.setJdk(javaSdk);
 
-		addConsuloLibs(selectedBuild, params);
+		addConsuloLibs(selectedBuildPath, params);
 
 		params.setMainClass(getMainClass());
 		for(RunConfigurationExtension ext : Extensions.getExtensions(RunConfigurationExtension.EP_NAME))
