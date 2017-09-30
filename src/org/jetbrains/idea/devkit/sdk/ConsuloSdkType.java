@@ -17,7 +17,6 @@ package org.jetbrains.idea.devkit.sdk;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -75,12 +74,13 @@ public class ConsuloSdkType extends SdkType
 
 		String plugins = selectSdkHome + File.separator + PLUGINS_DIR + File.separator;
 		List<VirtualFile> result = new ArrayList<>();
-		appendLibraries(selectSdkHome, result, "junit.jar");
+		appendLibraries(selectSdkHome, result);
 		appendLibraries(plugins + "core", result);
+		appendLibraries(plugins + "platform-independent", result);
 		return VfsUtilCore.toVirtualFileArray(result);
 	}
 
-	private static void appendLibraries(final String libDirPath, final List<VirtualFile> result, @NonNls final String... forbidden)
+	private static void appendLibraries(final String libDirPath, final List<VirtualFile> result)
 	{
 		final String path = libDirPath + File.separator + LIB_DIR_NAME;
 		ArchiveFileSystem fileSystem = JarArchiveFileType.INSTANCE.getFileSystem();
@@ -92,8 +92,8 @@ public class ConsuloSdkType extends SdkType
 			{
 				for(File jar : jars)
 				{
-					@NonNls String name = jar.getName();
-					if(jar.isFile() && Arrays.binarySearch(forbidden, name) < 0 && (name.endsWith(".jar") || name.endsWith(".zip")))
+					String name = jar.getName();
+					if(name.endsWith(".jar") || name.endsWith(".zip"))
 					{
 						VirtualFile virtualFile = fileSystem.findLocalVirtualFileByPath(jar.getPath());
 						if(virtualFile == null)
