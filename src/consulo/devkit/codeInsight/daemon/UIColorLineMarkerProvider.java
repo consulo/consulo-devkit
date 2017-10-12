@@ -31,7 +31,6 @@ import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.psi.util.PsiTypesUtil;
-import com.intellij.ui.ColorUtil;
 import consulo.annotations.RequiredReadAction;
 import consulo.annotations.RequiredWriteAction;
 import consulo.ui.RGBColor;
@@ -40,7 +39,7 @@ import consulo.ui.RGBColor;
  * @author VISTALL
  * @since 12-Oct-17
  *
- * copy&paste from {@link com.intellij.codeInsight.daemon.impl.JavaColorProvider}
+ * initial version from {@link com.intellij.codeInsight.daemon.impl.JavaColorProvider}
  */
 public class UIColorLineMarkerProvider implements ElementColorProvider
 {
@@ -48,7 +47,7 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 	@Override
 	public Color getColorFrom(@NotNull PsiElement element)
 	{
-		return getJavaColorFromExpression(element);
+		return getColorFromExpression(element);
 	}
 
 	public static boolean isColorType(@Nullable PsiType type)
@@ -69,7 +68,7 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 	}
 
 	@Nullable
-	public static Color getJavaColorFromExpression(@Nullable PsiElement element)
+	public static Color getColorFromExpression(@Nullable PsiElement element)
 	{
 		if(element instanceof PsiNewExpression)
 		{
@@ -83,6 +82,7 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 	}
 
 	@Nullable
+	@SuppressWarnings("UseJBColor")
 	private static Color getColor(PsiExpressionList list)
 	{
 		try
@@ -94,10 +94,13 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 			{
 				switch(type)
 				{
-					case INT_x3:
+					case INTx3:
 						return new Color(getInt(args[0]), getInt(args[1]), getInt(args[2]));
-					case INT_x4:
-						return new Color(getInt(args[0]), getInt(args[1]), getInt(args[2]), getInt(args[3]));
+					case INTx3_FLOAT:
+						float alpha = getFloat(args[3]);
+						Color color = new Color(getInt(args[0]), getInt(args[1]), getInt(args[2]));
+						float[] rgbColorComponents = color.getRGBColorComponents(null);
+						return new Color(rgbColorComponents[0], rgbColorComponents[1], rgbColorComponents[2], alpha);
 				}
 			}
 		}
@@ -119,9 +122,9 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 		switch(len)
 		{
 			case 3:
-				return ColorConstructors.INT_x3;
+				return ColorConstructors.INTx3;
 			case 4:
-				return ColorConstructors.INT_x4;
+				return ColorConstructors.INTx3_FLOAT;
 		}
 
 		return null;
@@ -129,17 +132,12 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 
 	public static int getInt(PsiExpression expr)
 	{
-		return ((Integer) getObject(expr)).intValue();
+		return (Integer) getObject(expr);
 	}
 
 	public static float getFloat(PsiExpression expr)
 	{
-		return ((Float) getObject(expr)).floatValue();
-	}
-
-	public static boolean getBoolean(PsiExpression expr)
-	{
-		return ((Boolean) getObject(expr)).booleanValue();
+		return (Float) getObject(expr);
 	}
 
 	private static Object getObject(PsiExpression expr)
@@ -161,34 +159,24 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 
 		switch(type)
 		{
-			case INT_x3:
-			case INT_x4:
+			case INTx3:
+			case INTx3_FLOAT:
 				replaceInt(expr[0], color.getRed());
 				replaceInt(expr[1], color.getGreen());
 				replaceInt(expr[2], color.getBlue());
-				if(type == ColorConstructors.INT_x4)
+				if(type == ColorConstructors.INTx3_FLOAT)
 				{
-					replaceInt(expr[3], color.getAlpha());
+					replaceFloat(expr[3], color.getRGBComponents(null)[4]);
 				}
-				else if(color.getAlpha() != 255)
-				{
-					//todo add alpha
-				}
-				return;
 		}
 	}
 
 	private static void replaceInt(PsiExpression expr, int newValue)
 	{
-		replaceInt(expr, newValue, false);
-	}
-
-	private static void replaceInt(PsiExpression expr, int newValue, boolean hex)
-	{
 		PsiElementFactory factory = JavaPsiFacade.getElementFactory(expr.getProject());
 		if(getInt(expr) != newValue)
 		{
-			String text = hex ? "0x" + ColorUtil.toHex(new Color(newValue)).toUpperCase() : Integer.toString(newValue);
+			String text = Integer.toString(newValue);
 			expr.replace(factory.createExpressionFromText(text, null));
 		}
 	}
@@ -204,6 +192,7 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 
 	private enum ColorConstructors
 	{
-		INT_x3, INT_x4
+		INTx3,
+		INTx3_FLOAT
 	}
 }
