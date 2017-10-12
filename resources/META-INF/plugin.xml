@@ -177,6 +177,8 @@
 		<codeInsight.lineMarkerProvider language="JAVA"
 										implementationClass="org.jetbrains.idea.devkit.navigation.ExtensionPointDeclarationRelatedItemLineMarkerProvider"/>
 
+		<colorProvider implementation="consulo.devkit.codeInsight.daemon.UIColorLineMarkerProvider"/>
+
 		<iconDescriptorUpdater implementation="consulo.devkit.ConsuloDevkitIconDescriptorUpdater" order="last"/>
 	</extensions>
 
@@ -240,7 +242,7 @@
 					id="GenerateDomModel"/>
 
 			<action id="DevKit.GenerateIconsClassAction" class="consulo.devkit.action.GenerateIconsClassAction" text="Generate Icons Class"
-					icon="AllIcons.Nodes.Class" />
+					icon="AllIcons.Nodes.Class"/>
 
 			<add-to-group group-id="ToolsMenu" anchor="last"/>
 		</group>
