@@ -111,8 +111,8 @@ public class AWTErrorInspection extends InternalInspection
 		final Module[] dependencies = ModuleRootManager.getInstance(module).getDependencies(false);
 		for(Module dependency : dependencies)
 		{
-			// module-marker for desktop impl
-			if(dependency.getName().equals("desktop-ui-impl"))
+			// allow AWT & Swing inside desktop modules
+			if(dependency.getName().startsWith("consulo-desktop-"))
 			{
 				return false;
 			}
