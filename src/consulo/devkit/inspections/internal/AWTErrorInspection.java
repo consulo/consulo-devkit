@@ -92,16 +92,6 @@ public class AWTErrorInspection extends InternalInspection
 	@Override
 	protected boolean isAllowed(ProblemsHolder holder)
 	{
-		if(isAllowedByDefault())
-		{
-			return true;
-		}
-
-		if(!super.isAllowed(holder))
-		{
-			return false;
-		}
-
 		Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
 		if(module == null)
 		{
