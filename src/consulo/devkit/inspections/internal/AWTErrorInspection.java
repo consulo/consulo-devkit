@@ -21,17 +21,16 @@ import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiNewExpression;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeElement;
+import com.intellij.psi.util.PsiUtil;
 import consulo.annotations.RequiredReadAction;
 
 /**
@@ -69,22 +68,19 @@ public class AWTErrorInspection extends InternalInspection
 
 			private void checkType(PsiElement owner, PsiType psiType)
 			{
-				if(psiType instanceof PsiClassType)
+				PsiClass psiClass = PsiUtil.resolveClassInType(psiType);
+				if(psiClass != null)
 				{
-					final PsiClass psiClass = ((PsiClassType) psiType).resolve();
-					if(psiClass != null)
+					final String qualifiedName = psiClass.getQualifiedName();
+					if(qualifiedName == null)
 					{
-						final String qualifiedName = psiClass.getQualifiedName();
-						if(qualifiedName == null)
+						return;
+					}
+					for(String errorPackage : ourErrorPackages)
+					{
+						if(StringUtil.startsWith(qualifiedName, errorPackage))
 						{
-							return;
-						}
-						for(String errorPackage : ourErrorPackages)
-						{
-							if(StringUtil.startsWith(qualifiedName, errorPackage))
-							{
-								holder.registerProblem(owner, "AWT & Swing implementation can not be used. Please visit guide for writing UI");
-							}
+							holder.registerProblem(owner, "AWT & Swing implementation can not be used. Please visit guide for writing UI");
 						}
 					}
 				}
@@ -107,15 +103,15 @@ public class AWTErrorInspection extends InternalInspection
 		}
 
 		Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
-		assert module != null;
-		final Module[] dependencies = ModuleRootManager.getInstance(module).getDependencies(false);
-		for(Module dependency : dependencies)
+		if(module == null)
 		{
-			// allow AWT & Swing inside desktop modules
-			if(dependency.getName().startsWith("consulo-desktop-"))
-			{
-				return false;
-			}
+			return false;
+		}
+
+		// allow AWT & Swing inside desktop modules
+		if(module.getName().startsWith("consulo-desktop-"))
+		{
+			return false;
 		}
 		return true;
 	}
