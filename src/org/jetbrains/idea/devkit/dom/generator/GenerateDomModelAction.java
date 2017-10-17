@@ -17,7 +17,6 @@ package org.jetbrains.idea.devkit.dom.generator;
 
 import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.action.InternalAction;
@@ -31,7 +30,7 @@ public class GenerateDomModelAction extends InternalAction
 	@Override
 	public void actionPerformed(@NotNull AnActionEvent e)
 	{
-		final Project project = PlatformDataKeys.PROJECT.getData(e.getDataContext());
+		final Project project = e.getProject();
 		if(project != null)
 		{
 			new DomGenDialog(project).show();

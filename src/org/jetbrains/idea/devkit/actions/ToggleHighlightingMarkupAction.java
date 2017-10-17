@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx;
 import com.intellij.codeInsight.daemon.impl.HighlightInfo;
@@ -46,18 +47,19 @@ public class ToggleHighlightingMarkupAction extends InternalAction
 {
 	@RequiredDispatchThread
 	@Override
-	public void update(AnActionEvent e)
+	public void update(@NotNull AnActionEvent e)
 	{
-		Editor editor = CommonDataKeys.EDITOR.getData(e.getDataContext());
-		PsiFile file = CommonDataKeys.PSI_FILE.getData(e.getDataContext());
+		Editor editor = e.getData(CommonDataKeys.EDITOR);
+		PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
 		e.getPresentation().setEnabled(editor != null && file != null);
 	}
 
+	@RequiredDispatchThread
 	@Override
-	public void actionPerformed(AnActionEvent e)
+	public void actionPerformed(@NotNull AnActionEvent e)
 	{
-		final Editor editor = CommonDataKeys.EDITOR.getData(e.getDataContext());
-		PsiFile file = CommonDataKeys.PSI_FILE.getData(e.getDataContext());
+		final Editor editor = e.getData(CommonDataKeys.EDITOR);
+		PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
 		if(editor == null || file == null)
 		{
 			return;

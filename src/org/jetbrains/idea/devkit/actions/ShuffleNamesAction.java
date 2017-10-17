@@ -49,16 +49,16 @@ public class ShuffleNamesAction extends InternalAction
 	@Override
 	public void update(AnActionEvent e)
 	{
-		Editor editor = PlatformDataKeys.EDITOR.getData(e.getDataContext());
-		PsiFile file = LangDataKeys.PSI_FILE.getData(e.getDataContext());
+		Editor editor = e.getData(PlatformDataKeys.EDITOR);
+		PsiFile file = e.getData(LangDataKeys.PSI_FILE);
 		e.getPresentation().setEnabled(editor != null && file != null);
 	}
 
 	@Override
 	public void actionPerformed(AnActionEvent e)
 	{
-		final Editor editor = PlatformDataKeys.EDITOR.getData(e.getDataContext());
-		PsiFile file = LangDataKeys.PSI_FILE.getData(e.getDataContext());
+		final Editor editor = e.getData(PlatformDataKeys.EDITOR);
+		PsiFile file = e.getData(LangDataKeys.PSI_FILE);
 		if(editor == null || file == null)
 		{
 			return;
