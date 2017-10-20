@@ -19,6 +19,7 @@ package org.jetbrains.idea.devkit.inspections.quickfix;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ListSelectionModel;
@@ -87,8 +88,7 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable
 	@Override
 	public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor)
 	{
-		final List<VirtualFile> virtualFiles = isIntention ? IntentionDescriptionNotFoundInspection.getPotentialRoots(myModule) :
-				InspectionDescriptionNotFoundInspection.getPotentialRoots(myModule);
+		final List<VirtualFile> virtualFiles = isIntention ? IntentionDescriptionNotFoundInspection.getPotentialRoots(myModule) : InspectionDescriptionNotFoundInspection.getPotentialRoots(myModule);
 		final VirtualFile[] roots = prepare(VfsUtil.toVirtualFileArray(virtualFiles));
 		if(roots.length == 1)
 		{
@@ -116,8 +116,8 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable
 			}
 			final JBList files = new JBList(ArrayUtil.toStringArray(options));
 			files.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			final JBPopup popup = JBPopupFactory.getInstance().createListPopupBuilder(files).setTitle(DevKitBundle.message("select.target.location" +
-					".of.description", myFilename)).setItemChoosenCallback(new Runnable()
+			final JBPopup popup = JBPopupFactory.getInstance().createListPopupBuilder(files).setTitle(DevKitBundle.message("select.target.location" + ".of.description", myFilename))
+					.setItemChoosenCallback(new Runnable()
 			{
 				@Override
 				public void run()
@@ -179,8 +179,7 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable
 				}
 			}
 			final FileTemplate descrTemplate = FileTemplateManager.getInstance(myModule.getProject()).getJ2eeTemplate(TEMPLATE_NAME);
-			final PsiElement template = FileTemplateUtil.createFromTemplate(descrTemplate, isIntention ? "description.html" : myFilename, null,
-					descrRoot);
+			final PsiElement template = FileTemplateUtil.createFromTemplate(descrTemplate, isIntention ? "description.html" : myFilename, (Map<String, Object>) null, descrRoot);
 			if(template instanceof PsiFile)
 			{
 				final VirtualFile file = ((PsiFile) template).getVirtualFile();
