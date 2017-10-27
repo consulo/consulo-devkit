@@ -74,12 +74,6 @@
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true" level="WARNING"
 						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.DontUseNewPairInspection"/>
-		<localInspection language="JAVA"
-						 groupKey="inspections.group.name"
-						 displayName="Default StubBasedPsiElementBase.getParent() implementation"
-						 enabledByDefault="true"
-						 level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.StubBasedPsiElementBaseGetParentInspection"/>
 		<localInspection language="JAVA" shortName="StatefulEp" displayName="Stateful Extension"
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true" level="WARNING"
