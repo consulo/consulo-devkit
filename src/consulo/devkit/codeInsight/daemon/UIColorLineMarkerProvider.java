@@ -33,7 +33,7 @@ import com.intellij.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.psi.util.PsiTypesUtil;
 import consulo.annotations.RequiredReadAction;
 import consulo.annotations.RequiredWriteAction;
-import consulo.ui.RGBColor;
+import consulo.ui.shared.RGBColor;
 
 /**
  * @author VISTALL
