@@ -39,9 +39,7 @@ import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.packaging.elements.ArtifactRootElement;
 import com.intellij.packaging.impl.artifacts.PlainArtifactType;
-import com.intellij.packaging.impl.elements.ArtifactPackagingElement;
 import com.intellij.packaging.impl.elements.ArtifactRootElementImpl;
-import com.intellij.packaging.impl.elements.DirectoryCopyPackagingElement;
 import com.intellij.packaging.impl.elements.DirectoryPackagingElement;
 import com.intellij.packaging.impl.elements.moduleContent.ModuleOutputPackagingElementImpl;
 import com.intellij.packaging.impl.elements.moduleContent.ProductionModuleOutputElementType;
@@ -53,7 +51,6 @@ import consulo.ide.newProject.NewModuleBuilder;
 import consulo.ide.newProject.NewModuleContext;
 import consulo.java.module.extension.JavaMutableModuleExtension;
 import consulo.module.extension.MutableModuleExtensionWithSdk;
-import consulo.packaging.artifacts.ArtifactPointerUtil;
 import consulo.packaging.impl.elements.ZipArchivePackagingElement;
 import consulo.packaging.impl.elements.moduleContent.ProductionResourceModuleOutputElementType;
 import consulo.packaging.impl.run.BuildArtifactsBeforeRunTaskProvider;
@@ -95,12 +92,13 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 				assert devkitExtension != null;
 
 				javaExtension.setEnabled(true);
+				javaExtension.setBytecodeVersion("1.8");
 				devkitExtension.setEnabled(true);
 
 				modifiableRootModel.addModuleExtensionSdkEntry(javaExtension);
 				modifiableRootModel.addModuleExtensionSdkEntry(devkitExtension);
 
-				javaExtension.getInheritableLanguageLevel().set(null, LanguageLevel.JDK_1_6);
+				javaExtension.getInheritableLanguageLevel().set(null, LanguageLevel.JDK_1_8);
 				javaExtension.getInheritableSdk().set(null, DEFAULT_JAVA_SDK_NAME);
 
 				devkitExtension.getInheritableSdk().set(null, DEFAULT_CONSULO_SDK_NAME);
@@ -127,20 +125,18 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 				JavaCompilerConfiguration compilerConfiguration = JavaCompilerConfiguration.getInstance(project);
 
 				compilerConfiguration.setAddNotNullAssertions(true);
-				compilerConfiguration.setProjectBytecodeTarget("1.6");
+				compilerConfiguration.setProjectBytecodeTarget("1.8");
 
 				GuiDesignerConfiguration.getInstance(project).COPY_FORMS_RUNTIME_TO_OUTPUT = false;
 
 				Artifact distArtifact = ArtifactManager.getInstance(project).addArtifact("dist", PlainArtifactType.getInstance(), createDistRootElement(modifiableRootModel));
-
-				Artifact pluginArtifact = ArtifactManager.getInstance(project).addArtifact("plugin", PlainArtifactType.getInstance(), createPluginRootElement(modifiableRootModel, distArtifact));
 
 				RunManagerEx runManager = RunManagerEx.getInstanceEx(project);
 
 				RunnerAndConfigurationSettings runConfiguration = runManager.createRunConfiguration("Run Consulo In Sandbox", PluginConfigurationType.getInstance().getConfigurationFactories()[0]);
 
 				ConsuloRunConfiguration configuration = (ConsuloRunConfiguration) runConfiguration.getConfiguration();
-				configuration.setArtifactName("plugin");
+				configuration.setArtifactName("dist");
 				configuration.setJavaSdkName(DEFAULT_JAVA_SDK_NAME);
 				configuration.setConsuloSdkName(DEFAULT_CONSULO_SDK_NAME);
 
@@ -151,17 +147,6 @@ public class DevkitNewModuleBuilder implements NewModuleBuilder
 				runManager.setSelectedConfiguration(runConfiguration);
 
 				BuildArtifactsBeforeRunTaskProvider.setBuildArtifactBeforeRun(project, configuration, distArtifact);
-				BuildArtifactsBeforeRunTaskProvider.setBuildArtifactBeforeRun(project, configuration, pluginArtifact);
-			}
-
-			@NotNull
-			private ArtifactRootElement<?> createPluginRootElement(ModifiableRootModel modifiableRootModel, Artifact distArtifact)
-			{
-				ArtifactRootElementImpl rootElement = new ArtifactRootElementImpl();
-				rootElement.addFirstChild(new ArtifactPackagingElement(modifiableRootModel.getProject(), ArtifactPointerUtil.getPointerManager(modifiableRootModel.getProject()).create
-						(distArtifact)));
-				rootElement.addFirstChild(new DirectoryCopyPackagingElement(modifiableRootModel.getModule().getModuleDirPath() + "/dep"));
-				return rootElement;
 			}
 
 			@NotNull
