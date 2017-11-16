@@ -23,6 +23,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import consulo.annotations.RequiredReadAction;
 import consulo.devkit.module.extension.PluginModuleExtension;
+import consulo.devkit.module.library.ConsuloPluginLibraryType;
 import consulo.ide.IconDescriptor;
 import consulo.ide.IconDescriptorUpdater;
 
@@ -39,7 +40,7 @@ public class ConsuloDevkitIconDescriptorUpdater implements IconDescriptorUpdater
 		if(psiElement instanceof PsiDirectory)
 		{
 			String name = ((PsiDirectory) psiElement).getName();
-			if(name.equals("dep"))
+			if(ConsuloPluginLibraryType.DEP_LIBRARY.equals(name))
 			{
 				PsiDirectory parentDirectory = ((PsiDirectory) psiElement).getParentDirectory();
 				if(parentDirectory != null && Comparing.equal(parentDirectory.getVirtualFile(), psiElement.getProject().getBaseDir()))

@@ -17,6 +17,8 @@
 package consulo.devkit.run;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,9 +35,11 @@ import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
+import consulo.devkit.module.library.ConsuloPluginLibraryType;
 
 /**
  * @author VISTALL
@@ -87,14 +91,28 @@ public class ConsuloSandboxRunState extends CommandLineState
 		String installPluginPath = dataPath + "/config/plugins";
 		vm.defineProperty(ApplicationProperties.CONSULO_INSTALL_PLUGINS_PATH, installPluginPath);
 
+		List<String> pluginPaths = new ArrayList<>();
+		pluginPaths.add(installPluginPath);
+
+		VirtualFile baseDir = env.getProject().getBaseDir();
+		assert baseDir != null;
+
+		// if plugin name is not plugin - append dep directory
+		if(artifact == null || !"plugin".contains(artifact.getName()))
+		{
+			VirtualFile dep = baseDir.findChild(ConsuloPluginLibraryType.DEP_LIBRARY);
+			if(dep != null)
+			{
+				pluginPaths.add(dep.getPath());
+			}
+		}
+
 		if(artifact != null)
 		{
-			vm.defineProperty(ApplicationProperties.CONSULO_PLUGINS_PATHS, artifact.getOutputPath() + File.pathSeparator + installPluginPath);
+			pluginPaths.add(artifact.getOutputPath());
 		}
-		else
-		{
-			vm.defineProperty(ApplicationProperties.CONSULO_PLUGINS_PATHS, installPluginPath);
-		}
+
+		vm.defineProperty(ApplicationProperties.CONSULO_PLUGINS_PATHS, String.join(File.pathSeparator, pluginPaths));
 
 		File logFile = new File(dataPath, ConsuloRunConfigurationBase.LOG_FILE);
 		FileUtil.createIfDoesntExist(logFile);
