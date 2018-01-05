@@ -19,7 +19,7 @@ package consulo.devkit.inspections.internal;
 import java.util.Collection;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
+import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.util.TextRange;
@@ -30,12 +30,14 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.util.containers.MultiMap;
 import consulo.annotations.RequiredReadAction;
+import consulo.devkit.util.PluginModuleUtil;
+import consulo.platform.Platform;
 
 /**
  * @author VISTALL
  * @since 23-Aug-17
  */
-public class PlatformErrorInspection extends InternalInspection
+public class PlatformErrorInspection extends BaseJavaLocalInspectionTool
 {
 	private final MultiMap<String, String> myRestrictedMethodList = MultiMap.create();
 
@@ -54,9 +56,16 @@ public class PlatformErrorInspection extends InternalInspection
 		myRestrictedMethodList.putValue(Long.class.getName(), "getLong");
 	}
 
+	@NotNull
 	@Override
-	public PsiElementVisitor buildInternalVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly)
+	@RequiredReadAction
+	public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly)
 	{
+		if(PluginModuleUtil.searchClassInFileUseScope(holder.getFile(), Platform.class.getName()) == null)
+		{
+			return PsiElementVisitor.EMPTY_VISITOR;
+		}
+
 		return new JavaElementVisitor()
 		{
 			@Override

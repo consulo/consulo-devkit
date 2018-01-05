@@ -26,14 +26,19 @@ import org.jetbrains.idea.devkit.build.PluginBuildUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtil;
+import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.HashSet;
 import consulo.annotations.RequiredReadAction;
 import consulo.devkit.module.extension.PluginModuleExtension;
+import consulo.java.module.extension.JavaModuleExtension;
 import consulo.java.roots.SpecialDirUtil;
 
 /**
@@ -158,5 +163,18 @@ public class PluginModuleUtil
 			}
 		}
 		return false;
+	}
+
+	@RequiredReadAction
+	@Nullable
+	public static PsiClass searchClassInFileUseScope(@NotNull PsiFile file, @NotNull String qName)
+	{
+		JavaModuleExtension extension = ModuleUtilCore.getExtension(file, JavaModuleExtension.class);
+		if(extension == null)
+		{
+			return null;
+		}
+
+		return JavaPsiFacade.getInstance(file.getProject()).findClass(qName, GlobalSearchScope.moduleWithDependenciesScope(extension.getModule()));
 	}
 }
