@@ -51,6 +51,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.io.DownloadUtil;
 import com.intellij.util.io.ZipUtil;
+import consulo.annotations.DeprecationInfo;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.module.library.ConsuloPluginLibraryType;
 import consulo.ide.updateSettings.UpdateChannel;
@@ -62,6 +63,8 @@ import consulo.vfs.util.ArchiveVfsUtil;
  * @author VISTALL
  * @since 16.02.14
  */
+@Deprecated
+@DeprecationInfo("After full migration to maven, old plugin dependencies load will be dropped")
 public class DownloadDependenciesAction extends AnAction
 {
 	private static final Logger LOGGER = Logger.getInstance(DownloadDependenciesAction.class);

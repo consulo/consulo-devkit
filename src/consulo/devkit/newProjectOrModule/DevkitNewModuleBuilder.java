@@ -45,6 +45,7 @@ import com.intellij.packaging.impl.elements.moduleContent.ModuleOutputPackagingE
 import com.intellij.packaging.impl.elements.moduleContent.ProductionModuleOutputElementType;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.uiDesigner.GuiDesignerConfiguration;
+import consulo.annotations.DeprecationInfo;
 import consulo.devkit.run.ConsuloRunConfiguration;
 import consulo.ide.impl.UnzipNewModuleBuilderProcessor;
 import consulo.ide.newProject.NewModuleBuilder;
@@ -62,6 +63,8 @@ import consulo.util.pointers.NamedPointer;
  * @author VISTALL
  * @since 26.11.14
  */
+@Deprecated
+@DeprecationInfo("After full migration to maven, plugin factory will be replaced by maven archtype")
 public class DevkitNewModuleBuilder implements NewModuleBuilder
 {
 	private static final String DEFAULT_JAVA_SDK_NAME = "1.8";

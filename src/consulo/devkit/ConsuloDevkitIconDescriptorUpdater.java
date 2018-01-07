@@ -21,6 +21,7 @@ import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
+import consulo.annotations.DeprecationInfo;
 import consulo.annotations.RequiredReadAction;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.module.library.ConsuloPluginLibraryType;
@@ -31,6 +32,8 @@ import consulo.ide.IconDescriptorUpdater;
  * @author VISTALL
  * @since 06-Oct-16
  */
+@Deprecated
+@DeprecationInfo("After full migration to maven, old plugin dependencies load will be dropped")
 public class ConsuloDevkitIconDescriptorUpdater implements IconDescriptorUpdater
 {
 	@RequiredReadAction

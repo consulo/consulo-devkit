@@ -19,7 +19,7 @@ package consulo.devkit.module.extension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.openapi.projectRoots.SdkType;
-import consulo.extension.impl.ModuleExtensionWithSdkImpl;
+import consulo.module.extension.impl.ModuleExtensionWithSdkImpl;
 import consulo.roots.ModuleRootLayer;
 
 /**
