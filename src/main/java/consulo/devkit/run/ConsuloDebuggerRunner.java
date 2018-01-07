@@ -35,9 +35,6 @@ import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.configurations.RunProfileState;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
-import com.intellij.xdebugger.XDebugProcess;
-import com.intellij.xdebugger.XDebugProcessStarter;
-import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
 import com.intellij.xdebugger.impl.XDebugSessionImpl;
 
@@ -93,23 +90,18 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 					debugProcess.putUserData(BatchEvaluator.REMOTE_SESSION_KEY, Boolean.TRUE);
 				}
 
-				return XDebuggerManager.getInstance(env.getProject()).startSession(env, new XDebugProcessStarter()
+				return XDebuggerManager.getInstance(env.getProject()).startSession(env, session ->
 				{
-					@NotNull
-					@Override
-					public XDebugProcess start(@NotNull XDebugSession session)
+					XDebugSessionImpl sessionImpl = (XDebugSessionImpl) session;
+					ExecutionResult executionResult = debugProcess.getExecutionResult();
+					sessionImpl.addExtraActions(executionResult.getActions());
+					if(executionResult instanceof DefaultExecutionResult)
 					{
-						XDebugSessionImpl sessionImpl = (XDebugSessionImpl) session;
-						ExecutionResult executionResult = debugProcess.getExecutionResult();
-						sessionImpl.addExtraActions(executionResult.getActions());
-						if(executionResult instanceof DefaultExecutionResult)
-						{
-							sessionImpl.addRestartActions(((DefaultExecutionResult) executionResult).getRestartActions());
-							sessionImpl.addExtraStopActions(((DefaultExecutionResult) executionResult).getAdditionalStopActions());
-						}
-
-						return JavaDebugProcess.create(session, debuggerSession);
+						sessionImpl.addRestartActions(((DefaultExecutionResult) executionResult).getRestartActions());
+						sessionImpl.addExtraStopActions(((DefaultExecutionResult) executionResult).getAdditionalStopActions());
 					}
+
+					return JavaDebugProcess.create(session, debuggerSession);
 				}).getRunContentDescriptor();
 			}
 			else

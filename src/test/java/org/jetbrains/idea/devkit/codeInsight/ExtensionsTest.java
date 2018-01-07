@@ -16,7 +16,6 @@
 package org.jetbrains.idea.devkit.codeInsight;
 
 import com.intellij.codeInspection.LocalInspectionEP;
-import com.intellij.openapi.application.PluginPathManager;
 import com.intellij.testFramework.builders.JavaModuleFixtureBuilder;
 import com.intellij.testFramework.fixtures.JavaCodeInsightFixtureTestCase;
 import com.intellij.util.PathUtil;
@@ -43,11 +42,10 @@ public class ExtensionsTest extends JavaCodeInsightFixtureTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myFixture.enableInspections(PluginXmlFunctionalTest.getInspectionClasses());
   }
 
   @Override
   protected String getBasePath() {
-    return PluginPathManager.getPluginHomePathRelative("devkit") + "/testData/codeInsight";
+    return "codeInsight";
   }
 }

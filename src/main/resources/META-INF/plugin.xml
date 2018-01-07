@@ -24,8 +24,6 @@
 	<extensions defaultExtensionNs="com.intellij">
 		<useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
 
-		<newModuleBuilder implementation="consulo.devkit.newProjectOrModule.DevkitNewModuleBuilder"/>
-
 		<programRunner implementation="consulo.devkit.run.ConsuloDebuggerRunner"/>
 
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
