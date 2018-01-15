@@ -8,7 +8,6 @@
 	<depends>consulo.java</depends>
 	<depends>com.intellij.properties</depends>
 	<depends>com.intellij.xml</depends>
-	<depends>com.intellij.junit</depends>
 	<depends>com.intellij.uiDesigner</depends>
 	<!--This depend is not used, but it needed for developing, and it required-->
 	<depends optional="true" config-file="consulo.jflex.xml">consulo.jflex</depends>
@@ -27,7 +26,6 @@
 		<programRunner implementation="consulo.devkit.run.ConsuloDebuggerRunner"/>
 
 		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
-		<configurationType implementation="consulo.devkit.run.ConsuloTestRunConfigurationType"/>
 
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>

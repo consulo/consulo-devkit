@@ -52,7 +52,6 @@
 					<dependencies>
 						<dependency>com.intellij.xml</dependency>
 						<dependency>com.intellij.properties</dependency>
-						<dependency>com.intellij.junit</dependency>
 						<dependency>com.intellij.uiDesigner</dependency>
 						<dependency>consulo.java</dependency>
 						<dependency>consulo.jflex</dependency>
@@ -96,12 +95,6 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>consulo.java</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>com.intellij.junit</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
