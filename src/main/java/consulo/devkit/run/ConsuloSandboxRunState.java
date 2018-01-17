@@ -26,7 +26,6 @@ import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.CommandLineState;
-import com.intellij.execution.configurations.JavaParameters;
 import com.intellij.execution.configurations.ParametersList;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
@@ -40,6 +39,7 @@ import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
 import consulo.devkit.module.library.ConsuloPluginLibraryType;
+import consulo.java.execution.configurations.OwnJavaParameters;
 
 /**
  * @author VISTALL
@@ -47,7 +47,7 @@ import consulo.devkit.module.library.ConsuloPluginLibraryType;
  */
 public class ConsuloSandboxRunState extends CommandLineState
 {
-	protected JavaParameters myJavaParameters;
+	protected OwnJavaParameters myJavaParameters;
 	protected ExecutionEnvironment myEnvironment;
 
 	public ConsuloSandboxRunState(@NotNull ExecutionEnvironment environment, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome, @Nullable Artifact artifact) throws ExecutionException
@@ -70,12 +70,12 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return configuration.getSandboxPath();
 	}
 
-	private JavaParameters createJavaParameters(@NotNull ExecutionEnvironment env, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome, @Nullable Artifact artifact) throws ExecutionException
+	private OwnJavaParameters createJavaParameters(@NotNull ExecutionEnvironment env, @NotNull Sdk javaSdk, @NotNull String consuloSdkHome, @Nullable Artifact artifact) throws ExecutionException
 	{
 		ConsuloRunConfigurationBase profile = (ConsuloRunConfigurationBase) env.getRunProfile();
 		final String dataPath = getSandboxPath(profile);
 
-		final JavaParameters params = new JavaParameters();
+		final OwnJavaParameters params = new OwnJavaParameters();
 
 		ParametersList vm = params.getVMParametersList();
 
@@ -154,7 +154,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return "com.intellij.idea.Main";
 	}
 
-	protected void addConsuloLibs(@NotNull String consuloHomePath, @NotNull JavaParameters params)
+	protected void addConsuloLibs(@NotNull String consuloHomePath, @NotNull OwnJavaParameters params)
 	{
 		String libPath = consuloHomePath + "/lib";
 
@@ -188,7 +188,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 		}
 	}
 
-	public JavaParameters getJavaParameters()
+	public OwnJavaParameters getJavaParameters()
 	{
 		return myJavaParameters;
 	}
