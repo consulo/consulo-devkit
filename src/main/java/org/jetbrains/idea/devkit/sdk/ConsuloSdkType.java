@@ -21,13 +21,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.Icon;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
@@ -46,6 +45,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.ContainerUtil;
 import consulo.roots.types.BinariesOrderRootType;
+import consulo.ui.image.Image;
 import consulo.vfs.ArchiveFileSystem;
 import consulo.vfs.util.ArchiveVfsUtil;
 
@@ -114,14 +114,7 @@ public class ConsuloSdkType extends SdkType
 	}
 
 	@Override
-	public Icon getIcon()
-	{
-		return AllIcons.Icon16;
-	}
-
-	@Nullable
-	@Override
-	public Icon getGroupIcon()
+	public Image getIcon()
 	{
 		return AllIcons.Icon16;
 	}

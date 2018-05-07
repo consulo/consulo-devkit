@@ -41,6 +41,7 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.DomJavaUtil;
 import com.intellij.util.xml.GenericAttributeValue;
+import consulo.awt.TargetAWT;
 
 class LanguageResolvingUtil
 {
@@ -81,7 +82,7 @@ class LanguageResolvingUtil
 				}
 
 				final LanguageFileType type = language.getAssociatedFileType();
-				final Icon icon = type != null ? type.getIcon() : null;
+				final Icon icon = type != null ? TargetAWT.to(type.getIcon()) : null;
 				return new LanguageDefinition(language.getID(), psiClass, icon, language.getDisplayName());
 			}
 		});
