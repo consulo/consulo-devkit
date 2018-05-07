@@ -15,9 +15,8 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import javax.swing.Icon;
-
 import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
@@ -33,6 +32,7 @@ import com.intellij.util.xml.DomUtil;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.highlighting.DomElementAnnotationHolder;
 import com.intellij.util.xml.highlighting.DomElementsAnnotator;
+import consulo.ui.image.Image;
 
 /**
  * @author mike
@@ -110,7 +110,7 @@ public class PluginXmlDomFileDescription extends DomFileDescription<IdeaPlugin>
 	}
 
 	@Override
-	public Icon getFileIcon(@Iconable.IconFlags int flags)
+	public Image getFileIcon(@Iconable.IconFlags int flags)
 	{
 		return AllIcons.Nodes.Plugin;
 	}
