@@ -16,7 +16,8 @@
 
 package consulo.devkit.inspections;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInsight.intention.AddAnnotationFix;
 import com.intellij.codeInspection.AnnotateMethodFix;
 import com.intellij.codeInspection.LocalInspectionTool;
@@ -43,7 +44,7 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 			super(fqn, annotationsToRemove);
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		protected String getPreposition()
 		{
@@ -63,9 +64,9 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 		}
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly)
+	public PsiElementVisitor buildVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{

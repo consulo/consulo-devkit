@@ -26,8 +26,8 @@ import javax.swing.Icon;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
@@ -67,7 +67,7 @@ public class ConsuloSdkType extends SdkType
 		super(DevKitBundle.message("sdk.title"));
 	}
 
-	@NotNull
+	@Nonnull
 	private static VirtualFile[] getLibraries(VirtualFile home)
 	{
 		String selectSdkHome = selectBuild(home.getPath());
@@ -107,7 +107,7 @@ public class ConsuloSdkType extends SdkType
 		}
 	}
 
-	@NotNull
+	@Nonnull
 	public static ConsuloSdkType getInstance()
 	{
 		return EP_NAME.findExtension(ConsuloSdkType.class);
@@ -126,14 +126,14 @@ public class ConsuloSdkType extends SdkType
 		return AllIcons.Icon16;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getHelpTopic()
 	{
 		return "reference.project.structure.sdk.idea";
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Collection<String> suggestHomePaths()
 	{
@@ -160,7 +160,7 @@ public class ConsuloSdkType extends SdkType
 	}
 
 	@Nullable
-	public static String selectBuild(@NotNull String sdkHome)
+	public static String selectBuild(@Nonnull String sdkHome)
 	{
 		File platformDirectory = new File(sdkHome, "platform");
 		if(!platformDirectory.exists())
@@ -282,7 +282,7 @@ public class ConsuloSdkType extends SdkType
 		return JavaSdk.getInstance().isRootTypeApplicable(type);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getPresentableName()
 	{

@@ -20,7 +20,7 @@
 package org.jetbrains.idea.devkit.dom;
 
 import com.intellij.util.xml.DomElement;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public interface ApplicationComponents extends DomElement {
    *
    * @return the list of component children.
    */
-  @NotNull
+  @Nonnull
   List<Component.Application> getComponents();
 
   /**

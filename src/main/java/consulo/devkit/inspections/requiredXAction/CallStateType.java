@@ -16,10 +16,10 @@
 
 package consulo.devkit.inspections.requiredXAction;
 
+import javax.annotation.Nonnull;
 import javax.swing.SwingUtilities;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.BaseActionRunnable;
@@ -52,7 +52,7 @@ public enum CallStateType
 	})
 			{
 				@Override
-				public boolean isAcceptableActionType(@NotNull CallStateType type)
+				public boolean isAcceptableActionType(@Nonnull CallStateType type)
 				{
 					return type == READ || type == DISPATCH_THREAD || type == UI_ACCESS || type == WRITE;
 				}
@@ -67,7 +67,7 @@ public enum CallStateType
 	UI_ACCESS(RequiredUIAccess.class.getName(), null, new AcceptableMethodCallCheck(UIAccess.class.getName(), "give"))
 			{
 				@Override
-				public boolean isAcceptableActionType(@NotNull CallStateType type)
+				public boolean isAcceptableActionType(@Nonnull CallStateType type)
 				{
 					// write actions required call from ui thread, and it inherit ui state
 					return type == DISPATCH_THREAD || type == WRITE || type == UI_ACCESS;
@@ -83,7 +83,7 @@ public enum CallStateType
 	})
 			{
 				@Override
-				public boolean isAcceptableActionType(@NotNull CallStateType type)
+				public boolean isAcceptableActionType(@Nonnull CallStateType type)
 				{
 					// write actions required call from dispatch thread, and it inherit dispatch state
 					return type == DISPATCH_THREAD || type == WRITE || type == UI_ACCESS;
@@ -94,18 +94,18 @@ public enum CallStateType
 	private final String myActionClass;
 	@Nullable
 	private final Class<? extends BaseActionRunnable> myActionRunnable;
-	@NotNull
+	@Nonnull
 	private final AcceptableMethodCallCheck[] myAcceptableMethodCallChecks;
 
-	CallStateType(@Nullable String actionClass, @Nullable Class<? extends BaseActionRunnable> actionRunnable, @NotNull AcceptableMethodCallCheck... methodCallChecks)
+	CallStateType(@Nullable String actionClass, @Nullable Class<? extends BaseActionRunnable> actionRunnable, @Nonnull AcceptableMethodCallCheck... methodCallChecks)
 	{
 		myActionClass = actionClass;
 		myAcceptableMethodCallChecks = methodCallChecks;
 		myActionRunnable = actionRunnable;
 	}
 
-	@NotNull
-	public static CallStateType findSelfActionType(@NotNull PsiMethod method)
+	@Nonnull
+	public static CallStateType findSelfActionType(@Nonnull PsiMethod method)
 	{
 		for(CallStateType actionType : values())
 		{
@@ -123,21 +123,21 @@ public enum CallStateType
 		return NONE;
 	}
 
-	@NotNull
+	@Nonnull
 	public AcceptableMethodCallCheck[] getAcceptableMethodCallChecks()
 	{
 		return myAcceptableMethodCallChecks;
 	}
 
-	@NotNull
+	@Nonnull
 	public String getActionClass()
 	{
 		assert myActionClass != null;
 		return myActionClass;
 	}
 
-	@NotNull
-	public static CallStateType findActionType(@NotNull PsiMethod method)
+	@Nonnull
+	public static CallStateType findActionType(@Nonnull PsiMethod method)
 	{
 		PsiClass baseActionRunnable = JavaPsiFacade.getInstance(method.getProject()).findClass(BaseActionRunnable.class.getName(), method.getResolveScope());
 
@@ -180,7 +180,7 @@ public enum CallStateType
 		return NONE;
 	}
 
-	public boolean isAcceptableActionType(@NotNull CallStateType type)
+	public boolean isAcceptableActionType(@Nonnull CallStateType type)
 	{
 		return type == this;
 	}

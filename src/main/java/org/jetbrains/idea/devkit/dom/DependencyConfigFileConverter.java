@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import com.intellij.ide.highlighter.XmlFileType;
 import com.intellij.openapi.fileTypes.FileType;
@@ -59,7 +59,7 @@ public class DependencyConfigFileConverter extends PathReferenceConverter
 	{
 
 		@Override
-		public boolean createReferences(@NotNull final PsiElement psiElement, int offset, String text, @NotNull List<PsiReference> references, boolean soft)
+		public boolean createReferences(@Nonnull final PsiElement psiElement, int offset, String text, @Nonnull List<PsiReference> references, boolean soft)
 		{
 			FileReferenceSet set = new FileReferenceSet(text, psiElement, offset, null, true, true, new FileType[]{XmlFileType.INSTANCE})
 			{
@@ -95,7 +95,7 @@ public class DependencyConfigFileConverter extends PathReferenceConverter
 					});
 				}
 
-				@NotNull
+				@Nonnull
 				@Override
 				@RequiredReadAction
 				public Collection<PsiFileSystemItem> computeDefaultContexts()
@@ -121,8 +121,8 @@ public class DependencyConfigFileConverter extends PathReferenceConverter
 				}
 
 				@Override
-				@NotNull
-				protected Collection<PsiFileSystemItem> toFileSystemItems(@NotNull Collection<VirtualFile> files)
+				@Nonnull
+				protected Collection<PsiFileSystemItem> toFileSystemItems(@Nonnull Collection<VirtualFile> files)
 				{
 					final PsiManager manager = getElement().getManager();
 					return ContainerUtil.mapNotNull(files, (NullableFunction<VirtualFile, PsiFileSystemItem>) file -> file != null ? manager.findDirectory(file) : null);
@@ -157,9 +157,9 @@ public class DependencyConfigFileConverter extends PathReferenceConverter
 		return PathReferenceManager.getInstance().getCustomPathReference(s, module, element, ourProvider);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public PsiReference[] createReferences(@NotNull PsiElement psiElement, boolean soft)
+	public PsiReference[] createReferences(@Nonnull PsiElement psiElement, boolean soft)
 	{
 		return PathReferenceManager.getInstance().createCustomReferences(psiElement, soft, ourProvider);
 	}

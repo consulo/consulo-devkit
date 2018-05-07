@@ -15,7 +15,8 @@
  */
 package org.jetbrains.idea.devkit.dom;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.NameValue;
@@ -28,7 +29,7 @@ import com.intellij.util.xml.Stubbed;
 public interface ActionOrGroup extends DomElement
 {
 
-	@NotNull
+	@Nonnull
 	@NameValue
 	@Stubbed
 	@Required(value = false, nonEmpty = true)

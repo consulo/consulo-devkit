@@ -16,7 +16,8 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
+
 import com.intellij.psi.PsiAnonymousClass;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;

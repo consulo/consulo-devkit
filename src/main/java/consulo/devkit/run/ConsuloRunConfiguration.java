@@ -16,8 +16,8 @@
 
 package consulo.devkit.run;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -39,7 +39,7 @@ public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase impleme
 		super(project, factory, name);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	@SuppressWarnings("unchecked")
 	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
@@ -51,11 +51,11 @@ public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase impleme
 		return settingsEditorGroup;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public ConsuloSandboxRunState createState(Executor executor, @NotNull ExecutionEnvironment env,
-			@NotNull Sdk javaSdk,
-			@NotNull String consuloHome,
+	public ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
+			@Nonnull Sdk javaSdk,
+			@Nonnull String consuloHome,
 			@Nullable Artifact artifact) throws ExecutionException
 	{
 		return new ConsuloSandboxRunState(env, javaSdk, consuloHome, artifact);

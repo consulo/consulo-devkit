@@ -18,8 +18,8 @@ package consulo.devkit.module.extension;
 
 import javax.swing.JComponent;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.openapi.projectRoots.Sdk;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.module.extension.MutableModuleExtensionWithSdk;
@@ -32,7 +32,7 @@ import consulo.roots.ModuleRootLayer;
  */
 public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtensionWithSdk<PluginModuleExtension>
 {
-	public PluginMutableModuleExtension(@NotNull String id, @NotNull ModuleRootLayer module)
+	public PluginMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module)
 	{
 		super(id, module);
 	}
@@ -52,12 +52,12 @@ public class PluginMutableModuleExtension extends PluginModuleExtension implemen
 	}
 
 	@Override
-	public boolean isModified(@NotNull PluginModuleExtension pluginModuleExtension)
+	public boolean isModified(@Nonnull PluginModuleExtension pluginModuleExtension)
 	{
 		return isModifiedImpl(pluginModuleExtension);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public MutableModuleInheritableNamedPointer<Sdk> getInheritableSdk()
 	{

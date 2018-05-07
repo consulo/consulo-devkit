@@ -16,7 +16,8 @@
 
 package consulo.devkit.codeInsight.generation;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInsight.generation.OverrideImplementsAnnotationsHandler;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ArrayUtil;
@@ -44,9 +45,9 @@ public class XActionOverrideImplementsAnnotationsHandler implements OverrideImpl
 		return ourAnnotations;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public String[] annotationsToRemove(Project project, @NotNull String s)
+	public String[] annotationsToRemove(Project project, @Nonnull String s)
 	{
 		if(ArrayUtil.contains(s, ourAnnotations))
 		{

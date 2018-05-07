@@ -17,7 +17,7 @@ package org.jetbrains.idea.devkit.dom;
 
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.SubTagList;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import java.util.List;
  * @author mike
  */
 public interface ExtensionPoints extends DomElement {
-  @NotNull
+  @Nonnull
   @SubTagList("extensionPoint")
   List<ExtensionPoint> getExtensionPoints();
 

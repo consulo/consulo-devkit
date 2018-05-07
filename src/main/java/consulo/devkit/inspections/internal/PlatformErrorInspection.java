@@ -18,7 +18,7 @@ package consulo.devkit.inspections.internal;
 
 import java.util.Collection;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -56,10 +56,10 @@ public class PlatformErrorInspection extends BaseJavaLocalInspectionTool
 		myRestrictedMethodList.putValue(Long.class.getName(), "getLong");
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	@RequiredReadAction
-	public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly)
+	public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
 	{
 		if(PluginModuleUtil.searchClassInFileUseScope(holder.getFile(), Platform.class.getName()) == null)
 		{

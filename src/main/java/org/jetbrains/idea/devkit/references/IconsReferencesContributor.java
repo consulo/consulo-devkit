@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.find.FindModel;
 import com.intellij.find.impl.FindInProjectUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -83,9 +83,9 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 
 		registrar.registerReferenceProvider(annotationValue, new PsiReferenceProvider()
 		{
-			@NotNull
+			@Nonnull
 			@Override
-			public PsiReference[] getReferencesByElement(@NotNull final PsiElement element, @NotNull ProcessingContext context)
+			public PsiReference[] getReferencesByElement(@Nonnull final PsiElement element, @Nonnull ProcessingContext context)
 			{
 				return new PsiReference[]{
 						new PsiReferenceBase<PsiElement>(element, true)
@@ -144,7 +144,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 							}
 
 							@Override
-							public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException
+							public PsiElement bindToElement(@Nonnull PsiElement element) throws IncorrectOperationException
 							{
 								if(element instanceof PsiField)
 								{
@@ -170,7 +170,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 								return getElement().replace(JavaPsiFacade.getElementFactory(container.getProject()).createExpressionFromText(newValue, container.getParent()));
 							}
 
-							@NotNull
+							@Nonnull
 							@Override
 							public Object[] getVariants()
 							{
@@ -183,9 +183,9 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 
 		registrar.registerReferenceProvider(javaFile, new PsiReferenceProvider()
 		{
-			@NotNull
+			@Nonnull
 			@Override
-			public PsiReference[] getReferencesByElement(@NotNull final PsiElement element, @NotNull ProcessingContext context)
+			public PsiReference[] getReferencesByElement(@Nonnull final PsiElement element, @Nonnull ProcessingContext context)
 			{
 				return new FileReferenceSet(element)
 				{
@@ -216,9 +216,9 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 
 		registrar.registerReferenceProvider(pluginXml, new PsiReferenceProvider()
 		{
-			@NotNull
+			@Nonnull
 			@Override
-			public PsiReference[] getReferencesByElement(@NotNull final PsiElement element, @NotNull ProcessingContext context)
+			public PsiReference[] getReferencesByElement(@Nonnull final PsiElement element, @Nonnull ProcessingContext context)
 			{
 				return new PsiReference[]{
 						new PsiReferenceBase<PsiElement>(element, true)
@@ -287,7 +287,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 							}
 
 							@Override
-							public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException
+							public PsiElement bindToElement(@Nonnull PsiElement element) throws IncorrectOperationException
 							{
 								if(element instanceof PsiFile)
 								{
@@ -319,7 +319,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 								return parent.getValueElement();
 							}
 
-							@NotNull
+							@Nonnull
 							@Override
 							public Object[] getVariants()
 							{
@@ -337,7 +337,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 	}
 
 	@Override
-	public boolean execute(@NotNull ReferencesSearch.SearchParameters queryParameters, @NotNull final Processor<PsiReference> consumer)
+	public boolean execute(@Nonnull ReferencesSearch.SearchParameters queryParameters, @Nonnull final Processor<PsiReference> consumer)
 	{
 		final PsiElement file = queryParameters.getElementToSearch();
 		if(file instanceof PsiBinaryFile)

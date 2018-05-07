@@ -15,6 +15,8 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
@@ -22,7 +24,6 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.pom.Navigatable;
 import com.intellij.psi.*;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
 /**
@@ -61,14 +62,14 @@ public class ImplementOrExtendFix extends BaseFix {
     return fix != null ? new LocalQuickFix[]{fix} : LocalQuickFix.EMPTY_ARRAY;
   }
 
-  @NotNull
+  @Nonnull
   public String getName() {
     return (myCompClass.isInterface()
             ? StringUtil.capitalize(DevKitBundle.message("keyword.implement"))
             : StringUtil.capitalize(DevKitBundle.message("keyword.extend"))) + " '" + myCompClass.getQualifiedName() + "'";
   }
 
-  @NotNull
+  @Nonnull
   public String getFamilyName() {
     return getName();
   }

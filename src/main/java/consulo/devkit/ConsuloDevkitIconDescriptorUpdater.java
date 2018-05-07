@@ -16,7 +16,8 @@
 
 package consulo.devkit;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.PsiDirectory;
@@ -38,7 +39,7 @@ public class ConsuloDevkitIconDescriptorUpdater implements IconDescriptorUpdater
 {
 	@RequiredReadAction
 	@Override
-	public void updateIcon(@NotNull IconDescriptor iconDescriptor, @NotNull PsiElement psiElement, int i)
+	public void updateIcon(@Nonnull IconDescriptor iconDescriptor, @Nonnull PsiElement psiElement, int i)
 	{
 		if(psiElement instanceof PsiDirectory)
 		{

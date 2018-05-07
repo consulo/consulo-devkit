@@ -19,7 +19,7 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 
@@ -37,7 +37,7 @@ public interface Vendor extends DomElement {
    *
    * @return the value of the simple content.
    */
-  @NotNull
+  @Nonnull
   String getValue();
 
   /**
@@ -54,7 +54,7 @@ public interface Vendor extends DomElement {
    *
    * @return the value of the email child.
    */
-  @NotNull
+  @Nonnull
   GenericAttributeValue<String> getEmail();
 
 
@@ -64,6 +64,6 @@ public interface Vendor extends DomElement {
    *
    * @return the value of the url child.
    */
-  @NotNull
+  @Nonnull
   GenericAttributeValue<String> getUrl();
 }

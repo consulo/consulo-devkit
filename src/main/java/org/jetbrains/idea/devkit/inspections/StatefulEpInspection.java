@@ -17,8 +17,8 @@ package org.jetbrains.idea.devkit.inspections;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.util.ExtensionPointLocator;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -37,15 +37,15 @@ import com.intellij.util.containers.ContainerUtil;
 
 public class StatefulEpInspection extends DevKitInspectionBase
 {
-	@NotNull
-	public static StatefulEpInspection getInstance(@NotNull Project project)
+	@Nonnull
+	public static StatefulEpInspection getInstance(@Nonnull Project project)
 	{
 		return ServiceManager.getService(project, StatefulEpInspection.class);
 	}
 
 	@Nullable
 	@Override
-	public ProblemDescriptor[] checkClass(@NotNull PsiClass psiClass, @NotNull InspectionManager manager, boolean isOnTheFly)
+	public ProblemDescriptor[] checkClass(@Nonnull PsiClass psiClass, @Nonnull InspectionManager manager, boolean isOnTheFly)
 	{
 		PsiField[] fields = psiClass.getFields();
 		if(fields.length == 0)

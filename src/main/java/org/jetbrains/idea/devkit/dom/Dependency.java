@@ -19,7 +19,8 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.dom.impl.IdeaPluginConverter;
 import com.intellij.openapi.paths.PathReference;
 import com.intellij.util.xml.Convert;
@@ -31,10 +32,10 @@ import com.intellij.util.xml.Stubbed;
 @Convert(IdeaPluginConverter.class)
 public interface Dependency extends GenericDomValue<IdeaPlugin>
 {
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> getOptional();
 
-	@NotNull
+	@Nonnull
 	@Convert(DependencyConfigFileConverter.class)
 	GenericAttributeValue<PathReference> getConfigFile();
 }

@@ -16,7 +16,8 @@
 
 package consulo.devkit.inspections.internal;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.module.Module;
@@ -45,7 +46,7 @@ public class AWTErrorInspection extends InternalInspection
 	};
 
 	@Override
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{

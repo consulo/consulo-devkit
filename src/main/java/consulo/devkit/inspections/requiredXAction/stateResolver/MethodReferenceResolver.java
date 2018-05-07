@@ -16,7 +16,7 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiMethodReferenceExpression;
 import consulo.annotations.RequiredReadAction;

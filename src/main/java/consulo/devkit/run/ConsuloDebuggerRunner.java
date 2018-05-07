@@ -16,8 +16,8 @@
 
 package consulo.devkit.run;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.debugger.DebugEnvironment;
 import com.intellij.debugger.DebuggerManagerEx;
 import com.intellij.debugger.engine.DebugProcessImpl;
@@ -44,7 +44,7 @@ import com.intellij.xdebugger.impl.XDebugSessionImpl;
  */
 public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 {
-	@NotNull
+	@Nonnull
 	@Override
 	public String getRunnerId()
 	{
@@ -52,14 +52,14 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 	}
 
 	@Override
-	public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile)
+	public boolean canRun(@Nonnull String executorId, @Nonnull RunProfile profile)
 	{
 		return super.canRun(executorId, profile) && profile instanceof ConsuloRunConfigurationBase;
 	}
 
 	@Nullable
 	@Override
-	protected RunContentDescriptor createContentDescriptor(@NotNull RunProfileState state, @NotNull ExecutionEnvironment env) throws ExecutionException
+	protected RunContentDescriptor createContentDescriptor(@Nonnull RunProfileState state, @Nonnull ExecutionEnvironment env) throws ExecutionException
 	{
 		String address = DebuggerUtils.getInstance().findAvailableDebugAddress(DebuggerSettings.SOCKET_TRANSPORT).address();
 		RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", address, false);
@@ -72,7 +72,7 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 
 	@Override
 	@Nullable
-	protected RunContentDescriptor attachVirtualMachine(RunProfileState state, @NotNull ExecutionEnvironment env, RemoteConnection connection, boolean pollConnection) throws ExecutionException
+	protected RunContentDescriptor attachVirtualMachine(RunProfileState state, @Nonnull ExecutionEnvironment env, RemoteConnection connection, boolean pollConnection) throws ExecutionException
 	{
 		DebugEnvironment environment = new ConsuloDebugEnvironment(env, (ConsuloSandboxRunState) state, connection, pollConnection);
 		final DebuggerSession debuggerSession = DebuggerManagerEx.getInstanceEx(env.getProject()).attachVirtualMachine(environment);

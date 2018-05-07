@@ -21,26 +21,27 @@ package org.jetbrains.idea.devkit.dom;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.Stubbed;
 
 public interface Actions extends DomElement
 {
-	@NotNull
+	@Nonnull
 	@Stubbed
 	List<Action> getActions();
 
 	Action addAction();
 
 
-	@NotNull
+	@Nonnull
 	@Stubbed
 	List<Group> getGroups();
 
 	Group addGroup();
 
-	@NotNull
+	@Nonnull
 	List<Reference> getReferences();
 
 	Reference addReference();

@@ -15,8 +15,8 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.openapi.util.text.StringUtil;
@@ -24,7 +24,7 @@ import com.intellij.util.xml.DomUtil;
 
 public abstract class ExtensionPointImpl implements ExtensionPoint
 {
-	@NotNull
+	@Nonnull
 	@Override
 	public String getEffectiveName()
 	{
@@ -53,7 +53,7 @@ public abstract class ExtensionPointImpl implements ExtensionPoint
 		return StringUtil.notNullize(plugin.getPluginId(), "com.intellij");
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getEffectiveQualifiedName()
 	{

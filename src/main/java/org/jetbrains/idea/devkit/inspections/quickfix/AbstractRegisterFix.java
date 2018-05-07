@@ -17,8 +17,9 @@ package org.jetbrains.idea.devkit.inspections.quickfix;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
@@ -46,12 +47,12 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
     myClass = klass;
   }
 
-  @NotNull
+  @Nonnull
   public String getFamilyName() {
     return DevKitBundle.message("inspections.component.not.registered.quickfix.family");
   }
 
-  @NotNull
+  @Nonnull
   public String getName() {
     return DevKitBundle.message("inspections.component.not.registered.quickfix.name", getType());
   }
@@ -68,7 +69,7 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
     return message;
   }
 
-  public void applyFix(@NotNull final Project project, @NotNull ProblemDescriptor descriptor) {
+  public void applyFix(@Nonnull final Project project, @Nonnull ProblemDescriptor descriptor) {
     if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.getPsiElement())) return;
     final PsiFile psiFile = myClass.getContainingFile();
     LOG.assertTrue(psiFile != null);

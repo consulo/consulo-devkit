@@ -17,7 +17,7 @@
 package consulo.devkit.run;
 
 import org.jdom.Element;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import com.intellij.openapi.util.NotNullFactory;
 import consulo.util.pointers.Named;
 import consulo.util.pointers.NamedPointer;

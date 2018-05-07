@@ -19,9 +19,11 @@ package consulo.devkit.run;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.jdom.Element;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
@@ -77,7 +79,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 		super(project, factory, name);
 	}
 
-	@NotNull
+	@Nonnull
 	public String getSandboxPath()
 	{
 		return getProject().getBasePath() + "/" + Project.DIRECTORY_STORE_FOLDER + "/sandbox";
@@ -114,7 +116,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 
 	@Nullable
 	@Override
-	public final ConsuloSandboxRunState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment env) throws ExecutionException
+	public final ConsuloSandboxRunState getState(@Nonnull Executor executor, @Nonnull ExecutionEnvironment env) throws ExecutionException
 	{
 		final Sdk javaSdk = myJavaSdkPointer == null ? null : myJavaSdkPointer.get();
 		if(javaSdk == null)
@@ -132,10 +134,10 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 		return createState(executor, env, javaSdk, consuloSdkHome, artifact);
 	}
 
-	@NotNull
-	public abstract ConsuloSandboxRunState createState(Executor executor, @NotNull ExecutionEnvironment env,
-			@NotNull Sdk javaSdk,
-			@NotNull String consuloHome,
+	@Nonnull
+	public abstract ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
+			@Nonnull Sdk javaSdk,
+			@Nonnull String consuloHome,
 			@Nullable Artifact artifact) throws ExecutionException;
 
 	@Override
@@ -145,7 +147,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 
 		myJavaSdkPointer = PluginRunXmlConfigurationUtil.readPointer(JAVA_SDK, element, new NotNullFactory<NamedPointerManager<Sdk>>()
 		{
-			@NotNull
+			@Nonnull
 			@Override
 			public NamedPointerManager<Sdk> create()
 			{
@@ -155,7 +157,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 
 		myConsuloSdkPointer = PluginRunXmlConfigurationUtil.readPointer(CONSULO_SDK, element, new NotNullFactory<NamedPointerManager<Sdk>>()
 		{
-			@NotNull
+			@Nonnull
 			@Override
 			public NamedPointerManager<Sdk> create()
 			{
@@ -165,7 +167,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 
 		myArtifactPointer = PluginRunXmlConfigurationUtil.readPointer(ARTIFACT, element, new NotNullFactory<NamedPointerManager<Artifact>>()
 		{
-			@NotNull
+			@Nonnull
 			@Override
 			public NamedPointerManager<Artifact> create()
 			{
@@ -227,7 +229,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 		myConsuloSdkPointer = name == null ? null : SdkUtil.createPointer(name);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	@RequiredReadAction
 	public Module[] getModules()

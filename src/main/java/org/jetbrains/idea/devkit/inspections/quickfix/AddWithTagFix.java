@@ -28,7 +28,7 @@ import com.intellij.util.PsiNavigateUtil;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomUtil;
 import com.intellij.util.xmlb.annotations.Tag;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.With;
 import org.jetbrains.idea.devkit.dom.impl.PluginFieldNameConverter;
@@ -40,20 +40,20 @@ import java.util.List;
  * @author yole
  */
 public class AddWithTagFix implements LocalQuickFix {
-  @NotNull
+  @Nonnull
   @Override
   public String getName() {
     return "Add <with> tag";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getFamilyName() {
     return getName();
   }
 
   @Override
-  public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     DomElement element = DomUtil.getDomElement(descriptor.getPsiElement());
     if (!(element instanceof ExtensionPoint)) {
       return;

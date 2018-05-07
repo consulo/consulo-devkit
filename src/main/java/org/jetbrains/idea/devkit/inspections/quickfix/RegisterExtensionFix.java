@@ -38,7 +38,7 @@ import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.KeyedLazyInstanceEP;
 import com.intellij.util.PsiNavigateUtil;
 import com.intellij.util.xml.DomFileElement;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.Extensions;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
@@ -57,25 +57,25 @@ public class RegisterExtensionFix implements IntentionAction {
     myEPCandidates = epCandidates;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getText() {
     return "Register extension";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getFamilyName() {
     return getText();
   }
 
   @Override
-  public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
+  public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
     return true;
   }
 
   @Override
-  public void invoke(@NotNull Project project, final Editor editor, PsiFile file) throws IncorrectOperationException {
+  public void invoke(@Nonnull Project project, final Editor editor, PsiFile file) throws IncorrectOperationException {
     RegisterInspectionFix.choosePluginDescriptor(project, editor, file, new Consumer<DomFileElement<IdeaPlugin>>() {
       @Override
       public void consume(DomFileElement<IdeaPlugin> element) {

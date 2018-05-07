@@ -19,10 +19,11 @@
 
 package org.jetbrains.idea.devkit.dom;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.Required;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * plugin.dtd:helpset interface.
@@ -41,7 +42,7 @@ public interface Helpset extends DomElement {
    *
    * @return the value of the file child.
    */
-  @NotNull
+  @Nonnull
   @Required
   GenericAttributeValue<String> getFile();
 
@@ -52,7 +53,7 @@ public interface Helpset extends DomElement {
    *
    * @return the value of the path child.
    */
-  @NotNull
+  @Nonnull
   @Required
   GenericAttributeValue<String> getPath();
 

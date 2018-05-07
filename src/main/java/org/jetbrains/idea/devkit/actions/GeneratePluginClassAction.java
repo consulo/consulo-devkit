@@ -24,8 +24,8 @@ import java.util.Set;
 import javax.swing.Icon;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
@@ -70,7 +70,7 @@ public abstract class GeneratePluginClassAction extends CreateElementActionBase 
 		super(text, description, icon);
 	}
 
-	@NotNull
+	@Nonnull
 	protected final PsiElement[] invokeDialog(Project project, PsiDirectory directory)
 	{
 		try
@@ -158,7 +158,7 @@ public abstract class GeneratePluginClassAction extends CreateElementActionBase 
 		return fileIndex.getModuleForFile(vFile);
 	}
 
-	@NotNull
+	@Nonnull
 	protected PsiElement[] create(String newName, PsiDirectory directory) throws Exception
 	{
 		final Project project = directory.getProject();

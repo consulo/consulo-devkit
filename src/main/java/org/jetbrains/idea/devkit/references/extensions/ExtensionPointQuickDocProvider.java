@@ -17,7 +17,7 @@ package org.jetbrains.idea.devkit.references.extensions;
 
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.inspections.DevKitInspectionBase;
 import com.intellij.lang.documentation.DocumentationProvider;
 import com.intellij.lang.java.JavaDocumentationProvider;

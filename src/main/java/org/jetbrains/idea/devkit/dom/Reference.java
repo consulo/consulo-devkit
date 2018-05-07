@@ -21,7 +21,8 @@ package org.jetbrains.idea.devkit.dom;
 
 import java.util.Collection;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
 import com.intellij.util.xml.Convert;
 import com.intellij.util.xml.DomElement;
@@ -32,14 +33,14 @@ import com.intellij.util.xml.GenericAttributeValue;
  */
 public interface Reference extends DomElement
 {
-	@NotNull
+	@Nonnull
 	@Convert(ActionOrGroupResolveConverter.class)
 	GenericAttributeValue<ActionOrGroup> getRef();
 
-	@NotNull
+	@Nonnull
 	@Convert(ActionOrGroupResolveConverter.class)
 	GenericAttributeValue<ActionOrGroup> getId();
 
-	@NotNull
+	@Nonnull
 	Collection<AddToGroup> getAddToGroups();
 }

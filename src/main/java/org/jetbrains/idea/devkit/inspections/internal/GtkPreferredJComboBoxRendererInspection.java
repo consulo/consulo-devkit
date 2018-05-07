@@ -17,7 +17,7 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import javax.swing.JComboBox;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
@@ -39,8 +39,8 @@ public class GtkPreferredJComboBoxRendererInspection extends InternalInspection
 			"" + "so please use ListCellRendererWrapper or ColoredListCellRenderer instead.";
 
 	@Override
-	@NotNull
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly)
+	@Nonnull
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{

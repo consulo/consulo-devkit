@@ -19,8 +19,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.util.ExtensionPointCandidate;
 import org.jetbrains.idea.devkit.util.ExtensionPointLocator;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
@@ -43,7 +44,7 @@ public class ExtensionPointDeclarationRelatedItemLineMarkerProvider extends Rela
 	private static final NotNullFunction<ExtensionPointCandidate, Collection<? extends PsiElement>> CONVERTER = new
 			NotNullFunction<ExtensionPointCandidate, Collection<? extends PsiElement>>()
 	{
-		@NotNull
+		@Nonnull
 		@Override
 		public Collection<? extends PsiElement> fun(ExtensionPointCandidate candidate)
 		{
@@ -54,7 +55,7 @@ public class ExtensionPointDeclarationRelatedItemLineMarkerProvider extends Rela
 	private static final NotNullFunction<ExtensionPointCandidate, Collection<? extends GotoRelatedItem>> RELATED_ITEM_PROVIDER = new
 			NotNullFunction<ExtensionPointCandidate, Collection<? extends GotoRelatedItem>>()
 	{
-		@NotNull
+		@Nonnull
 		@Override
 		public Collection<? extends GotoRelatedItem> fun(ExtensionPointCandidate candidate)
 		{
@@ -63,7 +64,7 @@ public class ExtensionPointDeclarationRelatedItemLineMarkerProvider extends Rela
 	};
 
 	@Override
-	protected void collectNavigationMarkers(@NotNull PsiElement element, Collection<? super RelatedItemLineMarkerInfo> result)
+	protected void collectNavigationMarkers(@Nonnull PsiElement element, Collection<? super RelatedItemLineMarkerInfo> result)
 	{
 		if(element instanceof PsiField)
 		{

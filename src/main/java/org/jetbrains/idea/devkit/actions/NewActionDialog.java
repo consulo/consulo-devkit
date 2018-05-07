@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -32,8 +33,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionData;
 import org.jetbrains.idea.devkit.util.ActionType;
@@ -222,7 +223,7 @@ public class NewActionDialog extends DialogWrapper implements ActionData
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public String getActionId()
 	{
 		return myActionIdEdit.getText();
@@ -234,7 +235,7 @@ public class NewActionDialog extends DialogWrapper implements ActionData
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public String getActionText()
 	{
 		return myActionTextEdit.getText();

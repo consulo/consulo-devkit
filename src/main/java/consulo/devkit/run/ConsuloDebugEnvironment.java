@@ -16,8 +16,9 @@
 
 package consulo.devkit.run;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.intellij.debugger.DefaultDebugEnvironment;
 import com.intellij.execution.configurations.RemoteConnection;
 import com.intellij.execution.runners.ExecutionEnvironment;
@@ -31,7 +32,7 @@ class ConsuloDebugEnvironment extends DefaultDebugEnvironment
 {
 	private final ConsuloSandboxRunState myState;
 
-	public ConsuloDebugEnvironment(@NotNull ExecutionEnvironment environment, @NotNull ConsuloSandboxRunState state, RemoteConnection remoteConnection, boolean pollConnection)
+	public ConsuloDebugEnvironment(@Nonnull ExecutionEnvironment environment, @Nonnull ConsuloSandboxRunState state, RemoteConnection remoteConnection, boolean pollConnection)
 	{
 		super(environment, state, remoteConnection, pollConnection);
 		myState = state;

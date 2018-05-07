@@ -15,7 +15,7 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Ref;
@@ -42,9 +42,9 @@ public class UnsafeVfsRecursionInspection extends InternalInspection
 			"This may cause an endless loop on cyclic symlinks. " +
 			"Please use VfsUtilCore.visitChildrenRecursively() instead.";
 
-	@NotNull
+	@Nonnull
 	@Override
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{

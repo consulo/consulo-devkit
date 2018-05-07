@@ -20,9 +20,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
@@ -42,7 +43,7 @@ import consulo.java.module.util.JavaClassNames;
  * @author yole
  */
 public class PluginFieldNameConverter extends ResolvingConverter<PsiField> {
-  @NotNull
+  @Nonnull
   @Override
   public Collection<? extends PsiField> getVariants(ConvertContext context) {
     PsiClass aClass = getEPBeanClass(context);
@@ -75,7 +76,7 @@ public class PluginFieldNameConverter extends ResolvingConverter<PsiField> {
     return findFieldByAttributeValue(value, s);
   }
 
-  private static PsiField findFieldByAttributeValue(PsiClass psiClass, @NotNull String attrNameToFind) {
+  private static PsiField findFieldByAttributeValue(PsiClass psiClass, @Nonnull String attrNameToFind) {
     for (PsiField psiField : psiClass.getAllFields()) {
       if (attrNameToFind.equals(getAttributeAnnotationValue(psiField))) {
         return psiField;

@@ -15,9 +15,10 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToGrayQuickFix;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -43,9 +44,9 @@ import com.intellij.ui.Gray;
  */
 public class UseGrayInspection extends InternalInspection
 {
-	@NotNull
+	@Nonnull
 	@Override
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{
@@ -136,14 +137,14 @@ public class UseGrayInspection extends InternalInspection
 	}
 
 	@Nls
-	@NotNull
+	@Nonnull
 	@Override
 	public String getDisplayName()
 	{
 		return "Using new Color(a,a,a)";
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getShortName()
 	{

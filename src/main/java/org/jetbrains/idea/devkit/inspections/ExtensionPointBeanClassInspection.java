@@ -23,7 +23,7 @@ import com.intellij.psi.XmlElementVisitor;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.impl.ExtensionDomExtender;
 import org.jetbrains.idea.devkit.inspections.quickfix.AddWithTagFix;
@@ -35,9 +35,9 @@ import java.util.List;
  * @author yole
  */
 public class ExtensionPointBeanClassInspection extends DevKitInspectionBase {
-  @NotNull
+  @Nonnull
   @Override
-  public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly) {
+  public PsiElementVisitor buildVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
     return new XmlElementVisitor() {
       @Override
       public void visitXmlTag(XmlTag tag) {

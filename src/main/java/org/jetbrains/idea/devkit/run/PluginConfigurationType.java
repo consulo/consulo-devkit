@@ -18,8 +18,9 @@ package org.jetbrains.idea.devkit.run;
 import java.util.Collections;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.diagnostic.VMOptions;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
@@ -42,7 +43,7 @@ import consulo.module.extension.ModuleExtensionHelper;
 
 public class PluginConfigurationType extends ConfigurationTypeBase
 {
-	@NotNull
+	@Nonnull
 	public static PluginConfigurationType getInstance()
 	{
 		return CONFIGURATION_TYPE_EP.findExtension(PluginConfigurationType.class);
@@ -73,13 +74,13 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 			}
 
 			@Override
-			public boolean isApplicable(@NotNull Project project)
+			public boolean isApplicable(@Nonnull Project project)
 			{
 				return ModuleExtensionHelper.getInstance(project).hasModuleExtension(PluginModuleExtension.class);
 			}
 
 			@Override
-			public void onNewConfigurationCreated(@NotNull RunConfiguration configuration)
+			public void onNewConfigurationCreated(@Nonnull RunConfiguration configuration)
 			{
 				ConsuloRunConfiguration runConfiguration = (ConsuloRunConfiguration) configuration;
 
@@ -134,7 +135,7 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 		return null;
 	}
 
-	@NotNull
+	@Nonnull
 	private String getVmParameters()
 	{
 		if(myVmParameters == null)

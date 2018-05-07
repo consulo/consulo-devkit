@@ -19,7 +19,7 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
 import com.intellij.util.xml.Convert;
 import com.intellij.util.xml.DomElement;
@@ -37,7 +37,7 @@ public interface AddToGroup extends DomElement
 	 *
 	 * @return the value of the anchor child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Anchor> getAnchor();
 
 
@@ -47,7 +47,7 @@ public interface AddToGroup extends DomElement
 	 *
 	 * @return the value of the relative-to-action child.
 	 */
-	@NotNull
+	@Nonnull
 	@Convert(ActionOrGroupResolveConverter.class)
 	GenericAttributeValue<ActionOrGroup> getRelativeToAction();
 
@@ -58,7 +58,7 @@ public interface AddToGroup extends DomElement
 	 *
 	 * @return the value of the group-id child.
 	 */
-	@NotNull
+	@Nonnull
 	@Required
 	@Convert(ActionOrGroupResolveConverter.OnlyGroups.class)
 	GenericAttributeValue<ActionOrGroup> getGroupId();

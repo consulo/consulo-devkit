@@ -15,12 +15,13 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.actions.NewActionDialog;
 import org.jetbrains.idea.devkit.util.ActionType;
@@ -36,7 +37,7 @@ public class RegisterActionFix extends AbstractRegisterFix {
     return DevKitBundle.message("new.menu.action.text");
   }
 
-  public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     try {
       myDialog = new NewActionDialog(myClass);
       myDialog.show();

@@ -21,8 +21,9 @@ package org.jetbrains.idea.devkit.dom;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.intellij.util.xml.DefinesXml;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
@@ -40,88 +41,88 @@ public interface IdeaPlugin extends DomElement
 	@Nullable
 	String getPluginId();
 
-	@NotNull
+	@Nonnull
 	@NameValue
 	GenericDomValue<String> getId();
 
-	@NotNull
+	@Nonnull
 	GenericDomValue<String> getVersion();
 
-	@NotNull
+	@Nonnull
 	@SubTag("platformVersion")
 	GenericDomValue<String> getPlatformVersion();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getUrl();
 
-	@NotNull
+	@Nonnull
 	GenericDomValue<String> getCategory();
 
-	@NotNull
+	@Nonnull
 	GenericDomValue<String> getName();
 
-	@NotNull
+	@Nonnull
 	List<GenericDomValue<String>> getDescriptions();
 
 	GenericDomValue<String> addDescription();
 
 
-	@NotNull
+	@Nonnull
 	List<Vendor> getVendors();
 
 	Vendor addVendor();
 
 
-	@NotNull
+	@Nonnull
 	List<GenericDomValue<String>> getChangeNotess();
 
 	GenericDomValue<String> addChangeNotes();
 
-	@NotNull
+	@Nonnull
 	@SubTagList("resource-bundle")
 	List<GenericDomValue<String>> getResourceBundles();
 
 	GenericDomValue<String> addResourceBundle();
 
 
-	@NotNull
+	@Nonnull
 	@SubTagList("depends")
 	List<Dependency> getDependencies();
 
 	@SubTagList("depends")
 	Dependency addDependency();
 
-	@NotNull
+	@Nonnull
 	@SubTagList("extensions")
 	List<Extensions> getExtensions();
 
 	Extensions addExtensions();
 
-	@NotNull
+	@Nonnull
 	@SubTagList("extensionPoints")
 	List<ExtensionPoints> getExtensionPoints();
 
 	ExtensionPoints addExtensionPoints();
 
 
-	@NotNull
+	@Nonnull
 	ApplicationComponents getApplicationComponents();
 
-	@NotNull
+	@Nonnull
 	ProjectComponents getProjectComponents();
 
-	@NotNull
+	@Nonnull
 	ModuleComponents getModuleComponents();
 
 
-	@NotNull
+	@Nonnull
 	@SubTagList("actions")
 	List<Actions> getActions();
 
 	Actions addActions();
 
 
-	@NotNull
+	@Nonnull
 	List<Helpset> getHelpsets();
 
 	Helpset addHelpset();

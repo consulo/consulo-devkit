@@ -15,6 +15,8 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.diagnostic.Logger;
@@ -26,7 +28,6 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
 /**
@@ -41,7 +42,7 @@ abstract class BaseFix implements LocalQuickFix {
     myOnTheFly = onTheFly;
   }
 
-  public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     // can happen during batch-inspection if resolution has already been applied
     // to plugin.xml or java class
     if (!myElement.isValid()) return;

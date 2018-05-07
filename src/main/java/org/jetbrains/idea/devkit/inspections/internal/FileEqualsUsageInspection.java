@@ -15,7 +15,7 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.CommonClassNames;
@@ -33,8 +33,8 @@ public class FileEqualsUsageInspection extends InternalInspection
 			"FileUtil.filesEquals/fileHashCode/compareFiles instead";
 
 	@Override
-	@NotNull
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly)
+	@Nonnull
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{

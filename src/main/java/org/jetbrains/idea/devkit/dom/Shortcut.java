@@ -19,10 +19,11 @@
 
 package org.jetbrains.idea.devkit.dom;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.Required;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * plugin.dtd:shortcut interface.
@@ -35,7 +36,7 @@ public interface Shortcut extends DomElement {
    *
    * @return the value of the first-keystroke child.
    */
-  @NotNull
+  @Nonnull
   @Required
   GenericAttributeValue<String> getFirstKeystroke();
 
@@ -46,7 +47,7 @@ public interface Shortcut extends DomElement {
    *
    * @return the value of the keymap child.
    */
-  @NotNull
+  @Nonnull
   @Required
   GenericAttributeValue<String> getKeymap();
 
@@ -57,7 +58,7 @@ public interface Shortcut extends DomElement {
    *
    * @return the value of the second-keystroke child.
    */
-  @NotNull
+  @Nonnull
   GenericAttributeValue<String> getSecondKeystroke();
 
 

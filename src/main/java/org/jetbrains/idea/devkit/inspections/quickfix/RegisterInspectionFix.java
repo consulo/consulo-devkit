@@ -18,9 +18,9 @@ package org.jetbrains.idea.devkit.inspections.quickfix;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.swing.Icon;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.Extensions;
@@ -68,25 +68,25 @@ class RegisterInspectionFix implements IntentionAction {
     myEp = ep;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getText() {
     return "Register inspection";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getFamilyName() {
     return DevKitBundle.message("inspections.component.not.registered.quickfix.family");
   }
 
   @Override
-  public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
+  public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
     return true;
   }
 
   @Override
-  public void invoke(@NotNull final Project project, final Editor editor, final PsiFile file) throws IncorrectOperationException {
+  public void invoke(@Nonnull final Project project, final Editor editor, final PsiFile file) throws IncorrectOperationException {
     choosePluginDescriptor(project, editor, file, new Consumer<DomFileElement<IdeaPlugin>>() {
       @Override
       public void consume(DomFileElement<IdeaPlugin> element) {
@@ -137,7 +137,7 @@ class RegisterInspectionFix implements IntentionAction {
           return TypePresentationService.getInstance().getIcon(aValue);
         }
 
-        @NotNull
+        @Nonnull
         @Override
         public String getTextFor(DomFileElement<IdeaPlugin> value) {
           final String name = value.getFile().getName();

@@ -15,7 +15,7 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.ApplicationManager;
@@ -26,10 +26,10 @@ import consulo.devkit.util.PluginModuleUtil;
 
 public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 {
-	@NotNull
+	@Nonnull
 	@Override
 	@RequiredReadAction
-	public final PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly)
+	public final PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return isAllowed(holder) ? buildInternalVisitor(holder, isOnTheFly) : new PsiElementVisitor()
 		{
@@ -49,5 +49,5 @@ public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 		return ApplicationManager.getApplication().isUnitTestMode();
 	}
 
-	public abstract PsiElementVisitor buildInternalVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly);
+	public abstract PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly);
 }

@@ -20,8 +20,9 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
 import com.intellij.codeInspection.InspectionManager;
@@ -53,7 +54,7 @@ public class IntentionDescriptionNotFoundInspection extends DevKitInspectionBase
   @NonNls private static final String INSPECTION_DESCRIPTIONS = "intentionDescriptions";
 
   @Override
-  public ProblemDescriptor[] checkClass(@NotNull PsiClass aClass, @NotNull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly) {
     final Project project = aClass.getProject();
     final PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
     final Module module = ModuleUtil.findModuleForPsiElement(aClass);
@@ -111,7 +112,7 @@ public class IntentionDescriptionNotFoundInspection extends DevKitInspectionBase
     return descriptionDir;
   }
 
-  private static boolean hasBeforeAndAfterTemplate(@NotNull VirtualFile dir) {
+  private static boolean hasBeforeAndAfterTemplate(@Nonnull VirtualFile dir) {
     boolean hasBefore = false;
     boolean hasAfter = false;
 
@@ -156,12 +157,12 @@ public class IntentionDescriptionNotFoundInspection extends DevKitInspectionBase
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   public String getDisplayName() {
     return "Intention Description Checker";
   }
 
-  @NotNull
+  @Nonnull
   public String getShortName() {
     return "IntentionDescriptionNotFoundInspection";
   }

@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.icons.AllIcons;
@@ -96,7 +96,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		myRoot.add(builder.getPanel(), BorderLayout.NORTH);
 	}
 
-	protected void setupPanel(@NotNull FormBuilder builder)
+	protected void setupPanel(@Nonnull FormBuilder builder)
 	{
 		ProjectSdksModel projectSdksModel = new ProjectSdksModel();
 		if(!projectSdksModel.isInitialized())
@@ -261,7 +261,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public JComponent createEditor()
 	{
 		return myRoot;

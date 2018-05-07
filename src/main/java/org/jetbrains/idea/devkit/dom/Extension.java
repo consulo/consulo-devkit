@@ -15,10 +15,11 @@
  */
 package org.jetbrains.idea.devkit.dom;
 
+import javax.annotation.Nullable;
+
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.NameValue;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author mike

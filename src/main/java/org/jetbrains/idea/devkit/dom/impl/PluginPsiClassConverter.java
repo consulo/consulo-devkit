@@ -15,7 +15,8 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.JavaClassReferenceProvider;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -29,7 +30,7 @@ import com.intellij.util.xml.PsiClassConverter;
  */
 public class PluginPsiClassConverter extends PsiClassConverter {
   @Override
-  protected GlobalSearchScope getScope(@NotNull ConvertContext context) {
+  protected GlobalSearchScope getScope(@Nonnull ConvertContext context) {
     return GlobalSearchScope.allScope(context.getProject());
   }
 

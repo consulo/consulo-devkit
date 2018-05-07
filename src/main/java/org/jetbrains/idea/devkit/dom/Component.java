@@ -21,7 +21,8 @@ package org.jetbrains.idea.devkit.dom;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 import com.intellij.psi.PsiClass;
 import com.intellij.util.xml.Convert;
@@ -36,27 +37,27 @@ import com.intellij.util.xml.SubTag;
  */
 public interface Component extends DomElement
 {
-	@NotNull
+	@Nonnull
 	@Required
 	@Convert(PluginPsiClassConverter.class)
 	GenericDomValue<PsiClass> getImplementationClass();
 
-	@NotNull
+	@Nonnull
 	@ExtendClass(instantiatable = false)
 	@Convert(PluginPsiClassConverter.class)
 	GenericDomValue<PsiClass> getInterfaceClass();
 
-	@NotNull
+	@Nonnull
 	@Convert(PluginPsiClassConverter.class)
 	@ExtendClass(allowEmpty = true)
 	GenericDomValue<PsiClass> getHeadlessImplementationClass();
 
-	@NotNull
+	@Nonnull
 	@Convert(PluginPsiClassConverter.class)
 	@ExtendClass(allowEmpty = true)
 	GenericDomValue<PsiClass> getCompilerServerImplementationClass();
 
-	@NotNull
+	@Nonnull
 	List<Option> getOptions();
 
 	Option addOption();
@@ -71,11 +72,11 @@ public interface Component extends DomElement
 
 	interface Project extends Component
 	{
-		@NotNull
+		@Nonnull
 		@SubTag(value = "skipForDefaultProject", indicator = true)
 		GenericDomValue<Boolean> getSkipForDefaultProject();
 
-		@NotNull
+		@Nonnull
 		@SubTag(value = "loadForDefaultProject", indicator = true)
 		GenericDomValue<Boolean> getLoadForDefaultProject();
 	}

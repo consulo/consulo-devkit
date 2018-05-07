@@ -15,7 +15,8 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.util.PsiUtil;
 import com.intellij.codeInspection.InspectionProfileEntry;
 import com.intellij.openapi.module.Module;

@@ -16,7 +16,8 @@
 
 package consulo.devkit.run;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
+
 import com.intellij.coverage.JavaCoverageEngineExtension;
 import com.intellij.execution.configurations.RunConfigurationBase;
 

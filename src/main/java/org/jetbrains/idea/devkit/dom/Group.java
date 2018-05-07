@@ -21,7 +21,8 @@ package org.jetbrains.idea.devkit.dom;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 import com.intellij.ide.presentation.Presentation;
 import com.intellij.psi.PsiClass;
@@ -44,7 +45,7 @@ public interface Group extends Actions, ActionOrGroup
 	 *
 	 * @return the value of the popup child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> getPopup();
 
 	/**
@@ -53,7 +54,7 @@ public interface Group extends Actions, ActionOrGroup
 	 *
 	 * @return the value of the compact child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> getCompact();
 
 
@@ -63,7 +64,7 @@ public interface Group extends Actions, ActionOrGroup
 	 *
 	 * @return the value of the icon child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getIcon();
 
 
@@ -73,7 +74,7 @@ public interface Group extends Actions, ActionOrGroup
 	 *
 	 * @return the value of the description child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getDescription();
 
 
@@ -83,7 +84,7 @@ public interface Group extends Actions, ActionOrGroup
 	 *
 	 * @return the value of the class child.
 	 */
-	@NotNull
+	@Nonnull
 	@Attribute("class")
 	@ExtendClass(value = "com.intellij.openapi.actionSystem.ActionGroup",
 			instantiatable = true, allowAbstract = false, allowInterface = false)
@@ -97,7 +98,7 @@ public interface Group extends Actions, ActionOrGroup
 	 *
 	 * @return the value of the text child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getText();
 
 
@@ -106,7 +107,7 @@ public interface Group extends Actions, ActionOrGroup
 	 *
 	 * @return the value of the separator child.
 	 */
-	@NotNull
+	@Nonnull
 	List<GenericDomValue<String>> getSeparators();
 
 
@@ -115,7 +116,7 @@ public interface Group extends Actions, ActionOrGroup
 	 *
 	 * @return the list of add-to-group children.
 	 */
-	@NotNull
+	@Nonnull
 	List<AddToGroup> getAddToGroups();
 
 	/**
@@ -125,12 +126,12 @@ public interface Group extends Actions, ActionOrGroup
 	 */
 	AddToGroup addAddToGroup();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> isInternal();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getRequireModuleExtensions();
 }

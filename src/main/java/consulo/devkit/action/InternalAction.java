@@ -18,8 +18,8 @@ package consulo.devkit.action;
 
 import javax.swing.Icon;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -53,7 +53,7 @@ public abstract class InternalAction extends AnAction
 
 	@RequiredDispatchThread
 	@Override
-	public void update(@NotNull AnActionEvent e)
+	public void update(@Nonnull AnActionEvent e)
 	{
 		Project project = e.getProject();
 		e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));

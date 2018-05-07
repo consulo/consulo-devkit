@@ -1,8 +1,6 @@
 package ${PACKAGE_NAME};
 
-import com.intellij.openapi.module.ModuleComponent;
-import com.intellij.openapi.module.Module;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 #parse("Java File Header.java")
 public class ${NAME} implements ModuleComponent {
@@ -17,7 +15,7 @@ public class ${NAME} implements ModuleComponent {
         // TODO: insert component disposal logic here
     }
 
-    @NotNull
+    @Nonnull
     public String getComponentName() {
         return "${NAME}";
     }

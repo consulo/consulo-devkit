@@ -30,8 +30,8 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.SmartList;
 import gnu.trove.THashSet;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateConstructorFix;
 import org.jetbrains.idea.devkit.inspections.quickfix.ImplementOrExtendFix;
@@ -54,7 +54,7 @@ public class RegistrationProblemsInspection extends DevKitInspectionBase {
   public boolean CHECK_JAVA_CODE = true;
   public boolean CHECK_ACTIONS = true;
 
-  @NotNull
+  @Nonnull
   public HighlightDisplayLevel getDefaultLevel() {
     return HighlightDisplayLevel.ERROR;
   }
@@ -63,12 +63,12 @@ public class RegistrationProblemsInspection extends DevKitInspectionBase {
     return true;
   }
 
-  @NotNull
+  @Nonnull
   public String getDisplayName() {
     return DevKitBundle.message("inspections.registration.problems.name");
   }
 
-  @NotNull
+  @Nonnull
   @NonNls
   public String getShortName() {
     return "ComponentRegistrationProblems";
@@ -112,7 +112,7 @@ public class RegistrationProblemsInspection extends DevKitInspectionBase {
   }
 
   @Nullable
-  public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
     if (CHECK_PLUGIN_XML && isPluginXml(file)) {
       return checkPluginXml((XmlFile)file, manager, isOnTheFly);
     }
@@ -120,7 +120,7 @@ public class RegistrationProblemsInspection extends DevKitInspectionBase {
   }
 
   @Nullable
-  public ProblemDescriptor[] checkClass(@NotNull PsiClass checkedClass, @NotNull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkClass(@Nonnull PsiClass checkedClass, @Nonnull InspectionManager manager, boolean isOnTheFly) {
     final PsiIdentifier nameIdentifier = checkedClass.getNameIdentifier();
 
     if (CHECK_JAVA_CODE &&

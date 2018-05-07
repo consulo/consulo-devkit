@@ -20,7 +20,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
@@ -50,9 +51,9 @@ public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeP
 {
 	@Override
 	public void setDefaultParameters(
-			@NotNull Project project,
-			@NotNull VirtualFile virtualFile,
-			@NotNull BackgroundTaskByVfsParameters backgroundTaskByVfsParameters)
+			@Nonnull Project project,
+			@Nonnull VirtualFile virtualFile,
+			@Nonnull BackgroundTaskByVfsParameters backgroundTaskByVfsParameters)
 	{
 		Sdk sdk = null;
 		Module module = ModuleUtilCore.findModuleForFile(virtualFile, project);
@@ -103,7 +104,7 @@ public class JFlexBackgroundTaskProvider extends JFlexBackgroundTaskByVfsChangeP
 
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getTemplateName()
 	{

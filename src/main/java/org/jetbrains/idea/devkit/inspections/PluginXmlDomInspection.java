@@ -15,10 +15,11 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.util.xml.highlighting.BasicDomElementsInspection;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
@@ -31,19 +32,19 @@ public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugi
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   public String getGroupDisplayName() {
     return DevKitBundle.message("inspections.group.name");
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   public String getDisplayName() {
     return "Plugin.xml Validity";
   }
 
   @NonNls
-  @NotNull
+  @Nonnull
   public String getShortName() {
     return "PluginXmlValidity";
   }

@@ -24,7 +24,7 @@ import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.ui.JBColor;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * @author Konstantin Bulenkov
@@ -38,7 +38,7 @@ public class ConvertToJBColorConstantQuickFix extends LocalQuickFixBase {
   }
 
   @Override
-  public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     final PsiElement element = descriptor.getPsiElement();
     final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
     final String jbColorConstant = String.format("%s.%s", JBColor.class.getName(), myConstantName);

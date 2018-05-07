@@ -18,7 +18,8 @@ package consulo.devkit.action;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -36,17 +37,17 @@ public class InternalGroup extends DefaultActionGroup
 	{
 	}
 
-	public InternalGroup(@NotNull AnAction... actions)
+	public InternalGroup(@Nonnull AnAction... actions)
 	{
 		super(actions);
 	}
 
-	public InternalGroup(@NotNull List<? extends AnAction> actions)
+	public InternalGroup(@Nonnull List<? extends AnAction> actions)
 	{
 		super(actions);
 	}
 
-	public InternalGroup(@NotNull String name, @NotNull List<? extends AnAction> actions)
+	public InternalGroup(@Nonnull String name, @Nonnull List<? extends AnAction> actions)
 	{
 		super(name, actions);
 	}
@@ -58,7 +59,7 @@ public class InternalGroup extends DefaultActionGroup
 
 	@RequiredDispatchThread
 	@Override
-	public void update(@NotNull AnActionEvent e)
+	public void update(@Nonnull AnActionEvent e)
 	{
 		super.update(e);
 

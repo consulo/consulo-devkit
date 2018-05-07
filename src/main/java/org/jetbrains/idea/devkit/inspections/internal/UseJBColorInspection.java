@@ -17,9 +17,10 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import java.awt.Color;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorConstantQuickFix;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorQuickFix;
 import com.intellij.codeInspection.InspectionManager;
@@ -36,9 +37,9 @@ import com.intellij.ui.JBColor;
  */
 public class UseJBColorInspection extends InternalInspection
 {
-  @NotNull
+  @Nonnull
   @Override
-  public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly) {
+  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
     return new JavaElementVisitor() {
       @Override
       public void visitNewExpression(PsiNewExpression expression) {
@@ -105,13 +106,13 @@ public class UseJBColorInspection extends InternalInspection
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getDisplayName() {
     return "Use Darcula aware JBColor";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getShortName() {
     return "UseJBColor";

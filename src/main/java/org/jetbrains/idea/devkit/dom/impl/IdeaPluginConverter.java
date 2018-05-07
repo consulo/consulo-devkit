@@ -20,8 +20,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.openapi.project.DumbService;
@@ -56,7 +57,7 @@ public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
 	};
 
 	@Override
-	@NotNull
+	@Nonnull
 	public Collection<? extends IdeaPlugin> getVariants(final ConvertContext context)
 	{
 		Collection<IdeaPlugin> plugins = getAllPluginsWithoutSelf(context);
@@ -132,7 +133,7 @@ public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
 		});
 	}
 
-	@NotNull
+	@Nonnull
 	public static Collection<IdeaPlugin> getPlugins(Project project, GlobalSearchScope scope)
 	{
 		if(DumbService.isDumb(project))

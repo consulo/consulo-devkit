@@ -29,7 +29,7 @@ import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlAttributeValue;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.ProcessingContext;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.List;
 
@@ -50,12 +50,12 @@ public class InspectionsKeyPropertiesReferenceProvider extends PsiReferenceProvi
   }
 
   @Override
-  public boolean acceptsTarget(@NotNull PsiElement target) {
+  public boolean acceptsTarget(@Nonnull PsiElement target) {
     return target instanceof IProperty;
   }
 
-  @NotNull
-  public PsiReference[] getReferencesByElement(@NotNull PsiElement element, @NotNull final ProcessingContext context) {
+  @Nonnull
+  public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull final ProcessingContext context) {
     boolean soft = myDefaultSoft;
 
     if (element instanceof XmlAttributeValue) {

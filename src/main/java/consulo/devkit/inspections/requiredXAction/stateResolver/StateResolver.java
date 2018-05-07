@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.ThrowableComputable;
@@ -107,7 +107,7 @@ public abstract class StateResolver
 		return false;
 	}
 
-	protected static boolean acceptActionTypeFromCall(@NotNull PsiExpressionList expressionList, @NotNull CallStateType actionType)
+	protected static boolean acceptActionTypeFromCall(@Nonnull PsiExpressionList expressionList, @Nonnull CallStateType actionType)
 	{
 		for(CallStateType type : CallStateType.values())
 		{
@@ -128,7 +128,7 @@ public abstract class StateResolver
 	}
 
 	@RequiredReadAction
-	protected static boolean isAllowedFunctionCall(@NotNull PsiFunctionalExpression functionalExpression, @NotNull CallStateType actionType)
+	protected static boolean isAllowedFunctionCall(@Nonnull PsiFunctionalExpression functionalExpression, @Nonnull CallStateType actionType)
 	{
 		PsiElement superParent = functionalExpression.getParent();
 		if(superParent instanceof PsiVariable)
@@ -177,7 +177,7 @@ public abstract class StateResolver
 		return false;
 	}
 
-	private static boolean checkVariableType(@NotNull CallStateType actionType, PsiVariable variable, PsiType type)
+	private static boolean checkVariableType(@Nonnull CallStateType actionType, PsiVariable variable, PsiType type)
 	{
 		if(type instanceof PsiClassType)
 		{

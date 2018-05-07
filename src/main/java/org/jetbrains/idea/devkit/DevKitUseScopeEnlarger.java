@@ -15,6 +15,8 @@
  */
 package org.jetbrains.idea.devkit;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.pom.PomTarget;
 import com.intellij.pom.PomTargetPsiElement;
 import com.intellij.psi.PsiElement;
@@ -23,7 +25,6 @@ import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.search.UseScopeEnlarger;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomTarget;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 
 /**
@@ -31,7 +32,7 @@ import org.jetbrains.idea.devkit.dom.ExtensionPoint;
  */
 public class DevKitUseScopeEnlarger extends UseScopeEnlarger {
   @Override
-  public SearchScope getAdditionalUseScope(@NotNull PsiElement element) {
+  public SearchScope getAdditionalUseScope(@Nonnull PsiElement element) {
     if (element instanceof PomTargetPsiElement) {
       PomTarget target = ((PomTargetPsiElement)element).getTarget();
       if (target instanceof DomTarget) {

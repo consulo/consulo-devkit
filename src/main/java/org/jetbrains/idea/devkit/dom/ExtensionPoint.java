@@ -17,8 +17,8 @@ package org.jetbrains.idea.devkit.dom;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 import com.intellij.ide.presentation.Presentation;
 import com.intellij.psi.PsiClass;
@@ -49,26 +49,26 @@ public interface ExtensionPoint extends DomElement
 		MODULE
 	}
 
-	@NotNull
+	@Nonnull
 	@NameValue
 	GenericAttributeValue<String> getName();
 
 	@Attribute("qualifiedName")
 	GenericAttributeValue<String> getQualifiedName();
 
-	@NotNull
+	@Nonnull
 	@Convert(PluginPsiClassConverter.class)
 	GenericAttributeValue<PsiClass> getInterface();
 
-	@NotNull
+	@Nonnull
 	@Attribute("beanClass")
 	@Convert(PluginPsiClassConverter.class)
 	GenericAttributeValue<PsiClass> getBeanClass();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Area> getArea();
 
-	@NotNull
+	@Nonnull
 	@SubTagList("with")
 	List<With> getWithElements();
 
@@ -80,7 +80,7 @@ public interface ExtensionPoint extends DomElement
 	 * @return {@code PluginID.name} or {@code qualifiedName}.
 	 * @since 14
 	 */
-	@NotNull
+	@Nonnull
 	String getEffectiveQualifiedName();
 
 	/**
@@ -88,7 +88,7 @@ public interface ExtensionPoint extends DomElement
 	 *
 	 * @return {@link #getName()} if defined, {@link #getQualifiedName()} otherwise.
 	 */
-	@NotNull
+	@Nonnull
 	String getEffectiveName();
 
 	/**

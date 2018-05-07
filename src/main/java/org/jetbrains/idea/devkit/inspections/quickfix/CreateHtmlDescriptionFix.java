@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.swing.Icon;
 import javax.swing.ListSelectionModel;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection;
 import org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection;
@@ -72,21 +72,21 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public String getName()
 	{
 		return DevKitBundle.message("create.description.file");
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public String getFamilyName()
 	{
 		return "DevKit";
 	}
 
 	@Override
-	public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor)
+	public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor)
 	{
 		final List<VirtualFile> virtualFiles = isIntention ? IntentionDescriptionNotFoundInspection.getPotentialRoots(myModule) : InspectionDescriptionNotFoundInspection.getPotentialRoots(myModule);
 		final VirtualFile[] roots = prepare(VfsUtil.toVirtualFileArray(virtualFiles));

@@ -19,10 +19,11 @@ package org.jetbrains.idea.devkit.inspections;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
 import com.intellij.codeInspection.InspectionManager;
@@ -56,7 +57,7 @@ public class InspectionDescriptionNotFoundInspection extends DevKitInspectionBas
   @NonNls private static final String INSPECTION_DESCRIPTIONS = "inspectionDescriptions";
 
   @Override
-  public ProblemDescriptor[] checkClass(@NotNull PsiClass aClass, @NotNull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly) {
     final Project project = aClass.getProject();
     final PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
     final Module module = ModuleUtil.findModuleForPsiElement(aClass);
@@ -112,7 +113,7 @@ public class InspectionDescriptionNotFoundInspection extends DevKitInspectionBas
              isLastMethodDefinitionIn("getDescriptionFileName", INSPECTION_PROFILE_ENTRY, aClass));
   }
 
-  private static boolean isLastMethodDefinitionIn(@NotNull String methodName, @NotNull String classFQN, PsiClass cls) {
+  private static boolean isLastMethodDefinitionIn(@Nonnull String methodName, @Nonnull String classFQN, PsiClass cls) {
     if (cls == null) return false;
     for (PsiMethod method : cls.getMethods()) {
       if (method.getName().equals(methodName)) {
@@ -161,12 +162,12 @@ public class InspectionDescriptionNotFoundInspection extends DevKitInspectionBas
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   public String getDisplayName() {
     return "Inspection Description Checker";
   }
 
-  @NotNull
+  @Nonnull
   public String getShortName() {
     return "InspectionDescriptionNotFoundInspection";
   }

@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.GlobalInspectionTool;
 import com.intellij.codeInspection.InspectionEP;
@@ -46,7 +47,7 @@ import consulo.java.module.util.JavaClassNames;
  */
 public class RegisterExtensionFixProvider implements UnusedDeclarationFixProvider {
 
-  @NotNull
+  @Nonnull
   @Override
   public IntentionAction[] getQuickFixes(PsiElement element) {
     if (!(element instanceof PsiIdentifier)) return IntentionAction.EMPTY_ARRAY;

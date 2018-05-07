@@ -21,8 +21,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.dom.Dependency;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
@@ -72,7 +73,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 	private static final DomExtender EXTENSION_EXTENDER = new DomExtender()
 	{
 		@Override
-		public void registerExtensions(@NotNull final DomElement domElement, @NotNull final DomExtensionsRegistrar registrar)
+		public void registerExtensions(@Nonnull final DomElement domElement, @Nonnull final DomExtensionsRegistrar registrar)
 		{
 			final ExtensionPoint extensionPoint = (ExtensionPoint) domElement.getChildDescription().getDomDeclaration();
 			assert extensionPoint != null;
@@ -100,7 +101,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 
 
 	@Override
-	public void registerExtensions(@NotNull final Extensions extensions, @NotNull final DomExtensionsRegistrar registrar)
+	public void registerExtensions(@Nonnull final Extensions extensions, @Nonnull final DomExtensionsRegistrar registrar)
 	{
 		final XmlElement xmlElement = extensions.getXmlElement();
 		if(xmlElement == null)
@@ -199,7 +200,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 		domExtension.addExtender(EXTENSION_EXTENDER);
 	}
 
-	private static void registerXmlb(final DomExtensionsRegistrar registrar, @Nullable final PsiClass beanClass, @NotNull List<With> elements)
+	private static void registerXmlb(final DomExtensionsRegistrar registrar, @Nullable final PsiClass beanClass, @Nonnull List<With> elements)
 	{
 		if(beanClass == null)
 		{
@@ -225,7 +226,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 		return null;
 	}
 
-	private static void registerField(final DomExtensionsRegistrar registrar, @NotNull final PsiField field, With withElement)
+	private static void registerField(final DomExtensionsRegistrar registrar, @Nonnull final PsiField field, With withElement)
 	{
 		final PsiMethod getter = PropertyUtil.findGetterForField(field);
 		final PsiMethod setter = PropertyUtil.findSetterForField(field);
@@ -280,7 +281,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 				registrar.registerFixedNumberChildExtension(new XmlName(tagName), DomElement.class).addExtender(new DomExtender()
 				{
 					@Override
-					public void registerExtensions(@NotNull DomElement domElement, @NotNull DomExtensionsRegistrar registrar)
+					public void registerExtensions(@Nonnull DomElement domElement, @Nonnull DomExtensionsRegistrar registrar)
 					{
 						registerCollectionBinding(field.getType(), registrar, absColAnno, evalHelper);
 					}
@@ -367,7 +368,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 			registrar.registerCollectionChildrenExtension(new XmlName(tagName), DomElement.class).addExtender(new DomExtender()
 			{
 				@Override
-				public void registerExtensions(@NotNull DomElement domElement, @NotNull DomExtensionsRegistrar registrar)
+				public void registerExtensions(@Nonnull DomElement domElement, @Nonnull DomExtensionsRegistrar registrar)
 				{
 					registrar.registerGenericAttributeValueChildExtension(new XmlName(attrName), String.class);
 				}
@@ -383,7 +384,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 				registrar.registerCollectionChildrenExtension(new XmlName(classTagName), DomElement.class).addExtender(new DomExtender()
 				{
 					@Override
-					public void registerExtensions(@NotNull DomElement domElement, @NotNull DomExtensionsRegistrar registrar)
+					public void registerExtensions(@Nonnull DomElement domElement, @Nonnull DomExtensionsRegistrar registrar)
 					{
 						registerXmlb(registrar, psiClass, Collections.<With>emptyList());
 					}

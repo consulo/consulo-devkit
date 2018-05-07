@@ -25,7 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.QueryExecutorBase;
@@ -56,8 +56,8 @@ public class UndesirableClassUsageInspection extends InternalInspection
 	}
 
 	@Override
-	@NotNull
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly)
+	@Nonnull
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{

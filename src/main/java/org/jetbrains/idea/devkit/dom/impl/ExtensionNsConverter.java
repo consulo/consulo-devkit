@@ -20,8 +20,8 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.ResolvingConverter;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import java.util.List;
 * Date: 06.12.2007
 */
 public class ExtensionNsConverter extends ResolvingConverter<IdeaPlugin> {
-  @NotNull
+  @Nonnull
   public Collection<? extends IdeaPlugin> getVariants(ConvertContext context) {
     final IdeaPlugin ideaPlugin = context.getInvocationElement().getParentOfType(IdeaPlugin.class, true);
     if (ideaPlugin == null) return Collections.emptyList();

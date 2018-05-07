@@ -17,7 +17,8 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import java.util.Arrays;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.inspections.quickfix.ChangeToPairCreateQuickFix;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -36,7 +37,7 @@ public class DontUseNewPairInspection extends InternalInspection
 	private static final String PAIR_FQN = "com.intellij.openapi.util.Pair";
 
 	@Override
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{
@@ -60,7 +61,7 @@ public class DontUseNewPairInspection extends InternalInspection
 		};
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getShortName()
 	{

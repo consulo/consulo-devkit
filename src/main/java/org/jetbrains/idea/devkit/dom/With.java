@@ -21,7 +21,7 @@ import com.intellij.util.xml.Attribute;
 import com.intellij.util.xml.Convert;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import org.jetbrains.idea.devkit.dom.impl.PluginFieldNameConverter;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 
@@ -29,17 +29,17 @@ import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
  * @author yole
  */
 public interface With extends DomElement {
-  @NotNull
+  @Nonnull
   @Attribute("attribute")
   @Convert(PluginFieldNameConverter.class)
   GenericAttributeValue<PsiField> getAttribute();
 
-  @NotNull
+  @Nonnull
   @Attribute("tag")
   @Convert(PluginFieldNameConverter.class)
   GenericAttributeValue<PsiField> getTag();
 
-  @NotNull
+  @Nonnull
   @Attribute("implements")
   @Convert(PluginPsiClassConverter.class)
   GenericAttributeValue<PsiClass> getImplements();

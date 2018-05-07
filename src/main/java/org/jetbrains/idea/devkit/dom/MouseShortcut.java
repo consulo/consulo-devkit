@@ -22,7 +22,7 @@ package org.jetbrains.idea.devkit.dom;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.Required;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * plugin.dtd:mouse-shortcut interface.
@@ -35,7 +35,7 @@ public interface MouseShortcut extends DomElement {
    *
    * @return the value of the keymap child.
    */
-  @NotNull
+  @Nonnull
   @Required
   GenericAttributeValue<String> getKeymap();
 
@@ -46,7 +46,7 @@ public interface MouseShortcut extends DomElement {
    *
    * @return the value of the keystroke child.
    */
-  @NotNull
+  @Nonnull
   @Required
   GenericAttributeValue<String> getKeystroke();
 

@@ -15,9 +15,10 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -48,28 +49,28 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getGroupDisplayName() {
     return "Plugin DevKit";
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getDisplayName() {
     return "Incorrect dialog title capitalization";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getShortName() {
     return "DialogTitleCapitalization";
   }
 
-  @NotNull
+  @Nonnull
   @Override
-  public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly) {
+  public PsiElementVisitor buildVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
     return new JavaElementVisitor() {
       @Override
       public void visitMethodCallExpression(PsiMethodCallExpression expression) {
@@ -190,13 +191,13 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
       myTitleValue = titleValue;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName() {
       return "Properly capitalize '" + myTitleValue + '\'';
     }
 
-    public final void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+    public final void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
       final PsiElement problemElement = descriptor.getPsiElement();
       if (problemElement == null || !problemElement.isValid()) {
         return;
@@ -274,7 +275,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
       return status.hasReadonlyFiles();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getFamilyName() {
       return "Properly capitalize";

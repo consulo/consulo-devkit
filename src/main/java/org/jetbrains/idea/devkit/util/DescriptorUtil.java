@@ -15,7 +15,8 @@
  */
 package org.jetbrains.idea.devkit.util;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import consulo.devkit.module.extension.PluginModuleExtension;

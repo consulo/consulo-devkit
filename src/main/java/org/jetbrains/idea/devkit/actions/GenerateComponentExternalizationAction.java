@@ -16,8 +16,8 @@
 package org.jetbrains.idea.devkit.actions;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -54,7 +54,7 @@ public class GenerateComponentExternalizationAction extends AnAction
 	private final static String STORAGE = "com.intellij.openapi.components.Storage";
 
 	@Override
-	public void actionPerformed(@NotNull AnActionEvent e)
+	public void actionPerformed(@Nonnull AnActionEvent e)
 	{
 		final PsiClass target = getComponentInContext(e.getDataContext());
 		assert target != null;

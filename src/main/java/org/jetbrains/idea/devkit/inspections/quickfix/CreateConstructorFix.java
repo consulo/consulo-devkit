@@ -15,6 +15,8 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
@@ -23,7 +25,6 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
 /**
@@ -35,12 +36,12 @@ public class CreateConstructorFix extends BaseFix {
     super(checkedClass, onTheFly);
   }
 
-  @NotNull
+  @Nonnull
   public String getName() {
     return DevKitBundle.message("inspections.registration.problems.quickfix.create.constructor");
   }
 
-  @NotNull
+  @Nonnull
   public String getFamilyName() {
     return getName();
   }

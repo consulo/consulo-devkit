@@ -20,7 +20,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.inspections.DescriptionCheckerUtil;
 import org.jetbrains.idea.devkit.inspections.DescriptionType;
 import org.jetbrains.idea.devkit.inspections.InspectionDescriptionInfo;
@@ -51,7 +52,7 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
 	private static final NotNullFunction<PsiFile, Collection<? extends PsiElement>> CONVERTER = new NotNullFunction<PsiFile,
 			Collection<? extends PsiElement>>()
 	{
-		@NotNull
+		@Nonnull
 		@Override
 		public Collection<? extends PsiElement> fun(PsiFile psiFile)
 		{
@@ -62,7 +63,7 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
 	private static final NotNullFunction<PsiFile, Collection<? extends GotoRelatedItem>> RELATED_ITEM_PROVIDER = new NotNullFunction<PsiFile,
 			Collection<? extends GotoRelatedItem>>()
 	{
-		@NotNull
+		@Nonnull
 		@Override
 		public Collection<? extends GotoRelatedItem> fun(PsiFile psiFile)
 		{
@@ -71,7 +72,7 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
 	};
 
 	@Override
-	protected void collectNavigationMarkers(@NotNull PsiElement element, Collection<? super RelatedItemLineMarkerInfo> result)
+	protected void collectNavigationMarkers(@Nonnull PsiElement element, Collection<? super RelatedItemLineMarkerInfo> result)
 	{
 		if(element instanceof PsiClass)
 		{

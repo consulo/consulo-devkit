@@ -16,7 +16,8 @@
 
 package consulo.devkit.inspections.requiredXAction;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.codeInspection.AnnotateMethodFix;
 import com.intellij.codeInspection.LocalInspectionTool;
@@ -103,7 +104,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 			}
 		}
 
-		private void reportError(@NotNull PsiExpression expression, @NotNull CallStateType type)
+		private void reportError(@Nonnull PsiExpression expression, @Nonnull CallStateType type)
 		{
 			LocalQuickFix[] quickFixes = LocalQuickFix.EMPTY_ARRAY;
 			String text;
@@ -128,9 +129,9 @@ public class RequiredXActionInspection extends LocalInspectionTool
 		}
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly)
+	public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new RequiredXActionVisitor(holder);
 	}

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.RepositoryHelper;
 import com.intellij.notification.NotificationDisplayType;
@@ -73,7 +73,7 @@ public class DownloadDependenciesAction extends AnAction
 
 	@RequiredDispatchThread
 	@Override
-	public void update(@NotNull AnActionEvent e)
+	public void update(@Nonnull AnActionEvent e)
 	{
 		super.update(e);
 		if(e.getPresentation().isVisible())
@@ -86,7 +86,7 @@ public class DownloadDependenciesAction extends AnAction
 
 	@RequiredDispatchThread
 	@Override
-	public void actionPerformed(@NotNull AnActionEvent e)
+	public void actionPerformed(@Nonnull AnActionEvent e)
 	{
 		Project project = e.getData(PlatformDataKeys.PROJECT);
 		if(project == null)
@@ -117,7 +117,7 @@ public class DownloadDependenciesAction extends AnAction
 		new Task.Backgroundable(project, "Downloading build project info...")
 		{
 			@Override
-			public void run(@NotNull ProgressIndicator progressIndicator)
+			public void run(@Nonnull ProgressIndicator progressIndicator)
 			{
 				FileUtil.delete(depDir);
 				progressIndicator.setText("Downloading plugin list...");

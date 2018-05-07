@@ -21,9 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.Action;
 import org.jetbrains.idea.devkit.dom.ActionOrGroup;
 import org.jetbrains.idea.devkit.dom.Actions;
@@ -53,7 +55,7 @@ import consulo.annotations.RequiredReadAction;
 public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGroup>
 {
 
-	@NotNull
+	@Nonnull
 	@Override
 	public Collection<? extends ActionOrGroup> getVariants(ConvertContext context)
 	{
@@ -260,7 +262,7 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
 	}
 
 	@Nullable
-	private static String getName(@NotNull ActionOrGroup actionOrGroup)
+	private static String getName(@Nonnull ActionOrGroup actionOrGroup)
 	{
 		return ElementPresentationManager.getElementName(actionOrGroup);
 	}

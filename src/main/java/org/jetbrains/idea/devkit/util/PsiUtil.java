@@ -16,8 +16,9 @@
 
 package org.jetbrains.idea.devkit.util;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.intellij.psi.*;
 
 /**
@@ -29,7 +30,7 @@ public class PsiUtil
 	{
 	}
 
-	public static boolean isInstantiable(@NotNull PsiClass cls)
+	public static boolean isInstantiable(@Nonnull PsiClass cls)
 	{
 		final PsiModifierList modList = cls.getModifierList();
 		if(modList == null || cls.isInterface() || modList.hasModifierProperty(PsiModifier.ABSTRACT) || !isPublicOrStaticInnerClass(cls))
@@ -53,7 +54,7 @@ public class PsiUtil
 		return false;
 	}
 
-	public static boolean isPublicOrStaticInnerClass(@NotNull PsiClass cls)
+	public static boolean isPublicOrStaticInnerClass(@Nonnull PsiClass cls)
 	{
 		final PsiModifierList modifiers = cls.getModifierList();
 		if(modifiers == null)
@@ -65,7 +66,7 @@ public class PsiUtil
 				.STATIC));
 	}
 
-	public static boolean isOneStatementMethod(@NotNull PsiMethod method)
+	public static boolean isOneStatementMethod(@Nonnull PsiMethod method)
 	{
 		final PsiCodeBlock body = method.getBody();
 		return body != null && body.getStatements().length == 1 && body.getStatements()[0] instanceof PsiReturnStatement;

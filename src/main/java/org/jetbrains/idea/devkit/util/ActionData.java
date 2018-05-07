@@ -15,17 +15,17 @@
  */
 package org.jetbrains.idea.devkit.util;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author swr
  */
 public interface ActionData {
-  @NotNull
+  @Nonnull
   String getActionId();
 
-  @NotNull
+  @Nonnull
   String getActionText();
 
   String getActionDescription();

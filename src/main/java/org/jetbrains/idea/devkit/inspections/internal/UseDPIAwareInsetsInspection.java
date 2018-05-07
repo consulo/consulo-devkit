@@ -15,8 +15,8 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBInsetsQuickFix;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -42,7 +42,7 @@ import com.intellij.util.ui.JBUI;
 public class UseDPIAwareInsetsInspection extends InternalInspection
 {
 	@Override
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{

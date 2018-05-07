@@ -15,6 +15,8 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -23,8 +25,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.inspections.quickfix.RegisterActionFix;
 import org.jetbrains.idea.devkit.inspections.quickfix.RegisterComponentFix;
@@ -57,13 +57,13 @@ public class ComponentNotRegisteredInspection extends DevKitInspectionBase
 	public boolean IGNORE_NON_PUBLIC = true;
 	private static final Logger LOG = Logger.getInstance("org.jetbrains.idea.devkit.inspections.ComponentNotRegisteredInspection");
 
-	@NotNull
+	@Nonnull
 	public String getDisplayName()
 	{
 		return DevKitBundle.message("inspections.component.not.registered.name");
 	}
 
-	@NotNull
+	@Nonnull
 	@NonNls
 	public String getShortName()
 	{
@@ -108,7 +108,7 @@ public class ComponentNotRegisteredInspection extends DevKitInspectionBase
 
 	@Override
 	@Nullable
-	public ProblemDescriptor[] checkClass(@NotNull PsiClass checkedClass, @NotNull InspectionManager manager, boolean isOnTheFly)
+	public ProblemDescriptor[] checkClass(@Nonnull PsiClass checkedClass, @Nonnull InspectionManager manager, boolean isOnTheFly)
 	{
 		final PsiFile psiFile = checkedClass.getContainingFile();
 		final PsiIdentifier classIdentifier = checkedClass.getNameIdentifier();

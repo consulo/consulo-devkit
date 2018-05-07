@@ -21,7 +21,8 @@ package org.jetbrains.idea.devkit.dom;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 import com.intellij.psi.PsiClass;
@@ -44,7 +45,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the value of the popup child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> getPopup();
 
 
@@ -54,7 +55,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the value of the icon child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getIcon();
 
 
@@ -64,7 +65,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the value of the description child.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getDescription();
 
 
@@ -74,7 +75,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the value of the class child.
 	 */
-	@NotNull
+	@Nonnull
 	@Attribute("class")
 	@Required
 	@ExtendClass(value = "com.intellij.openapi.actionSystem.AnAction",
@@ -89,7 +90,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the value of the text child.
 	 */
-	@NotNull
+	@Nonnull
 	@Stubbed
 	GenericAttributeValue<String> getText();
 
@@ -99,7 +100,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the value of the id child.
 	 */
-	@NotNull
+	@Nonnull
 	@Required
 	@Stubbed
 	GenericAttributeValue<String> getId();
@@ -109,7 +110,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the list of keyboard-shortcut children.
 	 */
-	@NotNull
+	@Nonnull
 	List<KeyboardShortcut> getKeyboardShortcuts();
 
 	/**
@@ -125,7 +126,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the list of mouse-shortcut children.
 	 */
-	@NotNull
+	@Nonnull
 	List<MouseShortcut> getMouseShortcuts();
 
 	/**
@@ -141,7 +142,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the list of shortcut children.
 	 */
-	@NotNull
+	@Nonnull
 	List<Shortcut> getShortcuts();
 
 	/**
@@ -156,7 +157,7 @@ public interface Action extends ActionOrGroup
 	 *
 	 * @return the list of add-to-group children.
 	 */
-	@NotNull
+	@Nonnull
 	List<AddToGroup> getAddToGroups();
 
 	/**
@@ -166,25 +167,25 @@ public interface Action extends ActionOrGroup
 	 */
 	AddToGroup addAddToGroup();
 
-	@NotNull
+	@Nonnull
 	@Convert(ActionOrGroupResolveConverter.OnlyActions.class)
 	GenericAttributeValue<ActionOrGroup> getUseShortcutOf();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getKeymap();
 
 	/**
 	 * Return internal flag - show in internal Consulo mode.
 	 */
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> isInternal();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> isSecondary();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
 
-	@NotNull
+	@Nonnull
 	GenericAttributeValue<String> getRequireModuleExtensions();
 }

@@ -18,8 +18,8 @@ package org.jetbrains.idea.devkit.dom.impl;
 import java.util.Collection;
 
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.Condition;
@@ -29,7 +29,7 @@ import com.intellij.util.xml.ResolvingConverter;
 
 class LanguageResolvingConverter extends ResolvingConverter<LanguageResolvingUtil.LanguageDefinition>
 {
-	@NotNull
+	@Nonnull
 	@Override
 	public Collection<LanguageResolvingUtil.LanguageDefinition> getVariants(final ConvertContext context)
 	{

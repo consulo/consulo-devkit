@@ -20,8 +20,9 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx;
 import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -47,7 +48,7 @@ public class ToggleHighlightingMarkupAction extends InternalAction
 {
 	@RequiredDispatchThread
 	@Override
-	public void update(@NotNull AnActionEvent e)
+	public void update(@Nonnull AnActionEvent e)
 	{
 		Editor editor = e.getData(CommonDataKeys.EDITOR);
 		PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
@@ -56,7 +57,7 @@ public class ToggleHighlightingMarkupAction extends InternalAction
 
 	@RequiredDispatchThread
 	@Override
-	public void actionPerformed(@NotNull AnActionEvent e)
+	public void actionPerformed(@Nonnull AnActionEvent e)
 	{
 		final Editor editor = e.getData(CommonDataKeys.EDITOR);
 		PsiFile file = e.getData(CommonDataKeys.PSI_FILE);

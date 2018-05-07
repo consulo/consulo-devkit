@@ -17,8 +17,9 @@ package org.jetbrains.idea.devkit.inspections;
 
 import java.text.MessageFormat;
 
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
@@ -45,11 +46,11 @@ import com.intellij.util.xml.DomUtil;
  */
 public class InspectionMappingConsistencyInspection extends DevKitInspectionBase {
 
-  @NotNull
+  @Nonnull
   @Override
-  public PsiElementVisitor buildVisitor(@NotNull final ProblemsHolder holder,
+  public PsiElementVisitor buildVisitor(@Nonnull final ProblemsHolder holder,
                                         boolean isOnTheFly,
-                                        @NotNull LocalInspectionToolSession session) {
+                                        @Nonnull LocalInspectionToolSession session) {
     return new XmlElementVisitor() {
       @Override
       public void visitXmlTag(XmlTag tag) {
@@ -95,7 +96,7 @@ public class InspectionMappingConsistencyInspection extends DevKitInspectionBase
       @Override
       public LocalQuickFix fun(final String s) {
         return new InsertRequiredAttributeFix(PsiTreeUtil.getParentOfType(range.second, XmlTag.class, false), s) {
-          @NotNull
+          @Nonnull
           @Override
           public String getText() {
             return MessageFormat.format("Insert ''{0}'' attribute", s);
@@ -106,13 +107,13 @@ public class InspectionMappingConsistencyInspection extends DevKitInspectionBase
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getDisplayName() {
     return "<inspection> tag consistency";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getShortName() {
     return "InspectionMappingConsistency";

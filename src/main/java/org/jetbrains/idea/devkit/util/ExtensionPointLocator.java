@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
@@ -104,14 +104,14 @@ public class ExtensionPointLocator
 		}, scope);
 	}
 
-	@NotNull
-	private static GlobalSearchScope getCandidatesScope(@NotNull Project project)
+	@Nonnull
+	private static GlobalSearchScope getCandidatesScope(@Nonnull Project project)
 	{
 		Collection<VirtualFile> candidates = DomService.getInstance().getDomFileCandidates(IdeaPlugin.class, project, GlobalSearchScope.allScope(project));
 		return GlobalSearchScope.filesScope(project, candidates);
 	}
 
-	public static boolean isRegisteredExtension(@NotNull PsiClass psiClass)
+	public static boolean isRegisteredExtension(@Nonnull PsiClass psiClass)
 	{
 		final String name = psiClass.getQualifiedName();
 		if(name == null)

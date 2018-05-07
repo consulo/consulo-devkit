@@ -18,8 +18,8 @@ package org.jetbrains.idea.devkit.inspections;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionType;
 import org.jetbrains.idea.devkit.util.ComponentType;
@@ -57,7 +57,7 @@ import consulo.java.module.extension.JavaModuleExtension;
 public abstract class DevKitInspectionBase extends BaseJavaLocalInspectionTool {
 
   @Override
-  @NotNull
+  @Nonnull
   public String getGroupDisplayName() {
     return DevKitBundle.message("inspections.group.name");
   }
@@ -128,7 +128,7 @@ public abstract class DevKitInspectionBase extends BaseJavaLocalInspectionTool {
   }
 
   @Nullable
-  protected static PsiElement getAttValueToken(@NotNull XmlAttribute attribute) {
+  protected static PsiElement getAttValueToken(@Nonnull XmlAttribute attribute) {
     final XmlAttributeValue valueElement = attribute.getValueElement();
     if (valueElement == null) return null;
 

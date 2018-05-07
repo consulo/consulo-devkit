@@ -23,7 +23,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * @author Konstantin Bulenkov
@@ -37,7 +37,7 @@ public class ConvertToGrayQuickFix extends LocalQuickFixBase {
   }
 
   @Override
-  public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     final PsiElement element = descriptor.getPsiElement();
     final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
     final PsiExpression expression = factory.createExpressionFromText("com.intellij.ui.Gray._" + myNum, element.getContext());

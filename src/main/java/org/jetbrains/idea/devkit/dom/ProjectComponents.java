@@ -20,7 +20,7 @@
 package org.jetbrains.idea.devkit.dom;
 
 import com.intellij.util.xml.DomElement;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  */
 public interface ProjectComponents extends DomElement {
 
-  @NotNull
+  @Nonnull
   List<Component.Project> getComponents();
 
   Component.Project addComponent();

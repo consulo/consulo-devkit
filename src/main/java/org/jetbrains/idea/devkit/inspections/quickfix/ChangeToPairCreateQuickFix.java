@@ -15,7 +15,7 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.codeInspection.LocalQuickFixBase;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.project.Project;
@@ -36,7 +36,7 @@ public class ChangeToPairCreateQuickFix extends LocalQuickFixBase
 	}
 
 	@Override
-	public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor)
+	public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor)
 	{
 		PsiElement element = descriptor.getPsiElement();
 		if(element == null)

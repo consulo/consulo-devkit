@@ -15,9 +15,10 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
+import javax.annotation.Nonnull;
+
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -31,7 +32,7 @@ import com.siyeh.ig.PsiReplacementUtil;
 public class UsePrimitiveTypesInspection extends InternalInspection
 {
 	@Override
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, final boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{
@@ -88,7 +89,7 @@ public class UsePrimitiveTypesInspection extends InternalInspection
 		}
 
 		@Nls
-		@NotNull
+		@Nonnull
 		@Override
 		public String getName()
 		{
@@ -96,7 +97,7 @@ public class UsePrimitiveTypesInspection extends InternalInspection
 		}
 
 		@Nls
-		@NotNull
+		@Nonnull
 		@Override
 		public String getFamilyName()
 		{
@@ -104,7 +105,7 @@ public class UsePrimitiveTypesInspection extends InternalInspection
 		}
 
 		@Override
-		public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor)
+		public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor)
 		{
 			final PsiElement psiElement = descriptor.getPsiElement();
 			if(psiElement instanceof PsiJavaToken)

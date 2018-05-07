@@ -22,11 +22,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import com.intellij.application.options.ModuleListCellRenderer;
 import com.intellij.ide.actions.OpenFileAction;
 import com.intellij.ide.highlighter.JavaFileType;
@@ -79,7 +79,7 @@ public class GenerateIconsClassAction extends InternalAction
 		private JBTextField myClassTextField;
 
 		@RequiredDispatchThread
-		public SettingsDialog(@NotNull final Project project)
+		public SettingsDialog(@Nonnull final Project project)
 		{
 			super(project);
 			setTitle("Generate Icons Class");
@@ -97,7 +97,7 @@ public class GenerateIconsClassAction extends InternalAction
 			return myClassTextField.getText();
 		}
 
-		@NotNull
+		@Nonnull
 		public Module getModule()
 		{
 			return (Module) myModuleComboBox.getSelectedItem();
@@ -124,7 +124,7 @@ public class GenerateIconsClassAction extends InternalAction
 
 	@RequiredDispatchThread
 	@Override
-	public void actionPerformed(@NotNull AnActionEvent anActionEvent)
+	public void actionPerformed(@Nonnull AnActionEvent anActionEvent)
 	{
 		final Project project = anActionEvent.getData(CommonDataKeys.PROJECT);
 		assert project != null;
@@ -158,7 +158,7 @@ public class GenerateIconsClassAction extends InternalAction
 				VfsUtil.visitChildrenRecursively(iconDir, new VirtualFileVisitor()
 				{
 					@Override
-					public boolean visitFile(@NotNull VirtualFile file)
+					public boolean visitFile(@Nonnull VirtualFile file)
 					{
 						if("png".equalsIgnoreCase(file.getExtension()))
 						{

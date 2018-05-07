@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.build.PluginBuildUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -111,7 +111,7 @@ public class PluginModuleUtil
 	}
 
 	@RequiredReadAction
-	@NotNull
+	@Nonnull
 	public static List<Module> getCandidateModules(Module module)
 	{
 		final Module[] modules = ModuleManager.getInstance(module.getProject()).getModules();
@@ -139,7 +139,7 @@ public class PluginModuleUtil
 	}
 
 	@RequiredReadAction
-	public static boolean isConsuloOrPluginProject(@NotNull Project project, @Nullable Module module)
+	public static boolean isConsuloOrPluginProject(@Nonnull Project project, @Nullable Module module)
 	{
 		if(PluginModuleUtil.isConsuloProject(project))
 		{
@@ -166,7 +166,7 @@ public class PluginModuleUtil
 
 	@RequiredReadAction
 	@Nullable
-	public static PsiClass searchClassInFileUseScope(@NotNull PsiFile file, @NotNull String qName)
+	public static PsiClass searchClassInFileUseScope(@Nonnull PsiFile file, @Nonnull String qName)
 	{
 		JavaModuleExtension extension = ModuleUtilCore.getExtension(file, JavaModuleExtension.class);
 		if(extension == null)

@@ -1,7 +1,6 @@
 package ${PACKAGE_NAME};
 
-import com.intellij.openapi.components.ApplicationComponent;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 #parse("Java File Header.java")
 public class ${NAME} implements ApplicationComponent {
@@ -16,7 +15,7 @@ public class ${NAME} implements ApplicationComponent {
         // TODO: insert component disposal logic here
     }
 
-    @NotNull
+    @Nonnull
     public String getComponentName() {
         return "${NAME}";
     }

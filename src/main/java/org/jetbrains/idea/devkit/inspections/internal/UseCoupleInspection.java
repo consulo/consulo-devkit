@@ -17,7 +17,8 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import org.jetbrains.idea.devkit.inspections.quickfix.UseCoupleQuickFix;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -40,7 +41,7 @@ public class UseCoupleInspection extends InternalInspection
 	private static final String PAIR_FQN = "com.intellij.openapi.util.Pair";
 
 	@Override
-	public PsiElementVisitor buildInternalVisitor(@NotNull final ProblemsHolder holder, boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{
