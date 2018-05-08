@@ -53,6 +53,7 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomService;
 import com.intellij.xml.util.IncludedXmlTag;
+import consulo.awt.TargetAWT;
 
 /**
  * @author Dmitry Avdeev
@@ -134,7 +135,7 @@ class RegisterInspectionFix implements IntentionAction {
 
         @Override
         public Icon getIconFor(DomFileElement<IdeaPlugin> aValue) {
-          return TypePresentationService.getInstance().getIcon(aValue);
+          return TargetAWT.to(TypePresentationService.getInstance().getIcon(aValue));
         }
 
         @Nonnull
