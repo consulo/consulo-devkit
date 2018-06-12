@@ -16,10 +16,9 @@
 
 package consulo.devkit.codeInsight.daemon;
 
-import java.awt.Color;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import com.intellij.openapi.editor.ElementColorProvider;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -33,6 +32,7 @@ import com.intellij.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.psi.util.PsiTypesUtil;
 import consulo.annotations.RequiredReadAction;
 import consulo.annotations.RequiredWriteAction;
+import consulo.ui.shared.ColorValue;
 import consulo.ui.shared.RGBColor;
 
 /**
@@ -45,7 +45,7 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 {
 	@RequiredReadAction
 	@Override
-	public Color getColorFrom(@Nonnull PsiElement element)
+	public ColorValue getColorFrom(@Nonnull PsiElement element)
 	{
 		return getColorFromExpression(element);
 	}
@@ -68,7 +68,7 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 	}
 
 	@Nullable
-	public static Color getColorFromExpression(@Nullable PsiElement element)
+	public static ColorValue getColorFromExpression(@Nullable PsiElement element)
 	{
 		if(element instanceof PsiNewExpression)
 		{
@@ -82,8 +82,7 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 	}
 
 	@Nullable
-	@SuppressWarnings("UseJBColor")
-	private static Color getColor(PsiExpressionList list)
+	private static ColorValue getColor(PsiExpressionList list)
 	{
 		try
 		{
@@ -95,12 +94,10 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 				switch(type)
 				{
 					case INTx3:
-						return new Color(getInt(args[0]), getInt(args[1]), getInt(args[2]));
+						return new RGBColor(getInt(args[0]), getInt(args[1]), getInt(args[2]));
 					case INTx3_FLOAT:
 						float alpha = getFloat(args[3]);
-						Color color = new Color(getInt(args[0]), getInt(args[1]), getInt(args[2]));
-						float[] rgbColorComponents = color.getRGBColorComponents(null);
-						return new Color(rgbColorComponents[0], rgbColorComponents[1], rgbColorComponents[2], alpha);
+						return new RGBColor(getInt(args[0]), getInt(args[1]), getInt(args[2]), alpha);
 				}
 			}
 		}
@@ -147,7 +144,7 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 
 	@RequiredWriteAction
 	@Override
-	public void setColorTo(@Nonnull PsiElement element, @Nonnull Color color)
+	public void setColorTo(@Nonnull PsiElement element, @Nonnull ColorValue color)
 	{
 		PsiExpressionList argumentList = ((PsiNewExpression) element).getArgumentList();
 		assert argumentList != null;
@@ -161,12 +158,14 @@ public class UIColorLineMarkerProvider implements ElementColorProvider
 		{
 			case INTx3:
 			case INTx3_FLOAT:
-				replaceInt(expr[0], color.getRed());
-				replaceInt(expr[1], color.getGreen());
-				replaceInt(expr[2], color.getBlue());
+				RGBColor rgb = color.toRGB();
+				replaceInt(expr[0], rgb.getRed());
+				replaceInt(expr[1], rgb.getGreen());
+				replaceInt(expr[2], rgb.getBlue());
+
 				if(type == ColorConstructors.INTx3_FLOAT)
 				{
-					replaceFloat(expr[3], color.getRGBComponents(null)[4]);
+					replaceFloat(expr[3], rgb.getAlpha());
 				}
 		}
 	}
