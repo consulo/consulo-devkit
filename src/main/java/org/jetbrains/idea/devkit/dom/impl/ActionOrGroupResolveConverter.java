@@ -22,10 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.NonNls;
-
-import javax.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.Action;
 import org.jetbrains.idea.devkit.dom.ActionOrGroup;
 import org.jetbrains.idea.devkit.dom.Actions;
@@ -42,7 +41,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.xml.XmlFile;
-import com.intellij.util.ObjectUtils;
+import com.intellij.util.ObjectUtil;
 import com.intellij.util.PairProcessor;
 import com.intellij.util.Processor;
 import com.intellij.util.xml.ConvertContext;
@@ -131,7 +130,7 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
 				throw new IllegalStateException("no PSI: " + msg);
 			}
 
-			LookupElementBuilder builder = LookupElementBuilder.create(ObjectUtils.assertNotNull(element), ObjectUtils.assertNotNull(getName(action)));
+			LookupElementBuilder builder = LookupElementBuilder.create(ObjectUtil.assertNotNull(element), ObjectUtil.assertNotNull(getName(action)));
 
 			final String text = action.getText().getStringValue();
 			if(StringUtil.isNotEmpty(text))

@@ -53,8 +53,7 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 
 	public PluginConfigurationType()
 	{
-		super("#org.jetbrains.idea.devkit.run.PluginConfigurationType", DevKitBundle.message("run.configuration.title"),
-				DevKitBundle.message("run.configuration.type.description"), ConsuloSandboxIcons.Icon16_Sandbox);
+		super("#org.jetbrains.idea.devkit.run.PluginConfigurationType", DevKitBundle.message("run.configuration.title"), DevKitBundle.message("run.configuration.type.description"), ConsuloSandboxIcons.Icon16_Sandbox);
 		addFactory(new ConfigurationFactoryEx(this)
 		{
 			@Override
