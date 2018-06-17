@@ -15,8 +15,9 @@
  */
 package org.intellij.grammar;
 
-import org.intellij.grammar.livePreview.LivePreviewFileType;
 import javax.annotation.Nonnull;
+
+import org.intellij.grammar.livePreview.LivePreviewFileType;
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
 
@@ -26,10 +27,12 @@ import com.intellij.openapi.fileTypes.FileTypeFactory;
  * Date: 13.07.11
  * Time: 22:45
  */
-public class BnfFileTypeFactory extends FileTypeFactory {
-  @Override
-  public void createFileTypes(@Nonnull FileTypeConsumer fileTypeConsumer) {
-    fileTypeConsumer.consume(BnfFileType.INSTANCE);
-    fileTypeConsumer.consume(LivePreviewFileType.INSTANCE);
-  }
+public class BnfFileTypeFactory extends FileTypeFactory
+{
+	@Override
+	public void createFileTypes(@Nonnull FileTypeConsumer fileTypeConsumer)
+	{
+		fileTypeConsumer.consume(BnfFileType.INSTANCE);
+		fileTypeConsumer.consume(LivePreviewFileType.INSTANCE);
+	}
 }
