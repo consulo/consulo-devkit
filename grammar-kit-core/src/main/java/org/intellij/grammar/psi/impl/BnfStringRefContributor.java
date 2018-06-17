@@ -24,7 +24,7 @@ import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrPattern;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.Set;
 
@@ -43,13 +43,13 @@ public class BnfStringRefContributor extends PsiReferenceContributor {
     EXTENDS, IMPLEMENTS, MIXIN);
 
   @Override
-  public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
+  public void registerReferenceProviders(@Nonnull PsiReferenceRegistrar registrar) {
     registrar.registerReferenceProvider(
       psiElement(BnfStringImpl.class).withParent(psiElement(BnfAttrPattern.class)), new PsiReferenceProvider() {
 
-        @NotNull
+        @Nonnull
         @Override
-        public PsiReference[] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
+        public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
           return new PsiReference[]{BnfStringImpl.createPatternReference((BnfStringImpl)element)};
         }
       }
@@ -59,9 +59,9 @@ public class BnfStringRefContributor extends PsiReferenceContributor {
       psiElement(BnfStringImpl.class).withParent(psiElement(BnfAttr.class).withName(string().with(oneOf(RULE_ATTRIBUTES)))),
       new PsiReferenceProvider() {
 
-        @NotNull
+        @Nonnull
         @Override
-        public PsiReference[] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
+        public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
           return new PsiReference[]{BnfStringImpl.createRuleReference((BnfStringImpl)element)};
         }
       }
@@ -72,9 +72,9 @@ public class BnfStringRefContributor extends PsiReferenceContributor {
         or(string().endsWith("Class"), string().endsWith("Package"), string().with(oneOf(JAVA_CLASS_ATTRIBUTES))))),
       new PsiReferenceProvider() {
 
-        @NotNull
+        @Nonnull
         @Override
-        public PsiReference[] getReferencesByElement(@NotNull PsiElement element, @NotNull ProcessingContext context) {
+        public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
           PsiReferenceProvider provider = JavaHelper.getJavaHelper(element).getClassReferenceProvider();
           return provider == null ? PsiReference.EMPTY_ARRAY : provider.getReferencesByElement(element, new ProcessingContext());
         }
@@ -84,7 +84,7 @@ public class BnfStringRefContributor extends PsiReferenceContributor {
   private static PatternCondition<String> oneOf(final Set<KnownAttribute> attributes) {
     return new PatternCondition<String>("oneOf") {
       @Override
-      public boolean accepts(@NotNull String s, ProcessingContext context) {
+      public boolean accepts(@Nonnull String s, ProcessingContext context) {
         return attributes.contains(KnownAttribute.getCompatibleAttribute(s));
       }
     };

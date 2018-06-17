@@ -15,7 +15,7 @@
  */
 package org.intellij.grammar;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import consulo.ui.image.Image;
 
@@ -33,19 +33,19 @@ public class BnfFileType extends LanguageFileType {
     super(BnfLanguage.INSTANCE);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getId() {
     return "BNF";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getDescription() {
     return "BNF Grammar";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getDefaultExtension() {
     return "bnf";

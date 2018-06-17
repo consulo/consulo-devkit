@@ -30,8 +30,8 @@ import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,7 +72,7 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
     }, false);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public List<BnfRule> getRules() {
     return new ArrayList<BnfRule>(myRules.getValue().values());
@@ -84,7 +84,7 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
     return ruleName == null ? null : myRules.getValue().get(ruleName);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public List<BnfAttrs> getAttributes() {
     return myGlobalAttributes.getValue();
@@ -92,20 +92,20 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
 
   @Override
   @Nullable
-  public BnfAttr findAttribute(@Nullable BnfRule rule, @NotNull KnownAttribute<?> knownAttribute, @Nullable String match) {
+  public BnfAttr findAttribute(@Nullable BnfRule rule, @Nonnull KnownAttribute<?> knownAttribute, @Nullable String match) {
     AttributeInfo result = findAttributeInfo(rule, knownAttribute, match);
     if (result == null) return null;
     return PsiTreeUtil.getParentOfType(findElementAt(result.attrOffset), BnfAttr.class);
   }
 
-  public <T> T findAttributeValue(@Nullable BnfRule rule, @NotNull KnownAttribute<T> knownAttribute, @Nullable String match) {
+  public <T> T findAttributeValue(@Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match) {
     AttributeInfo result = findAttributeInfo(rule, knownAttribute, match);
     return result == null ? knownAttribute.getDefaultValue() : knownAttribute.ensureValue(result.value);
   }
 
   private static final Pattern SUB_EXPRESSION = Pattern.compile(".*(_\\d+)+");
   @Nullable
-  public <T> AttributeInfo findAttributeInfo(@Nullable BnfRule rule, @NotNull KnownAttribute<T> knownAttribute, @Nullable String match) {
+  public <T> AttributeInfo findAttributeInfo(@Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match) {
     List<AttributeInfo> list = myAttributeValues.getValue().get(knownAttribute.getName());
     if (list == null) return null;
     BnfAttrs globalAttrs = rule == null? ContainerUtil.getFirstItem(getAttributes()) : null;
@@ -132,7 +132,7 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
     return result;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public FileType getFileType() {
     return BnfFileType.INSTANCE;

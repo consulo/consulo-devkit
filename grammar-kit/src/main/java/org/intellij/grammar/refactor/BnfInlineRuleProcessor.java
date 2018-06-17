@@ -35,7 +35,7 @@ import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -61,7 +61,7 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
     myInlineThisOnly = isInlineThisOnly;
   }
 
-  @NotNull
+  @Nonnull
   protected UsageViewDescriptor createUsageViewDescriptor(UsageInfo[] usages) {
     return new BnfInlineViewDescriptor(myRule);
   }
@@ -70,7 +70,7 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
     return "Inline rule '"+myRule.getName()+"'";
   }
 
-  @NotNull
+  @Nonnull
   protected UsageInfo[] findUsages() {
     if (myInlineThisOnly) return new UsageInfo[]{new UsageInfo(myReference.getElement())};
 

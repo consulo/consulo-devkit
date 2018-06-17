@@ -34,8 +34,8 @@ import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.generator.RuleGraphHelper;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.*;
 
@@ -79,22 +79,22 @@ public class BnfFirstNextAnalyzer {
     return this;
   }
 
-  public Set<BnfExpression> calcFirst(@NotNull BnfRule rule) {
+  public Set<BnfExpression> calcFirst(@Nonnull BnfRule rule) {
     Set<BnfExpression> visited = new THashSet<BnfExpression>();
     BnfExpression expression = rule.getExpression();
     visited.add(expression);
     return calcFirstInner(expression, new THashSet<BnfExpression>(), visited);
   }
 
-  public Map<BnfExpression, BnfExpression> calcNext(@NotNull BnfRule targetRule) {
+  public Map<BnfExpression, BnfExpression> calcNext(@Nonnull BnfRule targetRule) {
     return calcNextInner(targetRule.getExpression(), new THashMap<BnfExpression, BnfExpression>(), new THashSet<BnfExpression>());
   }
 
-  public Map<BnfExpression, BnfExpression> calcNext(@NotNull BnfExpression targetExpression) {
+  public Map<BnfExpression, BnfExpression> calcNext(@Nonnull BnfExpression targetExpression) {
     return calcNextInner(targetExpression, new THashMap<BnfExpression, BnfExpression>(), new THashSet<BnfExpression>());
   }
 
-  private Map<BnfExpression, BnfExpression> calcNextInner(@NotNull BnfExpression targetExpression, Map<BnfExpression, BnfExpression> result, Set<BnfExpression> visited) {
+  private Map<BnfExpression, BnfExpression> calcNextInner(@Nonnull BnfExpression targetExpression, Map<BnfExpression, BnfExpression> result, Set<BnfExpression> visited) {
     LinkedList<BnfExpression> stack = new LinkedList<BnfExpression>();
     THashSet<BnfRule> totalVisited = new THashSet<BnfRule>();
     Set<BnfExpression> curResult = new THashSet<BnfExpression>();

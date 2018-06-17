@@ -16,10 +16,11 @@
 
 package org.intellij.grammar.psi.impl;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.util.ProperTextRange;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.LiteralTextEscaper;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author gregsh
@@ -30,7 +31,7 @@ public class BnfStringLiteralEscaper extends LiteralTextEscaper<BnfStringImpl> {
   }
 
   @Override
-  public boolean decode(@NotNull final TextRange rangeInsideHost, @NotNull final StringBuilder outChars) {
+  public boolean decode(@Nonnull final TextRange rangeInsideHost, @Nonnull final StringBuilder outChars) {
     // todo implement proper java-like string escapes support
     ProperTextRange.assertProperRange(rangeInsideHost);
     outChars.append(myHost.getText(), rangeInsideHost.getStartOffset(), rangeInsideHost.getEndOffset());
@@ -38,7 +39,7 @@ public class BnfStringLiteralEscaper extends LiteralTextEscaper<BnfStringImpl> {
   }
 
   @Override
-  public int getOffsetInHost(final int offsetInDecoded, @NotNull final TextRange rangeInsideHost) {
+  public int getOffsetInHost(final int offsetInDecoded, @Nonnull final TextRange rangeInsideHost) {
     ProperTextRange.assertProperRange(rangeInsideHost);
     int offset = offsetInDecoded;
     // todo implement proper java-like string escapes support

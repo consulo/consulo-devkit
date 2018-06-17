@@ -16,12 +16,13 @@
 
 package org.intellij.grammar.refactor;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.psi.PsiElement;
 import com.intellij.refactoring.RefactoringBundle;
 import com.intellij.usageView.UsageViewBundle;
 import com.intellij.usageView.UsageViewDescriptor;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,7 +38,7 @@ public class BnfInlineViewDescriptor implements UsageViewDescriptor {
         this.myElement = myElement;
     }
 
-    @NotNull
+    @Nonnull
     public PsiElement[] getElements() {
       return new PsiElement[] {myElement};
     }

@@ -15,13 +15,13 @@
  */
 package org.intellij.grammar.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import javax.annotation.Nonnull;
+
 import com.intellij.psi.PsiElement;
 
 public interface BnfStringLiteralExpression extends BnfLiteralExpression {
 
-  @NotNull
+  @Nonnull
   PsiElement getString();
 
 }

@@ -17,11 +17,12 @@ package org.intellij.grammar.psi.impl;
 
 import static org.intellij.grammar.psi.BnfTypes.BNF_ID;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.psi.BnfModifier;
 import org.intellij.grammar.psi.BnfNamedElement;
 import org.intellij.grammar.psi.BnfRule;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.LocalSearchScope;
@@ -48,7 +49,7 @@ public abstract class BnfNamedElementImpl extends BnfCompositeElementImpl implem
     myCachedName = null;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getName() {
     if (myCachedName == null) {
@@ -58,7 +59,7 @@ public abstract class BnfNamedElementImpl extends BnfCompositeElementImpl implem
   }
 
   @Override
-  public PsiElement setName(@NonNls @NotNull String s) throws IncorrectOperationException {
+  public PsiElement setName(@NonNls @Nonnull String s) throws IncorrectOperationException {
     getId().replace(BnfElementFactory.createLeafFromText(getProject(), s));
     return this;
   }
@@ -68,7 +69,7 @@ public abstract class BnfNamedElementImpl extends BnfCompositeElementImpl implem
     return getId().getTextOffset();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public SearchScope getUseScope() {
     return new LocalSearchScope(getContainingFile());

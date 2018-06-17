@@ -16,6 +16,8 @@
 
 package org.intellij.grammar.inspection;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.application.AccessToken;
@@ -30,7 +32,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.refactor.BnfIntroduceRuleHandler;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,20 +48,20 @@ public class CreateRuleFromTokenFix implements LocalQuickFix {
     myName = name;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getName() {
     return "Create '"+myName+"' rule";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getFamilyName() {
     return "Create rule from usage";
   }
 
   @Override
-  public void applyFix(final @NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+  public void applyFix(final @Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     final AccessToken token = WriteAction.start();
     try {
       final PsiElement element = descriptor.getPsiElement();

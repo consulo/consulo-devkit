@@ -22,6 +22,8 @@ import static org.intellij.grammar.psi.BnfTypes.BNF_ID;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.generator.RuleGraphHelper;
 import org.intellij.grammar.parser.GeneratedParserUtilBase;
 import org.intellij.grammar.psi.BnfAttr;
@@ -34,8 +36,8 @@ import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.codeInsight.TailType;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionInitializationContext;
@@ -74,7 +76,7 @@ public class BnfCompletionContributor extends CompletionContributor
 		extend(CompletionType.BASIC, placePattern, new CompletionProvider()
 		{
 			@Override
-			public void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result)
+			public void addCompletions(@Nonnull CompletionParameters parameters, ProcessingContext context, @Nonnull CompletionResultSet result)
 			{
 				PsiElement position = parameters.getPosition();
 				BnfCompositeElement parent = PsiTreeUtil.getParentOfType(position, BnfAttrs.class, BnfAttr.class, BnfParenExpression.class);
@@ -121,7 +123,7 @@ public class BnfCompletionContributor extends CompletionContributor
 		extend(CompletionType.BASIC, placePattern.andNot(psiElement().inside(false, psiElement(BnfAttr.class))), new CompletionProvider()
 		{
 			@Override
-			public void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull final CompletionResultSet result)
+			public void addCompletions(@Nonnull CompletionParameters parameters, ProcessingContext context, @Nonnull final CompletionResultSet result)
 			{
 				BnfFile file = (BnfFile) parameters.getOriginalFile();
 				PsiElement positionRefOrToken = PsiTreeUtil.getParentOfType(parameters.getOriginalPosition(), BnfReferenceOrToken.class);
@@ -149,7 +151,7 @@ public class BnfCompletionContributor extends CompletionContributor
 	}
 
 	@Override
-	public void beforeCompletion(@NotNull CompletionInitializationContext context)
+	public void beforeCompletion(@Nonnull CompletionInitializationContext context)
 	{
 		BnfFile file = ObjectUtils.tryCast(context.getFile(), BnfFile.class);
 		if(file == null)

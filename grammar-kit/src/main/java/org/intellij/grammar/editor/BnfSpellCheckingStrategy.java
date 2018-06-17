@@ -16,7 +16,7 @@
 
 package org.intellij.grammar.editor;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.psi.PsiElement;
 import com.intellij.spellchecker.tokenizer.SpellcheckingStrategy;
 import com.intellij.spellchecker.tokenizer.Tokenizer;
@@ -25,7 +25,7 @@ import com.intellij.spellchecker.tokenizer.Tokenizer;
  * @author gregsh
  */
 public class BnfSpellCheckingStrategy extends SpellcheckingStrategy {
-  @NotNull
+  @Nonnull
   @Override
   public Tokenizer getTokenizer(PsiElement element) {
     return super.getTokenizer(element);

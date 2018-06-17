@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.java.JavaHelper;
@@ -45,8 +47,8 @@ import org.intellij.grammar.psi.BnfReferenceOrToken;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfSequence;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Pair;
@@ -616,8 +618,8 @@ public class ParserGenerator
 		}
 	}
 
-	@NotNull
-	private List<Set<String>> buildExtendsSet(@NotNull MultiMap<BnfRule, BnfRule> map)
+	@Nonnull
+	private List<Set<String>> buildExtendsSet(@Nonnull MultiMap<BnfRule, BnfRule> map)
 	{
 		if(map.isEmpty())
 		{
@@ -733,7 +735,7 @@ public class ParserGenerator
 		myShortener = shortener;
 	}
 
-	@NotNull
+	@Nonnull
 	private static Function<String, String> newClassNameShortener(final Set<String> realImports)
 	{
 		return new Function<String, String>()
@@ -1699,7 +1701,7 @@ public class ParserGenerator
 		out("}");
 	}
 
-	private boolean isIgnoredWhitespaceToken(@NotNull String tokenName, @NotNull String tokenText)
+	private boolean isIgnoredWhitespaceToken(@Nonnull String tokenName, @Nonnull String tokenText)
 	{
 		return isRegexpToken(tokenText) && !myTokensUsedInGrammar.contains(tokenName) && matchesAny(getRegexpTokenRegexp(tokenText), " ", "\n") && !matchesAny(getRegexpTokenRegexp(tokenText), "a",
 				"1", "_", ".");
@@ -1970,7 +1972,7 @@ public class ParserGenerator
 		newLine();
 	}
 
-	private String generatePsiAccessorImplCall(@NotNull BnfRule rule, @NotNull RuleMethodsHelper.MethodInfo methodInfo)
+	private String generatePsiAccessorImplCall(@Nonnull BnfRule rule, @Nonnull RuleMethodsHelper.MethodInfo methodInfo)
 	{
 		boolean isToken = methodInfo.rule == null;
 
@@ -2007,7 +2009,7 @@ public class ParserGenerator
 		return required ? "notNullChild(" + result + ")" : result;
 	}
 
-	private String getAccessorType(@NotNull BnfRule rule)
+	private String getAccessorType(@Nonnull BnfRule rule)
 	{
 		if(Rule.isExternal(rule))
 		{

@@ -32,7 +32,7 @@ import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfRefOrTokenImpl;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.StringTokenizer;
 
@@ -41,7 +41,7 @@ import java.util.StringTokenizer;
  */
 public class BnfAnnotator implements Annotator, DumbAware {
   @Override
-  public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
+  public void annotate(@Nonnull PsiElement psiElement, @Nonnull AnnotationHolder annotationHolder) {
     PsiElement parent = psiElement.getParent();
     if (parent instanceof BnfRule && ((BnfRule)parent).getId() == psiElement) {
       addRuleHighlighting((BnfRule)parent, psiElement, annotationHolder);

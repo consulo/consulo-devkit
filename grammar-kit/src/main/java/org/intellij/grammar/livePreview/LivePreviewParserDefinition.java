@@ -16,7 +16,8 @@
 
 package org.intellij.grammar.livePreview;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.lang.ASTNode;
@@ -58,7 +59,7 @@ public class LivePreviewParserDefinition implements ParserDefinition {
     return myLanguage;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public Lexer createLexer(LanguageVersion languageVersion) {
     return new LivePreviewLexer(null, myLanguage);
@@ -74,25 +75,25 @@ public class LivePreviewParserDefinition implements ParserDefinition {
     return myFileElementType;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getWhitespaceTokens(LanguageVersion languageVersion) {
     return ourWhiteSpaceTokens;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getCommentTokens(LanguageVersion languageVersion) {
     return ourCommentTokens;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getStringLiteralElements(LanguageVersion languageVersion) {
     return ourStringLiteralElements;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public PsiElement createElement(ASTNode node) {
     return new ASTWrapperPsiElement(node);
@@ -101,7 +102,7 @@ public class LivePreviewParserDefinition implements ParserDefinition {
   @Override
   public PsiFile createFile(FileViewProvider viewProvider) {
     return new PsiFileBase(viewProvider, myLanguage) {
-      @NotNull
+      @Nonnull
       @Override
       public FileType getFileType() {
         return LivePreviewFileType.INSTANCE;

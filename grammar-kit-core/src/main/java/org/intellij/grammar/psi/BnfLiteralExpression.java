@@ -15,8 +15,8 @@
  */
 package org.intellij.grammar.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import javax.annotation.Nullable;
+
 import com.intellij.psi.PsiElement;
 
 public interface BnfLiteralExpression extends BnfExpression {

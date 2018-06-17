@@ -22,7 +22,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.actions.BasePlatformRefactoringAction;
 import org.intellij.grammar.psi.BnfFile;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * @author greg
@@ -40,12 +40,12 @@ public class BnfIntroduceTokenAction extends BasePlatformRefactoringAction {
     return file instanceof BnfFile;
   }
 
-  protected boolean isEnabledOnElements(@NotNull PsiElement[] elements) {
+  protected boolean isEnabledOnElements(@Nonnull PsiElement[] elements) {
     return false;
   }
 
   @Override
-  protected RefactoringActionHandler getRefactoringHandler(@NotNull RefactoringSupportProvider provider) {
+  protected RefactoringActionHandler getRefactoringHandler(@Nonnull RefactoringSupportProvider provider) {
     return new BnfIntroduceTokenHandler();
   }
 }

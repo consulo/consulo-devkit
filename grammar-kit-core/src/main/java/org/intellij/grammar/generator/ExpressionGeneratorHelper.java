@@ -22,8 +22,8 @@ import com.intellij.util.containers.ContainerUtil;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.*;
 
@@ -196,7 +196,7 @@ public class ExpressionGeneratorHelper {
     }
   }
 
-  @NotNull
+  @Nonnull
   public static List<OperatorInfo> findOperators(Collection<OperatorInfo> list, OperatorType... types) {
     List<OperatorInfo> result = ContainerUtil.newSmartList();
     List<OperatorType> typeList = Arrays.asList(types);
@@ -224,8 +224,8 @@ public class ExpressionGeneratorHelper {
   }
 
   @Nullable
-  public static ConsumeType fixForcedConsumeType(@NotNull ExpressionHelper expressionHelper,
-                                                 @NotNull BnfRule rule,
+  public static ConsumeType fixForcedConsumeType(@Nonnull ExpressionHelper expressionHelper,
+                                                 @Nonnull BnfRule rule,
                                                  @Nullable BnfExpression node,
                                                  @Nullable ConsumeType defValue) {
     if (defValue != null) return defValue;

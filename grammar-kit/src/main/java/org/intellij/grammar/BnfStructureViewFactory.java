@@ -30,8 +30,8 @@ import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfValueList;
 import org.intellij.grammar.psi.impl.BnfFileImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.StructureViewModelBase;
@@ -55,7 +55,7 @@ import consulo.ide.IconDescriptorUpdaters;
 public class BnfStructureViewFactory implements PsiStructureViewFactory {
   public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
     return new TreeBasedStructureViewBuilder() {
-      @NotNull
+      @Nonnull
       public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
         return new MyModel(psiFile);
       }
@@ -69,7 +69,7 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
 
   public static class MyModel extends StructureViewModelBase implements StructureViewModel.ElementInfoProvider {
 
-    protected MyModel(@NotNull PsiFile psiFile) {
+    protected MyModel(@Nonnull PsiFile psiFile) {
       super(psiFile, new MyElement(psiFile));
       withSuitableClasses(BnfFile.class, BnfRule.class, BnfAttrs.class, BnfAttr.class);
     }
@@ -108,7 +108,7 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
       return getPresentableText();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Collection<StructureViewTreeElement> getChildrenBase() {
       PsiElement element = getElement();

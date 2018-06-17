@@ -16,7 +16,9 @@
 package org.intellij.grammar.psi;
 
 import java.util.List;
-import org.jetbrains.annotations.*;
+
+import javax.annotation.*;
+
 import com.intellij.psi.PsiElement;
 
 public interface BnfRule extends BnfNamedElement {
@@ -24,13 +26,13 @@ public interface BnfRule extends BnfNamedElement {
   @Nullable
   BnfAttrs getAttrs();
 
-  @NotNull
+  @Nonnull
   BnfExpression getExpression();
 
-  @NotNull
+  @Nonnull
   List<BnfModifier> getModifierList();
 
-  @NotNull
+  @Nonnull
   PsiElement getId();
 
 }

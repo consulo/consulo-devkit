@@ -15,13 +15,11 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static org.intellij.grammar.psi.BnfTypes.*;
+
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.psi.*;
 
 public class BnfPredicateSignImpl extends BnfCompositeElementImpl implements BnfPredicateSign {
@@ -30,11 +28,11 @@ public class BnfPredicateSignImpl extends BnfCompositeElementImpl implements Bnf
     super(node);
   }
 
-  public <R> R accept(@NotNull BnfVisitor<R> visitor) {
+  public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
     return visitor.visitPredicateSign(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
+  public void accept(@Nonnull PsiElementVisitor visitor) {
     if (visitor instanceof BnfVisitor) accept((BnfVisitor)visitor);
     else super.accept(visitor);
   }

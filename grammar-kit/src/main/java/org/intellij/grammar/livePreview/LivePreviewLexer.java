@@ -28,12 +28,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.Case;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.BnfFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.lexer.LexerBase;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -80,7 +81,7 @@ public class LivePreviewLexer extends LexerBase {
   }
 
   @Override
-  public void start(@NotNull CharSequence buffer, int startOffset, int endOffset, int initialState) {
+  public void start(@Nonnull CharSequence buffer, int startOffset, int endOffset, int initialState) {
     myBuffer = buffer;
     myEndOffset = endOffset;
     myPosition = startOffset;
@@ -161,7 +162,7 @@ public class LivePreviewLexer extends LexerBase {
     }
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public CharSequence getBufferSequence() {
     return myBuffer;
@@ -221,7 +222,7 @@ public class LivePreviewLexer extends LexerBase {
   }
 
   @Nullable
-  private static IElementType guessDelegateType(@NotNull String tokenName,
+  private static IElementType guessDelegateType(@Nonnull String tokenName,
                                                 @Nullable Pattern pattern,
                                                 boolean usedInGrammar) {
     if (pattern != null) {
@@ -241,8 +242,8 @@ public class LivePreviewLexer extends LexerBase {
     return null;
   }
 
-  @NotNull
-  public static Map<String, String> collectTokenPattern2Name(@NotNull BnfFile file, @Nullable Set<String> usedInGrammar) {
+  @Nonnull
+  public static Map<String, String> collectTokenPattern2Name(@Nonnull BnfFile file, @Nullable Set<String> usedInGrammar) {
     return ParserGeneratorUtil.collectTokenPattern2Name(file, true, ContainerUtil.<String, String>newLinkedHashMap(), usedInGrammar);
   }
 }

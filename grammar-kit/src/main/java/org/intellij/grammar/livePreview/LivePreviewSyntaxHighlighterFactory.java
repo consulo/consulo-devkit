@@ -16,6 +16,9 @@
 
 package org.intellij.grammar.livePreview;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.intellij.lang.Language;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
@@ -28,8 +31,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.testFramework.LightVirtualFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author gregsh
@@ -39,13 +40,13 @@ public class LivePreviewSyntaxHighlighterFactory extends SyntaxHighlighterFactor
   public LivePreviewSyntaxHighlighterFactory() {
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public SyntaxHighlighter getSyntaxHighlighter(@Nullable final Project project, @Nullable VirtualFile virtualFile) {
     final Language language = virtualFile instanceof LightVirtualFile ? ((LightVirtualFile)virtualFile).getLanguage() : null;
     if (!(language instanceof LivePreviewLanguage)) return new PlainSyntaxHighlighter();
     return new SyntaxHighlighterBase() {
-      @NotNull
+      @Nonnull
       @Override
       public Lexer getHighlightingLexer() {
         return new LivePreviewLexer(project, (LivePreviewLanguage)language) {
@@ -59,7 +60,7 @@ public class LivePreviewSyntaxHighlighterFactory extends SyntaxHighlighterFactor
         };
       }
 
-      @NotNull
+      @Nonnull
       @Override
       public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
         if (tokenType == LivePreviewParserDefinition.COMMENT) return pack(DefaultLanguageHighlighterColors.LINE_COMMENT);

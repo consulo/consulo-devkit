@@ -18,6 +18,8 @@ package org.intellij.grammar.psi.impl;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.BnfConstants;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
@@ -27,7 +29,6 @@ import org.intellij.grammar.psi.BnfExternalExpression;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfSequence;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.Comparing;
@@ -48,7 +49,7 @@ import consulo.ide.IconDescriptorUpdaters;
  */
 public class BnfReferenceImpl<T extends BnfCompositeElement> extends PsiReferenceBase<T> {
 
-  public BnfReferenceImpl(@NotNull T element, TextRange range) {
+  public BnfReferenceImpl(@Nonnull T element, TextRange range) {
     super(element, range);
   }
 
@@ -75,7 +76,7 @@ public class BnfReferenceImpl<T extends BnfCompositeElement> extends PsiReferenc
   }
 
 
-  @NotNull
+  @Nonnull
   @Override
   public Object[] getVariants() {
     List<LookupElement> list = ContainerUtil.newArrayList();

@@ -16,6 +16,9 @@
 
 package org.intellij.grammar.intention;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -27,33 +30,31 @@ import com.intellij.util.IncorrectOperationException;
 import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Vadim Romansky
  * @author gregsh
  */
 public class BnfFlipChoiceIntention implements IntentionAction {
-  @NotNull
+  @Nonnull
   @Override
   public String getText() {
     return "Flip arguments";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getFamilyName() {
     return "Flip choice intention";
   }
 
   @Override
-  public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
+  public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
     return getArguments(file, editor.getCaretModel().getOffset()) != null;
   }
 
   @Override
-  public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+  public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
     final Pair<PsiElement, PsiElement> arguments = getArguments(file, editor.getCaretModel().getOffset());
     if (arguments == null) return;
     PsiElement newFirst = BnfElementFactory.createRuleFromText(project, "a ::=" + arguments.second.getText()).getExpression();

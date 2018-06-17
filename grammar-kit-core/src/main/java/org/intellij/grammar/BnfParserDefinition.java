@@ -15,11 +15,12 @@
  */
 package org.intellij.grammar;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.parser.BnfLexer;
 import org.intellij.grammar.parser.GrammarParser;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.impl.BnfFileImpl;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
@@ -47,7 +48,7 @@ public class BnfParserDefinition implements ParserDefinition {
   public static final TokenSet COMMENTS = TokenSet.create(BNF_LINE_COMMENT, BNF_BLOCK_COMMENT);
   public static final TokenSet LITERALS = TokenSet.create(BnfTypes.BNF_STRING);
 
-  @NotNull
+  @Nonnull
   @Override
   public Lexer createLexer(LanguageVersion languageVersion) {
     return new BnfLexer();
@@ -63,25 +64,25 @@ public class BnfParserDefinition implements ParserDefinition {
     return BNF_FILE_ELEMENT_TYPE;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getWhitespaceTokens(LanguageVersion languageVersion) {
     return WS;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getCommentTokens(LanguageVersion languageVersion) {
     return COMMENTS;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TokenSet getStringLiteralElements(LanguageVersion languageVersion) {
     return LITERALS;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public PsiElement createElement(ASTNode astNode) {
     return BnfTypes.Factory.createElement(astNode);

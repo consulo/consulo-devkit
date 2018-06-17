@@ -30,8 +30,8 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.org.objectweb.asm.AnnotationVisitor;
 import org.jetbrains.org.objectweb.asm.ClassReader;
 import org.jetbrains.org.objectweb.asm.ClassVisitor;
@@ -65,7 +65,7 @@ public abstract class JavaHelper
 		CONSTRUCTOR
 	}
 
-	public static JavaHelper getJavaHelper(@NotNull PsiElement context)
+	public static JavaHelper getJavaHelper(@Nonnull PsiElement context)
 	{
 		PsiFile file = context.getContainingFile();
 		JavaHelper service = ServiceManager.getService(file.getProject(), JavaHelper.class);
@@ -78,8 +78,8 @@ public abstract class JavaHelper
 		return null;
 	}
 
-	@NotNull
-	public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @NotNull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
+	@Nonnull
+	public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @Nonnull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
 	{
 		return Collections.emptyList();
 	}
@@ -90,19 +90,19 @@ public abstract class JavaHelper
 		return null;
 	}
 
-	@NotNull
+	@Nonnull
 	public List<String> getMethodTypes(@Nullable NavigatablePsiElement method)
 	{
 		return Collections.emptyList();
 	}
 
-	@NotNull
+	@Nonnull
 	public String getDeclaringClass(@Nullable NavigatablePsiElement method)
 	{
 		return "";
 	}
 
-	@NotNull
+	@Nonnull
 	public List<String> getAnnotations(@Nullable NavigatablePsiElement element)
 	{
 		return Collections.emptyList();
@@ -157,9 +157,9 @@ public abstract class JavaHelper
 			}
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
-		public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @NotNull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
+		public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @Nonnull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
 		{
 			Class<?> aClass = findClassSafe(className);
 			if(aClass == null || methodName == null)
@@ -235,7 +235,7 @@ public abstract class JavaHelper
 			return staticMethods == Modifier.isStatic(modifiers) && acceptsModifiers(modifiers);
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public List<String> getMethodTypes(NavigatablePsiElement method)
 		{
@@ -256,7 +256,7 @@ public abstract class JavaHelper
 			return result;
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public String getDeclaringClass(@Nullable NavigatablePsiElement method)
 		{
@@ -267,7 +267,7 @@ public abstract class JavaHelper
 			return ((MyElement<Method>) method).myDelegate.getDeclaringClass().getName();
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public List<String> getAnnotations(NavigatablePsiElement element)
 		{
@@ -297,9 +297,9 @@ public abstract class JavaHelper
 			return info == null ? null : new MyElement<ClassInfo>(info);
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
-		public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @NotNull MethodType methodType, @Nullable final String methodName, int paramCount, String... paramTypes)
+		public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @Nonnull MethodType methodType, @Nullable final String methodName, int paramCount, String... paramTypes)
 		{
 			ClassInfo aClass = findClassSafe(className);
 			if(aClass == null || methodName == null)
@@ -378,7 +378,7 @@ public abstract class JavaHelper
 			return method.methodType == methodType && acceptsModifiers(method.modifiers);
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public List<String> getMethodTypes(NavigatablePsiElement method)
 		{
@@ -390,7 +390,7 @@ public abstract class JavaHelper
 			return signature.types;
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public String getDeclaringClass(@Nullable NavigatablePsiElement method)
 		{
@@ -401,7 +401,7 @@ public abstract class JavaHelper
 			return ((MyElement<MethodInfo>) method).myDelegate.declaringClass;
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public List<String> getAnnotations(NavigatablePsiElement element)
 		{

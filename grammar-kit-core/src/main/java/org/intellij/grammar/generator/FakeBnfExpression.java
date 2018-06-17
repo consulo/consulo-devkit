@@ -21,22 +21,22 @@ import com.intellij.psi.tree.IElementType;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.BnfVisitor;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
 * @author gregsh
 */
 public class FakeBnfExpression extends LeafPsiElement implements BnfExpression {
-  public FakeBnfExpression(@NotNull String text) {
+  public FakeBnfExpression(@Nonnull String text) {
     this(BnfTypes.BNF_EXPRESSION, text);
   }
 
-  public FakeBnfExpression(@NotNull IElementType elementType, @NotNull String text) {
+  public FakeBnfExpression(@Nonnull IElementType elementType, @Nonnull String text) {
     super(elementType, text);
   }
 
   @Override
-  public <R> R accept(@NotNull BnfVisitor<R> visitor) {
+  public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
     return null;
   }
 

@@ -15,8 +15,9 @@
  */
 package org.intellij.grammar.psi;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.psi.PsiElement;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * User: gregory
@@ -25,6 +26,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface BnfCompositeElement extends PsiElement {
 
-  <R> R accept(@NotNull BnfVisitor<R> visitor);
+  <R> R accept(@Nonnull BnfVisitor<R> visitor);
 
 }

@@ -21,25 +21,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.patterns.ElementPattern;
-import com.intellij.psi.LiteralTextEscaper;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementResolveResult;
-import com.intellij.psi.PsiLanguageInjectionHost;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceProvider;
-import com.intellij.psi.PsiReferenceRegistrar;
-import com.intellij.psi.ResolveResult;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.FakePsiElement;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -66,15 +59,15 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 		new BnfStringRefContributor().registerReferenceProviders(new PsiReferenceRegistrar()
 		{
 			@Override
-			public <T extends PsiElement> void registerReferenceProvider(@NotNull ElementPattern<T> pattern, @NotNull PsiReferenceProvider provider, double priority)
+			public <T extends PsiElement> void registerReferenceProvider(@Nonnull ElementPattern<T> pattern, @Nonnull PsiReferenceProvider provider, double priority)
 			{
 				ourProviders.put(pattern, provider);
 			}
 		});
 	}
 
-	@NotNull
-	public static PsiReference createPatternReference(@NotNull BnfStringImpl e)
+	@Nonnull
+	public static PsiReference createPatternReference(@Nonnull BnfStringImpl e)
 	{
 		PsiReference ref = e.getUserData(REF_KEY);
 		if(ref == null)
@@ -84,8 +77,8 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 		return ref;
 	}
 
-	@NotNull
-	public static PsiReference createRuleReference(@NotNull BnfStringImpl e)
+	@Nonnull
+	public static PsiReference createRuleReference(@Nonnull BnfStringImpl e)
 	{
 		PsiReference ref = e.getUserData(REF_KEY);
 		if(ref == null)
@@ -106,7 +99,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 		return null;
 	}
 
-	@NotNull
+	@Nonnull
 	public PsiReference[] getReferences()
 	{
 		// performance: do not run injectors
@@ -136,14 +129,14 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 	}
 
 	@Override
-	public BnfStringImpl updateText(@NotNull final String text)
+	public BnfStringImpl updateText(@Nonnull final String text)
 	{
 		final BnfExpression expression = BnfElementFactory.createExpressionFromText(getProject(), text);
 		assert expression instanceof BnfStringImpl : text + "-->" + expression;
 		return (BnfStringImpl) this.replace(expression);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public LiteralTextEscaper<? extends PsiLanguageInjectionHost> createLiteralTextEscaper()
 	{
@@ -183,9 +176,9 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 	{
 		private static final ResolveCache.PolyVariantResolver<MyPatternReference> RESOLVER = new ResolveCache.PolyVariantResolver<MyPatternReference>()
 		{
-			@NotNull
+			@Nonnull
 			@Override
-			public ResolveResult[] resolve(@NotNull MyPatternReference reference, boolean b)
+			public ResolveResult[] resolve(@Nonnull MyPatternReference reference, boolean b)
 			{
 				return reference.multiResolveInner();
 			}
@@ -208,14 +201,14 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 			return matchesElement(getElement(), element) && super.isReferenceTo(element);
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public ResolveResult[] multiResolve(boolean b)
 		{
 			return ResolveCache.getInstance(getElement().getProject()).resolveWithCaching(this, RESOLVER, false, b);
 		}
 
-		@NotNull
+		@Nonnull
 		public ResolveResult[] multiResolveInner()
 		{
 			final Pattern pattern = getPattern(getElement());
@@ -311,7 +304,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 			return myElement;
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public Object[] getVariants()
 		{
@@ -319,7 +312,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 		}
 	}
 
-	public static boolean matchesElement(@Nullable BnfLiteralExpression e1, @NotNull PsiElement e2)
+	public static boolean matchesElement(@Nullable BnfLiteralExpression e1, @Nonnull PsiElement e2)
 	{
 		if(e1 == null)
 		{
@@ -354,7 +347,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 			return myFuncName;
 		}
 
-		@NotNull
+		@Nonnull
 		@Override
 		public PsiElement getNavigationElement()
 		{
@@ -374,7 +367,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 		}
 
 		@Override
-		public <R> R accept(@NotNull BnfVisitor<R> visitor)
+		public <R> R accept(@Nonnull BnfVisitor<R> visitor)
 		{
 			return null;
 		}

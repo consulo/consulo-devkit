@@ -23,9 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.intellij.grammar.psi.BnfFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.org.objectweb.asm.AnnotationVisitor;
 import org.jetbrains.org.objectweb.asm.ClassWriter;
 import org.jetbrains.org.objectweb.asm.FieldVisitor;
@@ -65,7 +66,7 @@ public class LivePreviewLanguage extends Language {
 
   private static final MyClassLoader ourClassLoader = new MyClassLoader();
 
-  protected LivePreviewLanguage(@NotNull BnfFile grammarFile) {
+  protected LivePreviewLanguage(@Nonnull BnfFile grammarFile) {
     super(BASE_INSTANCE, ObjectUtils.assertNotNull(grammarFile.getVirtualFile()).getPath());
     VirtualFile virtualFile = ObjectUtils.assertNotNull(grammarFile.getVirtualFile());
     Application app = ApplicationManager.getApplication();
@@ -104,7 +105,7 @@ public class LivePreviewLanguage extends Language {
     return psiFile instanceof BnfFile? (BnfFile)psiFile : null;
   }
 
-  @NotNull
+  @Nonnull
   public static LivePreviewLanguage newInstance(PsiFile psiFile) {
     try {
       return (LivePreviewLanguage)ourClassLoader.createClass().getDeclaredConstructors()[0].newInstance(psiFile);
@@ -127,8 +128,8 @@ public class LivePreviewLanguage extends Language {
     return null;
   }
 
-  @NotNull
-  public List<Editor> getGrammarEditors(@NotNull Project project) {
+  @Nonnull
+  public List<Editor> getGrammarEditors(@Nonnull Project project) {
     VirtualFile file = getGrammarFile();
     if (file == null) return Collections.emptyList();
     FileEditor[] editors = FileEditorManager.getInstance(project).getAllEditors(file);
@@ -140,8 +141,8 @@ public class LivePreviewLanguage extends Language {
     return result;
   }
 
-  @NotNull
-  public List<Editor> getPreviewEditors(@NotNull Project project) {
+  @Nonnull
+  public List<Editor> getPreviewEditors(@Nonnull Project project) {
     FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
     VirtualFile[] files = fileEditorManager.getOpenFiles();
     if (files.length == 0) return Collections.emptyList();

@@ -32,7 +32,7 @@ import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.impl.BnfRefOrTokenImpl;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.Set;
 
@@ -46,20 +46,20 @@ import java.util.Set;
 public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getGroupDisplayName() {
     return "Grammar/BNF";
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getDisplayName() {
     return "Suspicious token";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getShortName() {
     return "BnfSuspiciousTokenInspection";
@@ -71,7 +71,7 @@ public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
   }
 
   @Override
-  public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
     ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
     checkFile(file, problemsHolder);
     return problemsHolder.getResultsArray();

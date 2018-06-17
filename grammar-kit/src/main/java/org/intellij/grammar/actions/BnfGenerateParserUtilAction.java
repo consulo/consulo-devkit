@@ -16,13 +16,15 @@
 
 package org.intellij.grammar.actions;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.BnfConstants;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrs;
 import org.intellij.grammar.psi.BnfFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.codeInsight.daemon.impl.quickfix.CreateClassKind;
 import com.intellij.codeInsight.intention.impl.CreateClassDialog;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -121,11 +123,11 @@ public class BnfGenerateParserUtilAction extends AnAction {
     return StringUtil.capitalize(FileUtil.getNameWithoutExtension(bnfFile.getName()));
   }
 
-  public static String createClass(@NotNull PsiFile origin,
-                                   @NotNull final String title,
+  public static String createClass(@Nonnull PsiFile origin,
+                                   @Nonnull final String title,
                                    @Nullable final String baseClass,
-                                   @NotNull String suggestedName,
-                                   @NotNull String suggestedPackage) {
+                                   @Nonnull String suggestedName,
+                                   @Nonnull String suggestedPackage) {
     Project project = origin.getProject();
     Module module = ModuleUtilCore.findModuleForPsiElement(origin);
     CreateClassDialog dialog = new CreateClassDialog(project, title, suggestedName, suggestedPackage, CreateClassKind.CLASS, true, module);

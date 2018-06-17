@@ -22,7 +22,7 @@ import com.intellij.lang.WhitespacesBinders;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.ContainerUtil;
 import org.intellij.grammar.parser.GeneratedParserUtilBase;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -65,7 +65,7 @@ public class LiveHooksHelper {
     return (GeneratedParserUtilBase.Hook)ourHooks.get(name);
   }
 
-  public static Object getHookParam(@NotNull String value) {
+  public static Object getHookParam(@Nonnull String value) {
     String[] args = value.trim().split("\\s*,\\s*");
     if (args.length == 1) return ourBinders.get(args[0]);
     Object[] res = new WhitespacesAndCommentsBinder[args.length];

@@ -30,8 +30,8 @@ import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.impl.BnfFileImpl;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.debugger.NoDataException;
 import com.intellij.debugger.PositionManager;
 import com.intellij.debugger.SourcePosition;
@@ -162,7 +162,7 @@ public class BnfPositionManager implements PositionManager {
     return result.get();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public List<ReferenceType> getAllClasses(SourcePosition classPosition) throws NoDataException {
     String parserClass = getParserClass(classPosition);
@@ -174,7 +174,7 @@ public class BnfPositionManager implements PositionManager {
     return referenceTypes;
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public List<Location> locationsOfLine(ReferenceType type, SourcePosition position) throws NoDataException {
     String parserClass = getParserClass(position);
@@ -239,7 +239,7 @@ public class BnfPositionManager implements PositionManager {
     return myProcess.getRequestsManager().createClassPrepareRequest(requestor, getParserClass(position));
   }
 
-  @NotNull
+  @Nonnull
   private String getParserClass(SourcePosition classPosition) throws NoDataException {
     AccessToken token = ReadAction.start();
     try {
@@ -253,7 +253,7 @@ public class BnfPositionManager implements PositionManager {
     }
   }
 
-  @NotNull
+  @Nonnull
   private BnfRule getRuleAt(SourcePosition position) throws NoDataException {
     PsiFile file = position.getFile();
     if (!(file instanceof BnfFileImpl)) throw new NoDataException();

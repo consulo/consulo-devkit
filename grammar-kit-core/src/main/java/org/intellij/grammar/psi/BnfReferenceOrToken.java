@@ -15,13 +15,13 @@
  */
 package org.intellij.grammar.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import javax.annotation.*;
+
 import com.intellij.psi.PsiElement;
 
 public interface BnfReferenceOrToken extends BnfExpression {
 
-  @NotNull
+  @Nonnull
   PsiElement getId();
 
   @Nullable

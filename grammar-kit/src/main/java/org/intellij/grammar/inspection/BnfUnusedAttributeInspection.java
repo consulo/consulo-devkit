@@ -19,10 +19,11 @@ package org.intellij.grammar.inspection;
 import static org.intellij.grammar.KnownAttribute.getAttribute;
 import static org.intellij.grammar.KnownAttribute.getCompatibleAttribute;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfVisitor;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.LocalInspectionToolSession;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -33,14 +34,14 @@ import com.intellij.psi.PsiElementVisitor;
  */
 public class BnfUnusedAttributeInspection extends LocalInspectionTool
 {
-	@NotNull
+	@Nonnull
 	@Override
-	public PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly, @NotNull LocalInspectionToolSession session)
+	public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session)
 	{
 		return new BnfVisitor<Void>()
 		{
 			@Override
-			public Void visitAttr(@NotNull BnfAttr o)
+			public Void visitAttr(@Nonnull BnfAttr o)
 			{
 				final String name = o.getName();
 				if(!name.toUpperCase().equals(name) && getAttribute(name) == null)

@@ -15,8 +15,8 @@
  */
 package org.intellij.grammar.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
+import javax.annotation.*;
+
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 
@@ -25,7 +25,7 @@ public interface BnfListEntry extends BnfCompositeElement {
   @Nullable
   PsiElement getId();
 
-  @NotNull
+  @Nonnull
   PsiReference[] getReferences();
 
   @Nullable

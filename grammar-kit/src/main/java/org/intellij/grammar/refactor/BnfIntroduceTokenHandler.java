@@ -48,8 +48,8 @@ import org.intellij.grammar.generator.RuleGraphHelper;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -63,12 +63,12 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
   public static final String REFACTORING_NAME = "Introduce Token";
 
   @Override
-  public void invoke(final @NotNull Project project, @NotNull PsiElement[] elements, DataContext dataContext) {
+  public void invoke(final @Nonnull Project project, @Nonnull PsiElement[] elements, DataContext dataContext) {
     // do not support this case
   }
 
   @Override
-  public void invoke(@NotNull final Project project,
+  public void invoke(@Nonnull final Project project,
                      final Editor editor,
                      final PsiFile file,
                      @Nullable DataContext dataContext) {
@@ -101,7 +101,7 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
 
     BnfVisitor visitor = new BnfVisitor<Void>() {
       @Override
-      public Void visitStringLiteralExpression(@NotNull BnfStringLiteralExpression o) {
+      public Void visitStringLiteralExpression(@Nonnull BnfStringLiteralExpression o) {
         if (tokenText != null && tokenText.equals(o.getText())) {
           allOccurrences.add(o);
         }
@@ -109,7 +109,7 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
       }
 
       @Override
-      public Void visitReferenceOrToken(@NotNull BnfReferenceOrToken o) {
+      public Void visitReferenceOrToken(@Nonnull BnfReferenceOrToken o) {
         if (GrammarUtil.isExternalReference(o)) return null;
         if (tokenName != null && tokenName.equals(o.getText())) {
           allOccurrences.add(o);
@@ -130,7 +130,7 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
       public void pass(final OccurrencesChooser.ReplaceChoice choice) {
         new WriteCommandAction(project, REFACTORING_NAME, file) {
           @Override
-          protected void run(@NotNull com.intellij.openapi.application.Result result) throws Throwable {
+          protected void run(@Nonnull com.intellij.openapi.application.Result result) throws Throwable {
             buildTemplateAndRun(project, editor, bnfFile, occurrencesMap.get(choice), tokenName, tokenText, tokenNameMap.keySet());
           }
         }.execute();

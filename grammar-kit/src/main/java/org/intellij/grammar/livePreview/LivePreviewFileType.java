@@ -16,9 +16,11 @@
 
 package org.intellij.grammar.livePreview;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.BnfIcons;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import consulo.ui.image.Image;
@@ -33,19 +35,19 @@ public class LivePreviewFileType extends LanguageFileType {
     super(LivePreviewLanguage.BASE_INSTANCE);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getId() {
     return "Grammar Live Preview";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getDescription() {
     return "Grammar Live Preview";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getDefaultExtension() {
     return "preview";

@@ -21,11 +21,13 @@ import static com.intellij.util.ArrayUtil.getFirstElement;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.BnfFileType;
 import org.intellij.grammar.config.Options;
 import org.intellij.grammar.generator.BnfConstants;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -46,9 +48,9 @@ import com.intellij.util.ObjectUtils;
  * @author gregsh
  */
 public class FileGeneratorUtil {
-  @NotNull
-  public static VirtualFile getTargetDirectoryFor(@NotNull Project project,
-                                                  @NotNull VirtualFile sourceFile,
+  @Nonnull
+  public static VirtualFile getTargetDirectoryFor(@Nonnull Project project,
+                                                  @Nonnull VirtualFile sourceFile,
                                                   @Nullable String targetFile,
                                                   @Nullable String targetPackage,
                                                   boolean returnRoot) {
@@ -97,7 +99,7 @@ public class FileGeneratorUtil {
       else {
         VirtualFile result = new WriteAction<VirtualFile>() {
           @Override
-          protected void run(@NotNull Result<VirtualFile> result) throws Throwable {
+          protected void run(@Nonnull Result<VirtualFile> result) throws Throwable {
             result.setResult(VfsUtil.createDirectoryIfMissing(virtualRoot, relativePath));
           }
         }.execute().throwException().getResultObject();
@@ -115,11 +117,11 @@ public class FileGeneratorUtil {
     }
   }
 
-  static void fail(@NotNull Project project, @NotNull VirtualFile sourceFile, @NotNull String message) {
+  static void fail(@Nonnull Project project, @Nonnull VirtualFile sourceFile, @Nonnull String message) {
     fail(project, sourceFile.getName(), message);
   }
 
-  static void fail(@NotNull Project project, @NotNull String title, @NotNull String message) {
+  static void fail(@Nonnull Project project, @Nonnull String title, @Nonnull String message) {
     Notifications.Bus.notify(new Notification(
       BnfConstants.GENERATION_GROUP,
       title, message,

@@ -34,6 +34,9 @@ import gnu.trove.TObjectHashingStrategy;
 
 import java.util.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.psi.BnfExpression;
@@ -46,8 +49,6 @@ import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfStringLiteralExpression;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import com.intellij.lang.Language;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiElement;
@@ -204,13 +205,13 @@ public class RuleGraphHelper {
 
   private static <K, V> MultiMap<K, V> newMultiMap() {
     return new MultiMap<K, V>() {
-      @NotNull
+      @Nonnull
       @Override
       protected Map<K, Collection<V>> createMap() {
         return ContainerUtil.newLinkedHashMap();
       }
 
-      @NotNull
+      @Nonnull
       @Override
       protected Collection<V> createCollection() {
         return ContainerUtil.newLinkedHashSet();
@@ -218,7 +219,7 @@ public class RuleGraphHelper {
     };
   }
 
-  @NotNull
+  @Nonnull
   public static Map<String, String> getTokenNameToTextMap(final BnfFile file) {
     return CachedValuesManager.getCachedValue(file, new CachedValueProvider<Map<String, String>>() {
       @Nullable
@@ -229,7 +230,7 @@ public class RuleGraphHelper {
     });
   }
 
-  @NotNull
+  @Nonnull
   public static Map<String, String> getTokenTextToNameMap(final BnfFile file) {
     return CachedValuesManager.getCachedValue(file, new CachedValueProvider<Map<String, String>>() {
       @Nullable
@@ -281,7 +282,7 @@ public class RuleGraphHelper {
     return myFile;
   }
 
-  public boolean canCollapse(@NotNull BnfRule rule) {
+  public boolean canCollapse(@Nonnull BnfRule rule) {
     return myRulesCollapseMap.containsKey(rule);
   }
 
@@ -319,7 +320,7 @@ public class RuleGraphHelper {
     }
   }
 
-  private Map<PsiElement, Cardinality> collectMembers(@NotNull BnfRule rule, Set<Object> visited) {
+  private Map<PsiElement, Cardinality> collectMembers(@Nonnull BnfRule rule, Set<Object> visited) {
     Map<PsiElement, Cardinality> result = myRuleContentsMap.get(rule);
     if (result != null) return result;
     if (Rule.isExternal(rule)) {
@@ -399,7 +400,7 @@ public class RuleGraphHelper {
     return myRulesGraph.get(rule);
   }
 
-  @NotNull
+  @Nonnull
   public Map<PsiElement, Cardinality> getFor(BnfRule rule) {
     Map<PsiElement, Cardinality> map = myRuleContentsMap.get(rule); // null for duplicate
     return map == null ? Collections.<PsiElement, Cardinality>emptyMap() : map;
@@ -564,7 +565,7 @@ public class RuleGraphHelper {
     return result;
   }
 
-  private Map<PsiElement, Cardinality> joinMaps(@NotNull BnfRule rule, boolean tryCollapse, IElementType type, List<Map<PsiElement, Cardinality>> list) {
+  private Map<PsiElement, Cardinality> joinMaps(@Nonnull BnfRule rule, boolean tryCollapse, IElementType type, List<Map<PsiElement, Cardinality>> list) {
     if (list.isEmpty()) return Collections.emptyMap();
     if (type == BnfTypes.BNF_OP_OPT || type == BnfTypes.BNF_OP_ZEROMORE || type == BnfTypes.BNF_OP_ONEMORE) {
       ParserGenerator.LOG.assertTrue(list.size() == 1);
@@ -702,7 +703,7 @@ public class RuleGraphHelper {
   }
 
   /** @noinspection UnusedParameters*/
-  private List<Map<PsiElement, Cardinality>> compactInheritors(@Nullable BnfRule forRule, @NotNull List<Map<PsiElement, Cardinality>> mapList) {
+  private List<Map<PsiElement, Cardinality>> compactInheritors(@Nullable BnfRule forRule, @Nonnull List<Map<PsiElement, Cardinality>> mapList) {
     Map<BnfRule, BnfRule> rulesAndAlts = ContainerUtil.newLinkedHashMap();
     Map<PsiElement, BnfRule> externalMap = ContainerUtil.newLinkedHashMap();
     for (Map<PsiElement, Cardinality> map : mapList) {
@@ -903,7 +904,7 @@ public class RuleGraphHelper {
     return thatRule == null || thatRule == grammarRoot || Rule.isPrivate(thatRule) || Rule.isExternal(thatRule);
   }
 
-  @NotNull
+  @Nonnull
   private PsiElement newExternalPsi(String name) {
     PsiElement e = myExternalElements.get(name);
     if (e == null) {

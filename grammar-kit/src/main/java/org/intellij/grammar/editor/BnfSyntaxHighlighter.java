@@ -26,7 +26,7 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.intellij.grammar.BnfParserDefinition;
 import org.intellij.grammar.parser.BnfLexer;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 import static org.intellij.grammar.psi.BnfTypes.*;
@@ -57,13 +57,13 @@ class BnfSyntaxHighlighter extends SyntaxHighlighterBase {
   public static final TextAttributesKey PIN_MARKER = createTextAttributesKey(
     "BNF_PIN", new TextAttributes(null, null, DefaultLanguageHighlighterColors.LINE_COMMENT.getDefaultAttributes().getForegroundColor(), EffectType.BOLD_DOTTED_LINE, 0));
 
-  @NotNull
+  @Nonnull
   @Override
   public Lexer getHighlightingLexer() {
     return new BnfLexer();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public TextAttributesKey[] getTokenHighlights(IElementType type) {
     if (type == TokenType.BAD_CHARACTER) {

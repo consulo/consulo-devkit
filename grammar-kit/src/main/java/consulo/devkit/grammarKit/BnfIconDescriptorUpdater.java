@@ -1,11 +1,12 @@
 package consulo.devkit.grammarKit;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.BnfIcons;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrs;
 import org.intellij.grammar.psi.BnfModifier;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.PsiElement;
@@ -20,7 +21,7 @@ import consulo.ui.image.Image;
 public class BnfIconDescriptorUpdater implements IconDescriptorUpdater
 {
 	@Override
-	public void updateIcon(@NotNull IconDescriptor iconDescriptor, @NotNull PsiElement element, int flags)
+	public void updateIcon(@Nonnull IconDescriptor iconDescriptor, @Nonnull PsiElement element, int flags)
 	{
 		if(element instanceof BnfRule)
 		{

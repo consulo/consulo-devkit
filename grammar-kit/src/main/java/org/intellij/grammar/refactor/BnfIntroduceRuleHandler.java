@@ -40,8 +40,8 @@ import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
 import org.intellij.grammar.psi.impl.BnfFileImpl;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jetbrains.annotations.TestOnly;
 
 import java.util.*;
@@ -58,7 +58,7 @@ public class BnfIntroduceRuleHandler implements RefactoringActionHandler {
   public static final String REFACTORING_NAME = "Extract Rule";
   public static final Function<BnfExpression, String> RENDER_FUNCTION = new Function<BnfExpression, String>() {
     @Override
-    public String fun(@NotNull BnfExpression bnfExpression) {
+    public String fun(@Nonnull BnfExpression bnfExpression) {
       return bnfExpression.getText().replaceAll("\\s+", " ");
     }
   };
@@ -76,12 +76,12 @@ public class BnfIntroduceRuleHandler implements RefactoringActionHandler {
   }
 
   @Override
-  public void invoke(@NotNull Project project, @NotNull PsiElement[] elements, DataContext dataContext) {
+  public void invoke(@Nonnull Project project, @Nonnull PsiElement[] elements, DataContext dataContext) {
     // do not support this case
   }
 
   @Override
-  public void invoke(@NotNull final Project project, final Editor editor, final PsiFile file, @Nullable DataContext dataContext) {
+  public void invoke(@Nonnull final Project project, final Editor editor, final PsiFile file, @Nullable DataContext dataContext) {
     if (!(file instanceof BnfFileImpl)) return;
 
     BnfFile bnfFile = (BnfFileImpl)file;

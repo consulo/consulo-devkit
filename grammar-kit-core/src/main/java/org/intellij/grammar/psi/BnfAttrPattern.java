@@ -15,9 +15,7 @@
  */
 package org.intellij.grammar.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElement;
+import javax.annotation.Nullable;
 
 public interface BnfAttrPattern extends BnfCompositeElement {
 

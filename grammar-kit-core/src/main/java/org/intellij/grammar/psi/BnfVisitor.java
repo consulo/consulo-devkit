@@ -15,100 +15,101 @@
  */
 package org.intellij.grammar.psi;
 
-import org.jetbrains.annotations.*;
+import javax.annotation.Nonnull;
+
 import com.intellij.psi.PsiElementVisitor;
 
 public class BnfVisitor<R> extends PsiElementVisitor {
 
-  public R visitAttr(@NotNull BnfAttr o) {
+  public R visitAttr(@Nonnull BnfAttr o) {
     return visitNamedElement(o);
   }
 
-  public R visitAttrPattern(@NotNull BnfAttrPattern o) {
+  public R visitAttrPattern(@Nonnull BnfAttrPattern o) {
     return visitCompositeElement(o);
   }
 
-  public R visitAttrs(@NotNull BnfAttrs o) {
+  public R visitAttrs(@Nonnull BnfAttrs o) {
     return visitCompositeElement(o);
   }
 
-  public R visitChoice(@NotNull BnfChoice o) {
+  public R visitChoice(@Nonnull BnfChoice o) {
     return visitExpression(o);
   }
 
-  public R visitExpression(@NotNull BnfExpression o) {
+  public R visitExpression(@Nonnull BnfExpression o) {
     return visitCompositeElement(o);
   }
 
-  public R visitExternalExpression(@NotNull BnfExternalExpression o) {
+  public R visitExternalExpression(@Nonnull BnfExternalExpression o) {
     return visitExpression(o);
   }
 
-  public R visitListEntry(@NotNull BnfListEntry o) {
+  public R visitListEntry(@Nonnull BnfListEntry o) {
     return visitCompositeElement(o);
   }
 
-  public R visitLiteralExpression(@NotNull BnfLiteralExpression o) {
+  public R visitLiteralExpression(@Nonnull BnfLiteralExpression o) {
     return visitExpression(o);
   }
 
-  public R visitModifier(@NotNull BnfModifier o) {
+  public R visitModifier(@Nonnull BnfModifier o) {
     return visitCompositeElement(o);
   }
 
-  public R visitParenExpression(@NotNull BnfParenExpression o) {
+  public R visitParenExpression(@Nonnull BnfParenExpression o) {
     return visitParenthesized(o);
   }
 
-  public R visitParenOptExpression(@NotNull BnfParenOptExpression o) {
+  public R visitParenOptExpression(@Nonnull BnfParenOptExpression o) {
     return visitParenthesized(o);
   }
 
-  public R visitParenthesized(@NotNull BnfParenthesized o) {
+  public R visitParenthesized(@Nonnull BnfParenthesized o) {
     return visitExpression(o);
   }
 
-  public R visitPredicate(@NotNull BnfPredicate o) {
+  public R visitPredicate(@Nonnull BnfPredicate o) {
     return visitExpression(o);
   }
 
-  public R visitPredicateSign(@NotNull BnfPredicateSign o) {
+  public R visitPredicateSign(@Nonnull BnfPredicateSign o) {
     return visitCompositeElement(o);
   }
 
-  public R visitQuantified(@NotNull BnfQuantified o) {
+  public R visitQuantified(@Nonnull BnfQuantified o) {
     return visitExpression(o);
   }
 
-  public R visitQuantifier(@NotNull BnfQuantifier o) {
+  public R visitQuantifier(@Nonnull BnfQuantifier o) {
     return visitCompositeElement(o);
   }
 
-  public R visitReferenceOrToken(@NotNull BnfReferenceOrToken o) {
+  public R visitReferenceOrToken(@Nonnull BnfReferenceOrToken o) {
     return visitExpression(o);
   }
 
-  public R visitRule(@NotNull BnfRule o) {
+  public R visitRule(@Nonnull BnfRule o) {
     return visitNamedElement(o);
   }
 
-  public R visitSequence(@NotNull BnfSequence o) {
+  public R visitSequence(@Nonnull BnfSequence o) {
     return visitExpression(o);
   }
 
-  public R visitStringLiteralExpression(@NotNull BnfStringLiteralExpression o) {
+  public R visitStringLiteralExpression(@Nonnull BnfStringLiteralExpression o) {
     return visitLiteralExpression(o);
   }
 
-  public R visitValueList(@NotNull BnfValueList o) {
+  public R visitValueList(@Nonnull BnfValueList o) {
     return visitExpression(o);
   }
 
-  public R visitNamedElement(@NotNull BnfNamedElement o) {
+  public R visitNamedElement(@Nonnull BnfNamedElement o) {
     return visitCompositeElement(o);
   }
 
-  public R visitCompositeElement(@NotNull BnfCompositeElement o) {
+  public R visitCompositeElement(@Nonnull BnfCompositeElement o) {
     visitElement(o);
     return null;
   }

@@ -20,8 +20,8 @@ import java.util.List;
 
 import org.intellij.grammar.livePreview.GrammarAtCaretPassFactory;
 import org.intellij.grammar.livePreview.LivePreviewLanguage;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.lang.Language;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -39,7 +39,7 @@ import com.intellij.util.ObjectUtil;
 public class HighlightGrammarAtCaretAction extends AnAction {
 
   @Nullable
-  private static Editor getPreviewEditor(@NotNull AnActionEvent e) {
+  private static Editor getPreviewEditor(@Nonnull AnActionEvent e) {
     Editor editor = e.getData(PlatformDataKeys.EDITOR);
     PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
     Language language = psiFile == null ? null : psiFile.getLanguage();

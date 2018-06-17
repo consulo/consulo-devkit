@@ -16,7 +16,7 @@
 
 package org.intellij.grammar.generator;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.Locale;
 
@@ -26,8 +26,8 @@ import java.util.Locale;
 public enum Case {
   LOWER, UPPER, AS_IS, CAMEL;
 
-  @NotNull
-  public String apply(@NotNull String s) {
+  @Nonnull
+  public String apply(@Nonnull String s) {
     if (s.isEmpty()) return s;
     switch (this) {
       case LOWER:

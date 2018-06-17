@@ -18,8 +18,8 @@ package org.intellij.grammar.psi;
 
 import com.intellij.psi.PsiFile;
 import org.intellij.grammar.KnownAttribute;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -27,18 +27,18 @@ import java.util.List;
  * @author gregsh
  */
 public interface BnfFile extends PsiFile {
-  @NotNull
+  @Nonnull
   List<BnfRule> getRules();
 
-  @NotNull
+  @Nonnull
   List<BnfAttrs> getAttributes();
 
   @Nullable
   BnfRule getRule(@Nullable String ruleName);
 
   @Nullable
-  BnfAttr findAttribute(@Nullable BnfRule rule, @NotNull KnownAttribute<?> knownAttribute, @Nullable String match);
+  BnfAttr findAttribute(@Nullable BnfRule rule, @Nonnull KnownAttribute<?> knownAttribute, @Nullable String match);
 
   @Nullable
-  <T> T findAttributeValue(@Nullable BnfRule rule, @NotNull KnownAttribute<T> knownAttribute, @Nullable String match);
+  <T> T findAttributeValue(@Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match);
 }

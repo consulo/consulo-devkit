@@ -25,8 +25,8 @@ import org.intellij.grammar.parser.GeneratedParserUtilBase;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.lang.Language;
 import com.intellij.lang.LanguageParserDefinitions;
 import com.intellij.lang.LanguageStructureViewBuilder;
@@ -127,7 +127,7 @@ public class LivePreviewHelper
 
 	private static final NotNullLazyKey<SingleAlarm, Project> LIVE_PREVIEW_ALARM = NotNullLazyKey.create("LIVE_PREVIEW_ALARM", new NotNullFunction<Project, SingleAlarm>()
 	{
-		@NotNull
+		@Nonnull
 		@Override
 		public SingleAlarm fun(final Project project)
 		{
@@ -184,7 +184,7 @@ public class LivePreviewHelper
 		//});
 	}
 
-	private static void reparseAllLivePreviews(@NotNull Project project)
+	private static void reparseAllLivePreviews(@Nonnull Project project)
 	{
 		if(!project.isOpen())
 		{

@@ -19,7 +19,7 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.text.StringUtil;
 import org.intellij.grammar.psi.*;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,7 +50,7 @@ public class BnfCompositeElementImpl extends ASTWrapperPsiElement implements Bnf
   }
 
   @Override
-  public <R> R accept(@NotNull BnfVisitor<R> visitor) {
+  public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
     return visitor.visitCompositeElement(this);
   }
 }

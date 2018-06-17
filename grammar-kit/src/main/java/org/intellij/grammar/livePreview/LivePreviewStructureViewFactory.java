@@ -23,13 +23,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 
 import org.intellij.grammar.BnfIcons;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.StructureViewModelBase;
@@ -61,7 +62,7 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
   public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
     if (!(psiFile.getLanguage() instanceof LivePreviewLanguage)) return null;
     return new TreeBasedStructureViewBuilder() {
-      @NotNull
+      @Nonnull
       @Override
       public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
         return new MyModel(psiFile);
@@ -75,7 +76,7 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
   }
 
   private static class MyModel extends StructureViewModelBase implements StructureViewModel.ElementInfoProvider{
-    protected MyModel(@NotNull PsiFile psiFile) {
+    protected MyModel(@Nonnull PsiFile psiFile) {
       super(psiFile, new MyElement(psiFile));
       withSuitableClasses(PsiElement.class);
     }
@@ -103,7 +104,7 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
       super(element);
     }
 
-    @NotNull
+    @Nonnull
     public Collection<StructureViewTreeElement> getChildrenBase() {
       PsiElement element = getElement();
       if (element == null || element instanceof LeafPsiElement) return Collections.emptyList();
@@ -120,7 +121,7 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
       return getPresentableText();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getPresentableText() {
       PsiElement element = getElement();

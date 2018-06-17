@@ -16,7 +16,8 @@
 
 package org.intellij.grammar.generator;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
+
 import com.intellij.openapi.application.ApplicationManager;
 
 /**
@@ -65,7 +66,7 @@ class Names
 		return new Names("b", "v", "l", "m", "p", "r", "c", "t", "g", "_");
 	}
 
-	@NotNull
+	@Nonnull
 	public static Names forName(String name)
 	{
 		if("long".equals(name))

@@ -16,6 +16,8 @@
 
 package org.intellij.grammar.inspection;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.lang.ASTNode;
@@ -26,26 +28,25 @@ import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.refactor.BnfExpressionOptimizer;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author gregsh
  */
 public class BnfRemoveExpressionFix implements LocalQuickFix {
-  @NotNull
+  @Nonnull
   @Override
   public String getName() {
     return getFamilyName();
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getFamilyName() {
     return "Remove expression";
   }
 
   @Override
-  public void applyFix(@NotNull Project project, @NotNull ProblemDescriptor descriptor) {
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     PsiElement element = descriptor.getPsiElement();
     if (!element.isValid()) return;
     PsiElement parent = element.getParent();

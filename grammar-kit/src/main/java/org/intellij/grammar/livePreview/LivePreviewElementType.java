@@ -22,8 +22,8 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ObjectUtils;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import static org.intellij.grammar.livePreview.LivePreviewParserDefinition.KEYWORD;
 
@@ -32,11 +32,11 @@ import static org.intellij.grammar.livePreview.LivePreviewParserDefinition.KEYWO
  */
 public class LivePreviewElementType extends IElementType {
 
-  public LivePreviewElementType(@NotNull String debugName, @NotNull LivePreviewLanguage language) {
+  public LivePreviewElementType(@Nonnull String debugName, @Nonnull LivePreviewLanguage language) {
     super(debugName, language, false);
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public LivePreviewLanguage getLanguage() {
     return (LivePreviewLanguage)super.getLanguage();
@@ -61,14 +61,14 @@ public class LivePreviewElementType extends IElementType {
   public static class TokenType extends LivePreviewElementType {
     final IElementType delegate;
 
-    TokenType(@Nullable IElementType delegate, @NotNull String name, @NotNull LivePreviewLanguage language) {
+    TokenType(@Nullable IElementType delegate, @Nonnull String name, @Nonnull LivePreviewLanguage language) {
       super(name, language);
       this.delegate = ObjectUtils.chooseNotNull(delegate, this);
     }
   }
 
   public static class KeywordType extends TokenType {
-    KeywordType(@NotNull String name, @NotNull LivePreviewLanguage language) {
+    KeywordType(@Nonnull String name, @Nonnull LivePreviewLanguage language) {
       super(KEYWORD, name, language);
     }
   }
@@ -76,7 +76,7 @@ public class LivePreviewElementType extends IElementType {
   public static class RuleType extends LivePreviewElementType {
     final String ruleName;
 
-    RuleType(@NotNull String elementType, @NotNull BnfRule rule, @NotNull LivePreviewLanguage language) {
+    RuleType(@Nonnull String elementType, @Nonnull BnfRule rule, @Nonnull LivePreviewLanguage language) {
       super(elementType, language);
       ruleName = rule.getName();
     }

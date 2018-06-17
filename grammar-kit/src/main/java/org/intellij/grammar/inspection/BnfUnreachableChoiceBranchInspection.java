@@ -29,7 +29,7 @@ import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfTypes;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.List;
 import java.util.Set;
@@ -40,20 +40,20 @@ import java.util.Set;
 public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getGroupDisplayName() {
     return "Grammar/BNF";
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getDisplayName() {
     return "Unreachable choice branch";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getShortName() {
     return "BnfUnreachableChoiceBranchInspection";
@@ -64,7 +64,7 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
   }
 
   @Override
-  public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
     ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
     checkFile(file, problemsHolder);
     return problemsHolder.getResultsArray();

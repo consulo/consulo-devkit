@@ -16,12 +16,15 @@
 package org.intellij.grammar.psi.impl;
 
 import java.util.List;
-import org.jetbrains.annotations.*;
+
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static org.intellij.grammar.psi.BnfTypes.*;
+
+import javax.annotation.*;
+
 import org.intellij.grammar.psi.*;
 
 public class BnfRuleImpl extends BnfNamedElementImpl implements BnfRule {
@@ -30,11 +33,11 @@ public class BnfRuleImpl extends BnfNamedElementImpl implements BnfRule {
     super(node);
   }
 
-  public <R> R accept(@NotNull BnfVisitor<R> visitor) {
+  public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
     return visitor.visitRule(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
+  public void accept(@Nonnull PsiElementVisitor visitor) {
     if (visitor instanceof BnfVisitor) accept((BnfVisitor)visitor);
     else super.accept(visitor);
   }
@@ -46,19 +49,19 @@ public class BnfRuleImpl extends BnfNamedElementImpl implements BnfRule {
   }
 
   @Override
-  @NotNull
+  @Nonnull
   public BnfExpression getExpression() {
     return findNotNullChildByClass(BnfExpression.class);
   }
 
   @Override
-  @NotNull
+  @Nonnull
   public List<BnfModifier> getModifierList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, BnfModifier.class);
   }
 
   @Override
-  @NotNull
+  @Nonnull
   public PsiElement getId() {
     return findNotNullChildByType(BNF_ID);
   }

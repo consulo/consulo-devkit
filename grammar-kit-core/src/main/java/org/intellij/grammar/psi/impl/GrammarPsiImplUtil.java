@@ -32,7 +32,7 @@ import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfListEntry;
 import org.intellij.grammar.psi.BnfLiteralExpression;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
  * @author gregsh
  */
 public class GrammarPsiImplUtil {
-  @NotNull
+  @Nonnull
   public static PsiReference[] getReferences(BnfListEntry o) {
     BnfAttr attr = PsiTreeUtil.getParentOfType(o, BnfAttr.class);
     if (attr == null || !Comparing.equal(KnownAttribute.METHODS.getName(), attr.getName())) return PsiReference.EMPTY_ARRAY;
@@ -64,13 +64,13 @@ public class GrammarPsiImplUtil {
           return ContainerUtil.concat(implMethods, mixinMethods);
         }
 
-        @NotNull
+        @Nonnull
         @Override
         public ResolveResult[] multiResolve(boolean b) {
           return PsiElementResolveResult.createResults(getTargetMethods(getElement().getText()));
         }
 
-        @NotNull
+        @Nonnull
         @Override
         public Object[] getVariants() {
           List<LookupElement> list = ContainerUtil.newArrayList();

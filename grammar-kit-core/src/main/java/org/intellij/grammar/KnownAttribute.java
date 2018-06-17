@@ -20,8 +20,8 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.containers.ContainerUtil;
 import org.intellij.grammar.generator.BnfConstants;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +34,7 @@ import java.util.*;
 public class KnownAttribute<T> {
   private static final Map<String, KnownAttribute> ourAttributes = new TreeMap<String, KnownAttribute>();
 
-  @NotNull
+  @Nonnull
   public static Collection<KnownAttribute> getAttributes() { return Collections.unmodifiableCollection(ourAttributes.values()); }
   @Nullable
   public static KnownAttribute getAttribute(@Nullable String name) { return name == null ? null : ourAttributes.get(name); }
@@ -112,7 +112,7 @@ public class KnownAttribute<T> {
     assert prev == null : name + " attribute already defined";
   }
 
-  @NotNull
+  @Nonnull
   public String getName() {
     return myName;
   }
@@ -150,7 +150,7 @@ public class KnownAttribute<T> {
   }
 
   // returns a non-registered attribute for migration purposes
-  @NotNull
+  @Nonnull
   public KnownAttribute<T> alias(String deprecatedName) {
     return new KnownAttribute<T>(deprecatedName, myClazz, null);
   }
@@ -164,14 +164,14 @@ public class KnownAttribute<T> {
   }
 
   public static class ListValue extends LinkedList<Pair<String, String>> {
-    @NotNull
+    @Nonnull
     public static ListValue singleValue(String s1, String s2) {
       ListValue t = new ListValue();
       t.add(Pair.create(s1, s2));
       return t;
     }
 
-    @NotNull
+    @Nonnull
     public List<String> asStrings() {
       List<String> t = ContainerUtil.newArrayList();
       for (Pair<String, String> pair : this) {
@@ -181,17 +181,17 @@ public class KnownAttribute<T> {
       return t;
     }
 
-    @NotNull
+    @Nonnull
     public Map<String, String> asMap() {
       return asMap(false);
     }
 
-    @NotNull
+    @Nonnull
     public Map<String, String> asInverseMap() {
       return asMap(true);
     }
 
-    @NotNull
+    @Nonnull
     private Map<String, String> asMap(boolean inverse) {
       Map<String, String> t = ContainerUtil.newLinkedHashMap();
       for (Pair<String, String> pair : this) {

@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nonnull;
+
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.intellij.grammar.KnownAttribute;
@@ -37,8 +39,8 @@ import org.intellij.grammar.psi.BnfAttrs;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfReferenceOrToken;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -196,8 +198,8 @@ public class BnfGenerateLexerAction extends AnAction {
     return StringUtil.convertLineSeparators(out.toString());
   }
 
-  @NotNull
-  public static String token2JFlex(@NotNull String tokenText) {
+  @Nonnull
+  public static String token2JFlex(@Nonnull String tokenText) {
     if (ParserGeneratorUtil.isRegexpToken(tokenText)) {
       return javaPattern2JFlex(ParserGeneratorUtil.getRegexpTokenRegexp(tokenText));
     }

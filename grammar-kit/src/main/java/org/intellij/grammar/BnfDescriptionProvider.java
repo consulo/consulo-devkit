@@ -15,10 +15,11 @@
  */
 package org.intellij.grammar;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfCompositeElement;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.ElementDescriptionLocation;
 import com.intellij.psi.ElementDescriptionProvider;
@@ -36,7 +37,7 @@ import com.intellij.usageView.UsageViewTypeLocation;
  */
 public class BnfDescriptionProvider implements ElementDescriptionProvider {
   @Override
-  public String getElementDescription(@NotNull PsiElement psiElement, @NotNull ElementDescriptionLocation location) {
+  public String getElementDescription(@Nonnull PsiElement psiElement, @Nonnull ElementDescriptionLocation location) {
     if (location == UsageViewNodeTextLocation.INSTANCE && psiElement instanceof BnfCompositeElement) {
       return getElementDescription(psiElement, UsageViewTypeLocation.INSTANCE) + " " +
              "'" + getElementDescription(psiElement, UsageViewShortNameLocation.INSTANCE) + "'";

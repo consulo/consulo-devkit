@@ -15,13 +15,11 @@
  */
 package org.intellij.grammar.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElement;
+import javax.annotation.Nonnull;
 
 public interface BnfParenthesized extends BnfExpression {
 
-  @NotNull
+  @Nonnull
   BnfExpression getExpression();
 
 }

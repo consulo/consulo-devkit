@@ -49,9 +49,25 @@
 		</dependency>
 
 		<dependency>
+			<groupId>consulo</groupId>
+			<artifactId>consulo-indexing-api</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>consulo.internal</groupId>
 			<artifactId>objectweb-asm</artifactId>
 			<version>6.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!--TODO [VISTALL] those impl dependency must be removed !!!!!!!!!!!!!!!!!!!!-->
+
+		<dependency>
+			<groupId>consulo</groupId>
+			<artifactId>consulo-lang-impl</artifactId>
+			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 

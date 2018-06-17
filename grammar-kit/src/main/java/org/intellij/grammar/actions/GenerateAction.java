@@ -26,11 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.BnfConstants;
 import org.intellij.grammar.generator.ParserGenerator;
 import org.intellij.grammar.psi.BnfFile;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
@@ -71,7 +72,7 @@ public class GenerateAction extends AnAction {
   private static final Logger LOG = Logger.getInstance("org.intellij.grammar.actions.GenerateAction");
 
   @Override
-  public void update(@NotNull AnActionEvent e) {
+  public void update(@Nonnull AnActionEvent e) {
     Project project = e.getProject();
     List<BnfFile> files = getFiles(e);
     e.getPresentation().setEnabledAndVisible(project != null && !files.isEmpty());
@@ -92,7 +93,7 @@ public class GenerateAction extends AnAction {
   }
 
   @Override
-  public void actionPerformed(@NotNull AnActionEvent e) {
+  public void actionPerformed(@Nonnull AnActionEvent e) {
     Project project = getEventProject(e);
     List<BnfFile> files = getFiles(e);
     if (project == null || files.isEmpty()) return;
@@ -102,7 +103,7 @@ public class GenerateAction extends AnAction {
     doGenerate(project, files);
   }
 
-  public static void doGenerate(@NotNull final Project project, final List<BnfFile> bnfFiles) {
+  public static void doGenerate(@Nonnull final Project project, final List<BnfFile> bnfFiles) {
     final Map<BnfFile, VirtualFile> rootMap = ContainerUtil.newLinkedHashMap();
     ApplicationManager.getApplication().runWriteAction(new Runnable() {
       @Override
@@ -125,7 +126,7 @@ public class GenerateAction extends AnAction {
       long totalWritten = 0;
 
       @Override
-      public void run(@NotNull ProgressIndicator indicator) {
+      public void run(@Nonnull ProgressIndicator indicator) {
         long startTime = System.currentTimeMillis();
         indicator.setIndeterminate(true);
         try {

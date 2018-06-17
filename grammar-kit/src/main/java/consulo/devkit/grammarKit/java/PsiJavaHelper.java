@@ -7,7 +7,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.intellij.grammar.java.JavaHelper;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.util.text.StringUtil;
@@ -70,9 +70,9 @@ public class PsiJavaHelper extends JavaHelper
 		return myFacade.findPackage(packageName);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
-	public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @NotNull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
+	public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @Nonnull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
 	{
 		if(methodName == null)
 		{
@@ -159,7 +159,7 @@ public class PsiJavaHelper extends JavaHelper
 		return staticMethods == modifierList.hasModifierProperty(PsiModifier.STATIC) && !modifierList.hasModifierProperty(PsiModifier.ABSTRACT) && (modifierList.hasModifierProperty(PsiModifier.PUBLIC) || !(modifierList.hasModifierProperty(PsiModifier.PROTECTED) || modifierList.hasModifierProperty(PsiModifier.PRIVATE)));
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public List<String> getMethodTypes(NavigatablePsiElement method)
 	{
@@ -181,7 +181,7 @@ public class PsiJavaHelper extends JavaHelper
 		return strings;
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getDeclaringClass(@Nullable NavigatablePsiElement method)
 	{
@@ -194,7 +194,7 @@ public class PsiJavaHelper extends JavaHelper
 		return aClass == null ? "" : StringUtil.notNullize(aClass.getQualifiedName());
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public List<String> getAnnotations(NavigatablePsiElement element)
 	{

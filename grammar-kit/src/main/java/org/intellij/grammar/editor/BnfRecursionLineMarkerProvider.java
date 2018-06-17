@@ -20,11 +20,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.generator.RuleGraphHelper;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.codeHighlighting.Pass;
 import com.intellij.codeInsight.daemon.LineMarkerInfo;
 import com.intellij.codeInsight.daemon.LineMarkerProvider;
@@ -41,12 +43,12 @@ import com.intellij.util.FunctionUtil;
 public class BnfRecursionLineMarkerProvider implements LineMarkerProvider {
   @Nullable
   @Override
-  public LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element) {
+  public LineMarkerInfo getLineMarkerInfo(@Nonnull PsiElement element) {
     return null;
   }
 
   @Override
-  public void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
+  public void collectSlowLineMarkers(@Nonnull List<PsiElement> elements, @Nonnull Collection<LineMarkerInfo> result) {
     for (PsiElement element : elements) {
       if (!(element instanceof BnfRule)) continue;
       BnfRule rule = (BnfRule)element;
@@ -62,7 +64,7 @@ public class BnfRecursionLineMarkerProvider implements LineMarkerProvider {
   }
 
   private static class MyMarkerInfo extends LineMarkerInfo<BnfRule> {
-    private MyMarkerInfo(@NotNull BnfRule rule) {
+    private MyMarkerInfo(@Nonnull BnfRule rule) {
       super(rule,
             rule.getTextRange(),
             AllIcons.Gutter.RecursiveMethod,

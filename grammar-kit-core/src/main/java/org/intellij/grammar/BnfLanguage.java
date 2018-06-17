@@ -15,8 +15,9 @@
  */
 package org.intellij.grammar;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.lang.Language;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,7 +33,7 @@ public class BnfLanguage extends Language {
     super("BNF");
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getDisplayName() {
     return "Grammar-Kit BNF";

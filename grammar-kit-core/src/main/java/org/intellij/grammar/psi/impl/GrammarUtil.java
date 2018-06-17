@@ -41,8 +41,8 @@ import org.intellij.grammar.psi.BnfReferenceOrToken;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfSequence;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Conditions;
 import com.intellij.openapi.util.Ref;
@@ -112,7 +112,7 @@ public class GrammarUtil {
     return parent instanceof BnfRule && ParserGeneratorUtil.Rule.isExternal((BnfRule)parent);
   }
 
-  public static List<BnfExpression> getExternalRuleExpressions(@NotNull BnfRule subRule) {
+  public static List<BnfExpression> getExternalRuleExpressions(@Nonnull BnfRule subRule) {
     BnfExpression expression = subRule.getExpression();
     return expression instanceof BnfSequence ? ((BnfSequence)expression).getExpressionList() : Collections.singletonList(expression);
   }
@@ -223,7 +223,7 @@ public class GrammarUtil {
     return ref.get();
   }
 
-  @NotNull
+  @Nonnull
   public static String getIdText(@Nullable PsiElement id) {
     return id == null ? "" : stripQuotesAroundId(id.getText());
   }

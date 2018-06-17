@@ -19,9 +19,10 @@ package org.intellij.grammar.livePreview;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfFile;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.codeHighlighting.Pass;
 import com.intellij.codeHighlighting.TextEditorHighlightingPass;
 import com.intellij.codeHighlighting.TextEditorHighlightingPassFactory;
@@ -59,7 +60,7 @@ public class GrammarAtCaretPassFactory extends AbstractProjectComponent implemen
   }
 
   @Override
-  public TextEditorHighlightingPass createHighlightingPass(@NotNull final PsiFile file, @NotNull final Editor editor) {
+  public TextEditorHighlightingPass createHighlightingPass(@Nonnull final PsiFile file, @Nonnull final Editor editor) {
     if (ApplicationManager.getApplication().isHeadlessEnvironment()) return null;
 
     if (editor.isOneLineMode()) return null;
@@ -72,7 +73,7 @@ public class GrammarAtCaretPassFactory extends AbstractProjectComponent implemen
       List<HighlightInfo> infos = ContainerUtil.newArrayList();
 
       @Override
-      public void doCollectInformation(@NotNull ProgressIndicator progress) {
+      public void doCollectInformation(@Nonnull ProgressIndicator progress) {
         infos.clear();
         LivePreviewLanguage previewLanguage = LivePreviewLanguage.findInstance(file);
         if (previewLanguage == null) return;
@@ -92,10 +93,10 @@ public class GrammarAtCaretPassFactory extends AbstractProjectComponent implemen
     };
   }
 
-  private static void collectHighlighters(@NotNull final Project project,
-                                          @NotNull Editor editor,
-                                          @NotNull LivePreviewLanguage livePreviewLanguage,
-                                          @NotNull List<HighlightInfo> result) {
+  private static void collectHighlighters(@Nonnull final Project project,
+                                          @Nonnull Editor editor,
+                                          @Nonnull LivePreviewLanguage livePreviewLanguage,
+                                          @Nonnull List<HighlightInfo> result) {
     final Set<TextRange> trueRanges = ContainerUtil.newHashSet();
     final Set<TextRange> falseRanges = ContainerUtil.newHashSet();
     final Set<BnfExpression> visited = ContainerUtil.newHashSet();

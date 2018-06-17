@@ -15,13 +15,14 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
+
 import static org.intellij.grammar.psi.BnfTypes.*;
+
+import javax.annotation.*;
+
 import org.intellij.grammar.psi.*;
 import com.intellij.psi.PsiReference;
 
@@ -31,11 +32,11 @@ public class BnfListEntryImpl extends BnfCompositeElementImpl implements BnfList
     super(node);
   }
 
-  public <R> R accept(@NotNull BnfVisitor<R> visitor) {
+  public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
     return visitor.visitListEntry(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
+  public void accept(@Nonnull PsiElementVisitor visitor) {
     if (visitor instanceof BnfVisitor) accept((BnfVisitor)visitor);
     else super.accept(visitor);
   }
@@ -46,7 +47,7 @@ public class BnfListEntryImpl extends BnfCompositeElementImpl implements BnfList
     return findChildByType(BNF_ID);
   }
 
-  @NotNull
+  @Nonnull
   public PsiReference[] getReferences() {
     return GrammarPsiImplUtil.getReferences(this);
   }

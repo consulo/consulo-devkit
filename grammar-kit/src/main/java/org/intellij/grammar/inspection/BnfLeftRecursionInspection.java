@@ -25,7 +25,7 @@ import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
 
@@ -35,20 +35,20 @@ import java.util.ArrayList;
 public class BnfLeftRecursionInspection extends LocalInspectionTool {
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getGroupDisplayName() {
     return "Grammar/BNF";
   }
 
   @Nls
-  @NotNull
+  @Nonnull
   @Override
   public String getDisplayName() {
     return "Left recursion";
   }
 
-  @NotNull
+  @Nonnull
   @Override
   public String getShortName() {
     return "BnfLeftRecursionInspection";
@@ -58,7 +58,7 @@ public class BnfLeftRecursionInspection extends LocalInspectionTool {
     return true;
   }
 
-  public ProblemDescriptor[] checkFile(@NotNull PsiFile file, @NotNull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
     if (file instanceof BnfFile) {
       BnfFile bnfFile = (BnfFile)file;
       ExpressionHelper expressionHelper = ExpressionHelper.getCached(bnfFile);

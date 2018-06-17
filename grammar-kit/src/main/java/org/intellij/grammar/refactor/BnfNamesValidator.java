@@ -16,23 +16,24 @@
 
 package org.intellij.grammar.refactor;
 
+import javax.annotation.Nonnull;
+
 import com.intellij.lang.refactoring.NamesValidator;
 import com.intellij.openapi.project.Project;
 import org.intellij.grammar.parser.BnfLexer;
 import org.intellij.grammar.psi.BnfTypes;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author gregsh
  */
 public class BnfNamesValidator implements NamesValidator {
   @Override
-  public boolean isKeyword(@NotNull String s, Project project) {
+  public boolean isKeyword(@Nonnull String s, Project project) {
     return false;
   }
 
   @Override
-  public boolean isIdentifier(@NotNull String s, Project project) {
+  public boolean isIdentifier(@Nonnull String s, Project project) {
     BnfLexer lexer = new BnfLexer();
     lexer.start(s);
     return lexer.getTokenEnd() == s.length() && lexer.getTokenType() == BnfTypes.BNF_ID;

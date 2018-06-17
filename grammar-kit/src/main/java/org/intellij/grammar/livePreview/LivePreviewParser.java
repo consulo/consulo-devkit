@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.generator.BnfConstants;
@@ -49,8 +51,8 @@ import org.intellij.grammar.psi.BnfPredicate;
 import org.intellij.grammar.psi.BnfReferenceOrToken;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.BracePair;
 import com.intellij.lang.LighterASTNode;
@@ -97,7 +99,7 @@ public class LivePreviewParser implements PsiParser
 		myFile = language.getGrammar(project);
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public ASTNode parse(IElementType root, PsiBuilder originalBuilder, LanguageVersion languageVersion)
 	{

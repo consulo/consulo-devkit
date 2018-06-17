@@ -36,7 +36,7 @@ import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -91,7 +91,7 @@ public class BnfIntroduceRulePopup extends InplaceVariableIntroducer<BnfExpressi
       public void actionPerformed(ActionEvent e) {
         new WriteCommandAction(myProject, BnfIntroduceRuleHandler.REFACTORING_NAME, BnfIntroduceRuleHandler.REFACTORING_NAME) {
           @Override
-          protected void run(@NotNull Result result) throws Throwable {
+          protected void run(@Nonnull Result result) throws Throwable {
             perform(myCheckBox.isSelected());
           }
         }.execute();

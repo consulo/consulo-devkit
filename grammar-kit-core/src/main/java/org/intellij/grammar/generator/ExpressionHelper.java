@@ -31,8 +31,8 @@ import com.intellij.util.containers.ContainerUtil;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.*;
 
@@ -270,13 +270,13 @@ public class ExpressionHelper {
     return result;
   }
 
-  @NotNull
+  @Nonnull
   public static List<BnfExpression> getOriginalExpressions(BnfExpression expression) {
     List<BnfExpression> data = expression.getUserData(ORIGINAL_EXPRESSIONS);
     return data == null ? Collections.singletonList(expression) : data;
   }
 
-  @NotNull
+  @Nonnull
   public RuleGraphHelper.Cardinality fixCardinality(BnfRule rule, PsiElement tree, RuleGraphHelper.Cardinality type) {
     if (type.optional()) return type;
     // in Expression parsing mode REQUIRED may go OPTIONAL

@@ -22,7 +22,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.RefactoringActionHandler;
 import com.intellij.refactoring.actions.BasePlatformRefactoringAction;
 import org.intellij.grammar.psi.BnfFile;
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,7 +50,7 @@ public class BnfIntroduceRuleAction extends BasePlatformRefactoringAction {
   }
 
   @Override
-  protected RefactoringActionHandler getRefactoringHandler(@NotNull RefactoringSupportProvider provider) {
+  protected RefactoringActionHandler getRefactoringHandler(@Nonnull RefactoringSupportProvider provider) {
     return new BnfIntroduceRuleHandler();
   }
 }

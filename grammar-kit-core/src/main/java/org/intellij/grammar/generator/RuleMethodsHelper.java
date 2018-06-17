@@ -25,8 +25,8 @@ import com.intellij.util.containers.ContainerUtil;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -83,7 +83,7 @@ public class RuleMethodsHelper {
     }
   }
 
-  @NotNull
+  @Nonnull
   public Collection<MethodInfo> getFor(BnfRule rule) {
     return myMethods.get(rule).second;
   }
@@ -158,7 +158,7 @@ public class RuleMethodsHelper {
   }
 
   @Nullable
-  private String getRuleOrTokenNameForPsi(@NotNull PsiElement tree, @NotNull RuleGraphHelper.Cardinality type) {
+  private String getRuleOrTokenNameForPsi(@Nonnull PsiElement tree, @Nonnull RuleGraphHelper.Cardinality type) {
     String result;
 
     if (!(tree instanceof BnfRule)) {
@@ -202,12 +202,12 @@ public class RuleMethodsHelper {
     }
 
     @Override
-    public int compareTo(@NotNull MethodInfo o) {
+    public int compareTo(@Nonnull MethodInfo o) {
       if (type != o.type) return type.compareTo(o.type);
       return name.compareTo(o.name);
     }
 
-    @NotNull
+    @Nonnull
     public String generateGetterName() {
       boolean many = cardinality.many();
 
