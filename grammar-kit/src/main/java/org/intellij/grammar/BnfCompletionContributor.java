@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.intellij.grammar.generator.RuleGraphHelper;
 import org.intellij.grammar.parser.GeneratedParserUtilBase;
@@ -36,8 +37,6 @@ import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 import org.jetbrains.annotations.Contract;
-
-import javax.annotation.Nullable;
 import com.intellij.codeInsight.TailType;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionInitializationContext;
@@ -69,7 +68,6 @@ import consulo.codeInsight.completion.CompletionProvider;
  */
 public class BnfCompletionContributor extends CompletionContributor
 {
-
 	public BnfCompletionContributor()
 	{
 		PsiElementPattern.Capture<PsiElement> placePattern = psiElement().inFile(PlatformPatterns.instanceOf(BnfFile.class)).andNot(psiElement().inside(PsiComment.class));

@@ -62,7 +62,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!--TODO [VISTALL] those impl dependency must be removed !!!!!!!!!!!!!!!!!!!!-->
+		<!--FIXME [VISTALL] hacky dependency just for compilation-->
 
 		<dependency>
 			<groupId>consulo</groupId>

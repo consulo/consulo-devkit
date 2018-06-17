@@ -10,6 +10,7 @@ import org.intellij.grammar.psi.BnfRule;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.psi.PsiElement;
+import consulo.annotations.RequiredReadAction;
 import consulo.ide.IconDescriptor;
 import consulo.ide.IconDescriptorUpdater;
 import consulo.ui.image.Image;
@@ -20,6 +21,7 @@ import consulo.ui.image.Image;
  */
 public class BnfIconDescriptorUpdater implements IconDescriptorUpdater
 {
+	@RequiredReadAction
 	@Override
 	public void updateIcon(@Nonnull IconDescriptor iconDescriptor, @Nonnull PsiElement element, int flags)
 	{

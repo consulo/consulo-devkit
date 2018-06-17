@@ -1,2 +1,3 @@
-* initial code from github.com/JetBrains/intellij-community/plugins/devkit
+* initial code from https://github.com/JetBrains/intellij-community/plugins/devkit
+* grammar kit from https://github.com/JetBrains/Grammar-Kit
 * package_root.png from https://github.com/JetBrains/intellij-plugins/tree/master/Dart/resources/icons AL2

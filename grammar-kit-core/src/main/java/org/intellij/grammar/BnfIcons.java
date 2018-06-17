@@ -25,11 +25,11 @@ import consulo.ui.image.Image;
  */
 public interface BnfIcons
 {
-	Image FILE = IconLoader.getIcon("/resources/file.png");
+	Image FILE = IconLoader.getIcon("/icons/grammarFile.png");
 
 	Image RULE = AllIcons.Nodes.Method;
 	Image EXTERNAL_RULE = AllIcons.Nodes.AbstractMethod;
 	Image ATTRIBUTE = AllIcons.Nodes.Attribute;
 
-	Image RELATED_METHOD = IconLoader.getIcon("/gutter/implementedMethod.png");
+	Image RELATED_METHOD = AllIcons.Gutter.ImplementedMethod;
 }

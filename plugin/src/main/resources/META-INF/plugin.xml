@@ -1,9 +1,13 @@
-<idea-plugin>
-	<id>consulo.devkit</id>
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+<id>consulo.devkit</id>
 	<name>Consulo Plugin DevKit</name>
 	<version>SNAPSHOT</version>
 	<category>IDE Frameworks</category>
 	<vendor>JetBrains &amp; consulo.io</vendor>
+
+	<xi:include href="/META-INF/grammar-kit.xml" xpointer="xpointer(/idea-plugin/*)">
+		<xi:fallback/>
+	</xi:include>
 
 	<depends>consulo.java</depends>
 	<depends>com.intellij.properties</depends>
