@@ -52,7 +52,6 @@ import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.CommonClassNames;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
@@ -1737,7 +1736,7 @@ public class ParserGenerator
 		String implSuper = StringUtil.notNullize(getAttribute(rule, KnownAttribute.MIXIN), adjustedSuperRuleClass);
 
 		Set<String> imports = ContainerUtil.newLinkedHashSet();
-		imports.addAll(Arrays.asList(CommonClassNames.JAVA_UTIL_LIST, "org.jetbrains.annotations.*", AST_NODE_CLASS, PSI_ELEMENT_CLASS));
+		imports.addAll(Arrays.asList(List.class.getName(), "org.jetbrains.annotations.*", AST_NODE_CLASS, PSI_ELEMENT_CLASS));
 		if(visitorClassName != null)
 		{
 			imports.add(PSI_ELEMENT_VISITOR_CLASS);
@@ -1962,7 +1961,7 @@ public class ParserGenerator
 		}
 		String className = myShortener.fun(isToken ? PSI_ELEMENT_CLASS : getAccessorType(methodInfo.rule));
 		String tail = intf ? "();" : "() {";
-		out((intf ? "" : "public ") + (many ? myShortener.fun(CommonClassNames.JAVA_UTIL_LIST) + "<" : "") + className + (many ? "> " : " ") + getterName + tail);
+		out((intf ? "" : "public ") + (many ? myShortener.fun(List.class.getName()) + "<" : "") + className + (many ? "> " : " ") + getterName + tail);
 		if(!intf)
 		{
 			out("return " + generatePsiAccessorImplCall(rule, methodInfo) + ";");
@@ -2060,7 +2059,7 @@ public class ParserGenerator
 			boolean many = targetInfo.cardinality.many();
 			String className = myShortener.fun(targetInfo.rule == null ? PSI_ELEMENT_CLASS : getAccessorType(targetInfo.rule));
 
-			String type = (many ? myShortener.fun(CommonClassNames.JAVA_UTIL_LIST) + "<" : "") + className + (many ? "> " : " ");
+			String type = (many ? myShortener.fun(List.class.getName()) + "<" : "") + className + (many ? "> " : " ");
 			String curId = N.psiLocal + (count++);
 			if(!context.isEmpty())
 			{
@@ -2151,7 +2150,7 @@ public class ParserGenerator
 		String className = myShortener.fun(targetRule == null ? PSI_ELEMENT_CLASS : getAccessorType(targetRule));
 		String getterName = getGetterName(methodInfo.name);
 		String tail = intf ? "();" : "() {";
-		out((intf ? "" : "public ") + (many ? myShortener.fun(CommonClassNames.JAVA_UTIL_LIST) + "<" : "") + className + (many ? "> " : " ") + getterName + tail);
+		out((intf ? "" : "public ") + (many ? myShortener.fun(List.class.getName()) + "<" : "") + className + (many ? "> " : " ") + getterName + tail);
 
 		if(!intf)
 		{

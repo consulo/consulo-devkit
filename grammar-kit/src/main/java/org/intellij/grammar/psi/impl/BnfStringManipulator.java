@@ -33,10 +33,6 @@ public class BnfStringManipulator extends AbstractElementManipulator<BnfStringIm
 
   @Override
   public TextRange getRangeInElement(final BnfStringImpl element) {
-    return getStringTokenRange(element);
-  }
-
-  public static TextRange getStringTokenRange(final BnfStringImpl element) {
-    return TextRange.from(1, element.getTextLength()-2);
+    return BnfStringImpl.getStringTokenRange(element);
   }
 }
