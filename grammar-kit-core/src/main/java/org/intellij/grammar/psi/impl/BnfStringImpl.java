@@ -49,7 +49,6 @@ import com.intellij.util.containers.ContainerUtil;
  */
 public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStringLiteralExpression, PsiLanguageInjectionHost
 {
-
 	private static final Key<PsiReference> REF_KEY = Key.create("BNF_REF_KEY");
 	private static final Map<ElementPattern<? extends PsiElement>, PsiReferenceProvider> ourProviders;
 

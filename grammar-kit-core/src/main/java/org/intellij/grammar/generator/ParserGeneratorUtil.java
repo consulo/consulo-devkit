@@ -51,7 +51,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Function;
-import com.intellij.util.ObjectUtils;
+import com.intellij.util.ObjectUtil;
 import com.intellij.util.ThreeState;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.JBIterable;
@@ -88,7 +88,7 @@ public class ParserGeneratorUtil
 					return method;
 				}
 			}
-			return ObjectUtils.chooseNotNull(forMethod(value), DEFAULT);
+			return ObjectUtil.chooseNotNull(forMethod(value), DEFAULT);
 		}
 
 		@Nullable
