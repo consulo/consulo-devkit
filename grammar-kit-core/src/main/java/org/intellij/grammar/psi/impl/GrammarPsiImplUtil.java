@@ -16,27 +16,32 @@
 
 package org.intellij.grammar.psi.impl;
 
-import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.*;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.ObjectUtils;
-import com.intellij.util.containers.ContainerUtil;
+import static org.intellij.grammar.generator.ParserGeneratorUtil.findRuleImplMethods;
+import static org.intellij.grammar.generator.ParserGeneratorUtil.getAttribute;
+import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
+
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfListEntry;
 import org.intellij.grammar.psi.BnfLiteralExpression;
 import org.intellij.grammar.psi.BnfRule;
-import javax.annotation.Nonnull;
-
-import java.util.List;
-
-import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
+import com.intellij.openapi.util.Comparing;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementResolveResult;
+import com.intellij.psi.PsiPolyVariantReferenceBase;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.ResolveResult;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.ObjectUtils;
+import com.intellij.util.containers.ContainerUtil;
 
 /**
  * @author gregsh
@@ -70,15 +75,16 @@ public class GrammarPsiImplUtil {
           return PsiElementResolveResult.createResults(getTargetMethods(getElement().getText()));
         }
 
-        @Nonnull
-        @Override
-        public Object[] getVariants() {
-          List<LookupElement> list = ContainerUtil.newArrayList();
-          for (NavigatablePsiElement element : getTargetMethods("*")) {
-            list.add(LookupElementBuilder.createWithIcon((PsiNamedElement)element));
-          }
-          return ArrayUtil.toObjectArray(list);
-        }
+        // TODO [VISTALL] remove that
+//        @Nonnull
+//        @Override
+//        public Object[] getVariants() {
+//          List<LookupElement> list = ContainerUtil.newArrayList();
+//          for (NavigatablePsiElement element : getTargetMethods("*")) {
+//            list.add(LookupElementBuilder.createWithIcon((PsiNamedElement)element));
+//          }
+//          return ArrayUtil.toObjectArray(list);
+//        }
 
         @Override
         public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {

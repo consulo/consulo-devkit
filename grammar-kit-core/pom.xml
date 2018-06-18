@@ -69,11 +69,9 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!--FIXME [VISTALL] hacky dependency just for compilation-->
-
 		<dependency>
-			<groupId>consulo</groupId>
-			<artifactId>consulo-lang-impl</artifactId>
+			<groupId>consulo.plugin</groupId>
+			<artifactId>consulo.devkit-grammar.kit.hacky.api</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>

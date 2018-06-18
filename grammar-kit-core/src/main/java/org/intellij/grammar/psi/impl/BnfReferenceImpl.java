@@ -15,13 +15,11 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
 import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.generator.BnfConstants;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.BnfCompositeElement;
@@ -29,20 +27,13 @@ import org.intellij.grammar.psi.BnfExternalExpression;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfSequence;
-import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.ContainerUtil;
-import consulo.ide.IconDescriptorUpdaters;
 
 /**
  * @author gregsh
@@ -75,47 +66,48 @@ public class BnfReferenceImpl<T extends BnfCompositeElement> extends PsiReferenc
     return result;
   }
 
+  // TODO [VISTALL] remove that
 
-  @Nonnull
-  @Override
-  public Object[] getVariants() {
-    List<LookupElement> list = ContainerUtil.newArrayList();
-    boolean isExternal = GrammarUtil.isExternalReference(myElement);
-
-    if (!isExternal || PsiTreeUtil.getParentOfType(myElement, BnfExternalExpression.class) != null) {
-      PsiFile containingFile = myElement.getContainingFile();
-      List<BnfRule> rules = containingFile instanceof BnfFile ? ((BnfFile)containingFile).getRules() : Collections.<BnfRule>emptyList();
-      for (BnfRule rule : rules) {
-        boolean fakeRule = ParserGeneratorUtil.Rule.isFake(rule);
-        boolean privateRule = ParserGeneratorUtil.Rule.isPrivate(rule);
-        if (isExternal && !ParserGeneratorUtil.Rule.isMeta(rule)) continue;
-        String idText = rule.getId().getText();
-        LookupElementBuilder e = LookupElementBuilder.create(rule, idText)
-          .withIcon(IconDescriptorUpdaters.getIcon(rule, 0))
-          .withBoldness(!privateRule)
-          .withStrikeoutness(fakeRule);
-        if (!Comparing.equal(idText, rule.getName())) {
-          e = e.withLookupString(rule.getName());
-        }
-        list.add(e);
-      }
-    }
-    if (isExternal) {
-      BnfRule rule = PsiTreeUtil.getParentOfType(myElement, BnfRule.class);
-      String parserClass = ParserGeneratorUtil.getAttribute(rule, KnownAttribute.PARSER_UTIL_CLASS);
-      if (StringUtil.isNotEmpty(parserClass)) {
-        JavaHelper helper = JavaHelper.getJavaHelper(myElement);
-        for (String className = parserClass; className != null; className = helper.getSuperClassName(className)) {
-          for (NavigatablePsiElement element : helper.findClassMethods(className, JavaHelper.MethodType.STATIC, "*", -1, BnfConstants.PSI_BUILDER_CLASS, "int")) {
-            List<String> methodTypes = helper.getMethodTypes(element);
-            if ("boolean".equals(ContainerUtil.getFirstItem(methodTypes))) {
-              list.add(LookupElementBuilder.createWithIcon((PsiNamedElement)element));
-            }
-          }
-        }
-      }
-    }
-    return ArrayUtil.toObjectArray(list);
-  }
+//  @Nonnull
+//  @Override
+//  public Object[] getVariants() {
+//    List<LookupElement> list = ContainerUtil.newArrayList();
+//    boolean isExternal = GrammarUtil.isExternalReference(myElement);
+//
+//    if (!isExternal || PsiTreeUtil.getParentOfType(myElement, BnfExternalExpression.class) != null) {
+//      PsiFile containingFile = myElement.getContainingFile();
+//      List<BnfRule> rules = containingFile instanceof BnfFile ? ((BnfFile)containingFile).getRules() : Collections.<BnfRule>emptyList();
+//      for (BnfRule rule : rules) {
+//        boolean fakeRule = ParserGeneratorUtil.Rule.isFake(rule);
+//        boolean privateRule = ParserGeneratorUtil.Rule.isPrivate(rule);
+//        if (isExternal && !ParserGeneratorUtil.Rule.isMeta(rule)) continue;
+//        String idText = rule.getId().getText();
+//        LookupElementBuilder e = LookupElementBuilder.create(rule, idText)
+//          .withIcon(IconDescriptorUpdaters.getIcon(rule, 0))
+//          .withBoldness(!privateRule)
+//          .withStrikeoutness(fakeRule);
+//        if (!Comparing.equal(idText, rule.getName())) {
+//          e = e.withLookupString(rule.getName());
+//        }
+//        list.add(e);
+//      }
+//    }
+//    if (isExternal) {
+//      BnfRule rule = PsiTreeUtil.getParentOfType(myElement, BnfRule.class);
+//      String parserClass = ParserGeneratorUtil.getAttribute(rule, KnownAttribute.PARSER_UTIL_CLASS);
+//      if (StringUtil.isNotEmpty(parserClass)) {
+//        JavaHelper helper = JavaHelper.getJavaHelper(myElement);
+//        for (String className = parserClass; className != null; className = helper.getSuperClassName(className)) {
+//          for (NavigatablePsiElement element : helper.findClassMethods(className, JavaHelper.MethodType.STATIC, "*", -1, BnfConstants.PSI_BUILDER_CLASS, "int")) {
+//            List<String> methodTypes = helper.getMethodTypes(element);
+//            if ("boolean".equals(ContainerUtil.getFirstItem(methodTypes))) {
+//              list.add(LookupElementBuilder.createWithIcon((PsiNamedElement)element));
+//            }
+//          }
+//        }
+//      }
+//    }
+//    return ArrayUtil.toObjectArray(list);
+//  }
 
 }
