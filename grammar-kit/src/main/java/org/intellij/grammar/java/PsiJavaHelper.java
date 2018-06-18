@@ -1,13 +1,12 @@
-package consulo.devkit.grammarKit.java;
+package org.intellij.grammar.java;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.intellij.grammar.java.JavaHelper;
-import javax.annotation.Nonnull;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.util.text.StringUtil;
@@ -18,10 +17,6 @@ import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.ContainerUtilRt;
 
-/**
- * @author VISTALL
- * @since 2018-06-17
- */
 public class PsiJavaHelper extends JavaHelper
 {
 	private final JavaPsiFacade myFacade;

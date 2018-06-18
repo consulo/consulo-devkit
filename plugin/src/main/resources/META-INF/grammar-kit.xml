@@ -1,6 +1,6 @@
 <idea-plugin>
 	<extensions defaultExtensionNs="com.intellij">
-		<projectService serviceInterface="org.intellij.grammar.java.JavaHelper" serviceImplementation="consulo.devkit.grammarKit.java.PsiJavaHelper"/>
+		<projectService serviceInterface="org.intellij.grammar.java.JavaHelper" serviceImplementation="org.intellij.grammar.java.PsiJavaHelper"/>
 		<!--<debugger.positionManagerFactory implementation="org.intellij.grammar.debugger.BnfPositionManagerFactory"/>-->
 	</extensions>
 
