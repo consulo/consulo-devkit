@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.intellij.grammar.BnfIcons;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
@@ -31,7 +33,6 @@ import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import javax.annotation.Nullable;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
@@ -43,7 +44,6 @@ import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
-import consulo.awt.TargetAWT;
 
 /**
  * @author gregsh
@@ -90,7 +90,7 @@ public class BnfRuleLineMarkerProvider extends RelatedItemLineMarkerProvider {
           popupTitleAd = " (for sub-expressions use " + actionText + ")";
         }
         String title = "parser " + (hasPSI ? "and PSI " : "") + "code";
-        NavigationGutterIconBuilder<PsiElement> builder = NavigationGutterIconBuilder.create(TargetAWT.to(BnfIcons.RELATED_METHOD)).
+        NavigationGutterIconBuilder<PsiElement> builder = NavigationGutterIconBuilder.create(BnfIcons.RELATED_METHOD).
           setTargets(items).
           setTooltipText("Click to navigate to "+title + tooltipAd).
           setPopupTitle(StringUtil.capitalize(title) + popupTitleAd);
