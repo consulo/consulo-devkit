@@ -97,7 +97,7 @@ public enum CallStateType
 	@Nonnull
 	private final AcceptableMethodCallCheck[] myAcceptableMethodCallChecks;
 
-	CallStateType(@Nullable String actionClass, @Nullable Class<? extends BaseActionRunnable> actionRunnable, @Nonnull AcceptableMethodCallCheck... methodCallChecks)
+	CallStateType(@Nullable String actionClass, @Nullable Class<? extends BaseActionRunnable> actionRunnable, AcceptableMethodCallCheck... methodCallChecks)
 	{
 		myActionClass = actionClass;
 		myAcceptableMethodCallChecks = methodCallChecks;
