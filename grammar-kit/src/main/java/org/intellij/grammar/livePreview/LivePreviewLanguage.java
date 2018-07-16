@@ -16,7 +16,7 @@
 
 package org.intellij.grammar.livePreview;
 
-import static org.jetbrains.org.objectweb.asm.Opcodes.*;
+import static consulo.internal.org.objectweb.asm.Opcodes.*;
 
 import java.lang.ref.SoftReference;
 import java.util.Collections;
@@ -27,12 +27,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.intellij.grammar.psi.BnfFile;
-import org.jetbrains.org.objectweb.asm.AnnotationVisitor;
-import org.jetbrains.org.objectweb.asm.ClassWriter;
-import org.jetbrains.org.objectweb.asm.FieldVisitor;
-import org.jetbrains.org.objectweb.asm.Label;
-import org.jetbrains.org.objectweb.asm.MethodVisitor;
-import org.jetbrains.org.objectweb.asm.Opcodes;
+import consulo.internal.org.objectweb.asm.AnnotationVisitor;
+import consulo.internal.org.objectweb.asm.ClassWriter;
+import consulo.internal.org.objectweb.asm.FieldVisitor;
+import consulo.internal.org.objectweb.asm.Label;
+import consulo.internal.org.objectweb.asm.MethodVisitor;
+import consulo.internal.org.objectweb.asm.Opcodes;
 import com.intellij.lang.Language;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
