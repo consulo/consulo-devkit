@@ -60,6 +60,8 @@
 		<colorSettingsPage implementation="org.intellij.grammar.editor.BnfColorSettingsPage"/>
 		<quoteHandler fileType="BNF" className="org.intellij.grammar.editor.BnfQuoteHandler"/>
 
+		<textEditorHighlightingPassFactory implementation="org.intellij.grammar.livePreview.GrammarAtCaretPassFactory" />
+
 		<intentionAction>
 			<className>org.intellij.grammar.intention.BnfFlipChoiceIntention</className>
 			<category>Grammar</category>
@@ -104,11 +106,4 @@
 			<add-to-group group-id="grammar.file.group" anchor="after" relative-to-action="grammar.Generate"/>
 		</action>
 	</actions>
-
-	<project-components>
-		<component>
-			<implementation-class>org.intellij.grammar.livePreview.GrammarAtCaretPassFactory</implementation-class>
-			<skipForDefaultProject/>
-		</component>
-	</project-components>
 </idea-plugin>
