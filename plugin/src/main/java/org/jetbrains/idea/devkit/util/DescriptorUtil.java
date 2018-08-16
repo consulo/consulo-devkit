@@ -38,7 +38,6 @@ import consulo.devkit.util.PluginModuleUtil;
  */
 public class DescriptorUtil
 {
-
 	public static void processComponents(XmlTag root, ComponentType.Processor processor)
 	{
 		final ComponentType[] types = ComponentType.values();
@@ -85,7 +84,7 @@ public class DescriptorUtil
 	}
 
 	@Nullable
-	public static DomFileElement<IdeaPlugin> getIdeaPlugin(XmlFile file)
+	public static DomFileElement<IdeaPlugin> getConsuloPlugin(XmlFile file)
 	{
 		return DomManager.getDomManager(file.getProject()).getFileElement(file, IdeaPlugin.class);
 	}
@@ -96,7 +95,7 @@ public class DescriptorUtil
 		{
 			return false;
 		}
-		return getIdeaPlugin((XmlFile) file) != null;
+		return getConsuloPlugin((XmlFile) file) != null;
 	}
 
 	@Nullable

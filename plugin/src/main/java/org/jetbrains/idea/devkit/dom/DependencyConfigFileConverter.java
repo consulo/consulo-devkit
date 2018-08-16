@@ -74,7 +74,7 @@ public class DependencyConfigFileConverter extends PathReferenceConverter
 					{
 						return false;
 					}
-					final DomFileElement<IdeaPlugin> ideaPlugin = DescriptorUtil.getIdeaPlugin((XmlFile) file);
+					final DomFileElement<IdeaPlugin> ideaPlugin = DescriptorUtil.getConsuloPlugin((XmlFile) file);
 					if(ideaPlugin == null)
 					{
 						return false;

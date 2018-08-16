@@ -141,6 +141,14 @@
 						 displayName="Platform method specific restriction"
 						 implementationClass="consulo.devkit.inspections.internal.PlatformErrorInspection"/>
 
+		<localInspection language="JAVA"
+						 level="ERROR"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
+						 displayName="Missed @Singleton annotation for services"
+						 implementationClass="consulo.devkit.inspections.inject.NoSingletonAnnotationInspection"/>
+
 		<localInspection language="JAVA" shortName="UndesirableClassUsage" displayName="Undesirable class usage"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
@@ -168,6 +176,8 @@
 										implementationClass="org.jetbrains.idea.devkit.navigation.DescriptionTypeRelatedItemLineMarkerProvider"/>
 		<codeInsight.lineMarkerProvider language="JAVA"
 										implementationClass="org.jetbrains.idea.devkit.navigation.ExtensionPointDeclarationRelatedItemLineMarkerProvider"/>
+		<codeInsight.lineMarkerProvider language="JAVA"
+										implementationClass="consulo.devkit.codeInsight.daemon.ServiceLineMarkerProvider" />
 
 		<colorProvider implementation="consulo.devkit.codeInsight.daemon.UIColorLineMarkerProvider"/>
 
