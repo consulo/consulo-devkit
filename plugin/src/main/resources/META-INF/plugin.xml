@@ -1,5 +1,5 @@
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
-<id>consulo.devkit</id>
+	<id>consulo.devkit</id>
 	<name>Consulo Plugin DevKit</name>
 	<version>SNAPSHOT</version>
 	<category>IDE Frameworks</category>
