@@ -138,9 +138,12 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		params.setJdk(javaSdk);
 
-		addConsuloLibs(selectedBuildPath, params);
+		boolean isNewBootDistribution = new File(selectedBuildPath, "boot").exists();
 
-		params.setMainClass(getMainClass());
+		addConsuloLibs(selectedBuildPath, params, isNewBootDistribution);
+
+		params.setMainClass(getMainClass(isNewBootDistribution));
+
 		for(RunConfigurationExtension ext : Extensions.getExtensions(RunConfigurationExtension.EP_NAME))
 		{
 			ext.updateJavaParameters(profile, params, getRunnerSettings());
@@ -149,14 +152,21 @@ public class ConsuloSandboxRunState extends CommandLineState
 	}
 
 	@Nonnull
-	public String getMainClass()
+	public String getMainClass(boolean isNewBootDistribution)
 	{
-		return "com.intellij.idea.Main";
+		return isNewBootDistribution ? "consulo.desktop.boot.Main" : "com.intellij.idea.Main";
 	}
 
-	protected void addConsuloLibs(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params)
+	protected void addConsuloLibs(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isNewBootDistribution)
 	{
 		String libPath = consuloHomePath + "/lib";
+
+		if(isNewBootDistribution)
+		{
+			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-boot.jar");
+			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-desktop-boot.jar");
+			return;
+		}
 
 		boolean isMavenDistribution = new File(libPath, "consulo-desktop-boot.jar").exists();
 
