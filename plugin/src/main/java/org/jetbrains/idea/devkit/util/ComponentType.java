@@ -15,26 +15,29 @@
  */
 package org.jetbrains.idea.devkit.util;
 
+import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.PropertyKey;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.module.ModuleComponent;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiParameter;
+import com.intellij.psi.PsiType;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlTagValue;
 import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NonNls;
-import javax.annotation.Nullable;
-import org.jetbrains.annotations.PropertyKey;
 
 /**
  * @author swr
  */
 public enum ComponentType {
   APPLICATION(ApplicationComponent.class, "application-components", "new.menu.application.component.text"),
-  PROJECT(ProjectComponent.class, "project-components", "new.menu.project.component.text"),
-  MODULE(ModuleComponent.class, "module-components", "new.menu.module.component.text");
+  PROJECT(ProjectComponent.class, "project-components", "new.menu.project.component.text");
 
   public final String myClassName;
   public final String myPropertyKey;

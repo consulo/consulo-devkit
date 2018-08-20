@@ -112,10 +112,6 @@ public interface IdeaPlugin extends DomElement
 	ProjectComponents getProjectComponents();
 
 	@Nonnull
-	ModuleComponents getModuleComponents();
-
-
-	@Nonnull
 	@SubTagList("actions")
 	List<Actions> getActions();
 

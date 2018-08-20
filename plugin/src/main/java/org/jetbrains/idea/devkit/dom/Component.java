@@ -53,20 +53,11 @@ public interface Component extends DomElement
 	GenericDomValue<PsiClass> getHeadlessImplementationClass();
 
 	@Nonnull
-	@Convert(PluginPsiClassConverter.class)
-	@ExtendClass(allowEmpty = true)
-	GenericDomValue<PsiClass> getCompilerServerImplementationClass();
-
-	@Nonnull
 	List<Option> getOptions();
 
 	Option addOption();
 
 	interface Application extends Component
-	{
-	}
-
-	interface Module extends Component
 	{
 	}
 
