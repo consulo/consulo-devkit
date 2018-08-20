@@ -210,10 +210,6 @@
 			<add-to-group anchor="last" group-id="NewGroup"/>
 		</action>
 
-		<action class="org.jetbrains.idea.devkit.actions.NewModuleComponentAction" text="Module Component" id="NewModuleComponent">
-			<add-to-group anchor="last" group-id="NewGroup"/>
-		</action>
-
 		<action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
 			<add-to-group anchor="last" group-id="NewGroup"/>
 		</action>

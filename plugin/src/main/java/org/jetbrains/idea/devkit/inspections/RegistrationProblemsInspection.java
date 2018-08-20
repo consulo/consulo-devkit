@@ -15,6 +15,27 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
+import gnu.trove.THashSet;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.inspections.quickfix.CreateConstructorFix;
+import org.jetbrains.idea.devkit.inspections.quickfix.ImplementOrExtendFix;
+import org.jetbrains.idea.devkit.util.ActionType;
+import org.jetbrains.idea.devkit.util.ComponentType;
+import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInsight.intention.QuickFixFactory;
 import com.intellij.codeInspection.InspectionManager;
@@ -22,28 +43,23 @@ import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.psi.*;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiIdentifier;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.ClassUtil;
-import com.intellij.psi.xml.*;
+import com.intellij.psi.xml.XmlAttribute;
+import com.intellij.psi.xml.XmlDocument;
+import com.intellij.psi.xml.XmlFile;
+import com.intellij.psi.xml.XmlTag;
+import com.intellij.psi.xml.XmlTagValue;
+import com.intellij.psi.xml.XmlText;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.SmartList;
-import gnu.trove.THashSet;
-import org.jetbrains.annotations.NonNls;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.inspections.quickfix.CreateConstructorFix;
-import org.jetbrains.idea.devkit.inspections.quickfix.ImplementOrExtendFix;
-import org.jetbrains.idea.devkit.util.ActionType;
-import org.jetbrains.idea.devkit.util.ComponentType;
-import org.jetbrains.idea.devkit.util.DescriptorUtil;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author swr
@@ -238,20 +254,8 @@ public class RegistrationProblemsInspection extends DevKitInspectionBase {
           else if (implClass != null) {
             final String fqn = intfClass.getQualifiedName();
 
-            if (type == ComponentType.MODULE) {
-              if (!checkInterface(fqn, intf)) {
-                // module components can be restricted to modules of certain types
-                final String[] keys = makeQualifiedModuleInterfaceNames(component, fqn);
-                for (String key : keys) {
-                  checkInterface(key, intf);
-                  myInterfaceClasses.add(key);
-                }
-              }
-            }
-            else {
-              checkInterface(fqn, intf);
-              myInterfaceClasses.add(fqn);
-            }
+            checkInterface(fqn, intf);
+            myInterfaceClasses.add(fqn);
 
             if (intfClass != implClass && !implClass.isInheritor(intfClass, true)) {
               addProblem(impl, DevKitBundle.message("inspections.registration.problems.component.incompatible.interface", fqn),
