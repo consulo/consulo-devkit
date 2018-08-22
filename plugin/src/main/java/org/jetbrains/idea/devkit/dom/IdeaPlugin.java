@@ -66,12 +66,10 @@ public interface IdeaPlugin extends DomElement
 
 	GenericDomValue<String> addDescription();
 
-
 	@Nonnull
 	List<Vendor> getVendors();
 
 	Vendor addVendor();
-
 
 	@Nonnull
 	List<GenericDomValue<String>> getChangeNotess();
@@ -83,7 +81,6 @@ public interface IdeaPlugin extends DomElement
 	List<GenericDomValue<String>> getResourceBundles();
 
 	GenericDomValue<String> addResourceBundle();
-
 
 	@Nonnull
 	@SubTagList("depends")
@@ -104,19 +101,11 @@ public interface IdeaPlugin extends DomElement
 
 	ExtensionPoints addExtensionPoints();
 
-
-	@Nonnull
-	ApplicationComponents getApplicationComponents();
-
-	@Nonnull
-	ProjectComponents getProjectComponents();
-
 	@Nonnull
 	@SubTagList("actions")
 	List<Actions> getActions();
 
 	Actions addActions();
-
 
 	@Nonnull
 	List<Helpset> getHelpsets();

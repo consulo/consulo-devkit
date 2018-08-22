@@ -20,9 +20,9 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionType;
-import org.jetbrains.idea.devkit.util.ComponentType;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -45,7 +45,6 @@ import com.intellij.psi.xml.XmlAttributeValue;
 import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
-import com.intellij.psi.xml.XmlTagValue;
 import com.intellij.psi.xml.XmlToken;
 import com.intellij.util.containers.ContainerUtil;
 import consulo.devkit.util.PluginModuleUtil;
@@ -104,7 +103,6 @@ public abstract class DevKitInspectionBase extends BaseJavaLocalInspectionTool {
     if (qualifiedName != null) {
       final RegistrationTypeFinder finder = new RegistrationTypeFinder(psiClass, types);
 
-      DescriptorUtil.processComponents(rootTag, finder);
 
       if (includeActions) {
         DescriptorUtil.processActions(rootTag, finder);
@@ -159,7 +157,7 @@ public abstract class DevKitInspectionBase extends BaseJavaLocalInspectionTool {
     return false;
   }
 
-  static class RegistrationTypeFinder implements ComponentType.Processor, ActionType.Processor {
+  static class RegistrationTypeFinder implements ActionType.Processor {
     private Set<PsiClass> myTypes;
     private final String myQualifiedName;
     private final PsiManager myManager;
@@ -170,16 +168,6 @@ public abstract class DevKitInspectionBase extends BaseJavaLocalInspectionTool {
       myQualifiedName = psiClass.getQualifiedName();
       myManager = psiClass.getManager();
       myScope = psiClass.getResolveScope();
-    }
-
-    public boolean process(ComponentType type, XmlTag component, XmlTagValue impl, XmlTagValue intf) {
-      if (impl != null && myQualifiedName.equals(impl.getTrimmedText())) {
-        final PsiClass clazz = JavaPsiFacade.getInstance(myManager.getProject()).findClass(type.myClassName, myScope);
-        if (clazz != null) {
-          addType(clazz);
-        }
-      }
-      return true;
     }
 
     public boolean process(ActionType type, XmlTag action) {

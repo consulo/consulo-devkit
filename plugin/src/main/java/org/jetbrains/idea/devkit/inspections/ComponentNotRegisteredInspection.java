@@ -27,8 +27,6 @@ import javax.swing.event.ChangeListener;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.inspections.quickfix.RegisterActionFix;
-import org.jetbrains.idea.devkit.inspections.quickfix.RegisterComponentFix;
-import org.jetbrains.idea.devkit.util.ComponentType;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -151,32 +149,6 @@ public class ComponentNotRegisteredInspection extends DevKitInspectionBase
 					else
 					{
 						// action IS registered, stop here
-						return null;
-					}
-				}
-			}
-
-			final ComponentType[] types = ComponentType.values();
-			for(ComponentType type : types)
-			{
-				final PsiClass compClass = JavaPsiFacade.getInstance(psiManager.getProject()).findClass(type.myClassName, scope);
-				if(compClass == null)
-				{
-					// stop if component classes cannot be found (non-devkit module/project)
-					return null;
-				}
-				if(checkedClass.isInheritor(compClass, true))
-				{
-					if(getRegistrationTypes(checkedClass, false) == null && canFix(checkedClass))
-					{
-						final LocalQuickFix fix = new RegisterComponentFix(type, checkedClass);
-						final ProblemDescriptor problem = manager.createProblemDescriptor(classIdentifier, DevKitBundle.message("inspections.component.not.registered.message",
-								DevKitBundle.message(type.myPropertyKey)), fix, ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly);
-						return new ProblemDescriptor[]{problem};
-					}
-					else
-					{
-						// component IS registered, stop here
 						return null;
 					}
 				}

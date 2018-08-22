@@ -38,15 +38,6 @@ import consulo.devkit.util.PluginModuleUtil;
  */
 public class DescriptorUtil
 {
-	public static void processComponents(XmlTag root, ComponentType.Processor processor)
-	{
-		final ComponentType[] types = ComponentType.values();
-		for(ComponentType type : types)
-		{
-			type.process(root, processor);
-		}
-	}
-
 	public static void processActions(XmlTag root, ActionType.Processor processor)
 	{
 		final ActionType[] types = ActionType.values();

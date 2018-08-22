@@ -84,11 +84,7 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
 						 implementationClass="org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection"/>
-		<localInspection shortName="ComponentRegistrationProblems"
-						 bundle="messages.DevKitBundle" key="inspections.registration.problems.name"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true" level="ERROR"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.RegistrationProblemsInspection"/>
+
 		<localInspection language="JAVA" shortName="DialogTitleCapitalization"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name"
@@ -201,15 +197,6 @@
 	</extensions>
 
 	<actions>
-		<action class="org.jetbrains.idea.devkit.actions.NewApplicationComponentAction" text="Application Component"
-				id="NewApplicationComponent">
-			<add-to-group anchor="last" group-id="NewGroup"/>
-		</action>
-
-		<action class="org.jetbrains.idea.devkit.actions.NewProjectComponentAction" text="Project Component" id="NewProjectComponent">
-			<add-to-group anchor="last" group-id="NewGroup"/>
-		</action>
-
 		<action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
 			<add-to-group anchor="last" group-id="NewGroup"/>
 		</action>
