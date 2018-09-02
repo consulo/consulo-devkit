@@ -145,6 +145,14 @@
 						 displayName="Missed @Singleton annotation for services"
 						 implementationClass="consulo.devkit.inspections.inject.NoSingletonAnnotationInspection"/>
 
+		<localInspection language="JAVA"
+						 level="ERROR"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
+						 displayName="Missed @Inject annotation for services &amp; extensions"
+						 implementationClass="consulo.devkit.inspections.inject.NoInjectAnnotationInspection"/>
+
 		<localInspection language="JAVA" shortName="UndesirableClassUsage" displayName="Undesirable class usage"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
