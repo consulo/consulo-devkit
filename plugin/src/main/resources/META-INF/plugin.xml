@@ -14,7 +14,7 @@
 	<depends>com.intellij.xml</depends>
 	<depends>com.intellij.uiDesigner</depends>
 	<!--This depend is not used, but it needed for developing, and it required-->
-	<depends optional="true" config-file="consulo.jflex.xml">consulo.jflex</depends>
+	<depends optional="true">consulo.jflex</depends>
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
@@ -184,8 +184,6 @@
 										implementationClass="consulo.devkit.codeInsight.daemon.ServiceLineMarkerProvider" />
 
 		<colorProvider implementation="consulo.devkit.codeInsight.daemon.UIColorLineMarkerProvider"/>
-
-		<iconDescriptorUpdater implementation="consulo.devkit.ConsuloDevkitIconDescriptorUpdater" order="last"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij.xml.dom">
@@ -208,13 +206,6 @@
 		<action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
 			<add-to-group anchor="last" group-id="NewGroup"/>
 		</action>
-
-		<group id="DownloadDependenciesGroup">
-			<separator/>
-			<action id="DownloadDependencies" class="consulo.devkit.action.DownloadDependenciesAction" can-use-project-as-default="true"
-					require-module-extensions="consulo-plugin"/>
-			<add-to-group anchor="last" group-id="ProjectViewPopupMenuSettingsGroup"/>
-		</group>
 
 		<action class="org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction" text="Generate Externalization"
 				id="GenerateExternalization">

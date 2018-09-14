@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
@@ -38,7 +39,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
-import consulo.devkit.module.library.ConsuloPluginLibraryType;
 import consulo.java.execution.configurations.OwnJavaParameters;
 
 /**
@@ -97,15 +97,6 @@ public class ConsuloSandboxRunState extends CommandLineState
 		VirtualFile baseDir = env.getProject().getBaseDir();
 		assert baseDir != null;
 
-		// if plugin name is not plugin - append dep directory
-		if(artifact == null || !"plugin".contains(artifact.getName()))
-		{
-			VirtualFile dep = baseDir.findChild(ConsuloPluginLibraryType.DEP_LIBRARY);
-			if(dep != null)
-			{
-				pluginPaths.add(dep.getPath());
-			}
-		}
 
 		if(artifact != null)
 		{
