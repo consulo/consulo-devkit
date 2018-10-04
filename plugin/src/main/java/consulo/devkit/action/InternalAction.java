@@ -16,15 +16,13 @@
 
 package consulo.devkit.action;
 
-import javax.swing.Icon;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.util.PluginModuleUtil;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
@@ -34,21 +32,6 @@ public abstract class InternalAction extends AnAction
 {
 	protected InternalAction()
 	{
-	}
-
-	protected InternalAction(Icon icon)
-	{
-		super(icon);
-	}
-
-	protected InternalAction(@Nullable String text)
-	{
-		super(text);
-	}
-
-	protected InternalAction(@Nullable String text, @Nullable String description, @Nullable Icon icon)
-	{
-		super(text, description, icon);
 	}
 
 	@RequiredDispatchThread
