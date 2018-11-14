@@ -16,16 +16,13 @@
 
 package consulo.devkit.action;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.project.Project;
 import consulo.annotations.RequiredDispatchThread;
 import consulo.devkit.util.PluginModuleUtil;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
@@ -33,36 +30,11 @@ import consulo.devkit.util.PluginModuleUtil;
  */
 public class InternalGroup extends DefaultActionGroup
 {
-	public InternalGroup()
-	{
-	}
-
-	public InternalGroup(@Nonnull AnAction... actions)
-	{
-		super(actions);
-	}
-
-	public InternalGroup(@Nonnull List<? extends AnAction> actions)
-	{
-		super(actions);
-	}
-
-	public InternalGroup(@Nonnull String name, @Nonnull List<? extends AnAction> actions)
-	{
-		super(name, actions);
-	}
-
-	public InternalGroup(String shortName, boolean popup)
-	{
-		super(shortName, popup);
-	}
-
 	@RequiredDispatchThread
 	@Override
 	public void update(@Nonnull AnActionEvent e)
 	{
-		super.update(e);
-
-		e.getPresentation().setVisible(PluginModuleUtil.isConsuloOrPluginProject(e.getRequiredData(CommonDataKeys.PROJECT), null));
+		Project project = e.getProject();
+		e.getPresentation().setVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
 	}
 }
