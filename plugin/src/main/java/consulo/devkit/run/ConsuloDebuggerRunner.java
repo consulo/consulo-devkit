@@ -98,7 +98,6 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 					if(executionResult instanceof DefaultExecutionResult)
 					{
 						sessionImpl.addRestartActions(((DefaultExecutionResult) executionResult).getRestartActions());
-						sessionImpl.addExtraStopActions(((DefaultExecutionResult) executionResult).getAdditionalStopActions());
 					}
 
 					return JavaDebugProcess.create(session, debuggerSession);
