@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
-import javax.swing.Icon;
 import javax.swing.ListSelectionModel;
 
 import org.jetbrains.annotations.NonNls;
@@ -49,9 +48,10 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.ui.LayeredIcon;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ArrayUtil;
+import consulo.ui.image.Image;
+import consulo.ui.image.ImageEffects;
 
 /**
  * @author Konstantin Bulenkov
@@ -195,9 +195,9 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable
 	}
 
 	@Override
-	public Icon getIcon(int flags)
+	public Image getIcon(int flags)
 	{
-		return new LayeredIcon(AllIcons.FileTypes.Html, AllIcons.Actions.New);
+		return ImageEffects.layered(AllIcons.FileTypes.Html, AllIcons.Actions.New);
 	}
 
 	private VirtualFile[] prepare(VirtualFile[] roots)
