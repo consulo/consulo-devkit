@@ -20,7 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.Icon;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrPattern;
@@ -30,8 +31,7 @@ import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfValueList;
 import org.intellij.grammar.psi.impl.BnfFileImpl;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.StructureViewModelBase;
@@ -44,10 +44,9 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiNamedElement;
-import com.intellij.util.PlatformIcons;
 import com.intellij.util.containers.ContainerUtil;
-import consulo.awt.TargetAWT;
 import consulo.ide.IconDescriptorUpdaters;
+import consulo.ui.image.Image;
 
 /**
  * @author gregsh
@@ -163,10 +162,10 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
     }
 
     @Override
-    public Icon getIcon(boolean open) {
+    public Image getIcon(boolean open) {
       PsiElement element = getElement();
       if (element == null) return null;
-      return element instanceof BnfAttrs ? PlatformIcons.PACKAGE_ICON : TargetAWT.to(IconDescriptorUpdaters.getIcon(element, 0));
+      return element instanceof BnfAttrs ? AllIcons.Nodes.Package : IconDescriptorUpdaters.getIcon(element, 0);
     }
   }
 }

@@ -23,14 +23,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.swing.Icon;
 
 import org.intellij.grammar.BnfIcons;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
-import javax.annotation.Nonnull;
-
 import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.StructureViewModelBase;
@@ -51,7 +49,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.tree.IElementType;
-import consulo.awt.TargetAWT;
+import consulo.ui.image.Image;
 
 /**
  * @author gregsh
@@ -152,7 +150,7 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
 
     @Nullable
     @Override
-    public Icon getIcon(boolean unused) {
+    public Image getIcon() {
       PsiElement element = getElement();
       if (element instanceof PsiErrorElement) {
         return null; //AllIcons.General.Error;
@@ -163,7 +161,7 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
       ASTNode node = element != null ? element.getNode() : null;
       IElementType elementType = node != null ? node.getElementType() : null;
       if (elementType instanceof LivePreviewElementType.RuleType) {
-        return TargetAWT.to(BnfIcons.RULE);
+        return BnfIcons.RULE;
       }
       return null;
     }
