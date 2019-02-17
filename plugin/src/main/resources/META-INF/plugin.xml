@@ -134,6 +134,14 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
+						 displayName="Wrong cast - require explicit conversion"
+						 implementationClass="consulo.devkit.inspections.internal.WrongCastRequireExplicitConversionInspection"/>
+
+		<localInspection language="JAVA"
+						 level="ERROR"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
 						 displayName="Platform method specific restriction"
 						 implementationClass="consulo.devkit.inspections.internal.PlatformErrorInspection"/>
 

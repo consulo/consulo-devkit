@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.build.PluginBuildUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
@@ -39,6 +40,7 @@ import consulo.annotations.RequiredReadAction;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.java.module.extension.JavaModuleExtension;
 import consulo.java.roots.SpecialDirUtil;
+import consulo.module.extension.ModuleExtension;
 
 /**
  * @author VISTALL
@@ -148,6 +150,12 @@ public class PluginModuleUtil
 
 		if(module != null)
 		{
+			PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(ModuleExtension.class.getName(), module.getModuleWithDependenciesAndLibrariesScope(false));
+			if(psiClass != null)
+			{
+				return true;
+			}
+
 			if(PluginModuleUtil.isPluginModuleOrDependency(module))
 			{
 				return true;
