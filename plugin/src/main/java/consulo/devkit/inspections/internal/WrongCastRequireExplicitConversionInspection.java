@@ -11,6 +11,7 @@ import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiExpression;
+import com.intellij.psi.PsiInstanceOfExpression;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeCastExpression;
 import com.intellij.psi.PsiTypeElement;
@@ -63,6 +64,28 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
 
 				PsiType castType = castTypeElement.getType();
 				PsiType expressionType = operand.getType();
+				checkType(expression, castTypeElement, castType, expressionType);
+			}
+
+			@Override
+			public void visitInstanceOfExpression(PsiInstanceOfExpression expression)
+			{
+				super.visitInstanceOfExpression(expression);
+
+				PsiTypeElement checkTypeElement = expression.getCheckType();
+				PsiExpression operand = expression.getOperand();
+				if(checkTypeElement == null)
+				{
+					return;
+				}
+
+				PsiType castType = checkTypeElement.getType();
+				PsiType expressionType = operand.getType();
+				checkType(expression, checkTypeElement, castType, expressionType);
+			}
+
+			private void checkType(PsiExpression expression, PsiTypeElement castTypeElement, PsiType castType, PsiType expressionType)
+			{
 				if(expressionType == null || PsiType.NULL.equals(castType) || PsiType.NULL.equals(expressionType))
 				{
 					return;
