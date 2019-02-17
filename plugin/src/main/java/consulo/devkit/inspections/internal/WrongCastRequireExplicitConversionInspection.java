@@ -63,7 +63,7 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
 
 				PsiType castType = castTypeElement.getType();
 				PsiType expressionType = operand.getType();
-				if(expressionType == null)
+				if(expressionType == null || PsiType.NULL.equals(castType) || PsiType.NULL.equals(expressionType))
 				{
 					return;
 				}
