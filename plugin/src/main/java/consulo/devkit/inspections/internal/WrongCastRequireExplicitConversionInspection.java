@@ -6,6 +6,7 @@ import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.wm.IdeFrame;
+import com.intellij.openapi.wm.ex.IdeFrameEx;
 import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClassType;
@@ -32,7 +33,10 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
 		UI_COMPONENT_TO_VAADIN_COMPONENT("consulo.ui.Component", "com.vaadin.ui.Component"),
 
 		IDE_FRAME_TO_AWT_WINDOW(IdeFrame.class.getName(), "java.awt.Window"),
-		AWT_WINDOW_TO_IDE_FRAME("java.awt.Window", IdeFrame.class.getName());
+		AWT_WINDOW_TO_IDE_FRAME("java.awt.Window", IdeFrame.class.getName()),
+
+		IDE_FRAME_EX_TO_AWT_WINDOW(IdeFrameEx.class.getName(), "java.awt.Window"),
+		AWT_WINDOW_TO_IDE_FRAME_EX("java.awt.Window", IdeFrameEx.class.getName());
 
 		private final String myType1;
 		private final String myType2;
