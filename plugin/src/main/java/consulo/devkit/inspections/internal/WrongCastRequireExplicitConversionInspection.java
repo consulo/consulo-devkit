@@ -32,11 +32,11 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
 		VAADIN_COMPONENT_TO_UI_COMPONENT("com.vaadin.ui.Component", "consulo.ui.Component"),
 		UI_COMPONENT_TO_VAADIN_COMPONENT("consulo.ui.Component", "com.vaadin.ui.Component"),
 
-		IDE_FRAME_TO_AWT_WINDOW(IdeFrame.class.getName(), "java.awt.Window"),
-		AWT_WINDOW_TO_IDE_FRAME("java.awt.Window", IdeFrame.class.getName()),
+		IDE_FRAME_TO_AWT_WINDOW(IdeFrame.class.getName(), "java.awt.Component"),
+		AWT_WINDOW_TO_IDE_FRAME("java.awt.Component", IdeFrame.class.getName()),
 
-		IDE_FRAME_EX_TO_AWT_WINDOW(IdeFrameEx.class.getName(), "java.awt.Window"),
-		AWT_WINDOW_TO_IDE_FRAME_EX("java.awt.Window", IdeFrameEx.class.getName());
+		IDE_FRAME_EX_TO_AWT_WINDOW(IdeFrameEx.class.getName(), "java.awt.Component"),
+		AWT_WINDOW_TO_IDE_FRAME_EX("java.awt.Component", IdeFrameEx.class.getName());
 
 		private final String myType1;
 		private final String myType2;
