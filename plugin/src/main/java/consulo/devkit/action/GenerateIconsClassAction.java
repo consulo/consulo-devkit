@@ -60,7 +60,7 @@ import com.intellij.util.ExceptionUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.MultiMap;
 import com.intellij.util.ui.UIUtil;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.RequiredUIAccess;
 import consulo.devkit.action.icons.GenerateDirNode;
 import consulo.devkit.action.icons.IconClassBuilder;
 import consulo.roots.ContentFolderScopes;
@@ -78,7 +78,7 @@ public class GenerateIconsClassAction extends InternalAction
 		private ComboBox<Module> myModuleComboBox;
 		private JBTextField myClassTextField;
 
-		@RequiredDispatchThread
+		@RequiredUIAccess
 		public SettingsDialog(@Nonnull final Project project)
 		{
 			super(project);
@@ -122,7 +122,7 @@ public class GenerateIconsClassAction extends InternalAction
 
 	private static final String ourIconsDirName = "icons";
 
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	@Override
 	public void actionPerformed(@Nonnull AnActionEvent anActionEvent)
 	{

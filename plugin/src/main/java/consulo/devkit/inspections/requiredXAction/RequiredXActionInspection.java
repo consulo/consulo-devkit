@@ -32,12 +32,11 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodReferenceExpression;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.RequiredUIAccess;
 import consulo.devkit.inspections.requiredXAction.stateResolver.AnonymousClassStateResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.LambdaStateResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.MethodReferenceResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.StateResolver;
-import consulo.ui.RequiredUIAccess;
 
 /**
  * @author VISTALL
@@ -116,7 +115,7 @@ public class RequiredXActionInspection extends LocalInspectionTool
 					break;
 				case DISPATCH_THREAD:
 					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.dispath", StringUtil.capitalize(type.name().toLowerCase()));
-					quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(RequiredDispatchThread.class.getName())};
+					quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(RequiredUIAccess.class.getName())};
 					break;
 				case UI_ACCESS:
 					text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.ui", StringUtil.capitalize(type.name().toLowerCase()));

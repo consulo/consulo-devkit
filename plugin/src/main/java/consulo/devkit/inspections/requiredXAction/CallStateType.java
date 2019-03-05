@@ -32,10 +32,9 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.UIUtil;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.RequiredUIAccess;
 import consulo.annotations.RequiredReadAction;
 import consulo.annotations.RequiredWriteAction;
-import consulo.ui.RequiredUIAccess;
 import consulo.ui.UIAccess;
 
 /**
@@ -73,7 +72,7 @@ public enum CallStateType
 					return type == DISPATCH_THREAD || type == WRITE || type == UI_ACCESS;
 				}
 			},
-	DISPATCH_THREAD(RequiredDispatchThread.class.getName(), null, new AcceptableMethodCallCheck[]{
+	DISPATCH_THREAD(RequiredUIAccess.class.getName(), null, new AcceptableMethodCallCheck[]{
 			new AcceptableMethodCallCheck(Application.class, "invokeLater"),
 			new AcceptableMethodCallCheck(Application.class, "invokeAndWait"),
 			new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),

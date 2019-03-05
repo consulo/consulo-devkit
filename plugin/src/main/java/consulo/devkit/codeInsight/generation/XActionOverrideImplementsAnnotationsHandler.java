@@ -21,10 +21,9 @@ import javax.annotation.Nonnull;
 import com.intellij.codeInsight.generation.OverrideImplementsAnnotationsHandler;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ArrayUtil;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.RequiredUIAccess;
 import consulo.annotations.RequiredReadAction;
 import consulo.annotations.RequiredWriteAction;
-import consulo.ui.RequiredUIAccess;
 
 /**
  * @author VISTALL
@@ -35,7 +34,7 @@ public class XActionOverrideImplementsAnnotationsHandler implements OverrideImpl
 	private static final String[] ourAnnotations = new String[]{
 			RequiredReadAction.class.getName(),
 			RequiredWriteAction.class.getName(),
-			RequiredDispatchThread.class.getName(),
+			RequiredUIAccess.class.getName(),
 			RequiredUIAccess.class.getName()
 	};
 

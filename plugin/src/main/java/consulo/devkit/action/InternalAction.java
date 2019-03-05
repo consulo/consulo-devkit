@@ -19,7 +19,7 @@ package consulo.devkit.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.RequiredUIAccess;
 import consulo.devkit.util.PluginModuleUtil;
 
 import javax.annotation.Nonnull;
@@ -34,7 +34,7 @@ public abstract class InternalAction extends AnAction
 	{
 	}
 
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	@Override
 	public void update(@Nonnull AnActionEvent e)
 	{

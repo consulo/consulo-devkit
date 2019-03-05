@@ -21,7 +21,7 @@ import javax.swing.JComponent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.intellij.openapi.projectRoots.Sdk;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.RequiredUIAccess;
 import consulo.module.extension.MutableModuleExtensionWithSdk;
 import consulo.module.extension.MutableModuleInheritableNamedPointer;
 import consulo.roots.ModuleRootLayer;
@@ -39,7 +39,7 @@ public class PluginMutableModuleExtension extends PluginModuleExtension implemen
 
 	@Nullable
 	@Override
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	public JComponent createConfigurablePanel(@Nullable Runnable updateOnCheck)
 	{
 		return new DevKitModuleExtensionPanel(this, updateOnCheck);

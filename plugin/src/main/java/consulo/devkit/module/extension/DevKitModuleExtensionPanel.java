@@ -19,7 +19,7 @@ package consulo.devkit.module.extension;
 import javax.swing.JPanel;
 
 import com.intellij.openapi.ui.VerticalFlowLayout;
-import consulo.annotations.RequiredDispatchThread;
+import consulo.ui.RequiredUIAccess;
 import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
 
 /**
@@ -28,7 +28,7 @@ import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
  */
 public class DevKitModuleExtensionPanel extends JPanel
 {
-	@RequiredDispatchThread
+	@RequiredUIAccess
 	public DevKitModuleExtensionPanel(PluginMutableModuleExtension mutableModuleExtension, Runnable updateOnCheck)
 	{
 		super(new VerticalFlowLayout(true, false));
