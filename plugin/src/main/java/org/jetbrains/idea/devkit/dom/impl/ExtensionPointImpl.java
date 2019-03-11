@@ -17,33 +17,17 @@ package org.jetbrains.idea.devkit.dom.impl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.xml.DomUtil;
 
 public abstract class ExtensionPointImpl implements ExtensionPoint
 {
-	@Nonnull
-	@Override
-	public String getEffectiveName()
-	{
-		if(DomUtil.hasXml(getName()))
-		{
-			return getName().getRawText();
-		}
-		return getQualifiedName().getRawText();
-	}
-
 	@Nullable
 	@Override
 	public String getNamePrefix()
 	{
-		if(DomUtil.hasXml(getQualifiedName()))
-		{
-			return null;
-		}
-
 		final IdeaPlugin plugin = getParentOfType(IdeaPlugin.class, false);
 		if(plugin == null)
 		{
@@ -57,11 +41,6 @@ public abstract class ExtensionPointImpl implements ExtensionPoint
 	@Override
 	public String getEffectiveQualifiedName()
 	{
-		if(DomUtil.hasXml(getQualifiedName()))
-		{
-			return getQualifiedName().getRawText();
-		}
-
 		return getNamePrefix() + "." + getName().getRawText();
 	}
 }

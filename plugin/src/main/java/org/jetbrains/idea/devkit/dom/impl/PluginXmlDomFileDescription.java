@@ -29,4 +29,6 @@ public class PluginXmlDomFileDescription extends ConsuloPluginXmlDomFileDescript
 	{
 		super("idea-plugin");
 	}
+
+
 }

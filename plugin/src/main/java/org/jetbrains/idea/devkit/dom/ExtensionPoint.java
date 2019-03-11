@@ -53,9 +53,6 @@ public interface ExtensionPoint extends DomElement
 	@NameValue
 	GenericAttributeValue<String> getName();
 
-	@Attribute("qualifiedName")
-	GenericAttributeValue<String> getQualifiedName();
-
 	@Nonnull
 	@Convert(PluginPsiClassConverter.class)
 	GenericAttributeValue<PsiClass> getInterface();
@@ -82,14 +79,6 @@ public interface ExtensionPoint extends DomElement
 	 */
 	@Nonnull
 	String getEffectiveQualifiedName();
-
-	/**
-	 * Returns the actually defined name.
-	 *
-	 * @return {@link #getName()} if defined, {@link #getQualifiedName()} otherwise.
-	 */
-	@Nonnull
-	String getEffectiveName();
 
 	/**
 	 * Returns EP name prefix (Plugin ID).
