@@ -1,5 +1,6 @@
 package consulo.devkit.inspections.util.service;
 
+import com.intellij.openapi.extensions.impl.ExtensionAreaId;
 import com.intellij.psi.PsiElement;
 
 /**
@@ -8,12 +9,12 @@ import com.intellij.psi.PsiElement;
  */
 public class ServiceInfo
 {
-	private String myArea;
+	private ExtensionAreaId myArea;
 	private String myInterface;
 	private String myImplementation;
 	private PsiElement myNavigatableElement;
 
-	public ServiceInfo(String area, String anInterface, String implementation, PsiElement navigatableElement)
+	public ServiceInfo(ExtensionAreaId area, String anInterface, String implementation, PsiElement navigatableElement)
 	{
 		myArea = area;
 		myInterface = anInterface;
@@ -26,7 +27,7 @@ public class ServiceInfo
 		return myNavigatableElement;
 	}
 
-	public String getArea()
+	public ExtensionAreaId getArea()
 	{
 		return myArea;
 	}

@@ -14,7 +14,7 @@ import org.jetbrains.idea.devkit.dom.Extensions;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import com.intellij.ide.plugins.PluginManagerCore;
-import com.intellij.openapi.components.ExtensionAreas;
+import com.intellij.openapi.extensions.impl.ExtensionAreaId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
@@ -38,13 +38,13 @@ import consulo.annotations.RequiredReadAction;
  */
 public class ServiceLocator
 {
-	private static Map<String, String> ourExtensionToArea = new HashMap<>();
+	private static Map<String, ExtensionAreaId> ourExtensionToArea = new HashMap<>();
 
 	static
 	{
-		ourExtensionToArea.put("applicationService", ExtensionAreas.APPLICATION);
-		ourExtensionToArea.put("projectService", ExtensionAreas.PROJECT);
-		ourExtensionToArea.put("moduleService", ExtensionAreas.MODULE);
+		ourExtensionToArea.put("applicationService", ExtensionAreaId.APPLICATION);
+		ourExtensionToArea.put("projectService", ExtensionAreaId.PROJECT);
+		ourExtensionToArea.put("moduleService", ExtensionAreaId.MODULE);
 	}
 
 	@Nullable
@@ -140,7 +140,7 @@ public class ServiceLocator
 
 					String name = tag.getName();
 
-					String area = ourExtensionToArea.get(name);
+					ExtensionAreaId area = ourExtensionToArea.get(name);
 					if(area == null)
 					{
 						continue;
