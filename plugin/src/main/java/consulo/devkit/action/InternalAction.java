@@ -16,13 +16,17 @@
 
 package consulo.devkit.action;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import consulo.ui.RequiredUIAccess;
 import consulo.devkit.util.PluginModuleUtil;
-
-import javax.annotation.Nonnull;
+import consulo.ui.RequiredUIAccess;
+import consulo.ui.image.Image;
 
 /**
  * @author VISTALL
@@ -34,11 +38,27 @@ public abstract class InternalAction extends AnAction
 	{
 	}
 
+	protected InternalAction(Image icon)
+	{
+		super(icon);
+	}
+
+	protected InternalAction(@Nullable String text)
+	{
+		super(text);
+	}
+
+	protected InternalAction(@Nullable String text, @Nullable String description, @Nullable Image icon)
+	{
+		super(text, description, icon);
+	}
+
 	@RequiredUIAccess
 	@Override
 	public void update(@Nonnull AnActionEvent e)
 	{
 		Project project = e.getProject();
-		e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
+		Module module = e.getData(CommonDataKeys.MODULE);
+		e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, module));
 	}
 }

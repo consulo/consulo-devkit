@@ -13,10 +13,14 @@
 	<depends>com.intellij.properties</depends>
 	<depends>com.intellij.xml</depends>
 	<depends>com.intellij.uiDesigner</depends>
-	<!--This depend is not used, but it needed for developing, and it required-->
-	<depends optional="true">consulo.jflex</depends>
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
+
+	<actions>
+		<action id="ConvertResourceBundleToYamlAction" class="consulo.devkit.action.ConvertResourceBundleToYamlAction">
+			<add-to-group group-id="ProjectViewPopupMenu" />
+		</action>
+	</actions>
 
 	<extensions defaultExtensionNs="consulo.java">
 		<coverageEngineExtension implementation="consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
