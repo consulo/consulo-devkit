@@ -82,9 +82,9 @@ public interface IdeaPlugin extends DomElement
 
 	GenericDomValue<String> addResourceBundle();
 
-	@Nonnull
-	@SubTagList("importFile")
-	List<ImportFile> getImportFiles();
+	//@Nonnull
+	//@SubTagList("importFile")
+	//List<ImportFile> getImportFiles();
 
 	@Nonnull
 	@SubTagList("depends")
