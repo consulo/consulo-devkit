@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -43,11 +44,11 @@ public class ConvertResourceBundleToYamlAction extends InternalAction
 
 		assert propertiesFile != null;
 
-		HashMap<String, Map<String, String>> messages = new HashMap<>();
+		HashMap<String, Map<String, String>> messages = new LinkedHashMap<>();
 
 		for(IProperty property : propertiesFile.getProperties())
 		{
-			Map<String, String> messageInfo = new HashMap<>();
+			Map<String, String> messageInfo = new LinkedHashMap<>();
 			messageInfo.put("text", property.getUnescapedValue());
 
 			messages.put(property.getUnescapedKey(), messageInfo);
