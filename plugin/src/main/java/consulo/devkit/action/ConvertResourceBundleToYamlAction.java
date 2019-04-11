@@ -59,6 +59,7 @@ public class ConvertResourceBundleToYamlAction extends InternalAction
 		dumperOptions.setAllowUnicode(true);
 		dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
 		dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+		dumperOptions.setWidth(1024);
 		dumperOptions.setMaxSimpleKeyLength(1024);
 		Yaml yaml = new Yaml(dumperOptions);
 
