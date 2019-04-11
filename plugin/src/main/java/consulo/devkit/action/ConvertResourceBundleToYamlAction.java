@@ -59,6 +59,7 @@ public class ConvertResourceBundleToYamlAction extends InternalAction
 		dumperOptions.setAllowUnicode(true);
 		dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
 		dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+		dumperOptions.setMaxSimpleKeyLength(1024);
 		Yaml yaml = new Yaml(dumperOptions);
 
 		File ioFile = VfsUtil.virtualToIoFile(file.getVirtualFile());
