@@ -1,8 +1,11 @@
 package consulo.devkit.action;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -68,7 +71,7 @@ public class ConvertResourceBundleToYamlAction extends InternalAction
 		File parentFile = ioFile.getParentFile();
 
 		File result = new File(parentFile, FileUtil.getNameWithoutExtension(ioFile) + ".yaml");
-		try (FileWriter fileWriter = new FileWriter(result))
+		try (Writer fileWriter = new OutputStreamWriter(new FileOutputStream(result), StandardCharsets.UTF_8))
 		{
 			yaml.dump(messages, fileWriter);
 		}
