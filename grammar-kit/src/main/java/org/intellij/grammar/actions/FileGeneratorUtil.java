@@ -19,7 +19,6 @@ package org.intellij.grammar.actions;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
-import com.intellij.openapi.application.Result;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.project.Project;
@@ -103,14 +102,7 @@ public class FileGeneratorUtil
 			}
 			else
 			{
-				VirtualFile result = new WriteAction<VirtualFile>()
-				{
-					@Override
-					protected void run(@Nonnull Result<VirtualFile> result) throws Throwable
-					{
-						result.setResult(VfsUtil.createDirectoryIfMissing(virtualRoot, relativePath));
-					}
-				}.execute().throwException().getResultObject();
+				VirtualFile result = WriteAction.compute(() -> VfsUtil.createDirectoryIfMissing(virtualRoot, relativePath));
 				VfsUtil.markDirtyAndRefresh(false, true, true, result);
 				return returnRoot && newGenRoot ? ObjectUtils.assertNotNull(virtualRoot.findChild(genDirName)) :
 						returnRoot ? virtualRoot : result;
