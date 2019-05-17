@@ -16,26 +16,21 @@
 
 package consulo.devkit.inspections.requiredXAction;
 
-import javax.annotation.Nonnull;
-import javax.swing.SwingUtilities;
-
-import javax.annotation.Nullable;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.application.Application;
-import com.intellij.openapi.application.BaseActionRunnable;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.util.InheritanceUtil;
-import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.UIUtil;
-import consulo.ui.RequiredUIAccess;
 import consulo.annotations.RequiredReadAction;
 import consulo.annotations.RequiredWriteAction;
+import consulo.ui.RequiredUIAccess;
 import consulo.ui.UIAccess;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
 
 /**
  * @author VISTALL
@@ -44,7 +39,7 @@ import consulo.ui.UIAccess;
 public enum CallStateType
 {
 	NONE(null, null),
-	READ(RequiredReadAction.class.getName(), ReadAction.class, new AcceptableMethodCallCheck[]{
+	READ(RequiredReadAction.class.getName(), new AcceptableMethodCallCheck[]{
 			new AcceptableMethodCallCheck(Application.class, "runReadAction"),
 			new AcceptableMethodCallCheck(ReadAction.class, "run"),
 			new AcceptableMethodCallCheck(ReadAction.class, "compute")
@@ -56,7 +51,7 @@ public enum CallStateType
 					return type == READ || type == DISPATCH_THREAD || type == UI_ACCESS || type == WRITE;
 				}
 			},
-	WRITE(RequiredWriteAction.class.getName(), WriteAction.class, new AcceptableMethodCallCheck[]{
+	WRITE(RequiredWriteAction.class.getName(), new AcceptableMethodCallCheck[]{
 			new AcceptableMethodCallCheck(Application.class, "runWriteAction"),
 			new AcceptableMethodCallCheck(WriteAction.class, "run"),
 			new AcceptableMethodCallCheck(WriteAction.class, "compute"),
@@ -72,7 +67,7 @@ public enum CallStateType
 					return type == DISPATCH_THREAD || type == WRITE || type == UI_ACCESS;
 				}
 			},
-	DISPATCH_THREAD(RequiredUIAccess.class.getName(), null, new AcceptableMethodCallCheck[]{
+	DISPATCH_THREAD(RequiredUIAccess.class.getName(), new AcceptableMethodCallCheck[]{
 			new AcceptableMethodCallCheck(Application.class, "invokeLater"),
 			new AcceptableMethodCallCheck(Application.class, "invokeAndWait"),
 			new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),
@@ -91,16 +86,13 @@ public enum CallStateType
 
 	@Nullable
 	private final String myActionClass;
-	@Nullable
-	private final Class<? extends BaseActionRunnable> myActionRunnable;
 	@Nonnull
 	private final AcceptableMethodCallCheck[] myAcceptableMethodCallChecks;
 
-	CallStateType(@Nullable String actionClass, @Nullable Class<? extends BaseActionRunnable> actionRunnable, AcceptableMethodCallCheck... methodCallChecks)
+	CallStateType(@Nullable String actionClass, AcceptableMethodCallCheck... methodCallChecks)
 	{
 		myActionClass = actionClass;
 		myAcceptableMethodCallChecks = methodCallChecks;
-		myActionRunnable = actionRunnable;
 	}
 
 	@Nonnull
@@ -138,15 +130,6 @@ public enum CallStateType
 	@Nonnull
 	public static CallStateType findActionType(@Nonnull PsiMethod method)
 	{
-		PsiClass baseActionRunnable = JavaPsiFacade.getInstance(method.getProject()).findClass(BaseActionRunnable.class.getName(), method.getResolveScope());
-
-		PsiMethod baseRunMethod = null;
-		if(baseActionRunnable != null)
-		{
-			PsiMethod[] runMethods = baseActionRunnable.findMethodsByName("run", false);
-			baseRunMethod = ArrayUtil.getFirstElement(runMethods);
-		}
-
 		for(CallStateType actionType : values())
 		{
 			String actionClass = actionType.myActionClass;
@@ -155,25 +138,9 @@ public enum CallStateType
 				continue;
 			}
 
-			if(AnnotationUtil.isAnnotated(method, actionClass, false))
+			if(AnnotationUtil.isAnnotated(method, actionClass, 0))
 			{
 				return actionType;
-			}
-
-			if(baseRunMethod != null && actionType.myActionRunnable != null)
-			{
-				PsiMethod[] superMethods = method.findSuperMethods(baseActionRunnable);
-				if(ArrayUtil.contains(baseRunMethod, superMethods))
-				{
-					PsiClass containingClass = method.getContainingClass();
-					if(containingClass != null)
-					{
-						if(InheritanceUtil.isInheritor(containingClass, actionType.myActionRunnable.getName()))
-						{
-							return actionType;
-						}
-					}
-				}
 			}
 		}
 		return NONE;
