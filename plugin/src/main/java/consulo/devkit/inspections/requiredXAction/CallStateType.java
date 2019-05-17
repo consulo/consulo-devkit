@@ -58,7 +58,7 @@ public enum CallStateType
 			new AcceptableMethodCallCheck(WriteCommandAction.class, "runWriteCommandAction")
 	}),
 	// replacement for DISPATCH_THREAD
-	UI_ACCESS(RequiredUIAccess.class.getName(), null, new AcceptableMethodCallCheck(UIAccess.class.getName(), "give"))
+	UI_ACCESS(RequiredUIAccess.class.getName(), new AcceptableMethodCallCheck(UIAccess.class.getName(), "give"))
 			{
 				@Override
 				public boolean isAcceptableActionType(@Nonnull CallStateType type)
