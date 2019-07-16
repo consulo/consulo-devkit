@@ -153,9 +153,10 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		if(isNewBootDistribution)
 		{
-			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-util-rt.jar");
+			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-container-api.jar");
+			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-container-impl.jar");
 			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-plugin-classloader.jar");
-			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-desktop-bootstrap.jar");
+			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-util-rt.jar");
 			return;
 		}
 
