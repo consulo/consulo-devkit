@@ -16,14 +16,6 @@
 
 package consulo.devkit.run;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.CommandLineState;
@@ -40,6 +32,13 @@ import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
 import consulo.java.execution.configurations.OwnJavaParameters;
+import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author VISTALL
@@ -145,7 +144,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 	@Nonnull
 	public String getMainClass(boolean isNewBootDistribution)
 	{
-		return isNewBootDistribution ? "consulo.desktop.boot.Main" : "com.intellij.idea.Main";
+		return "com.intellij.idea.Main";
 	}
 
 	protected void addConsuloLibs(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isNewBootDistribution)
@@ -155,6 +154,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 		if(isNewBootDistribution)
 		{
 			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-boot.jar");
+			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-util-rt.jar");
 			params.getClassPath().addFirst(consuloHomePath + "/boot/consulo-desktop-boot.jar");
 			return;
 		}
