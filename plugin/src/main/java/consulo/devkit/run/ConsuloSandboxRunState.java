@@ -23,7 +23,6 @@ import com.intellij.execution.configurations.ParametersList;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.application.PathManager;
-import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
@@ -134,7 +133,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		params.setMainClass(getMainClass(isNewBootDistribution));
 
-		for(RunConfigurationExtension ext : Extensions.getExtensions(RunConfigurationExtension.EP_NAME))
+		for(RunConfigurationExtension ext : RunConfigurationExtension.EP_NAME.getExtensionList())
 		{
 			ext.updateJavaParameters(profile, params, getRunnerSettings());
 		}
@@ -144,7 +143,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 	@Nonnull
 	public String getMainClass(boolean isNewBootDistribution)
 	{
-		return "com.intellij.idea.Main";
+		return isNewBootDistribution ? "consulo.desktop.boot.main.Main" : "com.intellij.idea.Main";
 	}
 
 	protected void addConsuloLibs(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isNewBootDistribution)
