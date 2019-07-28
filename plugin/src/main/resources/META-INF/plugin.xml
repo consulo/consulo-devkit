@@ -199,7 +199,6 @@
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij.xml.dom">
-		<fileDescription implementation="org.jetbrains.idea.devkit.dom.impl.PluginXmlDomFileDescription"/>
 		<fileDescription implementation="consulo.devkit.dom.impl.ConsuloPluginXmlDomFileDescriptor"/>
 
 		<extender domClass="org.jetbrains.idea.devkit.dom.Extensions"
