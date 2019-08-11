@@ -15,40 +15,6 @@
  */
 package org.intellij.grammar.generator;
 
-import static java.lang.String.format;
-import static org.intellij.grammar.generator.BnfConstants.*;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
-import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.AT_LEAST_ONE;
-import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.OPTIONAL;
-import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.REQUIRED;
-import static org.intellij.grammar.generator.RuleGraphHelper.getSynonymTargetOrSelf;
-import static org.intellij.grammar.psi.BnfTypes.*;
-
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
-import org.intellij.grammar.java.JavaHelper;
-import org.intellij.grammar.psi.BnfExpression;
-import org.intellij.grammar.psi.BnfExternalExpression;
-import org.intellij.grammar.psi.BnfFile;
-import org.intellij.grammar.psi.BnfLiteralExpression;
-import org.intellij.grammar.psi.BnfPredicate;
-import org.intellij.grammar.psi.BnfReferenceOrToken;
-import org.intellij.grammar.psi.BnfRule;
-import org.intellij.grammar.psi.BnfSequence;
-import org.intellij.grammar.psi.impl.GrammarUtil;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
@@ -56,14 +22,33 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.Function;
-import com.intellij.util.Functions;
-import com.intellij.util.ObjectUtil;
-import com.intellij.util.ObjectUtils;
+import com.intellij.util.*;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.JBIterable;
 import com.intellij.util.containers.MultiMap;
+import consulo.logging.Logger;
+import gnu.trove.THashMap;
+import gnu.trove.THashSet;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
+import org.intellij.grammar.java.JavaHelper;
+import org.intellij.grammar.psi.*;
+import org.intellij.grammar.psi.impl.GrammarUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+
+import static java.lang.String.format;
+import static org.intellij.grammar.generator.BnfConstants.*;
+import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
+import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.*;
+import static org.intellij.grammar.generator.RuleGraphHelper.getSynonymTargetOrSelf;
+import static org.intellij.grammar.psi.BnfTypes.*;
 
 
 /**
@@ -72,7 +57,7 @@ import com.intellij.util.containers.MultiMap;
  */
 public class ParserGenerator
 {
-	public static final Logger LOG = Logger.getInstance("ParserGenerator");
+	public static final Logger LOG = Logger.getInstance(ParserGenerator.class);
 
 	private static final String TYPE_TEXT_SEPARATORS = "<>,[]";
 
