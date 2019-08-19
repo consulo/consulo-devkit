@@ -56,8 +56,8 @@ public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase impleme
 	public ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
 			@Nonnull Sdk javaSdk,
 			@Nonnull String consuloHome,
-			@Nullable Artifact artifact) throws ExecutionException
+			@Nullable String pluginsHomePath) throws ExecutionException
 	{
-		return new ConsuloSandboxRunState(env, javaSdk, consuloHome, artifact);
+		return new ConsuloSandboxRunState(env, javaSdk, consuloHome, pluginsHomePath);
 	}
 }

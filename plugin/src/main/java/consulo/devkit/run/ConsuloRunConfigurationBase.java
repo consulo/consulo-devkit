@@ -16,15 +16,6 @@
 
 package consulo.devkit.run;
 
-import java.util.Collections;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
-import org.jdom.Element;
-
-import javax.annotation.Nullable;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.ConfigurationFactory;
@@ -37,21 +28,19 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.util.DefaultJDOMExternalizer;
-import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.util.NotNullFactory;
-import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.openapi.util.*;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.packaging.artifacts.Artifact;
-import com.intellij.packaging.impl.artifacts.ArtifactUtil;
 import consulo.annotations.RequiredReadAction;
 import consulo.bundle.SdkPointerManager;
 import consulo.bundle.SdkUtil;
 import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
-import consulo.packaging.artifacts.ArtifactPointerUtil;
 import consulo.util.pointers.NamedPointer;
 import consulo.util.pointers.NamedPointerManager;
+import org.jdom.Element;
+import org.jetbrains.idea.devkit.DevKitBundle;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -64,13 +53,12 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 	public static final String LOG_FILE = "/system/log/consulo.log";
 	private static final String JAVA_SDK = "java-sdk";
 	private static final String CONSULO_SDK = "consulo-sdk";
-	private static final String ARTIFACT = "artifact";
 
 	public String VM_PARAMETERS;
 	public String PROGRAM_PARAMETERS;
+	public String PLUGINS_HOME_PATH;
 	protected NamedPointer<Sdk> myJavaSdkPointer;
 	protected NamedPointer<Sdk> myConsuloSdkPointer;
-	protected NamedPointer<Artifact> myArtifactPointer;
 	public boolean USE_ALT_CONSULO_SDK;
 	public String ALT_CONSULO_SDK_PATH;
 
@@ -130,15 +118,14 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 			throw new ExecutionException(DevKitBundle.message("run.configuration.no.consulo.sdk"));
 		}
 
-		final Artifact artifact = myArtifactPointer == null ? null : myArtifactPointer.get();
-		return createState(executor, env, javaSdk, consuloSdkHome, artifact);
+		return createState(executor, env, javaSdk, consuloSdkHome, PLUGINS_HOME_PATH);
 	}
 
 	@Nonnull
 	public abstract ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
 			@Nonnull Sdk javaSdk,
 			@Nonnull String consuloHome,
-			@Nullable Artifact artifact) throws ExecutionException;
+			@Nullable String pluginsHomePath) throws ExecutionException;
 
 	@Override
 	public void readExternal(Element element) throws InvalidDataException
@@ -165,16 +152,6 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 			}
 		});
 
-		myArtifactPointer = PluginRunXmlConfigurationUtil.readPointer(ARTIFACT, element, new NotNullFactory<NamedPointerManager<Artifact>>()
-		{
-			@Nonnull
-			@Override
-			public NamedPointerManager<Artifact> create()
-			{
-				return ArtifactPointerUtil.getPointerManager(getProject());
-			}
-		});
-
 		super.readExternal(element);
 	}
 
@@ -185,7 +162,6 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 
 		PluginRunXmlConfigurationUtil.writePointer(JAVA_SDK, element, myJavaSdkPointer);
 		PluginRunXmlConfigurationUtil.writePointer(CONSULO_SDK, element, myConsuloSdkPointer);
-		PluginRunXmlConfigurationUtil.writePointer(ARTIFACT, element, myArtifactPointer);
 
 		super.writeExternal(element);
 	}
@@ -196,16 +172,6 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 		return Comparing.equal(getName(), suggestedName());
 	}
 
-	@Nullable
-	public String getArtifactName()
-	{
-		return myArtifactPointer == null ? null : myArtifactPointer.getName();
-	}
-
-	public void setArtifactName(@Nullable String name)
-	{
-		myArtifactPointer = name == null ? null : ArtifactPointerUtil.getPointerManager(getProject()).create(name);
-	}
 
 	@Nullable
 	public String getJavaSdkName()
@@ -234,17 +200,10 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 	@RequiredReadAction
 	public Module[] getModules()
 	{
-		Artifact artifact = myArtifactPointer == null ? null : myArtifactPointer.get();
-		if(artifact == null)
+		if(USE_ALT_CONSULO_SDK)
 		{
-			if(USE_ALT_CONSULO_SDK)
-			{
-				return ModuleManager.getInstance(getProject()).getModules();
-			}
-			return Module.EMPTY_ARRAY;
+			return ModuleManager.getInstance(getProject()).getModules();
 		}
-		final Set<Module> modules = ArtifactUtil.getModulesIncludedInArtifacts(Collections.singletonList(artifact), getProject());
-
-		return modules.isEmpty() ? Module.EMPTY_ARRAY : modules.toArray(new Module[modules.size()]);
+		return Module.EMPTY_ARRAY;
 	}
 }

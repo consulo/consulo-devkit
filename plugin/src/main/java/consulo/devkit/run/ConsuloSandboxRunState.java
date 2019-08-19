@@ -26,8 +26,8 @@ import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.packaging.artifacts.Artifact;
 import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
 import consulo.java.execution.configurations.OwnJavaParameters;
@@ -48,11 +48,11 @@ public class ConsuloSandboxRunState extends CommandLineState
 	protected OwnJavaParameters myJavaParameters;
 	protected ExecutionEnvironment myEnvironment;
 
-	public ConsuloSandboxRunState(@Nonnull ExecutionEnvironment environment, @Nonnull Sdk javaSdk, @Nonnull String consuloSdkHome, @Nullable Artifact artifact) throws ExecutionException
+	public ConsuloSandboxRunState(@Nonnull ExecutionEnvironment environment, @Nonnull Sdk javaSdk, @Nonnull String consuloSdkHome, @Nullable String pluginsHomePath) throws ExecutionException
 	{
 		super(environment);
 		myEnvironment = environment;
-		myJavaParameters = createJavaParameters(environment, javaSdk, consuloSdkHome, artifact);
+		myJavaParameters = createJavaParameters(environment, javaSdk, consuloSdkHome, pluginsHomePath);
 	}
 
 	@Nonnull
@@ -68,7 +68,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return configuration.getSandboxPath();
 	}
 
-	private OwnJavaParameters createJavaParameters(@Nonnull ExecutionEnvironment env, @Nonnull Sdk javaSdk, @Nonnull String consuloSdkHome, @Nullable Artifact artifact) throws ExecutionException
+	private OwnJavaParameters createJavaParameters(@Nonnull ExecutionEnvironment env, @Nonnull Sdk javaSdk, @Nonnull String consuloSdkHome, @Nullable String pluginsHomePath) throws ExecutionException
 	{
 		ConsuloRunConfigurationBase profile = (ConsuloRunConfigurationBase) env.getRunProfile();
 		final String dataPath = getSandboxPath(profile);
@@ -91,15 +91,13 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		List<String> pluginPaths = new ArrayList<>();
 		pluginPaths.add(installPluginPath);
+		if(!StringUtil.isEmptyOrSpaces(pluginsHomePath))
+		{
+			pluginPaths.add(pluginsHomePath);
+		}
 
 		VirtualFile baseDir = env.getProject().getBaseDir();
 		assert baseDir != null;
-
-
-		if(artifact != null)
-		{
-			pluginPaths.add(artifact.getOutputPath());
-		}
 
 		vm.defineProperty(ApplicationProperties.CONSULO_PLUGINS_PATHS, String.join(File.pathSeparator, pluginPaths));
 
