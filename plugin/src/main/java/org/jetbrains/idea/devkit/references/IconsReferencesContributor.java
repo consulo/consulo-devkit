@@ -15,17 +15,6 @@
  */
 package org.jetbrains.idea.devkit.references;
 
-import static com.intellij.patterns.PsiJavaPatterns.literalExpression;
-import static com.intellij.patterns.PsiJavaPatterns.psiExpression;
-import static com.intellij.patterns.PsiJavaPatterns.psiMethod;
-import static com.intellij.patterns.PsiJavaPatterns.string;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.intellij.find.FindModel;
 import com.intellij.find.impl.FindInProjectUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -41,11 +30,7 @@ import com.intellij.openapi.util.ProperTextRange;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.patterns.PsiJavaElementPattern;
-import com.intellij.patterns.PsiMethodPattern;
-import com.intellij.patterns.StringPattern;
-import com.intellij.patterns.XmlAttributeValuePattern;
-import com.intellij.patterns.XmlPatterns;
+import com.intellij.patterns.*;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReferenceSet;
@@ -64,6 +49,14 @@ import com.intellij.util.ProcessingContext;
 import com.intellij.util.Processor;
 import com.intellij.util.QueryExecutor;
 import consulo.roots.ContentFolderScopes;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static com.intellij.patterns.PsiJavaPatterns.*;
 
 /**
  * @author Konstantin Bulenkov
@@ -337,7 +330,7 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 	}
 
 	@Override
-	public boolean execute(@Nonnull ReferencesSearch.SearchParameters queryParameters, @Nonnull final Processor<PsiReference> consumer)
+	public boolean execute(@Nonnull ReferencesSearch.SearchParameters queryParameters, @Nonnull final Processor<? super PsiReference> consumer)
 	{
 		final PsiElement file = queryParameters.getElementToSearch();
 		if(file instanceof PsiBinaryFile)

@@ -16,9 +16,6 @@
 
 package org.intellij.grammar.psi;
 
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.psi.impl.BnfStringImpl;
 import com.intellij.openapi.application.QueryExecutorBase;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -27,6 +24,9 @@ import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Processor;
+import org.intellij.grammar.psi.impl.BnfStringImpl;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author gregsh
@@ -37,7 +37,7 @@ public class BnfAttrPatternRefSearcher extends QueryExecutorBase<PsiReference, R
   }
 
   @Override
-  public void processQuery(@Nonnull ReferencesSearch.SearchParameters queryParameters, @Nonnull final Processor<PsiReference> consumer) {
+  public void processQuery(@Nonnull ReferencesSearch.SearchParameters queryParameters, @Nonnull final Processor<? super PsiReference> consumer) {
     final PsiElement target = queryParameters.getElementToSearch();
     if (!(target instanceof BnfRule)) return;
 
