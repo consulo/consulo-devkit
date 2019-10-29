@@ -15,20 +15,13 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
-import gnu.trove.THashMap;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.ListIterator;
-import java.util.Map;
-
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.AccessToken;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessorEx;
+import com.intellij.openapi.command.CommandToken;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -37,8 +30,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
-import consulo.ui.RequiredUIAccess;
 import consulo.devkit.action.InternalAction;
+import consulo.ui.RequiredUIAccess;
+import gnu.trove.THashMap;
+
+import java.util.*;
 
 /**
  * @author gregsh
@@ -65,7 +61,7 @@ public class ShuffleNamesAction extends InternalAction
 		}
 		final Project project = file.getProject();
 		CommandProcessorEx commandProcessor = (CommandProcessorEx) CommandProcessorEx.getInstance();
-		Object commandToken = commandProcessor.startCommand(project, e.getPresentation().getText(), e.getPresentation().getText(), UndoConfirmationPolicy.DEFAULT);
+		CommandToken commandToken = commandProcessor.startCommand(project, e.getPresentation().getText(), e.getPresentation().getText(), UndoConfirmationPolicy.DEFAULT);
 		AccessToken token = ApplicationManager.getApplication().acquireWriteActionLock(getClass());
 		try
 		{
@@ -74,7 +70,7 @@ public class ShuffleNamesAction extends InternalAction
 		finally
 		{
 			token.finish();
-			commandProcessor.finishCommand(project, commandToken, null);
+			commandProcessor.finishCommand(commandToken, null);
 		}
 	}
 

@@ -15,14 +15,6 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx;
 import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -31,6 +23,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.CommandProcessorEx;
+import com.intellij.openapi.command.CommandToken;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -38,8 +31,15 @@ import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
-import consulo.ui.RequiredUIAccess;
 import consulo.devkit.action.InternalAction;
+import consulo.ui.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author gregsh
@@ -67,7 +67,7 @@ public class ToggleHighlightingMarkupAction extends InternalAction
 		}
 		final Project project = file.getProject();
 		CommandProcessorEx commandProcessor = (CommandProcessorEx) CommandProcessor.getInstance();
-		Object commandToken = commandProcessor.startCommand(project, e.getPresentation().getText(), e.getPresentation().getText(), UndoConfirmationPolicy.DEFAULT);
+		CommandToken commandToken = commandProcessor.startCommand(project, e.getPresentation().getText(), e.getPresentation().getText(), UndoConfirmationPolicy.DEFAULT);
 		try
 		{
 			WriteAction.run(() ->
@@ -78,7 +78,7 @@ public class ToggleHighlightingMarkupAction extends InternalAction
 		}
 		finally
 		{
-			commandProcessor.finishCommand(project, commandToken, null);
+			commandProcessor.finishCommand(commandToken, null);
 		}
 	}
 
