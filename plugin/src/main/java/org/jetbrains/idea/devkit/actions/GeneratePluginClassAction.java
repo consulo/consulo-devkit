@@ -15,27 +15,9 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.Icon;
-
-import org.jetbrains.annotations.NonNls;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
-import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import com.intellij.ide.IdeView;
 import com.intellij.ide.actions.CreateElementActionBase;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtil;
@@ -50,9 +32,19 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.IncorrectOperationException;
-import consulo.ui.RequiredUIAccess;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.util.PluginModuleUtil;
+import consulo.ui.RequiredUIAccess;
+import consulo.ui.image.Image;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
+import org.jetbrains.idea.devkit.util.DescriptorUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author yole
@@ -65,18 +57,16 @@ public abstract class GeneratePluginClassAction extends CreateElementActionBase 
 	// module selection is canceled. That's some weird interface actually...
 	private static final PsiElement[] CANCELED = new PsiElement[1];
 
-	public GeneratePluginClassAction(String text, String description, @Nullable Icon icon)
+	public GeneratePluginClassAction(String text, String description, @Nullable Image icon)
 	{
 		super(text, description, icon);
 	}
 
-	@Nonnull
-	protected final PsiElement[] invokeDialog(Project project, PsiDirectory directory)
+	protected final void invokeDialog(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer)
 	{
 		try
 		{
-			final PsiElement[] psiElements = invokeDialogImpl(project, directory);
-			return psiElements == CANCELED ? PsiElement.EMPTY_ARRAY : psiElements;
+			invokeDialogImpl(project, directory, consumer);
 		}
 		finally
 		{
@@ -84,7 +74,7 @@ public abstract class GeneratePluginClassAction extends CreateElementActionBase 
 		}
 	}
 
-	protected abstract PsiElement[] invokeDialogImpl(Project project, PsiDirectory directory);
+	protected abstract void invokeDialogImpl(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer);
 
 	private void addPluginModule(Module module)
 	{

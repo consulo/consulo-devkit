@@ -16,7 +16,6 @@
 package org.jetbrains.idea.devkit.actions;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
@@ -25,47 +24,52 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionType;
 
+import javax.annotation.Nonnull;
+import java.util.function.Consumer;
+
 /**
  * @author yole
  */
-public class NewActionAction extends GeneratePluginClassAction {
-  private NewActionDialog myDialog;
+public class NewActionAction extends GeneratePluginClassAction
+{
+	private NewActionDialog myDialog;
 
-  public NewActionAction() {
-    super(DevKitBundle.message("new.menu.action.text"), DevKitBundle.message("new.menu.action.description"), null);
-  }
+	public NewActionAction()
+	{
+		super(DevKitBundle.message("new.menu.action.text"), DevKitBundle.message("new.menu.action.description"), null);
+	}
 
-  protected PsiElement[] invokeDialogImpl(Project project, PsiDirectory directory) {
-    myDialog = new NewActionDialog(project);
-    myDialog.show();
-    if (myDialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-      final MyInputValidator validator = new MyInputValidator(project, directory);
-      // this actually runs the action to create the class from template
-      validator.canClose(myDialog.getActionName());
-      myDialog = null;
-      return validator.getCreatedElements();
-    }
-    myDialog = null;
-    return PsiElement.EMPTY_ARRAY;
-  }
+	@Override
+	protected void invokeDialogImpl(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer)
+	{
+		final MyInputValidator validator = new MyInputValidator(project, directory);
 
-  protected String getClassTemplateName() {
-    return "Action.java";
-  }
+		myDialog = new NewActionDialog(project);
+		myDialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
+	}
 
-  public void patchPluginXml(final XmlFile pluginXml, final PsiClass klass) throws IncorrectOperationException {
-    ActionType.ACTION.patchPluginXml(pluginXml, klass, myDialog);
-  }
+	protected String getClassTemplateName()
+	{
+		return "Action.java";
+	}
 
-  protected String getErrorTitle() {
-    return DevKitBundle.message("new.action.error");
-  }
+	public void patchPluginXml(final XmlFile pluginXml, final PsiClass klass) throws IncorrectOperationException
+	{
+		ActionType.ACTION.patchPluginXml(pluginXml, klass, myDialog);
+	}
 
-  protected String getCommandName() {
-    return DevKitBundle.message("new.action.command");
-  }
+	protected String getErrorTitle()
+	{
+		return DevKitBundle.message("new.action.error");
+	}
 
-  protected String getActionName(PsiDirectory directory, String newName) {
-    return DevKitBundle.message("new.action.action.name", directory, newName);
-  }
+	protected String getCommandName()
+	{
+		return DevKitBundle.message("new.action.command");
+	}
+
+	protected String getActionName(PsiDirectory directory, String newName)
+	{
+		return DevKitBundle.message("new.action.action.name", directory, newName);
+	}
 }
