@@ -105,4 +105,16 @@ public interface IdeaPlugin extends DomElement
 	List<Helpset> getHelpsets();
 
 	Helpset addHelpset();
+
+	@Nonnull
+	@SubTagList("applicationListeners")
+	List<Listeners> getApplicationListeners();
+
+	@Nonnull
+	@SubTagList("projectListeners")
+	List<Listeners> getProjectListeners();
+
+	@Nonnull
+	@SubTagList("moduleListeners")
+	List<Listeners> getModuleListeners();
 }
