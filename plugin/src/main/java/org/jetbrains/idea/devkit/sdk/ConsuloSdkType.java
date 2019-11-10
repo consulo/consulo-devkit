@@ -15,39 +15,34 @@
  */
 package org.jetbrains.idea.devkit.sdk;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
-import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.PathManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
 import com.intellij.openapi.projectRoots.SdkType;
 import com.intellij.openapi.roots.OrderRootType;
-import com.intellij.openapi.util.JDOMUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.logging.Logger;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.ui.image.Image;
 import consulo.vfs.ArchiveFileSystem;
-import consulo.vfs.util.ArchiveVfsUtil;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.DevKitBundle;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 
 /**
  * User: anna
@@ -55,12 +50,10 @@ import consulo.vfs.util.ArchiveVfsUtil;
  */
 public class ConsuloSdkType extends SdkType
 {
-	private static final Logger LOGGER = Logger.getInstance(ConsuloSdkType.class);
+	private static final Logger LOG = Logger.getInstance(ConsuloSdkType.class);
 
 	@NonNls
 	private static final String LIB_DIR_NAME = "lib";
-	@NonNls
-	private static final String PLUGINS_DIR = "plugins";
 
 	public ConsuloSdkType()
 	{
@@ -72,11 +65,11 @@ public class ConsuloSdkType extends SdkType
 	{
 		String selectSdkHome = selectBuild(home.getPath());
 
-		String plugins = selectSdkHome + File.separator + PLUGINS_DIR + File.separator;
+		String plugins = selectSdkHome + File.separator + "modules" + File.separator;
 		List<VirtualFile> result = new ArrayList<>();
 		appendLibraries(selectSdkHome, result);
-		appendLibraries(plugins + "core", result);
-		appendLibraries(plugins + "platform-independent", result);
+		appendLibraries(plugins + "consulo.platform.base", result);
+		appendLibraries(plugins + "consulo.platform.desktop", result);
 		return VfsUtilCore.toVirtualFileArray(result);
 	}
 
@@ -110,7 +103,7 @@ public class ConsuloSdkType extends SdkType
 	@Nonnull
 	public static ConsuloSdkType getInstance()
 	{
-		return EP_NAME.findExtension(ConsuloSdkType.class);
+		return EP_NAME.findExtensionOrFail(ConsuloSdkType.class);
 	}
 
 	@Override
@@ -192,53 +185,28 @@ public class ConsuloSdkType extends SdkType
 	@Nullable
 	private static String getBuildNumberImpl(File sdkHome)
 	{
-		// 1.0 resource path
-		// pre-maven resource path
-		// maven resource path
-		String[] resourceFiles = new String[] {"/lib/resources.jar", "/lib/consulo-resources.jar", "/lib/consulo-platform-resources.jar"};
-		File targetJar = null;
-
-		for(String file : resourceFiles)
+		for(File file : sdkHome.listFiles())
 		{
-			File temp = new File(sdkHome, file);
-			if(temp.exists())
+			String name = file.getName();
+
+			if(name.startsWith("consulo-core") && name.endsWith(".jar"))
 			{
-				targetJar = temp;
+				try
+				{
+					JarFile jarFile = new JarFile(file);
+					Attributes mainAttributes = jarFile.getManifest().getMainAttributes();
+
+					String number = mainAttributes.getValue("Consulo-Build-Number");
+					if(number != null)
+					{
+						return number;
+					}
+				}
+				catch(Exception e)
+				{
+					LOG.error(e);
+				}
 			}
-		}
-
-		if(targetJar == null)
-		{
-			return null;
-		}
-
-		VirtualFile ideaJarFile = LocalFileSystem.getInstance().findFileByIoFile(targetJar);
-		if(ideaJarFile == null)
-		{
-			return null;
-		}
-
-		VirtualFile ideaJarRoot = ArchiveVfsUtil.getArchiveRootForLocalFile(ideaJarFile);
-		if(ideaJarRoot == null)
-		{
-			return null;
-		}
-
-		VirtualFile appInfo = ideaJarRoot.findFileByRelativePath(ApplicationInfo.APPLICATION_INFO_XML);
-		if(appInfo == null)
-		{
-			return null;
-		}
-
-		try
-		{
-			Document document = JDOMUtil.loadDocument(appInfo.getInputStream());
-			Element build = document.getRootElement().getChild("build");
-			return build.getAttributeValue("number");
-		}
-		catch(Exception e)
-		{
-			LOGGER.error(e);
 		}
 		return null;
 	}
