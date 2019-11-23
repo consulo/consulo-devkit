@@ -16,8 +16,6 @@
 
 package consulo.devkit.run;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.intellij.debugger.DebugEnvironment;
 import com.intellij.debugger.DebuggerManagerEx;
 import com.intellij.debugger.engine.DebugProcessImpl;
@@ -37,6 +35,9 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.xdebugger.XDebuggerManager;
 import com.intellij.xdebugger.impl.XDebugSessionImpl;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -66,7 +67,7 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner
 
 		ConsuloSandboxRunState consuloSandboxRunState = (ConsuloSandboxRunState) state;
 
-		consuloSandboxRunState.getJavaParameters().getVMParametersList().addParametersString(connection.getLaunchCommandLine());
+		consuloSandboxRunState.addAdditionalVMParameter(connection.getLaunchCommandLine());
 		return attachVirtualMachine(consuloSandboxRunState, env, connection, true);
 	}
 

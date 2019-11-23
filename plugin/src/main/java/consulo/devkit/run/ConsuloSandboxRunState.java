@@ -45,21 +45,41 @@ import java.util.List;
  */
 public class ConsuloSandboxRunState extends CommandLineState
 {
-	protected OwnJavaParameters myJavaParameters;
 	protected ExecutionEnvironment myEnvironment;
+	@Nonnull
+	private final Sdk myJavaSdk;
+	@Nonnull
+	private final String myConsuloSdkHome;
+	@Nullable
+	private final String myPluginsHomePath;
+
+	private final List<String> myAdditionalVMParameters = new ArrayList<>();
 
 	public ConsuloSandboxRunState(@Nonnull ExecutionEnvironment environment, @Nonnull Sdk javaSdk, @Nonnull String consuloSdkHome, @Nullable String pluginsHomePath) throws ExecutionException
 	{
 		super(environment);
 		myEnvironment = environment;
-		myJavaParameters = createJavaParameters(environment, javaSdk, consuloSdkHome, pluginsHomePath);
+		myJavaSdk = javaSdk;
+		myConsuloSdkHome = consuloSdkHome;
+		myPluginsHomePath = pluginsHomePath;
+	}
+
+	public void addAdditionalVMParameter(String param)
+	{
+		myAdditionalVMParameters.add(param);
+	}
+
+	@Nonnull
+	public Sdk getJavaSdk()
+	{
+		return myJavaSdk;
 	}
 
 	@Nonnull
 	@Override
 	protected ProcessHandler startProcess() throws ExecutionException
 	{
-		return myJavaParameters.createOSProcessHandler();
+		return createJavaParameters(getEnvironment(), myJavaSdk, myConsuloSdkHome, myPluginsHomePath).createOSProcessHandler();
 	}
 
 	@Nonnull
@@ -131,6 +151,11 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		params.setMainClass(getMainClass(isNewBootDistribution));
 
+		for(String additionalVMParameter : myAdditionalVMParameters)
+		{
+			params.getVMParametersList().addParametersString(additionalVMParameter);
+		}
+
 		for(RunConfigurationExtension ext : RunConfigurationExtension.EP_NAME.getExtensionList())
 		{
 			ext.updateJavaParameters(profile, params, getRunnerSettings());
@@ -193,10 +218,5 @@ public class ConsuloSandboxRunState extends CommandLineState
 			params.getClassPath().addFirst(libPath + "/jna.jar");
 			params.getClassPath().addFirst(libPath + "/jna-platform.jar");
 		}
-	}
-
-	public OwnJavaParameters getJavaParameters()
-	{
-		return myJavaParameters;
 	}
 }

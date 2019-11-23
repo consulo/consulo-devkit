@@ -16,13 +16,13 @@
 
 package consulo.devkit.run;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.intellij.debugger.DefaultDebugEnvironment;
 import com.intellij.execution.configurations.RemoteConnection;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.projectRoots.Sdk;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
@@ -42,6 +42,6 @@ class ConsuloDebugEnvironment extends DefaultDebugEnvironment
 	@Override
 	public Sdk getRunJre()
 	{
-		return myState.getJavaParameters().getJdk();
+		return myState.getJavaSdk();
 	}
 }

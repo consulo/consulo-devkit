@@ -185,6 +185,11 @@ public class ConsuloSdkType extends SdkType
 	@Nullable
 	private static String getBuildNumberImpl(File sdkHome)
 	{
+		if(!sdkHome.exists())
+		{
+			return null;
+		}
+
 		for(File file : sdkHome.listFiles())
 		{
 			String name = file.getName();
