@@ -15,22 +15,6 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
-import java.io.File;
-import java.lang.reflect.Array;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.jdom.Element;
-import javax.annotation.Nullable;
 import com.intellij.CommonBundle;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -49,12 +33,22 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.FList;
-import com.intellij.util.lang.UrlClassLoader;
 import com.intellij.util.xmlb.Accessor;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import consulo.ui.RequiredUIAccess;
 import consulo.devkit.action.InternalAction;
+import consulo.ui.RequiredUIAccess;
+import consulo.util.nodep.classloader.UrlClassLoader;
+import org.jdom.Element;
+
+import javax.annotation.Nullable;
+import java.io.File;
+import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * @author nik
