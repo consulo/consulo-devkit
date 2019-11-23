@@ -31,13 +31,16 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
 import consulo.java.execution.configurations.OwnJavaParameters;
+import consulo.logging.Logger;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipFile;
 
 /**
  * @author VISTALL
@@ -183,7 +186,24 @@ public class ConsuloSandboxRunState extends CommandLineState
 				{
 					if(FileUtil.isJarOrZip(file))
 					{
-						params.getClassPath().addFirst(file.getPath());
+						boolean modular = false;
+						try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ))
+						{
+							modular = zipFile.getEntry("module-info.class") != null;
+						}
+						catch(IOException e)
+						{
+							Logger.getInstance(ConsuloSandboxRunState.class).error(e);
+						}
+
+						if(modular)
+						{
+							params.getModulePath().addFirst(file.getPath());
+						}
+						else
+						{
+							params.getClassPath().addFirst(file.getPath());
+						}
 					}
 				}
 			}
