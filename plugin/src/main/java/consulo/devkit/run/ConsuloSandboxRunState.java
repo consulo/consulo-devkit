@@ -23,6 +23,7 @@ import com.intellij.execution.configurations.ParametersList;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.projectRoots.OwnJdkVersionDetector;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
@@ -150,7 +151,16 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		boolean isNewBootDistribution = new File(selectedBuildPath, "boot").exists();
 
-		addConsuloLibs(selectedBuildPath, params, isNewBootDistribution);
+		OwnJdkVersionDetector.JdkVersionInfo versionInfo = OwnJdkVersionDetector.getInstance().detectJdkVersionInfo(ObjectUtil.notNull(javaSdk.getVersionString()));
+
+		boolean isJava9 = versionInfo != null && versionInfo.version.isAtLeast(9);
+
+		addBootLibraries(selectedBuildPath, params, isNewBootDistribution, isJava9);
+
+		if(!params.getModulePath().isEmpty())
+		{
+			params.setModuleName("consulo.desktop.bootstrap");
+		}
 
 		params.setMainClass(getMainClass(isNewBootDistribution));
 
@@ -172,7 +182,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return isNewBootDistribution ? "consulo.desktop.boot.main.Main" : "com.intellij.idea.Main";
 	}
 
-	protected void addConsuloLibs(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isNewBootDistribution)
+	protected void addBootLibraries(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isNewBootDistribution, boolean isJava9)
 	{
 		String libPath = consuloHomePath + "/lib";
 
@@ -187,13 +197,16 @@ public class ConsuloSandboxRunState extends CommandLineState
 					if(FileUtil.isJarOrZip(file))
 					{
 						boolean modular = false;
-						try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ))
+						if(isJava9)
 						{
-							modular = zipFile.getEntry("module-info.class") != null;
-						}
-						catch(IOException e)
-						{
-							Logger.getInstance(ConsuloSandboxRunState.class).error(e);
+							try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ))
+							{
+								modular = zipFile.getEntry("module-info.class") != null;
+							}
+							catch(IOException e)
+							{
+								Logger.getInstance(ConsuloSandboxRunState.class).error(e);
+							}
 						}
 
 						if(modular)
