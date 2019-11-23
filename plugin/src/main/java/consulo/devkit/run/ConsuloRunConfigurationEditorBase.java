@@ -47,6 +47,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 
 	private JPanel myRoot;
 	private JCheckBox myAlternativeConsuloSdkCheckBox;
+	private JCheckBox myEnableJava9Modules;
 	private TextFieldWithBrowseButton myPluginsHomePath;
 	private TextFieldWithBrowseButton myAltConsuloSdkTextField;
 
@@ -108,6 +109,10 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 		builder.addLabeledComponent("Program Parameters", myProgramParameters);
 		myVMParameters = new RawCommandLineEditor();
 		builder.addLabeledComponent("VM Parameters", myVMParameters);
+
+		myEnableJava9Modules = new JBCheckBox("Enable Java 9 modules?");
+
+		builder.addComponent(myEnableJava9Modules);
 	}
 
 	@Override
@@ -115,6 +120,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 	{
 		myVMParameters.setText(prc.VM_PARAMETERS);
 		myAlternativeConsuloSdkCheckBox.setSelected(prc.USE_ALT_CONSULO_SDK);
+		myEnableJava9Modules.setSelected(prc.ENABLED_JAVA9_MODULES);
 		if(prc.ALT_CONSULO_SDK_PATH != null)
 		{
 			myAltConsuloSdkTextField.setText(FileUtil.toSystemDependentName(prc.ALT_CONSULO_SDK_PATH));
@@ -138,6 +144,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 	{
 		prc.setJavaSdkName(myJavaSdkComboBox.getSelectedSdkName());
 		prc.setConsuloSdkName(myConsuloSdkComboBox.getSelectedSdkName());
+		prc.ENABLED_JAVA9_MODULES = myEnableJava9Modules.isSelected();
 
 		prc.VM_PARAMETERS = myVMParameters.getText();
 		prc.PROGRAM_PARAMETERS = myProgramParameters.getText();

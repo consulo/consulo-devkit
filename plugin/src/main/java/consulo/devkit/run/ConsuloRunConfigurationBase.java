@@ -55,6 +55,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 	private static final String CONSULO_SDK = "consulo-sdk";
 
 	public String VM_PARAMETERS;
+	public boolean ENABLED_JAVA9_MODULES;
 	public String PROGRAM_PARAMETERS;
 	public String PLUGINS_HOME_PATH;
 	protected NamedPointer<Sdk> myJavaSdkPointer;
@@ -171,7 +172,6 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 	{
 		return Comparing.equal(getName(), suggestedName());
 	}
-
 
 	@Nullable
 	public String getJavaSdkName()

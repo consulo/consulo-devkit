@@ -153,7 +153,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		OwnJdkVersionDetector.JdkVersionInfo versionInfo = OwnJdkVersionDetector.getInstance().detectJdkVersionInfo(javaSdk.getHomePath());
 
-		boolean isJava9 = versionInfo != null && versionInfo.version.isAtLeast(9);
+		boolean isJava9 = versionInfo != null && versionInfo.version.isAtLeast(9) && profile.ENABLED_JAVA9_MODULES;
 
 		addBootLibraries(selectedBuildPath, params, isNewBootDistribution, isJava9);
 
