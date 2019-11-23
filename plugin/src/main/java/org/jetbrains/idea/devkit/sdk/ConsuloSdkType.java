@@ -190,28 +190,21 @@ public class ConsuloSdkType extends SdkType
 			return null;
 		}
 
-		for(File file : sdkHome.listFiles())
+		File bootstrapJar = new File(sdkHome, "boot/consulo-bootstrap.jar");
+		try
 		{
-			String name = file.getName();
+			JarFile jarFile = new JarFile(bootstrapJar);
+			Attributes mainAttributes = jarFile.getManifest().getMainAttributes();
 
-			if(name.startsWith("consulo-core") && name.endsWith(".jar"))
+			String number = mainAttributes.getValue("Consulo-Build-Number");
+			if(number != null)
 			{
-				try
-				{
-					JarFile jarFile = new JarFile(file);
-					Attributes mainAttributes = jarFile.getManifest().getMainAttributes();
-
-					String number = mainAttributes.getValue("Consulo-Build-Number");
-					if(number != null)
-					{
-						return number;
-					}
-				}
-				catch(Exception e)
-				{
-					LOG.error(e);
-				}
+				return number;
 			}
+		}
+		catch(Exception e)
+		{
+			LOG.error(e);
 		}
 		return null;
 	}

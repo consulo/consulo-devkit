@@ -151,7 +151,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		boolean isNewBootDistribution = new File(selectedBuildPath, "boot").exists();
 
-		OwnJdkVersionDetector.JdkVersionInfo versionInfo = OwnJdkVersionDetector.getInstance().detectJdkVersionInfo(ObjectUtil.notNull(javaSdk.getVersionString()));
+		OwnJdkVersionDetector.JdkVersionInfo versionInfo = OwnJdkVersionDetector.getInstance().detectJdkVersionInfo(javaSdk.getHomePath());
 
 		boolean isJava9 = versionInfo != null && versionInfo.version.isAtLeast(9);
 
