@@ -17,12 +17,8 @@ package org.jetbrains.idea.devkit.inspections;
 
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInsight.daemon.ImplicitUsageProvider;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiMethod;
-import consulo.annotations.Exported;
+import com.intellij.psi.*;
+import consulo.annotation.UsedInPlugin;
 
 /**
  * User: anna
@@ -42,7 +38,7 @@ public class DevKitEntryPoints implements ImplicitUsageProvider
 		}
 		if(element instanceof PsiField || element instanceof PsiMethod || element instanceof PsiClass)
 		{
-			return AnnotationUtil.isAnnotated((com.intellij.psi.PsiModifierListOwner) element, Exported.class.getName(), false);
+			return AnnotationUtil.isAnnotated((com.intellij.psi.PsiModifierListOwner) element, UsedInPlugin.class.getName(), 0);
 		}
 		return false;
 	}

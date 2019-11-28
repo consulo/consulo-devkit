@@ -15,22 +15,6 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jetbrains.idea.devkit.dom.Dependency;
-import org.jetbrains.idea.devkit.dom.Extension;
-import org.jetbrains.idea.devkit.dom.ExtensionPoint;
-import org.jetbrains.idea.devkit.dom.ExtensionPoints;
-import org.jetbrains.idea.devkit.dom.Extensions;
-import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-import org.jetbrains.idea.devkit.dom.With;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -45,14 +29,7 @@ import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.LinkedMultiMap;
 import com.intellij.util.containers.MultiMap;
-import com.intellij.util.xml.Converter;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.DomFileElement;
-import com.intellij.util.xml.DomUtil;
-import com.intellij.util.xml.ExtendClassImpl;
-import com.intellij.util.xml.PsiClassConverter;
-import com.intellij.util.xml.TagValue;
-import com.intellij.util.xml.XmlName;
+import com.intellij.util.xml.*;
 import com.intellij.util.xml.reflect.DomExtender;
 import com.intellij.util.xml.reflect.DomExtension;
 import com.intellij.util.xml.reflect.DomExtensionsRegistrar;
@@ -61,6 +38,11 @@ import com.intellij.util.xmlb.annotations.AbstractCollection;
 import com.intellij.util.xmlb.annotations.Attribute;
 import com.intellij.util.xmlb.annotations.Property;
 import com.intellij.util.xmlb.annotations.Tag;
+import org.jetbrains.idea.devkit.dom.*;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
 
 /**
  * @author mike
@@ -458,7 +440,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 
 		for(Dependency dependency : ideaPlugin.getDependencies())
 		{
-			ContainerUtil.addIfNotNull(dependency.getStringValue(), result);
+			ContainerUtil.addIfNotNull(result, dependency.getStringValue());
 		}
 
 		String pluginId = ideaPlugin.getPluginId();
@@ -481,10 +463,10 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 							if(fileElement != null)
 							{
 								final IdeaPlugin mainPlugin = fileElement.getRootElement();
-								ContainerUtil.addIfNotNull(mainPlugin.getPluginId(), result);
+								ContainerUtil.addIfNotNull(result, mainPlugin.getPluginId());
 								for(Dependency dependency : mainPlugin.getDependencies())
 								{
-									ContainerUtil.addIfNotNull(dependency.getStringValue(), result);
+									ContainerUtil.addIfNotNull(result, dependency.getStringValue());
 								}
 							}
 						}

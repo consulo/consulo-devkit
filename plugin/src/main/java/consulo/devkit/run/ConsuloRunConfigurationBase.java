@@ -30,7 +30,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.*;
 import com.intellij.openapi.util.text.StringUtil;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.bundle.SdkPointerManager;
 import consulo.bundle.SdkUtil;
 import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;

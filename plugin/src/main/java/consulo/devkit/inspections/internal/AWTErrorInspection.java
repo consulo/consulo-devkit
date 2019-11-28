@@ -16,23 +16,16 @@
 
 package consulo.devkit.inspections.internal;
 
-import javax.annotation.Nonnull;
-
-import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiJavaCodeReferenceElement;
-import com.intellij.psi.PsiNewExpression;
-import com.intellij.psi.PsiType;
-import com.intellij.psi.PsiTypeElement;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtil;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL

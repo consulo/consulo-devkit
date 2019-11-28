@@ -16,14 +16,14 @@
 
 package consulo.devkit.codeInsight.generation;
 
-import javax.annotation.Nonnull;
-
 import com.intellij.codeInsight.generation.OverrideImplementsAnnotationsHandler;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ArrayUtil;
-import consulo.ui.RequiredUIAccess;
-import consulo.annotations.RequiredReadAction;
-import consulo.annotations.RequiredWriteAction;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL

@@ -1,8 +1,5 @@
 package consulo.devkit.inspections.inject;
 
-import javax.annotation.Nonnull;
-import javax.inject.Inject;
-
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
@@ -11,9 +8,12 @@ import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethod;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
+
+import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 /**
  * @author VISTALL

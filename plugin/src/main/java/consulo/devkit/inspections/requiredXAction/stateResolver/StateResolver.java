@@ -16,13 +16,6 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.ThrowableComputable;
@@ -31,9 +24,16 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.ThrowableRunnable;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.AcceptableMethodCallCheck;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author VISTALL

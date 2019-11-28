@@ -1,19 +1,19 @@
 package consulo.devkit.grammarKit;
 
-import javax.annotation.Nonnull;
-
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.util.Comparing;
+import com.intellij.psi.PsiElement;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.ide.IconDescriptor;
+import consulo.ide.IconDescriptorUpdater;
+import consulo.ui.image.Image;
 import org.intellij.grammar.BnfIcons;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrs;
 import org.intellij.grammar.psi.BnfModifier;
 import org.intellij.grammar.psi.BnfRule;
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.psi.PsiElement;
-import consulo.annotations.RequiredReadAction;
-import consulo.ide.IconDescriptor;
-import consulo.ide.IconDescriptorUpdater;
-import consulo.ui.image.Image;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL

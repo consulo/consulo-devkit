@@ -19,8 +19,8 @@ package consulo.devkit.action;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
-import consulo.ui.RequiredUIAccess;
 import consulo.devkit.util.PluginModuleUtil;
+import consulo.ui.annotation.RequiredUIAccess;
 
 import javax.annotation.Nonnull;
 

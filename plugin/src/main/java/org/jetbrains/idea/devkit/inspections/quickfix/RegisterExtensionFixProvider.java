@@ -15,12 +15,6 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.GlobalInspectionTool;
 import com.intellij.codeInspection.InspectionEP;
@@ -40,6 +34,11 @@ import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.xml.XmlTag;
 import consulo.java.module.util.JavaClassNames;
+
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author Dmitry Avdeev
@@ -87,7 +86,7 @@ public class RegisterExtensionFixProvider implements UnusedDeclarationFixProvide
     }
     GlobalSearchScope scope =
       GlobalSearchScope.getScopeRestrictedByFileTypes(ProjectScope.getAllScope(aClass.getProject()), XmlFileType.INSTANCE);
-    PsiSearchHelper.SERVICE.getInstance(aClass.getProject()).processUsagesInNonJavaFiles(name, new PsiNonJavaFileReferenceProcessor() {
+    PsiSearchHelper.getInstance(aClass.getProject()).processUsagesInNonJavaFiles(name, new PsiNonJavaFileReferenceProcessor() {
       @Override
       public boolean process(PsiFile file, int startOffset, int endOffset) {
         PsiElement element = file.findElementAt(startOffset);

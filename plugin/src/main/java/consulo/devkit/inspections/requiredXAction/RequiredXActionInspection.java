@@ -16,27 +16,17 @@
 
 package consulo.devkit.inspections.requiredXAction;
 
-import javax.annotation.Nonnull;
-
-import org.jetbrains.idea.devkit.DevKitBundle;
-import com.intellij.codeInspection.AnnotateMethodFix;
-import com.intellij.codeInspection.LocalInspectionTool;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.codeInspection.*;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiCallExpression;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiMethodReferenceExpression;
-import consulo.ui.RequiredUIAccess;
+import com.intellij.psi.*;
 import consulo.devkit.inspections.requiredXAction.stateResolver.AnonymousClassStateResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.LambdaStateResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.MethodReferenceResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.StateResolver;
+import consulo.ui.annotation.RequiredUIAccess;
+import org.jetbrains.idea.devkit.DevKitBundle;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL

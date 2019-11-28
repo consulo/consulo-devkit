@@ -15,20 +15,15 @@
  */
 package org.jetbrains.idea.devkit.dom;
 
-import java.util.List;
+import com.intellij.ide.presentation.Presentation;
+import com.intellij.psi.PsiClass;
+import com.intellij.util.xml.*;
+import consulo.annotation.DeprecationInfo;
+import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
-import com.intellij.ide.presentation.Presentation;
-import com.intellij.psi.PsiClass;
-import com.intellij.util.xml.Attribute;
-import com.intellij.util.xml.Convert;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.NameValue;
-import com.intellij.util.xml.SubTagList;
-import consulo.annotations.DeprecationInfo;
+import java.util.List;
 
 /**
  * @author mike

@@ -162,13 +162,6 @@ public class IconsReferencesContributor extends PsiReferenceContributor implemen
 								String newValue = "\"" + fqn.substring(pckg.length()) + "." + newElementName + "\"";
 								return getElement().replace(JavaPsiFacade.getElementFactory(container.getProject()).createExpressionFromText(newValue, container.getParent()));
 							}
-
-							@Nonnull
-							@Override
-							public Object[] getVariants()
-							{
-								return EMPTY_ARRAY;
-							}
 						}
 				};
 			}

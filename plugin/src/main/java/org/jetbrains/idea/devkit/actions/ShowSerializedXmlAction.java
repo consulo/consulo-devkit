@@ -37,7 +37,7 @@ import com.intellij.util.xmlb.Accessor;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import consulo.devkit.action.InternalAction;
-import consulo.ui.RequiredUIAccess;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.nodep.classloader.UrlClassLoader;
 import org.jdom.Element;
 

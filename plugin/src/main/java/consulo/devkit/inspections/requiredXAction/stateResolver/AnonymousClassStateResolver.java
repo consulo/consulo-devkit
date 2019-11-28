@@ -16,18 +16,13 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
-import javax.annotation.Nullable;
-
-import com.intellij.psi.PsiAnonymousClass;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiNewExpression;
+import com.intellij.psi.*;
 import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.psi.util.PsiTreeUtil;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
+
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL

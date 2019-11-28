@@ -1,18 +1,5 @@
 package consulo.devkit.inspections.util.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jetbrains.idea.devkit.dom.Extension;
-import org.jetbrains.idea.devkit.dom.Extensions;
-import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-import org.jetbrains.idea.devkit.util.DescriptorUtil;
 import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.extensions.impl.ExtensionAreaId;
 import com.intellij.openapi.project.Project;
@@ -30,7 +17,15 @@ import com.intellij.util.ObjectUtil;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
 import com.intellij.util.xml.DomService;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
+import org.jetbrains.idea.devkit.dom.Extension;
+import org.jetbrains.idea.devkit.dom.Extensions;
+import org.jetbrains.idea.devkit.dom.IdeaPlugin;
+import org.jetbrains.idea.devkit.util.DescriptorUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
 
 /**
  * @author VISTALL

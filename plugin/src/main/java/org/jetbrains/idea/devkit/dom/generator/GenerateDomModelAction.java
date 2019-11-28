@@ -15,12 +15,12 @@
  */
 package org.jetbrains.idea.devkit.dom.generator;
 
-import javax.annotation.Nonnull;
-
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import consulo.ui.RequiredUIAccess;
 import consulo.devkit.action.InternalAction;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author Konstantin Bulenkov

@@ -15,14 +15,15 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import javax.annotation.Nonnull;
 import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.psi.PsiElementVisitor;
-import consulo.annotations.RequiredReadAction;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.util.PluginModuleUtil;
+
+import javax.annotation.Nonnull;
 
 public abstract class InternalInspection extends BaseJavaLocalInspectionTool
 {

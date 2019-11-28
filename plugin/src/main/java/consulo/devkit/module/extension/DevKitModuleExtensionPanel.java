@@ -16,11 +16,11 @@
 
 package consulo.devkit.module.extension;
 
-import javax.swing.JPanel;
-
 import com.intellij.openapi.ui.VerticalFlowLayout;
-import consulo.ui.RequiredUIAccess;
 import consulo.extension.ui.ModuleExtensionSdkBoxBuilder;
+import consulo.ui.annotation.RequiredUIAccess;
+
+import javax.swing.*;
 
 /**
  * @author VISTALL
