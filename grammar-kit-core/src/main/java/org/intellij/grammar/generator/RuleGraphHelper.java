@@ -15,54 +15,31 @@
  */
 package org.intellij.grammar.generator;
 
-import static org.intellij.grammar.generator.ParserGeneratorUtil.Rule;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getAttribute;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getChildExpressions;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getEffectiveType;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.topoSort;
-import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.ANY_NUMBER;
-import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.AT_LEAST_ONE;
-import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.OPTIONAL;
-import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.REQUIRED;
-import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.fromNodeType;
-import static org.intellij.grammar.psi.impl.GrammarUtil.collectExtraArguments;
-import static org.intellij.grammar.psi.impl.GrammarUtil.isDoubleAngles;
-
-import gnu.trove.THashMap;
-import gnu.trove.TObjectHashingStrategy;
-
-import java.util.*;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
-import org.intellij.grammar.psi.BnfExpression;
-import org.intellij.grammar.psi.BnfExternalExpression;
-import org.intellij.grammar.psi.BnfFile;
-import org.intellij.grammar.psi.BnfLiteralExpression;
-import org.intellij.grammar.psi.BnfPredicate;
-import org.intellij.grammar.psi.BnfReferenceOrToken;
-import org.intellij.grammar.psi.BnfRule;
-import org.intellij.grammar.psi.BnfStringLiteralExpression;
-import org.intellij.grammar.psi.BnfTypes;
-import org.intellij.grammar.psi.impl.GrammarUtil;
 import com.intellij.lang.Language;
-import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.util.CachedValue;
-import com.intellij.psi.util.CachedValueProvider;
-import com.intellij.psi.util.CachedValuesManager;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.psi.util.PsiUtilCore;
+import com.intellij.psi.util.*;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.MultiMap;
+import consulo.util.dataholder.Key;
+import gnu.trove.THashMap;
+import gnu.trove.TObjectHashingStrategy;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
+import org.intellij.grammar.psi.*;
+import org.intellij.grammar.psi.impl.GrammarUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
+
+import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
+import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.*;
+import static org.intellij.grammar.psi.impl.GrammarUtil.collectExtraArguments;
+import static org.intellij.grammar.psi.impl.GrammarUtil.isDoubleAngles;
 
 /**
  * @author gregory

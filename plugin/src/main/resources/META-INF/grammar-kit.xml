@@ -1,4 +1,4 @@
-<idea-plugin>
+<consulo-plugin>
 	<extensions defaultExtensionNs="com.intellij">
 		<projectService serviceInterface="org.intellij.grammar.java.JavaHelper" serviceImplementation="org.intellij.grammar.java.PsiJavaHelper"/>
 		<!--<debugger.positionManagerFactory implementation="org.intellij.grammar.debugger.BnfPositionManagerFactory"/>-->
@@ -106,4 +106,4 @@
 			<add-to-group group-id="grammar.file.group" anchor="after" relative-to-action="grammar.Generate"/>
 		</action>
 	</actions>
-</idea-plugin>
+</consulo-plugin>

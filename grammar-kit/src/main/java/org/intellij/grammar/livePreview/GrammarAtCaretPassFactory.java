@@ -16,13 +16,6 @@
 
 package org.intellij.grammar.livePreview;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.psi.BnfExpression;
-import org.intellij.grammar.psi.BnfFile;
 import com.intellij.codeHighlighting.Pass;
 import com.intellij.codeHighlighting.TextEditorHighlightingPass;
 import com.intellij.codeHighlighting.TextEditorHighlightingPassFactory;
@@ -38,13 +31,19 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.PairProcessor;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.util.dataholder.Key;
+import org.intellij.grammar.psi.BnfExpression;
+import org.intellij.grammar.psi.BnfFile;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author gregsh
