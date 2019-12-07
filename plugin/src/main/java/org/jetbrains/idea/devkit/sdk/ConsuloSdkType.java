@@ -17,7 +17,6 @@ package org.jetbrains.idea.devkit.sdk;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.highlighter.JarArchiveFileType;
-import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.projectRoots.JavaSdk;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
@@ -27,6 +26,7 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.container.boot.ContainerPathManager;
 import consulo.logging.Logger;
 import consulo.roots.types.BinariesOrderRootType;
 import consulo.ui.image.Image;
@@ -123,7 +123,7 @@ public class ConsuloSdkType extends SdkType
 	@Override
 	public Collection<String> suggestHomePaths()
 	{
-		return Collections.singletonList(PathManager.getAppHomeDirectory().getPath());
+		return Collections.singletonList(ContainerPathManager.get().getAppHomeDirectory().getPath());
 	}
 
 	@Override

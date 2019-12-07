@@ -22,7 +22,6 @@ import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.ParametersList;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.projectRoots.OwnJdkVersionDetector;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.SystemInfo;
@@ -106,9 +105,9 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		String selectedBuildPath = ObjectUtil.notNull(ConsuloSdkType.selectBuild(consuloSdkHome), consuloSdkHome);
 
-		vm.defineProperty(PathManager.PROPERTY_CONFIG_PATH, dataPath + "/config");
-		vm.defineProperty(PathManager.PROPERTY_SYSTEM_PATH, dataPath + "/system");
-		vm.defineProperty(PathManager.PROPERTY_HOME_PATH, selectedBuildPath);
+		vm.defineProperty("idea.config.path", dataPath + "/config");
+		vm.defineProperty("idea.system.path", dataPath + "/system");
+		vm.defineProperty("consulo.home.path", selectedBuildPath);
 		// define plugin installation to default path
 		String installPluginPath = dataPath + "/config/plugins";
 		vm.defineProperty(ApplicationProperties.CONSULO_INSTALL_PLUGINS_PATH, installPluginPath);
@@ -127,7 +126,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		File logFile = new File(dataPath, ConsuloRunConfigurationBase.LOG_FILE);
 		FileUtil.createIfDoesntExist(logFile);
-		vm.defineProperty(PathManager.PROPERTY_LOG_PATH, logFile.getParent());
+		vm.defineProperty("idea.log.path", logFile.getParent());
 
 		if(SystemInfo.isMac)
 		{
