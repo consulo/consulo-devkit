@@ -24,7 +24,7 @@ import com.intellij.util.PathUtil;
  * @author Dmitry Avdeev
  * @since 10/11/11
  */
-public class ExtensionsTest extends JavaCodeInsightFixtureTestCase {
+public abstract class ExtensionsTest extends JavaCodeInsightFixtureTestCase {
   public void testInspectionMappings() throws Throwable {
     myFixture.testHighlighting("inspectionMapping.xml", "bundle.properties");
   }

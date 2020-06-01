@@ -24,7 +24,7 @@ import com.intellij.testFramework.fixtures.JavaCodeInsightFixtureTestCase;
  * @author Dmitry Avdeev
  *         Date: 1/20/12
  */
-public class CreateExtensionTest extends JavaCodeInsightFixtureTestCase {
+public abstract class CreateExtensionTest extends JavaCodeInsightFixtureTestCase {
 
   @Override
   public void setUp() throws Exception {

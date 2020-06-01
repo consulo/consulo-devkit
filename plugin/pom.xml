@@ -55,6 +55,7 @@
 						<dependency>com.intellij.uiDesigner</dependency>
 						<dependency>consulo.java</dependency>
 						<dependency>consulo.jflex</dependency>
+						<dependency>org.jetbrains.plugins.yaml</dependency>
 					</dependencies>
 					<packaging>
 						<skip>${dev.mode}</skip>
@@ -120,6 +121,12 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>com.intellij.uiDesigner</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>org.jetbrains.plugins.yaml</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>

@@ -11,14 +11,9 @@
 	<depends>com.intellij.properties</depends>
 	<depends>com.intellij.xml</depends>
 	<depends>com.intellij.uiDesigner</depends>
+	<depends>org.jetbrains.plugins.yaml</depends>
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
-
-	<actions>
-		<action id="ConvertResourceBundleToYamlAction" class="consulo.devkit.action.ConvertResourceBundleToYamlAction">
-			<add-to-group group-id="ProjectViewPopupMenu" />
-		</action>
-	</actions>
 
 	<extensions defaultExtensionNs="consulo.java">
 		<coverageEngineExtension implementation="consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
@@ -36,6 +31,9 @@
 		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
+
+		<lang.foldingBuilder language="JAVA" implementationClass="consulo.devkit.localize.folding.LocalizeFoldingBuilder" />
+		<fileBasedIndex implementation="consulo.devkit.localize.index.LocalizeFileBasedIndexExtension" />
 
 		<moduleExtensionProvider key="consulo-plugin"
 								 parentKey="java"
@@ -241,6 +239,8 @@
 			<add-to-group group-id="ToolsMenu" anchor="last"/>
 		</group>
 
+		<action id="ConvertResourceBundleToYamlAction" class="consulo.devkit.action.ConvertResourceBundleToYamlAction">
+			<add-to-group group-id="ProjectViewPopupMenu"/>
+		</action>
 	</actions>
-
 </consulo-plugin>
