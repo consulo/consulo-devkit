@@ -19,11 +19,18 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.util.xml.*;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
+
+import com.intellij.util.xml.DefinesXml;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.GenericAttributeValue;
+import com.intellij.util.xml.GenericDomValue;
+import com.intellij.util.xml.NameValue;
+import com.intellij.util.xml.SubTag;
+import com.intellij.util.xml.SubTagList;
 
 @DefinesXml
 public interface IdeaPlugin extends DomElement
@@ -68,7 +75,11 @@ public interface IdeaPlugin extends DomElement
 
 	@Nonnull
 	@SubTagList("resource-bundle")
+	@Deprecated
 	List<GenericDomValue<String>> getResourceBundles();
+
+	@Nonnull
+	GenericDomValue<String> getLocalize();
 
 	GenericDomValue<String> addResourceBundle();
 
