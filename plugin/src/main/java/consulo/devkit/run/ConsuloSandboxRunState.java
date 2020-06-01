@@ -16,6 +16,16 @@
 
 package consulo.devkit.run;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipFile;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.CommandLineState;
@@ -32,15 +42,6 @@ import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
 import consulo.java.execution.configurations.OwnJavaParameters;
 import consulo.logging.Logger;
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipFile;
 
 /**
  * @author VISTALL
@@ -154,14 +155,14 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		boolean isJava9 = versionInfo != null && versionInfo.version.isAtLeast(9) && profile.ENABLED_JAVA9_MODULES;
 
-		addBootLibraries(selectedBuildPath, params, isNewBootDistribution, isJava9);
+		boolean isWeb = addBootLibraries(selectedBuildPath, params, isNewBootDistribution, isJava9);
 
 		if(!params.getModulePath().isEmpty())
 		{
-			params.setModuleName("consulo.desktop.bootstrap");
+			params.setModuleName(isWeb ? "consulo.web.bootstrap" : "consulo.desktop.bootstrap");
 		}
 
-		params.setMainClass(getMainClass(isNewBootDistribution));
+		params.setMainClass(getMainClass(isNewBootDistribution, isWeb));
 
 		for(String additionalVMParameter : myAdditionalVMParameters)
 		{
@@ -176,17 +177,23 @@ public class ConsuloSandboxRunState extends CommandLineState
 	}
 
 	@Nonnull
-	public String getMainClass(boolean isNewBootDistribution)
+	public String getMainClass(boolean isNewBootDistribution, boolean isWeb)
 	{
+		if(isWeb)
+		{
+			return "consulo.web.boot.main.Main";
+		}
 		return isNewBootDistribution ? "consulo.desktop.boot.main.Main" : "com.intellij.idea.Main";
 	}
 
-	protected void addBootLibraries(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isNewBootDistribution, boolean isJava9)
+	protected boolean addBootLibraries(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isNewBootDistribution, boolean isJava9)
 	{
 		String libPath = consuloHomePath + "/lib";
 
 		if(isNewBootDistribution)
 		{
+			boolean web = false;
+
 			File bootDirectory = new File(consuloHomePath + "/boot");
 			if(bootDirectory.exists())
 			{
@@ -216,10 +223,15 @@ public class ConsuloSandboxRunState extends CommandLineState
 						{
 							params.getClassPath().addFirst(file.getPath());
 						}
+
+						if(file.getName().contains("-web-"))
+						{
+							web = true;
+						}
 					}
 				}
 			}
-			return;
+			return web;
 		}
 
 		boolean isMavenDistribution = new File(libPath, "consulo-desktop-boot.jar").exists();
@@ -250,5 +262,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 			params.getClassPath().addFirst(libPath + "/jna.jar");
 			params.getClassPath().addFirst(libPath + "/jna-platform.jar");
 		}
+
+		return false;
 	}
 }
