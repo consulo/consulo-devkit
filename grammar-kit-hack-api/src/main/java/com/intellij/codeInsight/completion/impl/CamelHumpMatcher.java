@@ -5,14 +5,14 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.TestOnly;
 import com.intellij.codeInsight.completion.PrefixMatcher;
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.util.Disposer;
+import consulo.disposer.Disposable;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.codeStyle.MinusculeMatcher;
 import com.intellij.psi.codeStyle.NameUtil;
 import com.intellij.util.containers.FList;
 import com.intellij.util.text.CharArrayUtil;
+import consulo.disposer.Disposer;
 
 /**
  * @author peter
