@@ -16,6 +16,14 @@
 
 package consulo.devkit.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.jetbrains.idea.devkit.build.PluginBuildUtil;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.module.ModuleUtil;
@@ -26,6 +34,7 @@ import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.HashSet;
 import consulo.annotation.access.RequiredReadAction;
@@ -33,13 +42,6 @@ import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.java.module.extension.JavaModuleExtension;
 import consulo.java.roots.SpecialDirUtil;
 import consulo.module.extension.ModuleExtension;
-import org.jetbrains.idea.devkit.build.PluginBuildUtil;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author VISTALL
@@ -149,7 +151,7 @@ public class PluginModuleUtil
 
 		if(module != null)
 		{
-			PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(ModuleExtension.class.getName(), module.getModuleWithDependenciesAndLibrariesScope(false));
+			PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(ModuleExtension.class.getName(), GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module, false));
 			if(psiClass != null)
 			{
 				return true;

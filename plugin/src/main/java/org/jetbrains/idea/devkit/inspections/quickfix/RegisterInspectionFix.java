@@ -45,6 +45,7 @@ import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.Consumer;
 import com.intellij.util.IncorrectOperationException;
@@ -103,7 +104,7 @@ class RegisterInspectionFix implements IntentionAction {
     Module module = ModuleUtil.findModuleForPsiElement(file);
     assert module != null;
     List<DomFileElement<IdeaPlugin>> elements =
-      DomService.getInstance().getFileElements(IdeaPlugin.class, project, module.getModuleContentWithDependenciesScope());
+      DomService.getInstance().getFileElements(IdeaPlugin.class, project, GlobalSearchScope.moduleContentWithDependenciesScope(module));
 
     elements = ContainerUtil.filter(elements, new Condition<DomFileElement<IdeaPlugin>>() {
       @Override

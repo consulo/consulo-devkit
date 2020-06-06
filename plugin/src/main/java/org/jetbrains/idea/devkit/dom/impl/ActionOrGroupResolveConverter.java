@@ -15,6 +15,21 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.dom.Action;
+import org.jetbrains.idea.devkit.dom.ActionOrGroup;
+import org.jetbrains.idea.devkit.dom.Actions;
+import org.jetbrains.idea.devkit.dom.Group;
+import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.module.Module;
@@ -23,6 +38,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.xml.XmlFile;
@@ -35,12 +51,6 @@ import com.intellij.util.xml.ElementPresentationManager;
 import com.intellij.util.xml.ResolvingConverter;
 import com.intellij.util.xml.impl.DomImplUtil;
 import consulo.annotation.access.RequiredReadAction;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.dom.*;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.*;
 
 public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGroup>
 {
@@ -188,7 +198,7 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
 			@Override
 			public boolean process(Module module)
 			{
-				final Collection<IdeaPlugin> dependenciesAndLibs = IdeaPluginConverter.getPlugins(project, module.getModuleRuntimeScope(false));
+				final Collection<IdeaPlugin> dependenciesAndLibs = IdeaPluginConverter.getPlugins(project, GlobalSearchScope.moduleRuntimeScope(module, false));
 				return processPlugins(dependenciesAndLibs, processor);
 			}
 		});
