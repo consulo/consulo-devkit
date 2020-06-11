@@ -120,6 +120,13 @@
 						 enabledByDefault="true"
 						 displayName="Invocation state(read, write, dispatch) annotation place inspection"
 						 implementationClass="consulo.devkit.inspections.PlaceXActionAnnotationInspection"/>
+		<localInspection language="JAVA"
+						 level="WARNING"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
+						 displayName="Compilcated Logger Initialization"
+						 implementationClass="consulo.devkit.inspections.ComplicatedLoggerInitializationInspection" />
 
 		<localInspection language="JAVA"
 						 level="ERROR"
