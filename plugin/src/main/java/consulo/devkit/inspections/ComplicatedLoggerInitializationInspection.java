@@ -119,26 +119,51 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
 			Object value = ((PsiLiteralExpression) expression).getValue();
 			if(value instanceof String)
 			{
-				return ("#" + qualifiedName).equals(value);
+				return qualifiedName.equals(value) || ("#" + qualifiedName).equals(value);
 			}
 		}
 		else if(expression instanceof PsiBinaryExpression)
 		{
 			PsiExpression lOperand = ((PsiBinaryExpression) expression).getLOperand();
 			PsiExpression rOperand = ((PsiBinaryExpression) expression).getROperand();
-			if(lOperand instanceof PsiLiteralExpression && rOperand instanceof PsiClassObjectAccessExpression)
+			if(lOperand instanceof PsiLiteralExpression)
 			{
 				if("#".equals(((PsiLiteralExpression) lOperand).getValue()))
 				{
-					PsiTypeElement operand = ((PsiClassObjectAccessExpression) rOperand).getOperand();
-					PsiType type = operand.getType();
-					if(type instanceof PsiClassType)
+					if(rOperand instanceof PsiClassObjectAccessExpression)
 					{
-						PsiClass className = ((PsiClassType) type).resolve();
-
-						if(className != null && qualifiedName.equals(className.getQualifiedName()))
+						PsiTypeElement operand = ((PsiClassObjectAccessExpression) rOperand).getOperand();
+						PsiType type = operand.getType();
+						if(type instanceof PsiClassType)
 						{
-							return true;
+							PsiClass className = ((PsiClassType) type).resolve();
+
+							if(className != null && qualifiedName.equals(className.getQualifiedName()))
+							{
+								return true;
+							}
+						}
+					}
+					else if(rOperand instanceof PsiMethodCallExpression)
+					{
+						PsiReferenceExpression methodExpression = ((PsiMethodCallExpression) rOperand).getMethodExpression();
+
+						if("getName".equals(methodExpression.getReferenceName()))
+						{
+							PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
+							if(qualifierExpression instanceof PsiClassObjectAccessExpression)
+							{
+								PsiType type = ((PsiClassObjectAccessExpression) qualifierExpression).getOperand().getType();
+								if(type instanceof PsiClassType)
+								{
+									PsiClass className = ((PsiClassType) type).resolve();
+
+									if(className != null && qualifiedName.equals(className.getQualifiedName()))
+									{
+										return true;
+									}
+								}
+							}
 						}
 					}
 				}
