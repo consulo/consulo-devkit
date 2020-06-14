@@ -169,6 +169,28 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
 				}
 			}
 		}
+		else if(expression instanceof PsiMethodCallExpression)
+		{
+			PsiReferenceExpression methodExpression = ((PsiMethodCallExpression) expression).getMethodExpression();
+
+			if("getName".equals(methodExpression.getReferenceName()))
+			{
+				PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
+				if(qualifierExpression instanceof PsiClassObjectAccessExpression)
+				{
+					PsiType type = ((PsiClassObjectAccessExpression) qualifierExpression).getOperand().getType();
+					if(type instanceof PsiClassType)
+					{
+						PsiClass className = ((PsiClassType) type).resolve();
+
+						if(className != null && qualifiedName.equals(className.getQualifiedName()))
+						{
+							return true;
+						}
+					}
+				}
+			}
+		}
 
 		return false;
 	}
