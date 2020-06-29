@@ -19,18 +19,13 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 import com.intellij.ide.presentation.Presentation;
 import com.intellij.psi.PsiClass;
-import com.intellij.util.xml.Attribute;
-import com.intellij.util.xml.Convert;
-import com.intellij.util.xml.ExtendClass;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.GenericDomValue;
+import com.intellij.util.xml.*;
+import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * plugin.dtd:group interface.
@@ -86,8 +81,7 @@ public interface Group extends Actions, ActionOrGroup
 	 */
 	@Nonnull
 	@Attribute("class")
-	@ExtendClass(value = "com.intellij.openapi.actionSystem.ActionGroup",
-			instantiatable = true, allowAbstract = false, allowInterface = false)
+	@ExtendClass(value = "com.intellij.openapi.actionSystem.AnAction", instantiatable = false, allowNonPublic = true, allowAbstract = false, allowInterface = false)
 	@Convert(PluginPsiClassConverter.class)
 	GenericAttributeValue<PsiClass> getClazz();
 
