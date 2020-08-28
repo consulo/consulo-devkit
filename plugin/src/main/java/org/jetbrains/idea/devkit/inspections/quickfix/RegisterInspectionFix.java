@@ -21,6 +21,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.swing.Icon;
 
+import consulo.ui.image.Image;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.Extensions;
@@ -135,8 +136,8 @@ class RegisterInspectionFix implements IntentionAction {
         }
 
         @Override
-        public Icon getIconFor(DomFileElement<IdeaPlugin> aValue) {
-          return TargetAWT.to(TypePresentationService.getInstance().getIcon(aValue));
+        public Image getIconFor(DomFileElement<IdeaPlugin> aValue) {
+          return TypePresentationService.getInstance().getIcon(aValue);
         }
 
         @Nonnull

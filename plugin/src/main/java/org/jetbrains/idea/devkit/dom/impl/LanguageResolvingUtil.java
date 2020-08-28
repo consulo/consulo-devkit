@@ -23,6 +23,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
 
+import consulo.ui.image.Image;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import com.intellij.codeInsight.completion.CompletionContributorEP;
@@ -59,7 +60,7 @@ class LanguageResolvingUtil
 		final List<LanguageDefinition> libraryDefinitions = collectLibraryLanguages(context);
 		final List<LanguageDefinition> projectDefinitions = collectProjectLanguages(context, libraryDefinitions);
 
-		final List<LanguageDefinition> all = new ArrayList<LanguageDefinition>(libraryDefinitions);
+		final List<LanguageDefinition> all = new ArrayList<>(libraryDefinitions);
 		all.addAll(projectDefinitions);
 		return all;
 	}
@@ -82,7 +83,7 @@ class LanguageResolvingUtil
 				}
 
 				final LanguageFileType type = language.getAssociatedFileType();
-				final Icon icon = type != null ? TargetAWT.to(type.getIcon()) : null;
+				final Image icon = type != null ? type.getIcon() : null;
 				return new LanguageDefinition(language.getID(), psiClass, icon, language.getDisplayName());
 			}
 		});
@@ -275,10 +276,10 @@ class LanguageResolvingUtil
 
 		final String id;
 		final PsiClass clazz;
-		final Icon icon;
+		final Image icon;
 		final String displayName;
 
-		LanguageDefinition(String id, PsiClass clazz, Icon icon, String displayName)
+		LanguageDefinition(String id, PsiClass clazz, Image icon, String displayName)
 		{
 			this.id = id;
 			this.clazz = clazz;
