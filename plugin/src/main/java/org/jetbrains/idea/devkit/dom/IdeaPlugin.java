@@ -19,18 +19,11 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import java.util.List;
+import com.intellij.util.xml.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import com.intellij.util.xml.DefinesXml;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.GenericDomValue;
-import com.intellij.util.xml.NameValue;
-import com.intellij.util.xml.SubTag;
-import com.intellij.util.xml.SubTagList;
+import java.util.List;
 
 @DefinesXml
 public interface IdeaPlugin extends DomElement
@@ -128,4 +121,7 @@ public interface IdeaPlugin extends DomElement
 	@Nonnull
 	@SubTagList("moduleListeners")
 	List<Listeners> getModuleListeners();
+
+	@Nonnull
+	GenericDomValue<Boolean> getExperimental();
 }
