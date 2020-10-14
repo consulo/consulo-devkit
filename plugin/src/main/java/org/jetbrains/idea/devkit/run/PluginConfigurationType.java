@@ -20,10 +20,10 @@ import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.ConfigurationTypeBase;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.project.Project;
-import consulo.devkit.ConsuloSandboxIcons;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.run.ConsuloRunConfiguration;
 import consulo.module.extension.ModuleExtensionHelper;
+import consulo.platform.base.icon.PlatformIconGroup;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
@@ -33,14 +33,14 @@ public class PluginConfigurationType extends ConfigurationTypeBase
 	@Nonnull
 	public static PluginConfigurationType getInstance()
 	{
-		return CONFIGURATION_TYPE_EP.findExtensionOrFail(PluginConfigurationType.class);
+		return EP_NAME.findExtensionOrFail(PluginConfigurationType.class);
 	}
 
 	private String myVmParameters;
 
 	public PluginConfigurationType()
 	{
-		super("#org.jetbrains.idea.devkit.run.PluginConfigurationType", DevKitBundle.message("run.configuration.title"), DevKitBundle.message("run.configuration.type.description"), ConsuloSandboxIcons.Icon16_Sandbox);
+		super("#org.jetbrains.idea.devkit.run.PluginConfigurationType", DevKitBundle.message("run.configuration.title"), DevKitBundle.message("run.configuration.type.description"), PlatformIconGroup.icon16_sandbox());
 		addFactory(new ConfigurationFactoryEx(this)
 		{
 			@Override

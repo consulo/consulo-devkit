@@ -37,7 +37,7 @@
 
 		<moduleExtensionProvider key="consulo-plugin"
 								 parentKey="java"
-								 icon="/icon16.png"
+								 icon="consulo.platform.base.PlatformIconGroup@icon16"
 								 name="Consulo Plugin"
 								 immutableClass="consulo.devkit.module.extension.PluginModuleExtension"
 								 mutableClass="consulo.devkit.module.extension.PluginMutableModuleExtension"/>

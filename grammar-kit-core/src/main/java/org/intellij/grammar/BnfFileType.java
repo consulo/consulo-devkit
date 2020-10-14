@@ -15,9 +15,11 @@
  */
 package org.intellij.grammar;
 
-import javax.annotation.Nonnull;
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import consulo.devkit.grammarKit.icon.GrammarKitIconGroup;
 import consulo.ui.image.Image;
+
+import javax.annotation.Nonnull;
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,6 +55,6 @@ public class BnfFileType extends LanguageFileType {
 
   @Override
   public Image getIcon() {
-    return BnfIcons.FILE;
+    return GrammarKitIconGroup.grammarFile();
   }
 }

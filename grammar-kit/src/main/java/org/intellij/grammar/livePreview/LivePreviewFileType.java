@@ -16,14 +16,13 @@
 
 package org.intellij.grammar.livePreview;
 
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.BnfIcons;
-
-import javax.annotation.Nullable;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.LanguageFileType;
+import consulo.devkit.grammarKit.icon.GrammarKitIconGroup;
 import consulo.ui.image.Image;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author gregsh
@@ -56,6 +55,6 @@ public class LivePreviewFileType extends LanguageFileType {
   @Nullable
   @Override
   public Image getIcon() {
-    return BnfIcons.FILE;
+    return GrammarKitIconGroup.grammarFile();
   }
 }

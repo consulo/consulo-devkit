@@ -15,29 +15,6 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.jetbrains.annotations.NonNls;
-
-import javax.annotation.Nullable;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.util.ActionData;
-import org.jetbrains.idea.devkit.util.ActionType;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -54,6 +31,27 @@ import com.intellij.ui.ListSpeedSearch;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.Function;
+import consulo.awt.TargetAWT;
+import consulo.ui.image.Image;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.util.ActionData;
+import org.jetbrains.idea.devkit.util.ActionType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author yole
@@ -184,9 +182,9 @@ public class NewActionDialog extends DialogWrapper implements ActionData
 		myFirstKeystrokeEdit.getDocument().addDocumentListener(listener);
 		myClearFirstKeystroke.setText(null);
 
-		final Icon icon = AllIcons.Actions.Cancel;
-		final Dimension size = new Dimension(icon.getIconWidth(), icon.getIconHeight());
-		myClearFirstKeystroke.setIcon(icon);
+		final Image icon = AllIcons.Actions.Cancel;
+		final Dimension size = new Dimension(icon.getWidth(), icon.getHeight());
+		myClearFirstKeystroke.setIcon(TargetAWT.to(icon));
 		myClearFirstKeystroke.setPreferredSize(size);
 		myClearFirstKeystroke.setMaximumSize(size);
 
@@ -203,7 +201,7 @@ public class NewActionDialog extends DialogWrapper implements ActionData
 		});
 		mySecondKeystrokeEdit.getDocument().addDocumentListener(listener);
 		myClearSecondKeystroke.setText(null);
-		myClearSecondKeystroke.setIcon(icon);
+		myClearSecondKeystroke.setIcon(TargetAWT.to(icon));
 		myClearSecondKeystroke.setPreferredSize(size);
 		myClearSecondKeystroke.setMaximumSize(size);
 

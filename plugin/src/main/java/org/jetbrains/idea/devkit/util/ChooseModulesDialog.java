@@ -27,9 +27,11 @@ import com.intellij.psi.xml.XmlFile;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.table.JBTable;
 import consulo.devkit.util.PluginModuleUtil;
+import consulo.ui.image.Image;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
@@ -51,7 +53,7 @@ import java.util.List;
  * @author swr
  */
 public class ChooseModulesDialog extends DialogWrapper {
-  private final Icon myIcon;
+  private final Image myIcon;
   private final String myMessage;
   private final JTable myView;
   private final List<Module> myCandidateModules;
@@ -122,7 +124,7 @@ public class ChooseModulesDialog extends DialogWrapper {
   protected JComponent createNorthPanel() {
     JPanel panel = new JPanel(new BorderLayout(15, 10));
     if (myIcon != null) {
-      JLabel iconLabel = new JLabel(myIcon);
+      JLabel iconLabel = new JBLabel(myIcon);
       Container container = new Container();
       container.setLayout(new BorderLayout());
       container.add(iconLabel, BorderLayout.NORTH);

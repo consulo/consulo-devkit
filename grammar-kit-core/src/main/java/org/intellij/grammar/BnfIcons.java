@@ -16,7 +16,6 @@
 package org.intellij.grammar;
 
 import com.intellij.icons.AllIcons;
-import com.intellij.openapi.util.IconLoader;
 import consulo.ui.image.Image;
 
 /**
@@ -25,8 +24,6 @@ import consulo.ui.image.Image;
  */
 public interface BnfIcons
 {
-	Image FILE = IconLoader.getIcon("/icons/grammarFile.png");
-
 	Image RULE = AllIcons.Nodes.Method;
 	Image EXTERNAL_RULE = AllIcons.Nodes.AbstractMethod;
 	Image ATTRIBUTE = AllIcons.Nodes.Attribute;
