@@ -2,10 +2,7 @@ package consulo.devkit.icon.inspection;
 
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.XmlElementVisitor;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.xml.XmlAttribute;
 import com.intellij.psi.xml.XmlAttributeValue;
@@ -28,7 +25,13 @@ public class IconNotResolvedInspection extends DevKitInspectionBase
 	@Override
 	public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
 	{
-		DomFileElement<IdeaPlugin> fileElement = DomManager.getDomManager(holder.getProject()).getFileElement((XmlFile) holder.getFile(), IdeaPlugin.class);
+		PsiFile file = holder.getFile();
+		if(!(file instanceof XmlFile))
+		{
+			return PsiElementVisitor.EMPTY_VISITOR;
+		}
+
+		DomFileElement<IdeaPlugin> fileElement = DomManager.getDomManager(holder.getProject()).getFileElement((XmlFile) file, IdeaPlugin.class);
 		if(fileElement == null)
 		{
 			return PsiElementVisitor.EMPTY_VISITOR;
