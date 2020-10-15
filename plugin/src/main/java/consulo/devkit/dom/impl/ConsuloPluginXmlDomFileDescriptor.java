@@ -1,10 +1,5 @@
 package consulo.devkit.dom.impl;
 
-import javax.annotation.Nullable;
-
-import org.jetbrains.idea.devkit.dom.Extension;
-import org.jetbrains.idea.devkit.dom.ExtensionPoint;
-import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.icons.AllIcons;
 import com.intellij.lang.annotation.Annotation;
@@ -18,6 +13,11 @@ import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.highlighting.DomElementAnnotationHolder;
 import com.intellij.util.xml.highlighting.DomElementsAnnotator;
 import consulo.ui.image.Image;
+import org.jetbrains.idea.devkit.dom.Extension;
+import org.jetbrains.idea.devkit.dom.ExtensionPoint;
+import org.jetbrains.idea.devkit.dom.IdeaPlugin;
+
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL

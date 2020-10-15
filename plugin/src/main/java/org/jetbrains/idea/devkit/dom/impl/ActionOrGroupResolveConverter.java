@@ -15,21 +15,6 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.dom.Action;
-import org.jetbrains.idea.devkit.dom.ActionOrGroup;
-import org.jetbrains.idea.devkit.dom.Actions;
-import org.jetbrains.idea.devkit.dom.Group;
-import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.module.Module;
@@ -51,10 +36,15 @@ import com.intellij.util.xml.ElementPresentationManager;
 import com.intellij.util.xml.ResolvingConverter;
 import com.intellij.util.xml.impl.DomImplUtil;
 import consulo.annotation.access.RequiredReadAction;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.dom.*;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGroup>
 {
-
 	@Nonnull
 	@Override
 	public Collection<? extends ActionOrGroup> getVariants(ConvertContext context)

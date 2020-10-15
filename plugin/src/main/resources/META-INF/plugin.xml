@@ -34,6 +34,7 @@
 
 		<lang.foldingBuilder language="JAVA" implementationClass="consulo.devkit.localize.folding.LocalizeFoldingBuilder" />
 		<fileBasedIndex implementation="consulo.devkit.localize.index.LocalizeFileBasedIndexExtension" />
+		<fileBasedIndex implementation="consulo.devkit.icon.index.IconFileBasedIndexExtension" />
 
 		<moduleExtensionProvider key="consulo-plugin"
 								 parentKey="java"
@@ -106,6 +107,13 @@
 						 enabledByDefault="true"
 						 level="WARNING"
 						 implementationClass="org.jetbrains.idea.devkit.inspections.ExtensionPointBeanClassInspection"/>
+		<localInspection language="XML" shortName="DevKitIconNotResolved"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 displayName="Icon not Resolved"
+						 enabledByDefault="true"
+						 level="ERROR"
+						 implementationClass="consulo.devkit.icon.inspection.IconNotResolvedInspection"/>
 		<localInspection language="JAVA"
 						 level="WARNING"
 						 bundle="messages.DevKitBundle"
@@ -187,8 +195,8 @@
 
 		<implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
 		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>
-		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.references.IconsReferencesContributor"/>
-		<referencesSearch implementation="org.jetbrains.idea.devkit.references.IconsReferencesContributor"/>
+		<psi.referenceContributor implementation="consulo.devkit.icon.references.IconPsiReferenceContributor"/>
+		<projectService serviceImplementation="consulo.devkit.icon.IconResolver" />
 		<unusedDeclarationFixProvider implementation="org.jetbrains.idea.devkit.inspections.quickfix.RegisterExtensionFixProvider"/>
 
 		<codeInsight.lineMarkerProvider language="JAVA"
