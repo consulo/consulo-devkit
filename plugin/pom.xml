@@ -145,7 +145,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>consulo-util-rt</artifactId>
+			<artifactId>consulo-util-nodep</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>provided</scope>
 		</dependency>

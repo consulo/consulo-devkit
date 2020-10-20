@@ -16,16 +16,6 @@
 
 package consulo.devkit.run;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipFile;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.RunConfigurationExtension;
 import com.intellij.execution.configurations.CommandLineState;
@@ -42,6 +32,15 @@ import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
 import consulo.java.execution.configurations.OwnJavaParameters;
 import consulo.logging.Logger;
+import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipFile;
 
 /**
  * @author VISTALL
@@ -243,7 +242,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 			params.getClassPath().addFirst(libPath + "/consulo-desktop-bootstrap.jar");
 			params.getClassPath().addFirst(libPath + "/consulo-extensions.jar");
 			params.getClassPath().addFirst(libPath + "/consulo-util.jar");
-			params.getClassPath().addFirst(libPath + "/consulo-util-rt.jar");
+			params.getClassPath().addFirst(libPath + "/consulo-util-nodep.jar");
 			params.getClassPath().addFirst(libPath + "/jdom.jar");
 			params.getClassPath().addFirst(libPath + "/trove4j.jar");
 			params.getClassPath().addFirst(libPath + "/jna.jar");
