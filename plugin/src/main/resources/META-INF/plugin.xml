@@ -128,6 +128,14 @@
 						 enabledByDefault="true"
 						 displayName="Invocation state(read, write, dispatch) annotation place inspection"
 						 implementationClass="consulo.devkit.inspections.PlaceXActionAnnotationInspection"/>
+
+		<localInspection language="JAVA"
+						 level="WARNING"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
+						 displayName="@MigratedExtensionsTo helper"
+						 implementationClass="consulo.devkit.inspections.MigratedExtensionsToInspection"/>
 		<localInspection language="JAVA"
 						 level="WARNING"
 						 bundle="messages.DevKitBundle"

@@ -25,7 +25,6 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
 {
 	private static class Fix extends LocalQuickFixOnPsiElement
 	{
-
 		protected Fix(@Nonnull PsiElement element)
 		{
 			super(element);

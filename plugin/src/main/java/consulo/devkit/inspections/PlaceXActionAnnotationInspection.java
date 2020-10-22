@@ -16,11 +16,8 @@
 
 package consulo.devkit.inspections;
 
-import javax.annotation.Nonnull;
-
 import com.intellij.codeInsight.intention.AddAnnotationFix;
 import com.intellij.codeInspection.AnnotateMethodFix;
-import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.JavaElementVisitor;
@@ -30,12 +27,15 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.searches.OverridingMethodsSearch;
 import com.intellij.util.Query;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
  * @since 18.05.2015
  */
-public class PlaceXActionAnnotationInspection extends LocalInspectionTool
+public class PlaceXActionAnnotationInspection extends InternalInspection
 {
 	private static class MyAnnotateMethodFix extends AnnotateMethodFix
 	{
@@ -66,7 +66,7 @@ public class PlaceXActionAnnotationInspection extends LocalInspectionTool
 
 	@Nonnull
 	@Override
-	public PsiElementVisitor buildVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new JavaElementVisitor()
 		{
