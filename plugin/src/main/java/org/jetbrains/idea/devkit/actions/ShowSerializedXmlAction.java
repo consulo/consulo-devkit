@@ -34,10 +34,12 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.FList;
 import com.intellij.util.xmlb.Accessor;
+import com.intellij.util.xmlb.MutableAccessor;
 import com.intellij.util.xmlb.XmlSerializer;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import consulo.devkit.action.InternalAction;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.util.lang.reflect.ReflectionUtil;
 import consulo.util.nodep.classloader.UrlClassLoader;
 import org.jdom.Element;
 
@@ -205,14 +207,17 @@ public class ShowSerializedXmlAction extends InternalAction implements DumbAware
 
 		public Object createObject(Class<?> aClass, FList<Type> processedTypes) throws Exception
 		{
-			final Object o = aClass.newInstance();
+			final Object o = ReflectionUtil.newInstance(aClass);
 			for(Accessor accessor : XmlSerializerUtil.getAccessors(aClass))
 			{
 				final Type type = accessor.getGenericType();
 				Object value = createValue(type, processedTypes);
 				if(value != null)
 				{
-					accessor.write(o, value);
+					if(accessor instanceof MutableAccessor)
+					{
+						((MutableAccessor) accessor).set(o, value);
+					}
 				}
 			}
 			return o;
