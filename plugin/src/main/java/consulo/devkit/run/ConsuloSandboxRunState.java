@@ -233,7 +233,20 @@ public class ConsuloSandboxRunState extends CommandLineState
 				File spiDir = new File(bootDirectory, "spi");
 				if(spiDir.exists())
 				{
-					params.getModulePath().add(spiDir);
+					for(File file : spiDir.listFiles())
+					{
+						if(FileUtil.isJarOrZip(file))
+						{
+							if(isJava9)
+							{
+								params.getModulePath().addFirst(file.getPath());
+							}
+							else
+							{
+								params.getClassPath().addFirst(file.getPath());
+							}
+						}
+					}
 				}
 			}
 			return web;
