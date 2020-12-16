@@ -229,6 +229,12 @@ public class ConsuloSandboxRunState extends CommandLineState
 						}
 					}
 				}
+
+				File spiDir = new File(bootDirectory, "spi");
+				if(spiDir.exists())
+				{
+					params.getModulePath().add(spiDir);
+				}
 			}
 			return web;
 		}
