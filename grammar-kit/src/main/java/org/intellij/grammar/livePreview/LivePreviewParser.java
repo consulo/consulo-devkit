@@ -16,48 +16,7 @@
 
 package org.intellij.grammar.livePreview;
 
-import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
-import static org.intellij.grammar.parser.GeneratedParserUtilBase.*;
-import static org.intellij.grammar.psi.BnfTypes.*;
-
-import gnu.trove.TObjectIntHashMap;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
-import org.intellij.grammar.generator.BnfConstants;
-import org.intellij.grammar.generator.Case;
-import org.intellij.grammar.generator.ExpressionGeneratorHelper;
-import org.intellij.grammar.generator.ExpressionHelper;
-import org.intellij.grammar.generator.GenOptions;
-import org.intellij.grammar.generator.ParserGeneratorUtil;
-import org.intellij.grammar.generator.RuleGraphHelper;
-import org.intellij.grammar.parser.GeneratedParserUtilBase;
-import org.intellij.grammar.psi.BnfExpression;
-import org.intellij.grammar.psi.BnfExternalExpression;
-import org.intellij.grammar.psi.BnfFile;
-import org.intellij.grammar.psi.BnfLiteralExpression;
-import org.intellij.grammar.psi.BnfPredicate;
-import org.intellij.grammar.psi.BnfReferenceOrToken;
-import org.intellij.grammar.psi.BnfRule;
-import org.intellij.grammar.psi.impl.GrammarUtil;
-
-import javax.annotation.Nullable;
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.BracePair;
-import com.intellij.lang.LighterASTNode;
-import com.intellij.lang.PsiBuilder;
-import com.intellij.lang.PsiParser;
+import com.intellij.lang.*;
 import com.intellij.lang.impl.PsiBuilderImpl;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.project.Project;
@@ -66,16 +25,29 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.util.NullableFunction;
 import com.intellij.util.PairProcessor;
 import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.containers.HashMap;
 import com.intellij.util.containers.MultiMap;
 import consulo.lang.LanguageVersion;
+import gnu.trove.TObjectIntHashMap;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
+import org.intellij.grammar.generator.*;
+import org.intellij.grammar.parser.GeneratedParserUtilBase;
+import org.intellij.grammar.psi.*;
+import org.intellij.grammar.psi.impl.GrammarUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
+
+import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
+import static org.intellij.grammar.parser.GeneratedParserUtilBase.*;
+import static org.intellij.grammar.psi.BnfTypes.*;
 
 /**
  * @author gregsh
  */
 public class LivePreviewParser implements PsiParser
 {
-
 	private final BnfFile myFile;
 	private final LivePreviewLanguage myLanguage;
 	private final Map<String, String> mySimpleTokens = ContainerUtil.newLinkedHashMap();
