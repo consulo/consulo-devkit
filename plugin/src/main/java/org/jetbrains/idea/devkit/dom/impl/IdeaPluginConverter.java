@@ -15,16 +15,6 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import org.jetbrains.annotations.NonNls;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Comparing;
@@ -35,26 +25,27 @@ import com.intellij.psi.search.ProjectScope;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiModificationTracker;
-import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomService;
 import com.intellij.util.xml.ResolvingConverter;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.dom.IdeaPlugin;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author mike
  */
 public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
 {
-	private static final Condition<IdeaPlugin> NON_CORE_PLUGINS = new Condition<IdeaPlugin>()
-	{
-		@Override
-		public boolean value(IdeaPlugin plugin)
-		{
-			return !"com.intellij".equals(plugin.getPluginId());
-		}
-	};
+	private static final Condition<IdeaPlugin> NON_CORE_PLUGINS = plugin -> !"com.intellij".equals(plugin.getPluginId());
 
 	@Override
 	@Nonnull
@@ -103,14 +94,7 @@ public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
 		}
 
 		final Collection<IdeaPlugin> plugins = getAllPlugins(context.getProject());
-		return ContainerUtil.filter(plugins, new Condition<IdeaPlugin>()
-		{
-			@Override
-			public boolean value(IdeaPlugin plugin)
-			{
-				return !Comparing.strEqual(self.getPluginId(), plugin.getPluginId());
-			}
-		});
+		return ContainerUtil.filter(plugins, plugin -> !Comparing.strEqual(self.getPluginId(), plugin.getPluginId()));
 	}
 
 	public static Collection<IdeaPlugin> getAllPlugins(final Project project)
@@ -126,8 +110,7 @@ public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
 			@Override
 			public Result<Collection<IdeaPlugin>> compute()
 			{
-				GlobalSearchScope scope = GlobalSearchScopesCore.projectProductionScope(project).
-						union(ProjectScope.getLibrariesScope(project));
+				GlobalSearchScope scope = GlobalSearchScopesCore.projectProductionScope(project).union(ProjectScope.getLibrariesScope(project));
 				return Result.create(getPlugins(project, scope), PsiModificationTracker.OUT_OF_CODE_BLOCK_MODIFICATION_COUNT);
 			}
 		});
@@ -142,13 +125,6 @@ public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
 		}
 
 		List<DomFileElement<IdeaPlugin>> files = DomService.getInstance().getFileElements(IdeaPlugin.class, project, scope);
-		return ContainerUtil.map(files, new Function<DomFileElement<IdeaPlugin>, IdeaPlugin>()
-		{
-			@Override
-			public IdeaPlugin fun(DomFileElement<IdeaPlugin> ideaPluginDomFileElement)
-			{
-				return ideaPluginDomFileElement.getRootElement();
-			}
-		});
+		return ContainerUtil.map(files, DomFileElement::getRootElement);
 	}
 }
