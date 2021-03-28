@@ -256,9 +256,6 @@
 			<action class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
 					id="GenerateDomModel"/>
 
-			<action id="DevKit.GenerateIconsClassAction" class="consulo.devkit.action.GenerateIconsClassAction" text="Generate Icons Class"
-					icon="AllIcons.Nodes.Class"/>
-
 			<add-to-group group-id="ToolsMenu" anchor="last"/>
 		</group>
 
