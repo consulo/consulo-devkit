@@ -126,7 +126,9 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		File logFile = new File(dataPath, ConsuloRunConfigurationBase.LOG_FILE);
 		FileUtil.createIfDoesntExist(logFile);
+		// deprecated
 		vm.defineProperty("idea.log.path", logFile.getParent());
+		vm.defineProperty("consulo.log.path", logFile.getParent());
 
 		if(SystemInfo.isMac)
 		{
@@ -148,20 +150,18 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		params.setJdk(javaSdk);
 
-		boolean isNewBootDistribution = new File(selectedBuildPath, "boot").exists();
-
 		OwnJdkVersionDetector.JdkVersionInfo versionInfo = OwnJdkVersionDetector.getInstance().detectJdkVersionInfo(javaSdk.getHomePath());
 
 		boolean isJava9 = versionInfo != null && versionInfo.version.isAtLeast(9) && profile.ENABLED_JAVA9_MODULES;
 
-		boolean isWeb = addBootLibraries(selectedBuildPath, params, isNewBootDistribution, isJava9);
+		ConsuloPlatform platform = addBootLibraries(selectedBuildPath, params, isJava9);
 
 		if(!params.getModulePath().isEmpty())
 		{
-			params.setModuleName(isWeb ? "consulo.web.bootstrap" : "consulo.desktop.bootstrap");
+			params.setModuleName(platform.getModuleName());
 		}
 
-		params.setMainClass(getMainClass(isNewBootDistribution, isWeb));
+		params.setMainClass(platform.getMainClass());
 
 		for(String additionalVMParameter : myAdditionalVMParameters)
 		{
@@ -175,46 +175,59 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return params;
 	}
 
-	@Nonnull
-	public String getMainClass(boolean isNewBootDistribution, boolean isWeb)
+	protected ConsuloPlatform addBootLibraries(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isJava9)
 	{
-		if(isWeb)
+		ConsuloPlatform platform = ConsuloPlatform.DESKTOP_AWT;
+
+		File bootDirectory = new File(consuloHomePath + "/boot");
+		if(bootDirectory.exists())
 		{
-			return "consulo.web.boot.main.Main";
-		}
-		return isNewBootDistribution ? "consulo.desktop.boot.main.Main" : "com.intellij.idea.Main";
-	}
-
-	protected boolean addBootLibraries(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isNewBootDistribution, boolean isJava9)
-	{
-		String libPath = consuloHomePath + "/lib";
-
-		if(isNewBootDistribution)
-		{
-			boolean web = false;
-
-			File bootDirectory = new File(consuloHomePath + "/boot");
-			if(bootDirectory.exists())
+			File[] files = bootDirectory.listFiles();
+			for(File file : files)
 			{
-				File[] files = bootDirectory.listFiles();
-				for(File file : files)
+				if(FileUtil.isJarOrZip(file))
+				{
+					boolean modular = false;
+					if(isJava9)
+					{
+						try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ))
+						{
+							modular = zipFile.getEntry("module-info.class") != null;
+						}
+						catch(IOException e)
+						{
+							Logger.getInstance(ConsuloSandboxRunState.class).error(e);
+						}
+					}
+
+					if(modular)
+					{
+						params.getModulePath().addFirst(file.getPath());
+					}
+					else
+					{
+						params.getClassPath().addFirst(file.getPath());
+					}
+
+					if(file.getName().contains("-web-"))
+					{
+						platform = ConsuloPlatform.WEB;
+					}
+					else if(file.getName().contains("desktop.swt"))
+					{
+						platform = ConsuloPlatform.DESKTOP_SWT;
+					}
+				}
+			}
+
+			File spiDir = new File(bootDirectory, "spi");
+			if(spiDir.exists())
+			{
+				for(File file : spiDir.listFiles())
 				{
 					if(FileUtil.isJarOrZip(file))
 					{
-						boolean modular = false;
 						if(isJava9)
-						{
-							try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ))
-							{
-								modular = zipFile.getEntry("module-info.class") != null;
-							}
-							catch(IOException e)
-							{
-								Logger.getInstance(ConsuloSandboxRunState.class).error(e);
-							}
-						}
-
-						if(modular)
 						{
 							params.getModulePath().addFirst(file.getPath());
 						}
@@ -222,65 +235,10 @@ public class ConsuloSandboxRunState extends CommandLineState
 						{
 							params.getClassPath().addFirst(file.getPath());
 						}
-
-						if(file.getName().contains("-web-"))
-						{
-							web = true;
-						}
-					}
-				}
-
-				File spiDir = new File(bootDirectory, "spi");
-				if(spiDir.exists())
-				{
-					for(File file : spiDir.listFiles())
-					{
-						if(FileUtil.isJarOrZip(file))
-						{
-							if(isJava9)
-							{
-								params.getModulePath().addFirst(file.getPath());
-							}
-							else
-							{
-								params.getClassPath().addFirst(file.getPath());
-							}
-						}
 					}
 				}
 			}
-			return web;
 		}
-
-		boolean isMavenDistribution = new File(libPath, "consulo-desktop-boot.jar").exists();
-
-		if(isMavenDistribution)
-		{
-			params.getVMParametersList().add("-Xbootclasspath/a:" + libPath + "/consulo-desktop-boot.jar");
-
-			params.getClassPath().addFirst(libPath + "/consulo-desktop-bootstrap.jar");
-			params.getClassPath().addFirst(libPath + "/consulo-extensions.jar");
-			params.getClassPath().addFirst(libPath + "/consulo-util.jar");
-			params.getClassPath().addFirst(libPath + "/consulo-util-nodep.jar");
-			params.getClassPath().addFirst(libPath + "/jdom.jar");
-			params.getClassPath().addFirst(libPath + "/trove4j.jar");
-			params.getClassPath().addFirst(libPath + "/jna.jar");
-			params.getClassPath().addFirst(libPath + "/jna-platform.jar");
-		}
-		else
-		{
-			params.getVMParametersList().add("-Xbootclasspath/a:" + libPath + "/boot.jar");
-
-			params.getClassPath().addFirst(libPath + "/log4j.jar");
-			params.getClassPath().addFirst(libPath + "/jdom.jar");
-			params.getClassPath().addFirst(libPath + "/trove4j.jar");
-			params.getClassPath().addFirst(libPath + "/util.jar");
-			params.getClassPath().addFirst(libPath + "/extensions.jar");
-			params.getClassPath().addFirst(libPath + "/bootstrap.jar");
-			params.getClassPath().addFirst(libPath + "/jna.jar");
-			params.getClassPath().addFirst(libPath + "/jna-platform.jar");
-		}
-
-		return false;
+		return platform;
 	}
 }
