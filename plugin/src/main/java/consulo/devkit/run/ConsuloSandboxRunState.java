@@ -213,7 +213,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 					{
 						platform = ConsuloPlatform.WEB;
 					}
-					else if(file.getName().contains("desktop.swt"))
+					else if(file.getName().contains("desktop-swt"))
 					{
 						platform = ConsuloPlatform.DESKTOP_SWT;
 					}
