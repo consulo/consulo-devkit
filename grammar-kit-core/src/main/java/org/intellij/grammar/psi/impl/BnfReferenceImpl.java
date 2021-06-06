@@ -15,18 +15,6 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.generator.ParserGeneratorUtil;
-import org.intellij.grammar.java.JavaHelper;
-import org.intellij.grammar.psi.BnfCompositeElement;
-import org.intellij.grammar.psi.BnfExternalExpression;
-import org.intellij.grammar.psi.BnfFile;
-import org.intellij.grammar.psi.BnfRule;
-import org.intellij.grammar.psi.BnfSequence;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
@@ -34,11 +22,18 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.generator.ParserGeneratorUtil;
+import org.intellij.grammar.java.JavaHelper;
+import org.intellij.grammar.psi.*;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * @author gregsh
  */
-public class BnfReferenceImpl<T extends BnfCompositeElement> extends PsiReferenceBase<T> {
+public class BnfReferenceImpl<T extends BnfComposite> extends PsiReferenceBase<T> {
 
   public BnfReferenceImpl(@Nonnull T element, TextRange range) {
     super(element, range);

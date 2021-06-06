@@ -15,11 +15,6 @@
  */
 package org.intellij.grammar;
 
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.psi.BnfAttr;
-import org.intellij.grammar.psi.BnfCompositeElement;
-import org.intellij.grammar.psi.BnfRule;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.ElementDescriptionLocation;
 import com.intellij.psi.ElementDescriptionProvider;
@@ -30,6 +25,11 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.usageView.UsageViewNodeTextLocation;
 import com.intellij.usageView.UsageViewShortNameLocation;
 import com.intellij.usageView.UsageViewTypeLocation;
+import org.intellij.grammar.psi.BnfAttr;
+import org.intellij.grammar.psi.BnfComposite;
+import org.intellij.grammar.psi.BnfRule;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author gregory
@@ -38,7 +38,7 @@ import com.intellij.usageView.UsageViewTypeLocation;
 public class BnfDescriptionProvider implements ElementDescriptionProvider {
   @Override
   public String getElementDescription(@Nonnull PsiElement psiElement, @Nonnull ElementDescriptionLocation location) {
-    if (location == UsageViewNodeTextLocation.INSTANCE && psiElement instanceof BnfCompositeElement) {
+    if (location == UsageViewNodeTextLocation.INSTANCE && psiElement instanceof BnfComposite) {
       return getElementDescription(psiElement, UsageViewTypeLocation.INSTANCE) + " " +
              "'" + getElementDescription(psiElement, UsageViewShortNameLocation.INSTANCE) + "'";
     }
@@ -55,7 +55,7 @@ public class BnfDescriptionProvider implements ElementDescriptionProvider {
       }
       return ((BnfAttr)psiElement).getName();
     }
-    else if (psiElement instanceof BnfCompositeElement) {
+    else if (psiElement instanceof BnfComposite) {
       if (location == UsageViewTypeLocation.INSTANCE) {
         return StringUtil.join(NameUtil.nameToWords(psiElement.getNode().getElementType().toString()), " ");
       }

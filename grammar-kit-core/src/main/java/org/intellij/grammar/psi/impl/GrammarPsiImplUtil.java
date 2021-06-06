@@ -16,84 +16,95 @@
 
 package org.intellij.grammar.psi.impl;
 
-import static org.intellij.grammar.generator.ParserGeneratorUtil.findRuleImplMethods;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getAttribute;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
-
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.java.JavaHelper;
-import org.intellij.grammar.psi.BnfAttr;
-import org.intellij.grammar.psi.BnfListEntry;
-import org.intellij.grammar.psi.BnfLiteralExpression;
-import org.intellij.grammar.psi.BnfRule;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementResolveResult;
-import com.intellij.psi.PsiPolyVariantReferenceBase;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.ResolveResult;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.containers.ContainerUtil;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.java.JavaHelper;
+import org.intellij.grammar.psi.*;
+import javax.annotation.Nonnull;
+
+import java.util.List;
+
+import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
 
 /**
  * @author gregsh
  */
-public class GrammarPsiImplUtil {
-  @Nonnull
-  public static PsiReference[] getReferences(BnfListEntry o) {
-    BnfAttr attr = PsiTreeUtil.getParentOfType(o, BnfAttr.class);
-    if (attr == null || !Comparing.equal(KnownAttribute.METHODS.getName(), attr.getName())) return PsiReference.EMPTY_ARRAY;
-    PsiElement id = o.getId();
-    BnfLiteralExpression value = o.getLiteralExpression();
-    if (id == null || value != null) return PsiReference.EMPTY_ARRAY;
-    final String psiImplUtilClass = getRootAttribute(attr, KnownAttribute.PSI_IMPL_UTIL_CLASS);
-    final JavaHelper javaHelper = JavaHelper.getJavaHelper(o);
+public class GrammarPsiImplUtil
+{
+	@Nonnull
+	public static PsiReference[] getReferences(BnfListEntry o)
+	{
+		BnfAttr attr = PsiTreeUtil.getParentOfType(o, BnfAttr.class);
+		if(attr == null || !Comparing.equal(KnownAttribute.METHODS.getName(), attr.getName()))
+		{
+			return PsiReference.EMPTY_ARRAY;
+		}
+		PsiElement id = o.getId();
+		BnfLiteralExpression value = o.getLiteralExpression();
+		if(id == null || value != null)
+		{
+			return PsiReference.EMPTY_ARRAY;
+		}
+		final String psiImplUtilClass = getRootAttribute(attr, KnownAttribute.PSI_IMPL_UTIL_CLASS);
+		final JavaHelper javaHelper = JavaHelper.getJavaHelper(o);
 
-    return new PsiReference[] {
-      new PsiPolyVariantReferenceBase<BnfListEntry>(o, TextRange.from(id.getStartOffsetInParent(), id.getTextLength())) {
+		return new PsiReference[]{
+				new PsiPolyVariantReferenceBase<BnfListEntry>(o, TextRange.from(id.getStartOffsetInParent(), id.getTextLength()))
+				{
 
-        private List<NavigatablePsiElement> getTargetMethods(String methodName) {
-          BnfRule rule = PsiTreeUtil.getParentOfType(getElement(), BnfRule.class);
-          String mixinClass = rule == null ? null : getAttribute(rule, KnownAttribute.MIXIN);
-          List<NavigatablePsiElement> implMethods = findRuleImplMethods(javaHelper, psiImplUtilClass, methodName, rule);
-          if (!implMethods.isEmpty()) return implMethods;
-          List<NavigatablePsiElement> mixinMethods = javaHelper.findClassMethods(mixinClass, JavaHelper.MethodType.INSTANCE, methodName, -1);
-          return ContainerUtil.concat(implMethods, mixinMethods);
-        }
+					private List<NavigatablePsiElement> getTargetMethods(String methodName)
+					{
+						BnfRule rule = PsiTreeUtil.getParentOfType(getElement(), BnfRule.class);
+						String mixinClass = rule == null ? null : getAttribute(rule, KnownAttribute.MIXIN);
+						List<NavigatablePsiElement> implMethods = findRuleImplMethods(javaHelper, psiImplUtilClass, methodName, rule);
+						if(!implMethods.isEmpty())
+						{
+							return implMethods;
+						}
+						List<NavigatablePsiElement> mixinMethods = javaHelper.findClassMethods(mixinClass, JavaHelper.MethodType.INSTANCE, methodName, -1);
+						return ContainerUtil.concat(implMethods, mixinMethods);
+					}
 
-        @Nonnull
-        @Override
-        public ResolveResult[] multiResolve(boolean b) {
-          return PsiElementResolveResult.createResults(getTargetMethods(getElement().getText()));
-        }
+					@Nonnull
+					@Override
+					public ResolveResult[] multiResolve(boolean b)
+					{
+						return PsiElementResolveResult.createResults(getTargetMethods(getElement().getText()));
+					}
 
-        // TODO [VISTALL] remove that
-//        @Nonnull
-//        @Override
-//        public Object[] getVariants() {
-//          List<LookupElement> list = ContainerUtil.newArrayList();
-//          for (NavigatablePsiElement element : getTargetMethods("*")) {
-//            list.add(LookupElementBuilder.createWithIcon((PsiNamedElement)element));
-//          }
-//          return ArrayUtil.toObjectArray(list);
-//        }
+					// TODO [VISTALL] remove that
+					//        @Nonnull
+					//        @Override
+					//        public Object[] getVariants() {
+					//          List<LookupElement> list = ContainerUtil.newArrayList();
+					//          for (NavigatablePsiElement element : getTargetMethods("*")) {
+					//            list.add(LookupElementBuilder.createWithIcon((PsiNamedElement)element));
+					//          }
+					//          return ArrayUtil.toObjectArray(list);
+					//        }
 
-        @Override
-        public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-          BnfListEntry element = getElement();
-          PsiElement id = ObjectUtils.assertNotNull(element.getId());
-          id.replace(BnfElementFactory.createLeafFromText(element.getProject(), newElementName));
-          return element;
-        }
-      }
-    };
-  }
+					@Override
+					public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException
+					{
+						BnfListEntry element = getElement();
+						PsiElement id = ObjectUtils.assertNotNull(element.getId());
+						id.replace(BnfElementFactory.createLeafFromText(element.getProject(), newElementName));
+						return element;
+					}
+				}
+		};
+	}
+
+	@Nonnull
+	public static List<BnfExpression> getArguments(@Nonnull BnfExternalExpression expr)
+	{
+		List<BnfExpression> expressions = expr.getExpressionList();
+		return expressions.subList(1, expressions.size());
+	}
 }

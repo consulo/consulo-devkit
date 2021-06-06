@@ -16,33 +16,8 @@
 
 package org.intellij.grammar;
 
-import static com.intellij.patterns.PlatformPatterns.psiElement;
-import static org.intellij.grammar.psi.BnfTypes.BNF_ID;
-
-import java.util.Collection;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.intellij.grammar.generator.RuleGraphHelper;
-import org.intellij.grammar.parser.GeneratedParserUtilBase;
-import org.intellij.grammar.psi.BnfAttr;
-import org.intellij.grammar.psi.BnfAttrs;
-import org.intellij.grammar.psi.BnfCompositeElement;
-import org.intellij.grammar.psi.BnfFile;
-import org.intellij.grammar.psi.BnfParenExpression;
-import org.intellij.grammar.psi.BnfReferenceOrToken;
-import org.intellij.grammar.psi.BnfRule;
-import org.intellij.grammar.psi.BnfTypes;
-import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.Contract;
 import com.intellij.codeInsight.TailType;
-import com.intellij.codeInsight.completion.CompletionContributor;
-import com.intellij.codeInsight.completion.CompletionInitializationContext;
-import com.intellij.codeInsight.completion.CompletionParameters;
-import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.codeInsight.completion.CompletionType;
+import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.TailTypeDecorator;
 import com.intellij.lang.ASTNode;
@@ -50,18 +25,26 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
-import com.intellij.psi.PsiComment;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
-import com.intellij.psi.PsiWhiteSpace;
-import com.intellij.psi.SyntaxTraverser;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.TreeUtil;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.ProcessingContext;
 import consulo.codeInsight.completion.CompletionProvider;
+import org.intellij.grammar.generator.RuleGraphHelper;
+import org.intellij.grammar.parser.GeneratedParserUtilBase;
+import org.intellij.grammar.psi.*;
+import org.intellij.grammar.psi.impl.GrammarUtil;
+import org.jetbrains.annotations.Contract;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Set;
+
+import static com.intellij.patterns.PlatformPatterns.psiElement;
+import static org.intellij.grammar.psi.BnfTypes.BNF_ID;
 
 /**
  * @author gregsh
@@ -77,7 +60,7 @@ public class BnfCompletionContributor extends CompletionContributor
 			public void addCompletions(@Nonnull CompletionParameters parameters, ProcessingContext context, @Nonnull CompletionResultSet result)
 			{
 				PsiElement position = parameters.getPosition();
-				BnfCompositeElement parent = PsiTreeUtil.getParentOfType(position, BnfAttrs.class, BnfAttr.class, BnfParenExpression.class);
+				BnfComposite parent = PsiTreeUtil.getParentOfType(position, BnfAttrs.class, BnfAttr.class, BnfParenExpression.class);
 				boolean attrCompletion;
 				if(parent instanceof BnfAttrs || isPossibleEmptyAttrs(parent))
 				{

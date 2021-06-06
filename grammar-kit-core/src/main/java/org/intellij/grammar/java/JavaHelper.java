@@ -16,24 +16,46 @@
 
 package org.intellij.grammar.java;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.psi.impl.FakePsiElement;
+import com.intellij.util.SmartList;
+import javax.annotation.Nonnull;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author gregsh
  */
 public abstract class JavaHelper
 {
+	public static class TypeParameterInfo
+	{
+		private final String name;
+		private final List<String> extendsList;
+
+		public TypeParameterInfo(@Nonnull String name)
+		{
+			this.name = name;
+			this.extendsList = new SmartList<>();
+		}
+
+		public String getName()
+		{
+			return name;
+		}
+
+		public List<String> getExtendsList()
+		{
+			return extendsList;
+		}
+	}
+
 	protected static class MyElement<T> extends FakePsiElement implements NavigatablePsiElement
 	{
 		private final T myDelegate;
@@ -114,6 +136,16 @@ public abstract class JavaHelper
 		return Collections.emptyList();
 	}
 
+	public List<TypeParameterInfo> getGenericParameters(NavigatablePsiElement method)
+	{
+		return Collections.emptyList();
+	}
+
+	public List<String> getExceptionList(NavigatablePsiElement method)
+	{
+		return Collections.emptyList();
+	}
+
 	@Nullable
 	public String getSuperClassName(@Nullable String className)
 	{
@@ -130,6 +162,17 @@ public abstract class JavaHelper
 	public String getDeclaringClass(@Nullable NavigatablePsiElement method)
 	{
 		return "";
+	}
+
+	public boolean isPublic(@Nullable NavigatablePsiElement element)
+	{
+		return true;
+	}
+
+	@Nonnull
+	public List<String> getParameterAnnotations(@Nullable NavigatablePsiElement method, int paramIndex)
+	{
+		return Collections.emptyList();
 	}
 
 	@Nonnull

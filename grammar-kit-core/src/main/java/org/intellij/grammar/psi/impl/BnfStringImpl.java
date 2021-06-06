@@ -323,7 +323,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 		return true;
 	}
 
-	private static class MyFakePsiElement extends FakePsiElement implements BnfCompositeElement
+	private static class MyFakePsiElement extends FakePsiElement implements BnfComposite
 	{
 		private final String myFuncName;
 		private final BnfExpression myExpression;
