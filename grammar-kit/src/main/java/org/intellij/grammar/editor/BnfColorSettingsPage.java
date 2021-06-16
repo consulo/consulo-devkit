@@ -16,20 +16,17 @@
 
 package org.intellij.grammar.editor;
 
-import static org.intellij.grammar.editor.BnfSyntaxHighlighter.*;
-
-import gnu.trove.THashMap;
-
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
-import org.jetbrains.annotations.NonNls;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
+
+import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.intellij.grammar.editor.BnfSyntaxHighlighter.*;
 
 /**
  * @author gregsh
@@ -109,8 +106,7 @@ public class BnfColorSettingsPage implements ColorSettingsPage {
   }
 
   public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
-    @NonNls
-    final Map<String, TextAttributesKey> map = new THashMap<String, TextAttributesKey>();
+    final Map<String, TextAttributesKey> map = new HashMap<String, TextAttributesKey>();
     map.put("r", RULE);
     map.put("mr", META_RULE);
     map.put("a", ATTRIBUTE);

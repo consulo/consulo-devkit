@@ -8,13 +8,12 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
-import gnu.trove.THashSet;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfRule;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.*;
 
 import static java.lang.String.format;
@@ -179,7 +178,7 @@ public class ExpressionGeneratorHelper
 		g.out("}");
 
 		// operators and tails
-		Set<BnfExpression> visited = new THashSet<>();
+		Set<BnfExpression> visited = new HashSet<>();
 		for(String opCall : sortedOpCalls)
 		{
 			for(OperatorInfo operator : opCalls.get(opCall))

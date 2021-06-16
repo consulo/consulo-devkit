@@ -30,13 +30,14 @@ import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewDescriptor;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.ContainerUtil;
-import gnu.trove.TObjectIntHashMap;
+import consulo.util.collection.primitive.objects.ObjectIntMap;
+import consulo.util.collection.primitive.objects.ObjectMaps;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +50,7 @@ import java.util.List;
  * @author Vadim Romansky
  */
 public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
-  private static final Logger LOG = Logger.getInstance("org.intellij.grammar.refactor.BnfInlineRuleProcessor");
+  private static final Logger LOG = Logger.getInstance(BnfInlineRuleProcessor.class);
   private BnfRule myRule;
   private final PsiReference myReference;
   private final boolean myInlineThisOnly;
@@ -142,7 +143,7 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
       LOG.error(parent);
       return;
     }
-    final TObjectIntHashMap<String> visited = new TObjectIntHashMap<String>();
+    final ObjectIntMap<String> visited = ObjectMaps.newObjectIntHashMap();
     final LinkedList<Pair<PsiElement, PsiElement>> work = new LinkedList<Pair<PsiElement, PsiElement>>();
     (expression = (BnfExpression)expression.copy()).acceptChildren(new PsiRecursiveElementWalkingVisitor() {
       @Override
@@ -151,8 +152,8 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
           List<BnfExpression> list = ((BnfExternalExpression)element).getExpressionList();
           if (list.size() == 1) {
             String text = list.get(0).getText();
-            int idx = visited.get(text);
-            if (idx == 0) visited.put(text, idx = visited.size() + 1);
+            int idx = visited.getInt(text);
+            if (idx == 0) visited.putInt(text, idx = visited.size() + 1);
             if (idx < expressionList.size()) {
               work.addFirst(Pair.create(element, (PsiElement)expressionList.get(idx)));
             }

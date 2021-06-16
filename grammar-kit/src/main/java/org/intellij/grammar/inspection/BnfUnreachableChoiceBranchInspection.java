@@ -23,14 +23,14 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.source.tree.TreeUtil;
-import gnu.trove.THashSet;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfTypes;
 import org.jetbrains.annotations.Nls;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -83,8 +83,8 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
   }
 
   private static void checkChoice(BnfChoice choice, ProblemsHolder problemsHolder) {
-    Set<BnfExpression> visited = new THashSet<BnfExpression>();
-    THashSet<BnfExpression> first = new THashSet<BnfExpression>();
+    Set<BnfExpression> visited = new HashSet<BnfExpression>();
+    Set<BnfExpression> first = new HashSet<BnfExpression>();
     BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer().setPredicateLookAhead(true);
     List<BnfExpression> list = choice.getExpressionList();
     for (int i = 0, listSize = list.size() - 1; i < listSize; i++) {

@@ -15,35 +15,25 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import gnu.trove.THashMap;
-
-import java.awt.image.BufferedImage;
-import java.util.Map;
-
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTree;
-
-import javax.annotation.Nonnull;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.QueryExecutorBase;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiJavaCodeReferenceElement;
-import com.intellij.psi.PsiNewExpression;
+import com.intellij.psi.*;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.QueryExecutor;
 
+import javax.annotation.Nonnull;
+import javax.swing.*;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
+
 public class UndesirableClassUsageInspection extends InternalInspection
 {
-	private static final Map<String, String> CLASSES = new THashMap<String, String>();
+	private static final Map<String, String> CLASSES = new HashMap<String, String>();
 
 	static
 	{

@@ -23,8 +23,7 @@ import com.intellij.util.containers.JBIterable;
 import com.intellij.util.containers.JBTreeTraverser;
 import com.intellij.util.containers.TreeTraversal;
 import consulo.devkit.grammarKit.generator.ErrorReporter;
-import gnu.trove.THashSet;
-import gnu.trove.TObjectHashingStrategy;
+import consulo.util.collection.HashingStrategy;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.*;
@@ -49,7 +48,7 @@ import static org.intellij.grammar.psi.BnfTypes.BNF_SEQUENCE;
 public class ParserGeneratorUtil
 {
 	private static final String RESERVED_SUFFIX = "_$";
-	private static final Set<String> JAVA_RESERVED = new THashSet<>(Arrays.asList(
+	private static final Set<String> JAVA_RESERVED = new HashSet<>(Arrays.asList(
 			"abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class",
 			"const", "default", "do", "double", "else", "enum", "extends", "false", "final", "finally",
 			"float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long",
@@ -1403,10 +1402,10 @@ public class ParserGeneratorUtil
 		return "static " + fqn + ".*";
 	}
 
-	private static final TObjectHashingStrategy<PsiElement> TEXT_STRATEGY = new TObjectHashingStrategy<>()
+	private static final HashingStrategy<PsiElement> TEXT_STRATEGY = new HashingStrategy<>()
 	{
 		@Override
-		public int computeHashCode(PsiElement e)
+		public int hashCode(PsiElement e)
 		{
 			return e.getText().hashCode();
 		}
@@ -1418,9 +1417,9 @@ public class ParserGeneratorUtil
 		}
 	};
 
-	public static <T extends PsiElement> TObjectHashingStrategy<T> textStrategy()
+	public static <T extends PsiElement> HashingStrategy<T> textStrategy()
 	{
-		return (TObjectHashingStrategy<T>) TEXT_STRATEGY;
+		return (HashingStrategy<T>) TEXT_STRATEGY;
 	}
 
 	@Nonnull

@@ -16,8 +16,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.CommonProcessors;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.JBIterable;
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
+import consulo.util.collection.Sets;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.generator.RuleGraphHelper;
@@ -78,25 +77,25 @@ public class BnfFirstNextAnalyzer
 
 	public Set<BnfExpression> calcFirst(@Nonnull BnfRule rule)
 	{
-		Set<BnfExpression> visited = new THashSet<>();
+		Set<BnfExpression> visited = new HashSet<>();
 		BnfExpression expression = rule.getExpression();
 		visited.add(expression);
-		return calcFirstInner(expression, new THashSet<>(), visited);
+		return calcFirstInner(expression, new HashSet<>(), visited);
 	}
 
 	public Set<BnfExpression> calcFirst(@Nonnull BnfExpression expressions)
 	{
-		return calcFirstInner(expressions, new THashSet<>(), new THashSet<>());
+		return calcFirstInner(expressions, new HashSet<>(), new HashSet<>());
 	}
 
 	public Map<BnfExpression, BnfExpression> calcNext(@Nonnull BnfRule targetRule)
 	{
-		return calcNextInner(targetRule.getExpression(), new THashMap<>(), new THashSet<>());
+		return calcNextInner(targetRule.getExpression(), new HashMap<>(), new HashSet<>());
 	}
 
 	public Map<BnfExpression, BnfExpression> calcNext(@Nonnull BnfExpression targetExpression)
 	{
-		return calcNextInner(targetExpression, new THashMap<>(), new THashSet<>());
+		return calcNextInner(targetExpression, new HashMap<>(), new HashSet<>());
 	}
 
 	private Map<BnfExpression, BnfExpression> calcNextInner(@Nonnull BnfExpression targetExpression,
@@ -104,8 +103,8 @@ public class BnfFirstNextAnalyzer
 															Set<BnfExpression> visited)
 	{
 		LinkedList<BnfExpression> stack = new LinkedList<>();
-		THashSet<BnfRule> totalVisited = new THashSet<>();
-		Set<BnfExpression> curResult = new THashSet<>();
+		HashSet<BnfRule> totalVisited = new HashSet<>();
+		Set<BnfExpression> curResult = new HashSet<>();
 		stack.add(targetExpression);
 		main:
 		while(!stack.isEmpty())
@@ -389,7 +388,7 @@ public class BnfFirstNextAnalyzer
 			{
 				if(forcedNext == null)
 				{
-					next = calcNextInner(expression, new THashMap<>(), visited).keySet();
+					next = calcNextInner(expression, new HashMap<>(), visited).keySet();
 				}
 				else
 				{
@@ -522,13 +521,13 @@ public class BnfFirstNextAnalyzer
 	@Nonnull
 	private static Set<BnfExpression> newExprSet()
 	{
-		return new THashSet<>(ParserGeneratorUtil.textStrategy());
+		return Sets.newHashSet(ParserGeneratorUtil.textStrategy());
 	}
 
 	@Nonnull
 	private static Set<BnfExpression> newExprSet(Collection<BnfExpression> expressions)
 	{
-		return new THashSet<>(expressions, ParserGeneratorUtil.textStrategy());
+		return Sets.newHashSet(expressions, ParserGeneratorUtil.textStrategy());
 	}
 
 	@Nonnull

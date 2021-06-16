@@ -40,6 +40,15 @@
 		</repository>
 	</repositories>
 
+	<!--<distributionManagement>
+		<snapshotRepository>
+			<uniqueVersion>true</uniqueVersion>
+			<id>consulo</id>
+			<url>https://maven.consulo.io/repository/snapshots/</url>
+			<layout>default</layout>
+		</snapshotRepository>
+	</distributionManagement> -->
+
 	<build>
 		<plugins>
 			<plugin>

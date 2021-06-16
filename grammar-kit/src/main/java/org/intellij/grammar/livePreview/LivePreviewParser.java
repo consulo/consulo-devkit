@@ -27,7 +27,8 @@ import com.intellij.util.PairProcessor;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.MultiMap;
 import consulo.lang.LanguageVersion;
-import gnu.trove.TObjectIntHashMap;
+import consulo.util.collection.primitive.objects.ObjectIntMap;
+import consulo.util.collection.primitive.objects.ObjectMaps;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.generator.*;
@@ -62,7 +63,7 @@ public class LivePreviewParser implements PsiParser
 	private MultiMap<BnfRule, BnfRule> myRuleExtendsMap;
 	private String myTokenTypeText;
 
-	private final TObjectIntHashMap<BnfRule> myRuleNumbers = new TObjectIntHashMap<BnfRule>();
+	private final ObjectIntMap<BnfRule> myRuleNumbers = ObjectMaps.newObjectIntHashMap();
 	private BitSet[] myBitSets;
 
 	public LivePreviewParser(@Nullable Project project, LivePreviewLanguage language)
@@ -148,7 +149,7 @@ public class LivePreviewParser implements PsiParser
 		int count = 0;
 		for(BnfRule rule : myFile.getRules())
 		{
-			myRuleNumbers.put(rule, count++);
+			myRuleNumbers.putInt(rule, count++);
 		}
 		myBitSets = new BitSet[builder.getOriginalText().length() + 1];
 		for(int i = 0; i < myBitSets.length; i++)
@@ -160,7 +161,7 @@ public class LivePreviewParser implements PsiParser
 	private boolean rule(PsiBuilder builder, int level, BnfRule rule, Map<String, Parser> externalArguments)
 	{
 		BitSet bitSet = myBitSets[builder.getCurrentOffset()];
-		int ruleNumber = myRuleNumbers.get(rule);
+		int ruleNumber = myRuleNumbers.getInt(rule);
 		if(bitSet.get(ruleNumber))
 		{
 			builder.error("Endless recursion detected for '" + rule.getName() + "'");
@@ -172,7 +173,12 @@ public class LivePreviewParser implements PsiParser
 		return result;
 	}
 
-	protected boolean expression(PsiBuilder builder, int level, final BnfRule rule, BnfExpression initialNode, String funcName, Map<String, Parser> externalArguments)
+	protected boolean expression(PsiBuilder builder,
+								 int level,
+								 final BnfRule rule,
+								 BnfExpression initialNode,
+								 String funcName,
+								 Map<String, Parser> externalArguments)
 	{
 		boolean isRule = initialNode.getParent() == rule;
 		BnfExpression node = getNonTrivialNode(initialNode);
@@ -185,16 +191,20 @@ public class LivePreviewParser implements PsiParser
 		boolean isLeftInner = isLeft && (isPrivate || ParserGeneratorUtil.Rule.isInner(rule));
 		boolean isBranch = !isPrivate && Rule.isUpper(rule);
 		String recoverWhile = firstNonTrivial ? getAttribute(rule, KnownAttribute.RECOVER_WHILE) : null;
-		Map<String, String> hooks = firstNonTrivial ? getAttribute(rule, KnownAttribute.HOOKS).asMap() : Collections.<String, String>emptyMap();
+		Map<String, String> hooks = firstNonTrivial ? getAttribute(rule, KnownAttribute.HOOKS).asMap() : Collections.emptyMap();
 		boolean canCollapse = !isPrivate && (!isLeft || isLeftInner) && firstNonTrivial && myGraphHelper.canCollapse(rule);
 
-		IElementType elementType = getRuleElementType(rule);
+		IElementType elementType = !isPrivate ? getRuleElementType(rule) : null;
 
-		List<BnfExpression> children;
-		if(node instanceof BnfReferenceOrToken || node instanceof BnfLiteralExpression || node instanceof BnfExternalExpression)
+		boolean isSingleNode = node instanceof BnfReferenceOrToken || node instanceof BnfLiteralExpression || node instanceof BnfExternalExpression;
+
+		List<BnfExpression> children = isSingleNode ? Collections.singletonList(node) : getChildExpressions(node);
+		String frameName = !children.isEmpty() && firstNonTrivial && !Rule.isMeta(rule) ? getRuleDisplayName(rule, !isPrivate) : null;
+
+		if(isSingleNode)
 		{
 			children = Collections.singletonList(node);
-			if(isPrivate && !isLeftInner && recoverWhile == null)
+			if(isPrivate && !isLeftInner && recoverWhile == null && frameName == null)
 			{
 				return generateNodeCall(builder, level, rule, node, getNextName(funcName, 0), externalArguments);
 			}
@@ -203,28 +213,14 @@ public class LivePreviewParser implements PsiParser
 				type = BNF_SEQUENCE;
 			}
 		}
-		else
+		if(!children.isEmpty())
 		{
-			children = getChildExpressions(node);
-			if(children.isEmpty() && recoverWhile == null)
+			if(!recursion_guard_(builder, level, funcName))
 			{
-				if(isPrivate || elementType == null)
-				{
-					return true;
-				}
-				else
-				{
-					builder.mark().done(elementType);
-					return true;
-				}
+				return false;
 			}
 		}
-		if(!recursion_guard_(builder, level, funcName))
-		{
-			return false;
-		}
 
-		String frameName = firstNonTrivial && !Rule.isMeta(rule) ? getRuleDisplayName(rule, !isPrivate) : null;
 		//if (recoverRoot == null && (isRule || firstNonTrivial)) {
 		//  frameName = generateFirstCheck(rule, frameName, true);
 		//}
@@ -266,17 +262,21 @@ public class LivePreviewParser implements PsiParser
 		PsiBuilder.Marker marker_ = null;
 		boolean sectionRequired = !alwaysTrue || !isPrivate || isLeft || recoverWhile != null;
 		boolean sectionRequiredSimple = sectionRequired && modifiers == _NONE_ && recoverWhile == null && !(pinned || frameName != null);
+		boolean sectionMaybeDropped = sectionRequiredSimple && type == BNF_CHOICE && elementType == null &&
+				children.stream().noneMatch(o -> ParserGeneratorUtil.isRollbackRequired(o, myFile));
 
 		if(sectionRequiredSimple)
 		{
-			marker_ = enter_section_(builder);
+			if(!sectionMaybeDropped)
+			{
+				marker_ = enter_section_(builder);
+			}
 		}
 		else if(sectionRequired)
 		{
-			marker_ = enter_section_(builder, level, modifiers, isPrivate ? null : elementType, frameName);
+			marker_ = enter_section_(builder, level, modifiers, elementType, frameName);
 		}
 
-		boolean predicateEncountered = false;
 		int[] skip = {0};
 		for(int i = 0, p = 0, childrenSize = children.size(); i < childrenSize; i++)
 		{
@@ -295,7 +295,6 @@ public class LivePreviewParser implements PsiParser
 			}
 			else if(type == BNF_SEQUENCE)
 			{
-				predicateEncountered |= pinApplied && ParserGeneratorUtil.getEffectiveExpression(myFile, child) instanceof BnfPredicate;
 				if(skip[0] == 0)
 				{
 					if(i == 0)
@@ -304,7 +303,7 @@ public class LivePreviewParser implements PsiParser
 					}
 					else
 					{
-						if(pinApplied && G.generateExtendedPin && !predicateEncountered)
+						if(pinApplied && G.generateExtendedPin)
 						{
 							if(i == childrenSize - 1)
 							{
@@ -324,8 +323,8 @@ public class LivePreviewParser implements PsiParser
 							}
 							else
 							{
-								result_ = pinned_ && report_error_(builder, generateTokenSequenceCall(builder, level, rule, children, funcName, i, pinMatcher, pinApplied, skip,
-										externalArguments)) && result_;
+								result_ = pinned_ && report_error_(builder, generateTokenSequenceCall(builder, level, rule, children, funcName, i, pinMatcher, pinApplied, skip, externalArguments))
+										&& result_;
 							}
 						}
 						else
@@ -404,7 +403,10 @@ public class LivePreviewParser implements PsiParser
 		}
 		if(sectionRequiredSimple)
 		{
-			exit_section_(builder, marker_, isPrivate ? null : elementType, alwaysTrue || result_);
+			if(!sectionMaybeDropped)
+			{
+				exit_section_(builder, marker_, elementType, alwaysTrue || result_);
+			}
 		}
 		else if(sectionRequired)
 		{
@@ -413,14 +415,7 @@ public class LivePreviewParser implements PsiParser
 			if(BnfConstants.RECOVER_AUTO.equals(recoverWhile))
 			{
 				final IElementType[] nextTokens = generateAutoRecoverCall(rule);
-				recoverPredicate = new Parser()
-				{
-					@Override
-					public boolean parse(PsiBuilder builder, int level)
-					{
-						return !GeneratedParserUtilBase.nextTokenIsFast(builder, nextTokens);
-					}
-				};
+				recoverPredicate = (builder12, level12) -> !GeneratedParserUtilBase.nextTokenIsFast(builder12, nextTokens);
 			}
 			else if(Rule.isMeta(rule) && GrammarUtil.isDoubleAngles(recoverWhile))
 			{
@@ -428,14 +423,7 @@ public class LivePreviewParser implements PsiParser
 			}
 			else
 			{
-				recoverPredicate = recoverRule == null ? null : new Parser()
-				{
-					@Override
-					public boolean parse(PsiBuilder builder, int level)
-					{
-						return rule(builder, level, recoverRule, Collections.<String, Parser>emptyMap());
-					}
-				};
+				recoverPredicate = recoverRule == null ? null : (builder1, level1) -> rule(builder1, level1, recoverRule, Collections.emptyMap());
 			}
 			exit_section_(builder, level, marker_, alwaysTrue || result_, pinned_, recoverPredicate);
 		}
@@ -540,15 +528,15 @@ public class LivePreviewParser implements PsiParser
 	}
 
 	private boolean generateTokenSequenceCall(PsiBuilder builder,
-			int level,
-			BnfRule rule,
-			List<BnfExpression> children,
-			String funcName,
-			int startIndex,
-			PinMatcher pinMatcher,
-			boolean pinApplied,
-			int[] skip,
-			Map<String, Parser> externalArguments)
+											  int level,
+											  BnfRule rule,
+											  List<BnfExpression> children,
+											  String funcName,
+											  int startIndex,
+											  PinMatcher pinMatcher,
+											  boolean pinApplied,
+											  int[] skip,
+											  Map<String, Parser> externalArguments)
 	{
 		BnfExpression nextChild = children.get(startIndex);
 		if(startIndex == children.size() - 1 || !isTokenExpression(nextChild))
@@ -599,7 +587,7 @@ public class LivePreviewParser implements PsiParser
 		// handle external rule call: substitute and merge arguments from external expression and rule definition
 		if(targetRule != null)
 		{
-			metaParameterNames = GrammarUtil.collectExtraArguments(targetRule, targetRule.getExpression());
+			metaParameterNames = GrammarUtil.collectMetaParameters(targetRule, targetRule.getExpression());
 			if(Rule.isExternal(targetRule))
 			{
 				// not supported
@@ -798,11 +786,11 @@ public class LivePreviewParser implements PsiParser
 	}
 
 	private boolean generateKernelMethod(PsiBuilder builder,
-			int level,
-			String methodName,
-			ExpressionHelper.ExpressionInfo info,
-			Map<String, List<ExpressionHelper.OperatorInfo>> opCalls,
-			int priority_)
+										 int level,
+										 String methodName,
+										 ExpressionHelper.ExpressionInfo info,
+										 Map<String, List<ExpressionHelper.OperatorInfo>> opCalls,
+										 int priority_)
 	{
 		if(!recursion_guard_(builder, level, methodName))
 		{

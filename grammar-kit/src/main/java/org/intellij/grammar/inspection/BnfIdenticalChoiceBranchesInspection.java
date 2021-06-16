@@ -23,13 +23,13 @@ import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
-import gnu.trove.THashSet;
 import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 import org.jetbrains.annotations.Nls;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -74,7 +74,7 @@ public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
   }
 
   private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
-    final THashSet<BnfExpression> set = new THashSet<BnfExpression>();
+    final Set<BnfExpression> set = new HashSet<BnfExpression>();
     file.accept(new PsiRecursiveElementWalkingVisitor() {
       @Override
       public void visitElement(PsiElement element) {

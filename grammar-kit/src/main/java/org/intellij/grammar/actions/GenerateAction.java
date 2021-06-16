@@ -15,23 +15,6 @@
  */
 package org.intellij.grammar.actions;
 
-import static org.intellij.grammar.actions.FileGeneratorUtil.getTargetDirectoryFor;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.generator.BnfConstants;
-import org.intellij.grammar.generator.ParserGenerator;
-import org.intellij.grammar.psi.BnfFile;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
@@ -62,6 +45,22 @@ import com.intellij.util.Function;
 import com.intellij.util.PathUtil;
 import com.intellij.util.containers.ContainerUtil;
 import consulo.devkit.grammarKit.generator.ErrorReporter;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.generator.BnfConstants;
+import org.intellij.grammar.generator.ParserGenerator;
+import org.intellij.grammar.psi.BnfFile;
+
+import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.intellij.grammar.actions.FileGeneratorUtil.getTargetDirectoryFor;
+import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
 
 /**
  * @author gregory
@@ -69,7 +68,6 @@ import consulo.devkit.grammarKit.generator.ErrorReporter;
  */
 public class GenerateAction extends AnAction
 {
-
 	public static final NotificationGroup LOG_GROUP = NotificationGroup.logOnlyGroup("Parser Generator Log");
 
 	private static final Logger LOG = Logger.getInstance("org.intellij.grammar.actions.GenerateAction");
@@ -194,7 +192,7 @@ public class GenerateAction extends AnAction
 							@Override
 							public Boolean compute() throws Exception
 							{
-								new ParserGenerator(file, sourcePath, genDir.getPath())
+								new ParserGenerator(file, sourcePath, genDir.getPath(), "")
 								{
 									@Override
 									protected PrintWriter openOutputInner(File file) throws IOException

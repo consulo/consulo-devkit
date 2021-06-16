@@ -16,15 +16,18 @@
 
 package org.intellij.grammar.editor;
 
-import gnu.trove.THashSet;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
+import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
+import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
+import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.keymap.KeymapUtil;
+import com.intellij.openapi.util.Couple;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.containers.ContainerUtil;
 import org.intellij.grammar.BnfIcons;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
@@ -33,17 +36,9 @@ import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
-import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
-import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.keymap.KeymapUtil;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.containers.ContainerUtil;
+
+import javax.annotation.Nullable;
+import java.util.*;
 
 /**
  * @author gregsh
@@ -54,7 +49,7 @@ public class BnfRuleLineMarkerProvider extends RelatedItemLineMarkerProvider {
   public void collectNavigationMarkers(List<PsiElement> elements,
                                        Collection<? super RelatedItemLineMarkerInfo> result,
                                        boolean forNavigation) {
-    Set<PsiElement> visited = forNavigation? new THashSet<PsiElement>() : null;
+    Set<PsiElement> visited = forNavigation? new HashSet<PsiElement>() : null;
     for (PsiElement element : elements) {
       PsiElement parent = element.getParent();
       boolean isRuleId = parent instanceof BnfRule && (forNavigation || element == ((BnfRule)parent).getId());
@@ -70,8 +65,8 @@ public class BnfRuleLineMarkerProvider extends RelatedItemLineMarkerProvider {
         if (RuleGraphHelper.hasPsiClass(rule)) {
           hasPSI = true;
           JavaHelper javaHelper = JavaHelper.getJavaHelper(rule);
-          for (String className : new String[]{ParserGeneratorUtil.getQualifiedRuleClassName(rule, false),
-            ParserGeneratorUtil.getQualifiedRuleClassName(rule, true)}) {
+          Couple<String> qualifiedRuleClassNames = ParserGeneratorUtil.getQualifiedRuleClassName(rule);
+          for (String className : new String[]{qualifiedRuleClassNames.getFirst(), qualifiedRuleClassNames.getSecond()}) {
             NavigatablePsiElement aClass = javaHelper.findClass(className);
             if (aClass != null && (!forNavigation || visited.add(aClass))) {
               items.add(aClass);

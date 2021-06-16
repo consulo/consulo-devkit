@@ -32,7 +32,6 @@ import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import consulo.devkit.action.InternalAction;
 import consulo.ui.annotation.RequiredUIAccess;
-import gnu.trove.THashMap;
 
 import java.util.*;
 
@@ -76,7 +75,7 @@ public class ShuffleNamesAction extends InternalAction
 
 	private static boolean shuffleIds(PsiFile file, Editor editor)
 	{
-		final Map<String, String> map = new THashMap<String, String>();
+		final Map<String, String> map = new HashMap<String, String>();
 		final StringBuilder sb = new StringBuilder();
 		final StringBuilder quote = new StringBuilder();
 		final ArrayList<String> split = new ArrayList<String>(100);
