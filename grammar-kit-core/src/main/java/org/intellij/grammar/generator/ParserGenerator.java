@@ -42,8 +42,7 @@ import static java.util.stream.Collectors.*;
 import static org.intellij.grammar.analysis.BnfFirstNextAnalyzer.BNF_MATCHES_ANY;
 import static org.intellij.grammar.analysis.BnfFirstNextAnalyzer.BNF_MATCHES_EOF;
 import static org.intellij.grammar.generator.BnfConstants.*;
-import static org.intellij.grammar.generator.NameShortener.addTypeToImports;
-import static org.intellij.grammar.generator.NameShortener.getRawClassName;
+import static org.intellij.grammar.generator.NameShortener.*;
 import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
 import static org.intellij.grammar.generator.RuleGraphHelper.Cardinality.*;
 import static org.intellij.grammar.generator.RuleGraphHelper.*;
@@ -570,6 +569,9 @@ public class ParserGenerator
 				{
 					continue;
 				}
+
+				int trimIdx = StringUtil.indexOfAny(top, TYPE_TEXT_SEPARATORS); // trim generics
+				top = trimIdx > 0 ? top.substring(0, trimIdx) : top;
 				top = getRawClassName(top);
 				if(first)
 				{
