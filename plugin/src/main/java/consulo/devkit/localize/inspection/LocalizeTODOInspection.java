@@ -2,6 +2,7 @@ package consulo.devkit.localize.inspection;
 
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.localize.LocalizeValue;
@@ -46,8 +47,12 @@ public class LocalizeTODOInspection extends DevKitInspectionBase
 						{
 							return;
 						}
-						
-						holder.registerProblem(expressions[0], new TextRange(0, expressions[0].getTextLength()), "Localize TODO text");
+
+						PsiExpression stringLiteral = expressions[0];
+
+						// unquote string. if expression is reference - it's invalid, and must be fixed anyway
+						String text = StringUtil.unquoteString(stringLiteral.getText());
+						holder.registerProblem(stringLiteral, new TextRange(0, stringLiteral.getTextLength()), "'" + text + "' not localized");
 					}
 				}
 			}
