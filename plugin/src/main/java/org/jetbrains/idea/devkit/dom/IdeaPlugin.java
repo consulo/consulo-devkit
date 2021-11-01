@@ -20,6 +20,7 @@
 package org.jetbrains.idea.devkit.dom;
 
 import com.intellij.util.xml.*;
+import consulo.devkit.dom.Permissions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -124,4 +125,7 @@ public interface IdeaPlugin extends DomElement
 
 	@Nonnull
 	GenericDomValue<Boolean> getExperimental();
+
+	@Nullable
+	Permissions getPermissions();
 }
