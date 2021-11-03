@@ -15,6 +15,10 @@
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
+	<tags>
+		<tag>ide.framework</tag>
+	</tags>
+
 	<extensions defaultExtensionNs="consulo.java">
 		<coverageEngineExtension implementation="consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
 		<overrideImplementsAnnotationsHandler

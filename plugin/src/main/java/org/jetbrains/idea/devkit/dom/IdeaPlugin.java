@@ -21,6 +21,7 @@ package org.jetbrains.idea.devkit.dom;
 
 import com.intellij.util.xml.*;
 import consulo.devkit.dom.Permissions;
+import consulo.devkit.dom.Tags;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -128,4 +129,8 @@ public interface IdeaPlugin extends DomElement
 
 	@Nullable
 	Permissions getPermissions();
+
+	@Nullable
+	@Required
+	Tags getTags();
 }
