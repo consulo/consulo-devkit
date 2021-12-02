@@ -482,11 +482,10 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 		return result;
 	}
 
-	interface SimpleTagValue extends DomElement
+	public interface SimpleTagValue extends DomElement
 	{
 		@SuppressWarnings("UnusedDeclaration")
 		@TagValue
 		String getTagValue();
 	}
-
 }
