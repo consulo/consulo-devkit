@@ -63,9 +63,6 @@ public interface IdeaPlugin extends DomElement
 
 	Vendor addVendor();
 
-	@Nullable
-	Repository getRepository();
-
 	@Nonnull
 	List<GenericDomValue<String>> getChangeNotess();
 
