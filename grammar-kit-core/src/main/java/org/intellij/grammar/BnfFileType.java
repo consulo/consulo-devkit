@@ -17,6 +17,7 @@ package org.intellij.grammar;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import consulo.devkit.grammarKit.icon.GrammarKitIconGroup;
+import consulo.localize.LocalizeValue;
 import consulo.ui.image.Image;
 
 import javax.annotation.Nonnull;
@@ -43,8 +44,8 @@ public class BnfFileType extends LanguageFileType {
 
   @Nonnull
   @Override
-  public String getDescription() {
-    return "BNF Grammar";
+  public LocalizeValue getDescription() {
+    return LocalizeValue.localizeTODO("BNF Grammar");
   }
 
   @Nonnull

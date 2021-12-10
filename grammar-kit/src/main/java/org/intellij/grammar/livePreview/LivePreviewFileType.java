@@ -19,6 +19,7 @@ package org.intellij.grammar.livePreview;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import consulo.devkit.grammarKit.icon.GrammarKitIconGroup;
+import consulo.localize.LocalizeValue;
 import consulo.ui.image.Image;
 
 import javax.annotation.Nonnull;
@@ -42,8 +43,8 @@ public class LivePreviewFileType extends LanguageFileType {
 
   @Nonnull
   @Override
-  public String getDescription() {
-    return "Grammar Live Preview";
+  public LocalizeValue getDescription() {
+    return LocalizeValue.localizeTODO("Grammar Live Preview");
   }
 
   @Nonnull
