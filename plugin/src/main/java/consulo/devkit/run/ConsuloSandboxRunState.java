@@ -24,7 +24,6 @@ import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.projectRoots.OwnJdkVersionDetector;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -32,6 +31,7 @@ import com.intellij.util.ObjectUtil;
 import consulo.application.ApplicationProperties;
 import consulo.java.execution.configurations.OwnJavaParameters;
 import consulo.logging.Logger;
+import consulo.platform.Platform;
 import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 
 import javax.annotation.Nonnull;
@@ -130,12 +130,13 @@ public class ConsuloSandboxRunState extends CommandLineState
 		vm.defineProperty("idea.log.path", logFile.getParent());
 		vm.defineProperty("consulo.log.path", logFile.getParent());
 
-		if(SystemInfo.isMac)
+		Platform.OperatingSystem os = Platform.current().os();
+		if(os.isMac())
 		{
 			vm.defineProperty("idea.smooth.progress", "false");
 			vm.defineProperty("apple.laf.useScreenMenuBar", "true");
 		}
-		else if(SystemInfo.isXWindow)
+		else if(os.isXWindow())
 		{
 			if(profile.VM_PARAMETERS == null || !profile.VM_PARAMETERS.contains("-Dsun.awt.disablegrab"))
 			{
@@ -154,14 +155,14 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		boolean isJava9 = versionInfo != null && versionInfo.version.isAtLeast(9) && profile.ENABLED_JAVA9_MODULES;
 
-		ConsuloPlatform platform = addBootLibraries(selectedBuildPath, params, isJava9);
+		ConsuloPlatform consuloPlatform = addBootLibraries(selectedBuildPath, params, isJava9);
 
 		if(!params.getModulePath().isEmpty())
 		{
-			params.setModuleName(platform.getModuleName());
+			params.setModuleName(consuloPlatform.getModuleName());
 		}
 
-		params.setMainClass(platform.getMainClass());
+		params.setMainClass(consuloPlatform.getMainClass());
 
 		for(String additionalVMParameter : myAdditionalVMParameters)
 		{
@@ -177,7 +178,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 	protected ConsuloPlatform addBootLibraries(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isJava9)
 	{
-		ConsuloPlatform platform = ConsuloPlatform.DESKTOP_AWT;
+		ConsuloPlatform platform = ConsuloPlatform.DESKTOP_AWT_V2;
 
 		File bootDirectory = new File(consuloHomePath + "/boot");
 		if(bootDirectory.exists())
@@ -212,6 +213,10 @@ public class ConsuloSandboxRunState extends CommandLineState
 					if(file.getName().contains("-web-"))
 					{
 						platform = ConsuloPlatform.WEB;
+					}
+					else if(file.getName().contains("desktop-awt"))
+					{
+						platform = ConsuloPlatform.DESKTOP_AWT;
 					}
 					else if(file.getName().contains("desktop-swt"))
 					{
