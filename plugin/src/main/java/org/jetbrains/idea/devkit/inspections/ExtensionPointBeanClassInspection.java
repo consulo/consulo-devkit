@@ -24,6 +24,8 @@ import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomUtil;
 import javax.annotation.Nonnull;
+
+import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.impl.ExtensionDomExtender;
 import org.jetbrains.idea.devkit.inspections.quickfix.AddWithTagFix;
@@ -58,7 +60,7 @@ public class ExtensionPointBeanClassInspection extends DevKitInspectionBase {
     PsiClass beanClass = element.getBeanClass().getValue();
     if (beanClass != null) {
       for (PsiField field : beanClass.getAllFields()) {
-        if (ExtensionDomExtender.isClassField(field.getName()) &&
+		  if (Extension.isClassField(field.getName()) &&
             ExtensionDomExtender.findWithElement(element.getWithElements(), field) == null) {
           result.add(field);
         }

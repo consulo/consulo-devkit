@@ -130,7 +130,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 
 	private static MultiMap<String, IdeaPlugin> getPluginMap(final Project project)
 	{
-		MultiMap<String, IdeaPlugin> byId = new LinkedMultiMap<String, IdeaPlugin>();
+		MultiMap<String, IdeaPlugin> byId = new LinkedMultiMap<>();
 		for(IdeaPlugin each : IdeaPluginConverter.getAllPlugins(project))
 		{
 			byId.putValue(each.getPluginId(), each);
@@ -165,10 +165,6 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 		}
 		if(epName == null)
 		{
-			epName = tag.getAttributeValue("qualifiedName");
-		}
-		if(epName == null)
-		{
 			return;
 		}
 		if(!epName.startsWith(prefix))
@@ -176,8 +172,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 			return;
 		}
 
-		final DomExtension domExtension = registrar.registerCollectionChildrenExtension(new XmlName(epName.substring(prefix.length())),
-				Extension.class);
+		final DomExtension domExtension = registrar.registerCollectionChildrenExtension(new XmlName(epName.substring(prefix.length())), Extension.class);
 		domExtension.setDeclaringElement(extensionPoint);
 		domExtension.addExtender(EXTENSION_EXTENDER);
 	}
@@ -226,11 +221,11 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 			if(attrName != null)
 			{
 				Class clazz = String.class;
-				if(withElement != null || isClassField(fieldName))
+				if(withElement != null || Extension.isClassField(fieldName))
 				{
 					clazz = PsiClass.class;
 				}
-				else if(field.getType() == PsiType.BOOLEAN)
+				else if(PsiType.BOOLEAN.equals(field.getType()))
 				{
 					clazz = Boolean.class;
 				}
@@ -290,7 +285,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 				}
 			});
 		}
-		if(isClassField(fieldName) || withElement != null)
+		if(Extension.isClassField(fieldName) || withElement != null)
 		{
 			extension.setConverter(CLASS_CONVERTER);
 		}
@@ -302,11 +297,6 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 		{
 			extension.setConverter(LANGUAGE_CONVERTER);
 		}
-	}
-
-	public static boolean isClassField(String fieldName)
-	{
-		return (fieldName.endsWith("Class") && !fieldName.equals("forClass")) || fieldName.equals("implementation");
 	}
 
 	@Nullable
@@ -434,7 +424,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 
 	public static Collection<String> getDependencies(IdeaPlugin ideaPlugin)
 	{
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 
 		result.add(PluginManager.CORE_PLUGIN_ID);
 

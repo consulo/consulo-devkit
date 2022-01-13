@@ -15,22 +15,36 @@
  */
 package org.jetbrains.idea.devkit.dom;
 
-import javax.annotation.Nullable;
-
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.NameValue;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * @author mike
  */
-public interface Extension extends DomElement {
+public interface Extension extends DomElement
+{
+	String IMPLEMENTATION_ATTRIBUTE = "implementation";
 
-  @NameValue
-  GenericAttributeValue<String> getId();
+	@NameValue
+	GenericAttributeValue<String> getId();
 
-  GenericAttributeValue<String> getOrder();
+	GenericAttributeValue<String> getOrder();
 
-  @Nullable
-  ExtensionPoint getExtensionPoint();
+	@Nullable
+	ExtensionPoint getExtensionPoint();
+
+	static boolean isClassField(@Nonnull String fieldName)
+	{
+		return fieldName.equals(IMPLEMENTATION_ATTRIBUTE) ||
+				fieldName.equals("className") ||
+				fieldName.equals("serviceInterface") ||
+				fieldName.equals("serviceImplementation") ||
+				fieldName.equals("class") ||
+				fieldName.endsWith("ClassName") ||
+				(fieldName.endsWith("Class") && !fieldName.equals("forClass"));
+	}
 }
