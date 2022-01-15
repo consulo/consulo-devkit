@@ -225,6 +225,11 @@
 										implementationClass="consulo.devkit.codeInsight.daemon.ServiceLineMarkerProvider" />
 
 		<colorProvider implementation="consulo.devkit.codeInsight.daemon.UIColorLineMarkerProvider"/>
+
+		<intentionAction>
+			<className>consulo.devkit.intentation.ExportAllPackageIntention</className>
+			<category>Java 9 Modules</category>
+		</intentionAction>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij.xml.dom">
