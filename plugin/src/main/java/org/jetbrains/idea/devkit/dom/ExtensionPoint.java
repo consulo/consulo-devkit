@@ -18,7 +18,6 @@ package org.jetbrains.idea.devkit.dom;
 import com.intellij.ide.presentation.Presentation;
 import com.intellij.psi.PsiClass;
 import com.intellij.util.xml.*;
-import consulo.annotation.DeprecationInfo;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 
 import javax.annotation.Nonnull;
@@ -33,13 +32,6 @@ public interface ExtensionPoint extends DomElement
 {
 	enum Area
 	{
-		@Deprecated
-		@DeprecationInfo("Use without 'CONSULO_' prefix")
-		CONSULO_PROJECT,
-		@Deprecated
-		@DeprecationInfo("Use without 'CONSULO_' prefix")
-		CONSULO_MODULE,
-
 		PROJECT,
 		MODULE
 	}
