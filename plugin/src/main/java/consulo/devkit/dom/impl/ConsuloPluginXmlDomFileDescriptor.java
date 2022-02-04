@@ -34,25 +34,6 @@ public class ConsuloPluginXmlDomFileDescriptor extends DomFileDescription<IdeaPl
 			{
 				annotateExtension((Extension) element, holder);
 			}
-			else if(element instanceof ExtensionPoint)
-			{
-				highlightDeprecatedArea((ExtensionPoint) element, holder);
-			}
-		}
-
-		private void highlightDeprecatedArea(ExtensionPoint element, DomElementAnnotationHolder holder)
-		{
-			GenericAttributeValue<ExtensionPoint.Area> area = element.getArea();
-			if(!DomUtil.hasXml(area))
-			{
-				return;
-			}
-			ExtensionPoint.Area value = area.getValue();
-			if(value == ExtensionPoint.Area.CONSULO_MODULE || value == ExtensionPoint.Area.CONSULO_PROJECT)
-			{
-				final Annotation annotation = holder.createAnnotation(area, HighlightSeverity.WARNING, "This area is deprecated. Use without 'CONSULO_' prefix");
-				annotation.setHighlightType(ProblemHighlightType.LIKE_DEPRECATED);
-			}
 		}
 
 		private void annotateExtension(Extension extension, DomElementAnnotationHolder holder)
