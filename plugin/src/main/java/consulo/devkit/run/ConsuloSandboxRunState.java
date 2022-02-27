@@ -162,8 +162,8 @@ public class ConsuloSandboxRunState extends CommandLineState
 		if((consuloPlatform == ConsuloPlatform.DESKTOP_AWT || consuloPlatform == ConsuloPlatform.DESKTOP_SWT) && enableModules)
 		{
 			modulepath.clear();
-			modulepath.add(new File(consuloSdkHome, "boot"));
-			modulepath.add(new File(consuloSdkHome, "boot/spi"));
+			modulepath.add(new File(selectedBuildPath, "boot"));
+			modulepath.add(new File(selectedBuildPath, "boot/spi"));
 		}
 
 		classpath.stream().forEach(it -> params.getClassPath().add(it));
