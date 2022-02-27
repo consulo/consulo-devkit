@@ -153,9 +153,21 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 		OwnJdkVersionDetector.JdkVersionInfo versionInfo = OwnJdkVersionDetector.getInstance().detectJdkVersionInfo(javaSdk.getHomePath());
 
-		boolean isJava9 = versionInfo != null && versionInfo.version.isAtLeast(9) && profile.ENABLED_JAVA9_MODULES;
+		boolean enableModules = versionInfo != null && versionInfo.version.isAtLeast(9) && profile.ENABLED_JAVA9_MODULES;
 
-		ConsuloPlatform consuloPlatform = addBootLibraries(selectedBuildPath, params, isJava9);
+		ArrayList<File> classpath = new ArrayList<>();
+		ArrayList<File> modulepath = new ArrayList<>();
+		ConsuloPlatform consuloPlatform = addBootLibraries(selectedBuildPath, classpath, modulepath, enableModules);
+
+		if((consuloPlatform == ConsuloPlatform.DESKTOP_AWT || consuloPlatform == ConsuloPlatform.DESKTOP_SWT) && enableModules)
+		{
+			modulepath.clear();
+			modulepath.add(new File(consuloSdkHome, "boot"));
+			modulepath.add(new File(consuloSdkHome, "boot/spi"));
+		}
+
+		classpath.stream().forEach(it -> params.getClassPath().add(it));
+		modulepath.stream().forEach(it -> params.getModulePath().add(it));
 
 		if(!params.getModulePath().isEmpty())
 		{
@@ -176,9 +188,9 @@ public class ConsuloSandboxRunState extends CommandLineState
 		return params;
 	}
 
-	protected ConsuloPlatform addBootLibraries(@Nonnull String consuloHomePath, @Nonnull OwnJavaParameters params, boolean isJava9)
+	protected ConsuloPlatform addBootLibraries(@Nonnull String consuloHomePath, List<File> classpath, List<File> modulepath, boolean enableModules)
 	{
-		ConsuloPlatform platform = ConsuloPlatform.DESKTOP_AWT_V2;
+		ConsuloPlatform platform = ConsuloPlatform.DESKTOP_AWT_OLD;
 
 		File bootDirectory = new File(consuloHomePath + "/boot");
 		if(bootDirectory.exists())
@@ -189,7 +201,7 @@ public class ConsuloSandboxRunState extends CommandLineState
 				if(FileUtil.isJarOrZip(file))
 				{
 					boolean modular = false;
-					if(isJava9)
+					if(enableModules)
 					{
 						try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ))
 						{
@@ -203,11 +215,11 @@ public class ConsuloSandboxRunState extends CommandLineState
 
 					if(modular)
 					{
-						params.getModulePath().addFirst(file.getPath());
+						modulepath.add(file);
 					}
 					else
 					{
-						params.getClassPath().addFirst(file.getPath());
+						classpath.add(file);
 					}
 
 					if(file.getName().contains("-web-"))
@@ -232,13 +244,13 @@ public class ConsuloSandboxRunState extends CommandLineState
 				{
 					if(FileUtil.isJarOrZip(file))
 					{
-						if(isJava9)
+						if(enableModules)
 						{
-							params.getModulePath().addFirst(file.getPath());
+							modulepath.add(file);
 						}
 						else
 						{
-							params.getClassPath().addFirst(file.getPath());
+							classpath.add(file);
 						}
 					}
 				}

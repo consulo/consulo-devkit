@@ -155,7 +155,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 	}
 
 	private static void registerExtensionPoint(final DomExtensionsRegistrar registrar, final ExtensionPoint extensionPoint, String prefix,
-			@Nullable String pluginId)
+											   @Nullable String pluginId)
 	{
 		final XmlTag tag = extensionPoint.getXmlTag();
 		String epName = tag.getAttributeValue("name");
@@ -321,7 +321,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 	}
 
 	private static void registerCollectionBinding(PsiType type, DomExtensionsRegistrar registrar, PsiAnnotation anno,
-			PsiConstantEvaluationHelper evalHelper)
+												  PsiConstantEvaluationHelper evalHelper)
 	{
 		final boolean surroundWithTag = getBooleanAttribute(anno, "surroundWithTag", evalHelper);
 		if(surroundWithTag)
