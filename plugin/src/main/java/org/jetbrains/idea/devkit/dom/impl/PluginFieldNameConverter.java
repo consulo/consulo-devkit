@@ -15,29 +15,19 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
+import com.intellij.psi.*;
+import com.intellij.util.xml.ConvertContext;
+import com.intellij.util.xml.ResolvingConverter;
+import consulo.java.module.util.JavaClassNames;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.dom.ExtensionPoint;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.dom.ExtensionPoint;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiClassType;
-import com.intellij.psi.PsiConstantEvaluationHelper;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiModifier;
-import com.intellij.psi.PsiType;
-import com.intellij.util.xml.ConvertContext;
-import com.intellij.util.xml.ResolvingConverter;
-import com.intellij.util.xmlb.annotations.Attribute;
-import consulo.java.module.util.JavaClassNames;
 
 /**
  * @author yole
@@ -86,14 +76,14 @@ public class PluginFieldNameConverter extends ResolvingConverter<PsiField> {
   }
 
   public static String getAttributeAnnotationValue(PsiField psiField) {
-    return getAnnotationValue(psiField, Attribute.class);
+    return getAnnotationValue(psiField, ExtensionDomExtender.xmlAttributeClasses);
   }
 
-  public static String getAnnotationValue(PsiField psiField, Class annotationClass) {
+  public static String getAnnotationValue(PsiField psiField, String[] annotationClasses) {
     final PsiConstantEvaluationHelper evalHelper = JavaPsiFacade.getInstance(psiField.getProject()).getConstantEvaluationHelper();
     final PsiMethod getter = com.intellij.psi.util.PropertyUtil.findGetterForField(psiField);
     final PsiMethod setter = com.intellij.psi.util.PropertyUtil.findSetterForField(psiField);
-    final PsiAnnotation attrAnno = ExtensionDomExtender.findAnnotation(annotationClass, psiField, getter, setter);
+    final PsiAnnotation attrAnno = ExtensionDomExtender.findAnnotation(annotationClasses, psiField, getter, setter);
     if (attrAnno != null) {
       return ExtensionDomExtender.getStringAttribute(attrAnno, "value", evalHelper);
     }

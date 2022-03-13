@@ -34,10 +34,6 @@ import com.intellij.util.xml.reflect.DomExtender;
 import com.intellij.util.xml.reflect.DomExtension;
 import com.intellij.util.xml.reflect.DomExtensionsRegistrar;
 import com.intellij.util.xmlb.Constants;
-import com.intellij.util.xmlb.annotations.AbstractCollection;
-import com.intellij.util.xmlb.annotations.Attribute;
-import com.intellij.util.xmlb.annotations.Property;
-import com.intellij.util.xmlb.annotations.Tag;
 import org.jetbrains.idea.devkit.dom.*;
 
 import javax.annotation.Nonnull;
@@ -49,6 +45,26 @@ import java.util.*;
  */
 public class ExtensionDomExtender extends DomExtender<Extensions>
 {
+	public static final String[] xmlAttributeClasses = {
+			"com.intellij.util.xmlb.annotations.Attribute",
+			"consulo.util.xml.serializer.annotation.Attribute"
+	};
+
+	public static final String[] xmlTagClasses = {
+			"com.intellij.util.xmlb.annotations.Tag",
+			"consulo.util.xml.serializer.annotation.Tag"
+	};
+
+	public static final String[] xmlPropertyClasses = {
+			"com.intellij.util.xmlb.annotations.Property",
+			"consulo.util.xml.serializer.annotation.Property"
+	};
+
+	public static final String[] xmlAbstractCollectionClasses = {
+			"com.intellij.util.xmlb.annotations.AbstractCollection",
+			"consulo.util.xml.serializer.annotation.AbstractCollection",
+	};
+
 	private static final PsiClassConverter CLASS_CONVERTER = new PluginPsiClassConverter();
 	private static final Converter LANGUAGE_CONVERTER = new LanguageResolvingConverter();
 
@@ -214,7 +230,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 
 		final String fieldName = field.getName();
 		final PsiConstantEvaluationHelper evalHelper = JavaPsiFacade.getInstance(field.getProject()).getConstantEvaluationHelper();
-		final PsiAnnotation attrAnno = findAnnotation(Attribute.class, field, getter, setter);
+		final PsiAnnotation attrAnno = findAnnotation(xmlAttributeClasses, field, getter, setter);
 		if(attrAnno != null)
 		{
 			final String attrName = getStringAttribute(attrAnno, "value", evalHelper);
@@ -239,9 +255,9 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 			}
 			return;
 		}
-		final PsiAnnotation tagAnno = findAnnotation(Tag.class, field, getter, setter);
-		final PsiAnnotation propAnno = findAnnotation(Property.class, field, getter, setter);
-		final PsiAnnotation absColAnno = findAnnotation(AbstractCollection.class, field, getter, setter);
+		final PsiAnnotation tagAnno = findAnnotation(xmlTagClasses, field, getter, setter);
+		final PsiAnnotation propAnno = findAnnotation(xmlPropertyClasses, field, getter, setter);
+		final PsiAnnotation absColAnno = findAnnotation(xmlAbstractCollectionClasses, field, getter, setter);
 		//final PsiAnnotation colAnno = modifierList.findAnnotation(Collection.class.getName()); // todo
 		final String tagName = tagAnno != null ? getStringAttribute(tagAnno, "value", evalHelper) : propAnno != null && getBooleanAttribute
 				(propAnno, "surroundWithTag", evalHelper) ? Constants.OPTION : null;
@@ -300,20 +316,27 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 	}
 
 	@Nullable
-	static PsiAnnotation findAnnotation(final Class<?> annotationClass, PsiMember... members)
+	static PsiAnnotation findAnnotation(final String[] annotationClasses, PsiMember... members)
 	{
 		for(PsiMember member : members)
 		{
-			if(member != null)
+			if(member == null)
 			{
-				final PsiModifierList modifierList = member.getModifierList();
-				if(modifierList != null)
+				continue;
+			}
+
+			final PsiModifierList modifierList = member.getModifierList();
+			if(modifierList == null)
+			{
+				continue;
+			}
+
+			for(String annotationClass : annotationClasses)
+			{
+				final PsiAnnotation annotation = modifierList.findAnnotation(annotationClass);
+				if(annotation != null)
 				{
-					final PsiAnnotation annotation = modifierList.findAnnotation(annotationClass.getName());
-					if(annotation != null)
-					{
-						return annotation;
-					}
+					return annotation;
 				}
 			}
 		}
@@ -348,8 +371,7 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 		}
 		else if(psiClass != null)
 		{
-			final PsiModifierList modifierList = psiClass.getModifierList();
-			final PsiAnnotation tagAnno = modifierList == null ? null : modifierList.findAnnotation(Tag.class.getName());
+			final PsiAnnotation tagAnno = findAnnotation(xmlTagClasses, psiClass);
 			final String classTagName = tagAnno == null ? psiClass.getName() : getStringAttribute(tagAnno, "value", evalHelper);
 			if(classTagName != null)
 			{

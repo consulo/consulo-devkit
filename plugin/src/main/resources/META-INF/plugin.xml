@@ -5,7 +5,7 @@
 	<category>IDE Frameworks</category>
 	<vendor>JetBrains &amp; consulo.io</vendor>
 
-	<import path="/META-INF/grammar-kit.xml" />
+	<import path="/META-INF/grammar-kit.xml"/>
 
 	<depends>consulo.java</depends>
 	<depends>com.intellij.properties</depends>
@@ -40,9 +40,9 @@
 		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
 		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
 
-		<lang.foldingBuilder language="JAVA" implementationClass="consulo.devkit.localize.folding.LocalizeFoldingBuilder" />
-		<fileBasedIndex implementation="consulo.devkit.localize.index.LocalizeFileBasedIndexExtension" />
-		<fileBasedIndex implementation="consulo.devkit.icon.index.IconFileBasedIndexExtension" />
+		<lang.foldingBuilder language="JAVA" implementationClass="consulo.devkit.localize.folding.LocalizeFoldingBuilder"/>
+		<fileBasedIndex implementation="consulo.devkit.localize.index.LocalizeFileBasedIndexExtension"/>
+		<fileBasedIndex implementation="consulo.devkit.icon.index.IconFileBasedIndexExtension"/>
 
 		<moduleExtensionProvider key="consulo-plugin"
 								 parentKey="java"
@@ -155,8 +155,8 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
-						 displayName="Compilcated Logger Initialization"
-						 implementationClass="consulo.devkit.inspections.ComplicatedLoggerInitializationInspection" />
+						 displayName="Complicated Logger Initialization"
+						 implementationClass="consulo.devkit.inspections.ComplicatedLoggerInitializationInspection"/>
 
 		<localInspection language="JAVA"
 						 level="ERROR"
@@ -214,7 +214,7 @@
 		<implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
 		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>
 		<psi.referenceContributor implementation="consulo.devkit.icon.references.IconPsiReferenceContributor"/>
-		<projectService serviceImplementation="consulo.devkit.icon.IconResolver" />
+		<projectService serviceImplementation="consulo.devkit.icon.IconResolver"/>
 		<unusedDeclarationFixProvider implementation="org.jetbrains.idea.devkit.inspections.quickfix.RegisterExtensionFixProvider"/>
 
 		<codeInsight.lineMarkerProvider language="JAVA"
@@ -222,7 +222,7 @@
 		<codeInsight.lineMarkerProvider language="JAVA"
 										implementationClass="org.jetbrains.idea.devkit.navigation.ExtensionPointDeclarationRelatedItemLineMarkerProvider"/>
 		<codeInsight.lineMarkerProvider language="JAVA"
-										implementationClass="consulo.devkit.codeInsight.daemon.ServiceLineMarkerProvider" />
+										implementationClass="consulo.devkit.codeInsight.daemon.ServiceLineMarkerProvider"/>
 
 		<colorProvider implementation="consulo.devkit.codeInsight.daemon.UIColorLineMarkerProvider"/>
 

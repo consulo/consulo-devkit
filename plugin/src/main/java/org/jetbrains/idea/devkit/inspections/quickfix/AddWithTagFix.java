@@ -27,13 +27,13 @@ import com.intellij.psi.search.PsiShortNamesCache;
 import com.intellij.util.PsiNavigateUtil;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomUtil;
-import com.intellij.util.xmlb.annotations.Tag;
-import javax.annotation.Nonnull;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.With;
+import org.jetbrains.idea.devkit.dom.impl.ExtensionDomExtender;
 import org.jetbrains.idea.devkit.dom.impl.PluginFieldNameConverter;
 import org.jetbrains.idea.devkit.inspections.ExtensionPointBeanClassInspection;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -63,7 +63,7 @@ public class AddWithTagFix implements LocalQuickFix {
     PsiElement navTarget = null;
     for (PsiField field : fields) {
       With with = extensionPoint.addWith();
-      String tagName = PluginFieldNameConverter.getAnnotationValue(field, Tag.class);
+      String tagName = PluginFieldNameConverter.getAnnotationValue(field, ExtensionDomExtender.xmlTagClasses);
       if (tagName != null) {
         with.getTag().setStringValue(tagName);
       }
