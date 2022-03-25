@@ -8,6 +8,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.devkit.grammarKit.generator.PlatformClass;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfRule;
@@ -17,7 +18,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static java.lang.String.format;
-import static org.intellij.grammar.generator.BnfConstants.PSI_BUILDER_CLASS;
 import static org.intellij.grammar.generator.ExpressionHelper.OperatorInfo;
 import static org.intellij.grammar.generator.ExpressionHelper.OperatorType;
 import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
@@ -27,7 +27,6 @@ import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
  */
 public class ExpressionGeneratorHelper
 {
-
 	private static final ConsumeType CONSUME_TYPE_OVERRIDE = ConsumeType.SMART;
 
 	@Nonnull
@@ -59,8 +58,8 @@ public class ExpressionGeneratorHelper
 		String methodName = getFuncName(info.rootRule);
 		String kernelMethodName = getNextName(methodName, 0);
 		String frameName = quote(ParserGeneratorUtil.getRuleDisplayName(info.rootRule, true));
-		String shortPB = g.shorten(BnfConstants.PSI_BUILDER_CLASS);
-		String shortMarker = !g.G.generateFQN ? "Marker" : PSI_BUILDER_CLASS + ".Marker";
+		String shortPB = g.shorten(PlatformClass.PSI_BUILDER);
+		String shortMarker = !g.G.generateFQN ? "Marker" : g.getClassName(PlatformClass.PSI_BUILDER) + ".Marker";
 		g.out("public static boolean %s(%s %s, int %s, int %s) {", methodName, shortPB, g.N.builder, g.N.level, g.N.priority);
 		g.out("if (!recursion_guard_(%s, %s, \"%s\")) return false;", g.N.builder, g.N.level, methodName);
 

@@ -6,10 +6,12 @@ package org.intellij.grammar;
 
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
+import consulo.devkit.grammarKit.generator.PlatformClassKnownAttribute;
+import consulo.devkit.grammarKit.generator.PlatformClass;
 import org.intellij.grammar.generator.BnfConstants;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -45,35 +47,36 @@ public class KnownAttribute<T>
 	public static final KnownAttribute<Boolean> EXTENDED_PIN = create(true, Boolean.class, "extendedPin", true);
 
 	public static final KnownAttribute<ListValue> PARSER_IMPORTS = create(true, ListValue.class, "parserImports", EMPTY_LIST);
+	public static final KnownAttribute<String> VERSION = create(true, String.class, "version", "");
 	public static final KnownAttribute<String> PSI_CLASS_PREFIX = create(true, String.class, "psiClassPrefix", "");
 	public static final KnownAttribute<String> PSI_IMPL_CLASS_SUFFIX = create(true, String.class, "psiImplClassSuffix", "Impl");
-	public static final KnownAttribute<String> PSI_TREE_UTIL_CLASS = create(true, String.class, "psiTreeUtilClass", BnfConstants.PSI_TREE_UTIL_CLASS);
+	public static final KnownAttribute<String> PSI_TREE_UTIL_CLASS = create(true, String.class, "psiTreeUtilClass", PlatformClass.PSI_TREE_UTIL);
 	public static final KnownAttribute<String> PSI_PACKAGE = create(true, String.class, "psiPackage", "generated.psi");
 	public static final KnownAttribute<String> PSI_IMPL_PACKAGE = create(true, String.class, "psiImplPackage", "generated.psi.impl");
 	public static final KnownAttribute<String> PSI_VISITOR_NAME = create(true, String.class, "psiVisitorName", "Visitor");
-	public static final KnownAttribute<String> PSI_IMPL_UTIL_CLASS = create(true, String.class, "psiImplUtilClass", null);
-	public static final KnownAttribute<String> ELEMENT_TYPE_CLASS = create(true, String.class, "elementTypeClass", BnfConstants.IELEMENTTYPE_CLASS);
-	public static final KnownAttribute<String> TOKEN_TYPE_CLASS = create(true, String.class, "tokenTypeClass", BnfConstants.IELEMENTTYPE_CLASS);
+	public static final KnownAttribute<String> PSI_IMPL_UTIL_CLASS = create(true, String.class, "psiImplUtilClass", (String) null);
+	public static final KnownAttribute<String> ELEMENT_TYPE_CLASS = create(true, String.class, "elementTypeClass", PlatformClass.IELEMENT_TYPE);
+	public static final KnownAttribute<String> TOKEN_TYPE_CLASS = create(true, String.class, "tokenTypeClass", PlatformClass.IELEMENT_TYPE);
 	public static final KnownAttribute<String> PARSER_CLASS = create(true, String.class, "parserClass", "generated.GeneratedParser");
 	public static final KnownAttribute<String> PARSER_UTIL_CLASS = create(true, String.class, "parserUtilClass", BnfConstants.GPUB_CLASS);
 	public static final KnownAttribute<String> ELEMENT_TYPE_HOLDER_CLASS = create(true, String.class, "elementTypeHolderClass", "generated.GeneratedTypes");
 	public static final KnownAttribute<String> ELEMENT_TYPE_PREFIX = create(true, String.class, "elementTypePrefix", "");
-	public static final KnownAttribute<String> ELEMENT_TYPE_FACTORY = create(true, String.class, "elementTypeFactory", null);
-	public static final KnownAttribute<String> TOKEN_TYPE_FACTORY = create(true, String.class, "tokenTypeFactory", null);
+	public static final KnownAttribute<String> ELEMENT_TYPE_FACTORY = create(true, String.class, "elementTypeFactory", (String) null);
+	public static final KnownAttribute<String> TOKEN_TYPE_FACTORY = create(true, String.class, "tokenTypeFactory", (String) null);
 
-	public static final KnownAttribute<String> EXTENDS = create(false, String.class, "extends", BnfConstants.AST_WRAPPER_PSI_ELEMENT_CLASS);
-	public static final KnownAttribute<ListValue> IMPLEMENTS = create(false, ListValue.class, "implements", ListValue.singleValue(null, BnfConstants.PSI_ELEMENT_CLASS));
-	public static final KnownAttribute<String> ELEMENT_TYPE = create(false, String.class, "elementType", null);
+	public static final KnownAttribute<String> EXTENDS = create(false, String.class, "extends", PlatformClass.AST_WRAPPER_PSI_ELEMENT);
+	public static final KnownAttribute<ListValue> IMPLEMENTS = create(false, ListValue.class, "implements", ListValue.singleValue(null, PlatformClass.PSI_ELEMENT.select(null)));
+	public static final KnownAttribute<String> ELEMENT_TYPE = create(false, String.class, "elementType", (String) null);
 	public static final KnownAttribute<Object> PIN = create(false, Object.class, "pin", (Object) (-1));
-	public static final KnownAttribute<String> MIXIN = create(false, String.class, "mixin", null);
-	public static final KnownAttribute<String> RECOVER_WHILE = create(false, String.class, "recoverWhile", null);
-	public static final KnownAttribute<String> NAME = create(false, String.class, "name", null);
+	public static final KnownAttribute<String> MIXIN = create(false, String.class, "mixin", (String) null);
+	public static final KnownAttribute<String> RECOVER_WHILE = create(false, String.class, "recoverWhile", (String) null);
+	public static final KnownAttribute<String> NAME = create(false, String.class, "name", (String) null);
 
 	public static final KnownAttribute<Boolean> EXTRA_ROOT = create(false, Boolean.class, "extraRoot", false);
 	public static final KnownAttribute<Boolean> RIGHT_ASSOCIATIVE = create(false, Boolean.class, "rightAssociative", false);
 	public static final KnownAttribute<String> CONSUME_TOKEN_METHOD = create(false, String.class, "consumeTokenMethod", "consumeToken");
 
-	public static final KnownAttribute<String> STUB_CLASS = create(false, String.class, "stubClass", null);
+	public static final KnownAttribute<String> STUB_CLASS = create(false, String.class, "stubClass", (String) null);
 
 	public static final KnownAttribute<ListValue> METHODS = create(false, ListValue.class, "methods", EMPTY_LIST);
 	public static final KnownAttribute<ListValue> HOOKS = create(false, ListValue.class, "hooks", EMPTY_LIST);
@@ -89,12 +92,21 @@ public class KnownAttribute<T>
 		return new KnownAttribute<>(name, clazz, defaultValue);
 	}
 
+	public static KnownAttribute<String> create(boolean global, Class<String> clazz, String name, @Nonnull PlatformClass platformClass)
+	{
+		if(clazz != String.class)
+		{
+			throw new IllegalArgumentException(clazz.toString());
+		}
+		return new PlatformClassKnownAttribute(global, name, platformClass);
+	}
+
 	private static <T> KnownAttribute<T> create(boolean global, Class<T> clazz, String name, @Nullable T defaultValue)
 	{
 		return new KnownAttribute<>(global, name, clazz, defaultValue);
 	}
 
-	private KnownAttribute(String name, Class<T> clazz, T defaultValue)
+	protected KnownAttribute(String name, Class<T> clazz, T defaultValue)
 	{
 		myName = name;
 		myClazz = clazz;
@@ -102,7 +114,7 @@ public class KnownAttribute<T>
 		myGlobal = false;
 	}
 
-	private KnownAttribute(boolean global, String name, Class<T> clazz, T defaultValue)
+	protected KnownAttribute(boolean global, String name, Class<T> clazz, T defaultValue)
 	{
 		myName = name;
 		myClazz = clazz;

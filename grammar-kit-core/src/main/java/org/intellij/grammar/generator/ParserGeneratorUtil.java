@@ -23,6 +23,7 @@ import com.intellij.util.containers.JBIterable;
 import com.intellij.util.containers.JBTreeTraverser;
 import com.intellij.util.containers.TreeTraversal;
 import consulo.devkit.grammarKit.generator.ErrorReporter;
+import consulo.devkit.grammarKit.generator.PlatformClass;
 import consulo.util.collection.HashingStrategy;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
@@ -1236,7 +1237,8 @@ public class ParserGeneratorUtil
 		}
 	}
 
-	public static String getParametersString(List<String> paramsTypes,
+	public static String getParametersString(ParserGenerator parserGenerator,
+											 List<String> paramsTypes,
 											 int offset,
 											 int mask,
 											 Function<String, String> substitutor,
@@ -1256,7 +1258,7 @@ public class ParserGeneratorUtil
 			{
 				type = substitutor.fun(type);
 			}
-			if(type.endsWith(BnfConstants.AST_NODE_CLASS))
+			if(type.endsWith(parserGenerator.getClassName(PlatformClass.AST_NODE)))
 			{
 				name = "node";
 			}
