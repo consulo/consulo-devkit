@@ -30,6 +30,7 @@ public class RuleMethodsHelper
 	private final ExpressionHelper myExpressionHelper;
 	private final Map<String, String> mySimpleTokens;
 	private final GenOptions G;
+	private final String myVersion;
 
 	private final Map<BnfRule, Pair<Map<String, MethodInfo>, Collection<MethodInfo>>> myMethods;
 
@@ -38,6 +39,7 @@ public class RuleMethodsHelper
 							 Map<String, String> simpleTokens,
 							 GenOptions genOptions)
 	{
+		myVersion = ruleGraphHelper.getFile().getVersion();
 		myGraphHelper = ruleGraphHelper;
 		myExpressionHelper = expressionHelper;
 		mySimpleTokens = Collections.unmodifiableMap(simpleTokens);
@@ -48,7 +50,7 @@ public class RuleMethodsHelper
 
 	public void buildMaps(Collection<BnfRule> sortedPsiRules)
 	{
-		Map<String, String> tokensReversed = RuleGraphHelper.computeTokens(myGraphHelper.getFile()).asMap();
+		Map<String, String> tokensReversed = RuleGraphHelper.computeTokens(myGraphHelper.getFile()).asMap(myVersion);
 		for(BnfRule rule : sortedPsiRules)
 		{
 			calcMethods(rule, tokensReversed);
@@ -136,7 +138,7 @@ public class RuleMethodsHelper
 		}
 		Collections.sort(result);
 
-		BnfAttr attr = findAttribute(rule, KnownAttribute.GENERATE_TOKEN_ACCESSORS);
+		BnfAttr attr = findAttribute(myVersion, rule, KnownAttribute.GENERATE_TOKEN_ACCESSORS);
 		boolean generateTokens = attr == null ? G.generateTokenAccessors :
 				Boolean.TRUE.equals(getAttributeValue(attr.getExpression()));
 		boolean generateTokensSet = attr != null || G.generateTokenAccessorsSet;
@@ -157,35 +159,35 @@ public class RuleMethodsHelper
 			}
 		}
 
-		KnownAttribute.ListValue methods = getAttribute(rule, KnownAttribute.METHODS);
-		for(Pair<String, String> pair : methods)
+		KnownAttribute.ListValue methods = getAttribute(myVersion, rule, KnownAttribute.METHODS);
+		for(Map.Entry<String, String> pair : methods.asMap(myVersion).entrySet())
 		{
-			if(StringUtil.isEmpty(pair.first))
+			if(StringUtil.isEmpty(pair.getKey()))
 			{
 				continue;
 			}
-			MethodInfo methodInfo = basicMethods.get(pair.first);
+			MethodInfo methodInfo = basicMethods.get(pair.getKey());
 			if(methodInfo != null)
 			{
 				methodInfo.name = ""; // suppress or user method override
 			}
-			if(StringUtil.isNotEmpty(pair.second))
+			if(StringUtil.isNotEmpty(pair.getValue()))
 			{
-				MethodInfo basicInfo = basicMethods.get(pair.second);
-				if(basicInfo != null && (basicInfo.name.equals(pair.second) || basicInfo.name.isEmpty()))
+				MethodInfo basicInfo = basicMethods.get(pair.getValue());
+				if(basicInfo != null && (basicInfo.name.equals(pair.getValue()) || basicInfo.name.isEmpty()))
 				{
-					basicInfo.name = pair.first; // simple rename, fix order anyway
+					basicInfo.name = pair.getKey(); // simple rename, fix order anyway
 					result.remove(basicInfo);
 					result.add(basicInfo);
 				}
 				else
 				{
-					result.add(new MethodInfo(MethodType.USER, pair.first, pair.second, null, null));
+					result.add(new MethodInfo(MethodType.USER, pair.getKey(), pair.getValue(), null, null));
 				}
 			}
 			else if(methodInfo == null)
 			{
-				result.add(new MethodInfo(MethodType.MIXIN, pair.first, null, null, null));
+				result.add(new MethodInfo(MethodType.MIXIN, pair.getKey(), null, null, null));
 			}
 		}
 		myMethods.put(rule, Pair.create(basicMethods, result));
@@ -221,7 +223,7 @@ public class RuleMethodsHelper
 		{
 			BnfRule asRule = (BnfRule) tree;
 			result = asRule.getName();
-			if(StringUtil.isEmpty(getElementType(asRule, G.generateElementCase)))
+			if(StringUtil.isEmpty(getElementType(myVersion, asRule, G.generateElementCase)))
 			{
 				return null;
 			}

@@ -16,22 +16,6 @@
 
 package org.intellij.grammar.debugger;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.generator.ParserGeneratorUtil;
-import org.intellij.grammar.parser.GeneratedParserUtilBase;
-import org.intellij.grammar.psi.BnfAttr;
-import org.intellij.grammar.psi.BnfExpression;
-import org.intellij.grammar.psi.BnfRule;
-import org.intellij.grammar.psi.impl.BnfFileImpl;
-import org.intellij.grammar.psi.impl.GrammarUtil;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.intellij.debugger.NoDataException;
 import com.intellij.debugger.PositionManager;
 import com.intellij.debugger.SourcePosition;
@@ -43,15 +27,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiCodeBlock;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
-import com.intellij.psi.PsiStatement;
+import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiNonJavaFileReferenceProcessor;
 import com.intellij.psi.search.PsiSearchHelper;
@@ -62,6 +38,19 @@ import consulo.internal.com.sun.jdi.AbsentInformationException;
 import consulo.internal.com.sun.jdi.Location;
 import consulo.internal.com.sun.jdi.ReferenceType;
 import consulo.internal.com.sun.jdi.request.ClassPrepareRequest;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.generator.ParserGeneratorUtil;
+import org.intellij.grammar.parser.GeneratedParserUtilBase;
+import org.intellij.grammar.psi.BnfAttr;
+import org.intellij.grammar.psi.BnfExpression;
+import org.intellij.grammar.psi.BnfFile;
+import org.intellij.grammar.psi.BnfRule;
+import org.intellij.grammar.psi.impl.BnfFileImpl;
+import org.intellij.grammar.psi.impl.GrammarUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
 
 /**
  * @author gregsh
@@ -109,7 +98,7 @@ public class BnfPositionManager implements PositionManager {
     for (PsiFile file : myGrammars.get(qname)) {
       BnfExpression expression = findExpression(file, name);
       BnfRule rule = PsiTreeUtil.getParentOfType(expression, BnfRule.class);
-      if (expression != null && qname.equals(ParserGeneratorUtil.getAttribute(rule, KnownAttribute.PARSER_CLASS))) {
+      if (expression != null && qname.equals(ParserGeneratorUtil.getAttribute(((BnfFile)file).getVersion(), rule, KnownAttribute.PARSER_CLASS))) {
         for (BnfExpression expr : ParserGeneratorUtil.getChildExpressions(expression)) {
           int line = getLineNumber(expr, qname, lineNumber);
           if (line == lineNumber) {
@@ -244,7 +233,8 @@ public class BnfPositionManager implements PositionManager {
     AccessToken token = ReadAction.start();
     try {
       BnfRule rule = getRuleAt(classPosition);
-      String parserClass = ParserGeneratorUtil.getAttribute(rule, KnownAttribute.PARSER_CLASS);
+      String version = rule.getContainingFile() instanceof BnfFile ? ((BnfFile) rule.getContainingFile()).getVersion() : null;
+      String parserClass = ParserGeneratorUtil.getAttribute(version, rule, KnownAttribute.PARSER_CLASS);
       if (StringUtil.isEmpty(parserClass)) throw new NoDataException();
       return parserClass;
     }

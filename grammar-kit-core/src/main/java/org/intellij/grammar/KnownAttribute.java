@@ -6,8 +6,8 @@ package org.intellij.grammar;
 
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
-import consulo.devkit.grammarKit.generator.PlatformClassKnownAttribute;
 import consulo.devkit.grammarKit.generator.PlatformClass;
+import consulo.devkit.grammarKit.generator.PlatformClassKnownAttribute;
 import org.intellij.grammar.generator.BnfConstants;
 
 import javax.annotation.Nonnull;
@@ -65,7 +65,7 @@ public class KnownAttribute<T>
 	public static final KnownAttribute<String> TOKEN_TYPE_FACTORY = create(true, String.class, "tokenTypeFactory", (String) null);
 
 	public static final KnownAttribute<String> EXTENDS = create(false, String.class, "extends", PlatformClass.AST_WRAPPER_PSI_ELEMENT);
-	public static final KnownAttribute<ListValue> IMPLEMENTS = create(false, ListValue.class, "implements", ListValue.singleValue(null, PlatformClass.PSI_ELEMENT.select(null)));
+	public static final KnownAttribute<ListValue> IMPLEMENTS = create(false, ListValue.class, "implements", ListValue.singleValue(null, PlatformClass.PSI_ELEMENT));
 	public static final KnownAttribute<String> ELEMENT_TYPE = create(false, String.class, "elementType", (String) null);
 	public static final KnownAttribute<Object> PIN = create(false, Object.class, "pin", (Object) (-1));
 	public static final KnownAttribute<String> MIXIN = create(false, String.class, "mixin", (String) null);
@@ -135,16 +135,16 @@ public class KnownAttribute<T>
 		return myGlobal;
 	}
 
-	public T getDefaultValue()
+	public T getDefaultValue(String version)
 	{
 		return myDefaultValue;
 	}
 
-	public T ensureValue(Object o)
+	public T ensureValue(Object o, String version)
 	{
 		if(o == null)
 		{
-			return getDefaultValue();
+			return getDefaultValue(version);
 		}
 		if(myClazz == ListValue.class && o instanceof String)
 		{
@@ -154,7 +154,7 @@ public class KnownAttribute<T>
 		{
 			return (T) o;
 		}
-		return getDefaultValue();
+		return getDefaultValue(version);
 	}
 
 	@Override
@@ -189,54 +189,75 @@ public class KnownAttribute<T>
 		return getAttribute(name);
 	}
 
-	public static class ListValue extends LinkedList<Pair<String, String>>
+	public static class ListValueObject
+	{
+		private final Object myValue;
+
+		public ListValueObject(@Nonnull Object value)
+		{
+			myValue = value;
+		}
+
+		public String getStringValue(String version)
+		{
+			if(myValue instanceof PlatformClass)
+			{
+				return ((PlatformClass) myValue).select(version);
+			}
+			return (String) myValue;
+		}
+	}
+
+	public static class ListValue extends LinkedList<Pair<ListValueObject, ListValueObject>>
 	{
 		@Nonnull
-		public static ListValue singleValue(String s1, String s2)
+		public static ListValue singleValue(Object s1, Object s2)
 		{
 			ListValue t = new ListValue();
-			t.add(Pair.create(s1, s2));
+			t.add(Pair.create(s1 == null ? null : new ListValueObject(s1), s2 == null ? null : new ListValueObject(s2)));
 			return t;
 		}
 
 		@Nonnull
-		public List<String> asStrings()
+		public List<String> asStrings(String version)
 		{
 			List<String> t = new ArrayList<>();
-			for(Pair<String, String> pair : this)
+			for(Pair<ListValueObject, ListValueObject> pair : this)
 			{
 				if(pair.first != null)
 				{
-					t.add(pair.first);
+					t.add(pair.first.getStringValue(version));
 				}
 				else if(pair.second != null)
 				{
-					t.add(pair.second);
+					t.add(pair.second.getStringValue(version));
 				}
 			}
 			return t;
 		}
 
 		@Nonnull
-		public Map<String, String> asMap()
+		public Map<String, String> asMap(String version)
 		{
-			return asMap(false);
+			return asMap(version, false);
 		}
 
 		@Nonnull
-		public Map<String, String> asInverseMap()
+		public Map<String, String> asInverseMap(String version)
 		{
-			return asMap(true);
+			return asMap(version, true);
 		}
 
 		@Nonnull
-		private Map<String, String> asMap(boolean inverse)
+		private Map<String, String> asMap(String version, boolean inverse)
 		{
 			Map<String, String> t = new LinkedHashMap<>();
-			for(Pair<String, String> pair : this)
+			for(Pair<ListValueObject, ListValueObject> pair : this)
 			{
-				String key = inverse ? pair.second : pair.first;
-				String value = inverse ? pair.first : pair.second;
+				ListValueObject v1 = inverse ? pair.second : pair.first;
+				String key = v1 == null ? null : v1.getStringValue(version);
+				ListValueObject v2 = inverse ? pair.first : pair.second;
+				String value = v2 == null ? null : v2.getStringValue(version);
 				if(key != null)
 				{
 					t.put(key, value);

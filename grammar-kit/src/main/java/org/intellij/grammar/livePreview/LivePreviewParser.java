@@ -65,11 +65,13 @@ public class LivePreviewParser implements PsiParser
 
 	private final ObjectIntMap<BnfRule> myRuleNumbers = ObjectMaps.newObjectIntHashMap();
 	private BitSet[] myBitSets;
+	private final String myVersion;
 
 	public LivePreviewParser(@Nullable Project project, LivePreviewLanguage language)
 	{
 		myLanguage = language;
 		myFile = language.getGrammar(project);
+		myVersion = myFile.getVersion();
 	}
 
 	@Nonnull
@@ -123,7 +125,7 @@ public class LivePreviewParser implements PsiParser
 		myRuleExtendsMap = myGraphHelper.getRuleExtendsMap();
 		myExpressionHelper = ExpressionHelper.getCached(myFile);
 
-		myTokenTypeText = getRootAttribute(myFile, KnownAttribute.ELEMENT_TYPE_PREFIX);
+		myTokenTypeText = getRootAttribute(myVersion, myFile, KnownAttribute.ELEMENT_TYPE_PREFIX);
 
 		Lexer lexer = ((PsiBuilderImpl) builder).getLexer();
 		if(lexer instanceof LivePreviewLexer)
@@ -135,7 +137,7 @@ public class LivePreviewParser implements PsiParser
 		}
 		for(BnfRule rule : myFile.getRules())
 		{
-			String elementType = ParserGeneratorUtil.getElementType(rule, G.generateElementCase);
+			String elementType = ParserGeneratorUtil.getElementType(myVersion, rule, G.generateElementCase);
 			if(StringUtil.isEmpty(elementType))
 			{
 				continue;
@@ -190,8 +192,8 @@ public class LivePreviewParser implements PsiParser
 		boolean isLeft = firstNonTrivial && ParserGeneratorUtil.Rule.isLeft(rule);
 		boolean isLeftInner = isLeft && (isPrivate || ParserGeneratorUtil.Rule.isInner(rule));
 		boolean isBranch = !isPrivate && Rule.isUpper(rule);
-		String recoverWhile = firstNonTrivial ? getAttribute(rule, KnownAttribute.RECOVER_WHILE) : null;
-		Map<String, String> hooks = firstNonTrivial ? getAttribute(rule, KnownAttribute.HOOKS).asMap() : Collections.emptyMap();
+		String recoverWhile = firstNonTrivial ? getAttribute(myVersion, rule, KnownAttribute.RECOVER_WHILE) : null;
+		Map<String, String> hooks = firstNonTrivial ? getAttribute(myVersion, rule, KnownAttribute.HOOKS).asMap(myVersion) : Collections.emptyMap();
 		boolean canCollapse = !isPrivate && (!isLeft || isLeftInner) && firstNonTrivial && myGraphHelper.canCollapse(rule);
 
 		IElementType elementType = !isPrivate ? getRuleElementType(rule) : null;
@@ -199,7 +201,7 @@ public class LivePreviewParser implements PsiParser
 		boolean isSingleNode = node instanceof BnfReferenceOrToken || node instanceof BnfLiteralExpression || node instanceof BnfExternalExpression;
 
 		List<BnfExpression> children = isSingleNode ? Collections.singletonList(node) : getChildExpressions(node);
-		String frameName = !children.isEmpty() && firstNonTrivial && !Rule.isMeta(rule) ? getRuleDisplayName(rule, !isPrivate) : null;
+		String frameName = !children.isEmpty() && firstNonTrivial && !Rule.isMeta(rule) ? getRuleDisplayName(myVersion, rule, !isPrivate) : null;
 
 		if(isSingleNode)
 		{
@@ -225,7 +227,7 @@ public class LivePreviewParser implements PsiParser
 		//  frameName = generateFirstCheck(rule, frameName, true);
 		//}
 
-		PinMatcher pinMatcher = new PinMatcher(rule, type, firstNonTrivial ? rule.getName() : funcName);
+		PinMatcher pinMatcher = new PinMatcher(myVersion, rule, type, firstNonTrivial ? rule.getName() : funcName);
 		boolean pinApplied = false;
 		boolean alwaysTrue = type == BNF_OP_OPT || type == BNF_OP_ZEROMORE;
 
@@ -263,7 +265,7 @@ public class LivePreviewParser implements PsiParser
 		boolean sectionRequired = !alwaysTrue || !isPrivate || isLeft || recoverWhile != null;
 		boolean sectionRequiredSimple = sectionRequired && modifiers == _NONE_ && recoverWhile == null && !(pinned || frameName != null);
 		boolean sectionMaybeDropped = sectionRequiredSimple && type == BNF_CHOICE && elementType == null &&
-				children.stream().noneMatch(o -> ParserGeneratorUtil.isRollbackRequired(o, myFile));
+				children.stream().noneMatch(o -> ParserGeneratorUtil.isRollbackRequired(myVersion, o, myFile));
 
 		if(sectionRequiredSimple)
 		{
@@ -711,7 +713,7 @@ public class LivePreviewParser implements PsiParser
 	@Nullable
 	private IElementType getRuleElementType(BnfRule rule)
 	{
-		String elementType = ParserGeneratorUtil.getElementType(rule, G.generateElementCase);
+		String elementType = ParserGeneratorUtil.getElementType(myVersion, rule, G.generateElementCase);
 		return StringUtil.isEmpty(elementType) ? null : myRuleElementTypes.get(elementType);
 	}
 
@@ -759,7 +761,7 @@ public class LivePreviewParser implements PsiParser
 		// main entry
 		String methodName = info.rootRule.getName();
 		String kernelMethodName = getNextName(methodName, 0);
-		String frameName = quote(ParserGeneratorUtil.getRuleDisplayName(info.rootRule, true));
+		String frameName = quote(ParserGeneratorUtil.getRuleDisplayName(myVersion, info.rootRule, true));
 		if(!recursion_guard_(builder, level, methodName))
 		{
 			return false;
@@ -826,7 +828,7 @@ public class LivePreviewParser implements PsiParser
 				{
 
 					IElementType elementType = getRuleElementType(operator.rule);
-					boolean rightAssociative = ParserGeneratorUtil.getAttribute(operator.rule, KnownAttribute.RIGHT_ASSOCIATIVE);
+					boolean rightAssociative = ParserGeneratorUtil.getAttribute(myVersion, operator.rule, KnownAttribute.RIGHT_ASSOCIATIVE);
 					if(operator.type == ExpressionHelper.OperatorType.BINARY)
 					{
 						result_ = report_error_(builder, generateExpressionRoot(builder, level, info, (rightAssociative ? argPriority - 1 : argPriority)));

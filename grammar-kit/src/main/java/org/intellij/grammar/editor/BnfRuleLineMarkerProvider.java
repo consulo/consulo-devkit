@@ -61,7 +61,7 @@ public class BnfRuleLineMarkerProvider extends RelatedItemLineMarkerProvider {
       }
       boolean hasPSI = false;
       if (isRuleId) {
-        BnfRule rule = RuleGraphHelper.getSynonymTargetOrSelf((BnfRule)parent);
+        BnfRule rule = RuleGraphHelper.getSynonymTargetOrSelf(null, (BnfRule)parent);
         if (RuleGraphHelper.hasPsiClass(rule)) {
           hasPSI = true;
           JavaHelper javaHelper = JavaHelper.getJavaHelper(rule);
@@ -98,7 +98,7 @@ public class BnfRuleLineMarkerProvider extends RelatedItemLineMarkerProvider {
   private static NavigatablePsiElement getMethod(PsiElement element) {
     BnfRule rule = PsiTreeUtil.getParentOfType(element, BnfRule.class);
     if (rule == null) return null;
-    String parserClass = ParserGeneratorUtil.getAttribute(rule, KnownAttribute.PARSER_CLASS);
+    String parserClass = ParserGeneratorUtil.getAttribute(null, rule, KnownAttribute.PARSER_CLASS);
     if (StringUtil.isEmpty(parserClass)) return null;
     JavaHelper helper = JavaHelper.getJavaHelper(element);
     List<NavigatablePsiElement> methods = helper.findClassMethods(parserClass, JavaHelper.MethodType.STATIC, GrammarUtil.getMethodName(rule, element), -1);

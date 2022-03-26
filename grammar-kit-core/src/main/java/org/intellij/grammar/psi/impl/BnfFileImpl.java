@@ -92,15 +92,15 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
 
   @Override
   @Nullable
-  public BnfAttr findAttribute(@Nullable BnfRule rule, @Nonnull KnownAttribute<?> knownAttribute, @Nullable String match) {
+  public BnfAttr findAttribute(@Nullable String version, @Nullable BnfRule rule, @Nonnull KnownAttribute<?> knownAttribute, @Nullable String match) {
     AttributeInfo result = findAttributeInfo(rule, knownAttribute, match);
     if (result == null) return null;
     return PsiTreeUtil.getParentOfType(findElementAt(result.attrOffset), BnfAttr.class);
   }
 
-  public <T> T findAttributeValue(@Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match) {
+  public <T> T findAttributeValue(@Nullable String version, @Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match) {
     AttributeInfo result = findAttributeInfo(rule, knownAttribute, match);
-    return result == null ? knownAttribute.getDefaultValue() : knownAttribute.ensureValue(result.value);
+    return result == null ? knownAttribute.getDefaultValue(version) : knownAttribute.ensureValue(result.value, version);
   }
 
   private static final Pattern SUB_EXPRESSION = Pattern.compile(".*(_\\d+)+");

@@ -47,7 +47,7 @@ public class BnfPinMarkerAnnotator implements Annotator, DumbAware {
     GrammarUtil.processPinnedExpressions(rule, new PairProcessor<BnfExpression, ParserGeneratorUtil.PinMatcher>() {
       @Override
       public boolean process(BnfExpression bnfExpression, ParserGeneratorUtil.PinMatcher pinMatcher) {
-        BnfAttr attr = bnfFile.findAttribute(pinMatcher.rule, KnownAttribute.PIN, pinMatcher.funcName);
+        BnfAttr attr = bnfFile.findAttribute(null, pinMatcher.rule, KnownAttribute.PIN, pinMatcher.funcName);
         return pinned.add(Pair.create(bnfExpression, attr));
       }
     });

@@ -16,39 +16,29 @@
 
 package org.intellij.grammar.inspection;
 
-import static com.intellij.openapi.util.Condition.NOT_NULL;
-import static org.intellij.grammar.KnownAttribute.RECOVER_WHILE;
-import static org.intellij.grammar.KnownAttribute.getCompatibleAttribute;
-import static org.intellij.grammar.generator.ParserGeneratorUtil.findAttribute;
-import static org.intellij.grammar.psi.impl.GrammarUtil.bnfTraverser;
-import static org.intellij.grammar.psi.impl.GrammarUtil.bnfTraverserNoAttrs;
-
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.generator.ParserGeneratorUtil;
-import org.intellij.grammar.psi.BnfAttr;
-import org.intellij.grammar.psi.BnfFile;
-import org.intellij.grammar.psi.BnfReferenceOrToken;
-import org.intellij.grammar.psi.BnfRule;
-import org.intellij.grammar.psi.BnfStringLiteralExpression;
-import org.intellij.grammar.psi.impl.BnfReferenceImpl;
-
-import javax.annotation.Nullable;
-import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalInspectionTool;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.codeInspection.SuppressionUtil;
+import com.intellij.codeInspection.*;
 import com.intellij.openapi.util.Condition;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.JBIterable;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.generator.ParserGeneratorUtil;
+import org.intellij.grammar.psi.*;
+import org.intellij.grammar.psi.impl.BnfReferenceImpl;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Set;
+
+import static com.intellij.openapi.util.Condition.NOT_NULL;
+import static org.intellij.grammar.KnownAttribute.RECOVER_WHILE;
+import static org.intellij.grammar.KnownAttribute.getCompatibleAttribute;
+import static org.intellij.grammar.generator.ParserGeneratorUtil.findAttribute;
+import static org.intellij.grammar.psi.impl.GrammarUtil.bnfTraverser;
+import static org.intellij.grammar.psi.impl.GrammarUtil.bnfTraverserNoAttrs;
 
 /**
  * @author gregsh
@@ -109,7 +99,7 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool
 					{
 						BnfRule rule = (BnfRule) element;
 						// add recovery rules to calculation
-						BnfAttr recoverAttr = findAttribute(rule, KnownAttribute.RECOVER_WHILE);
+						BnfAttr recoverAttr = findAttribute(myFile.getVersion(), rule, KnownAttribute.RECOVER_WHILE);
 						value(recoverAttr == null ? null : recoverAttr.getExpression());
 						return inParsing.contains(rule) || inSuppressed.contains(rule);
 					}

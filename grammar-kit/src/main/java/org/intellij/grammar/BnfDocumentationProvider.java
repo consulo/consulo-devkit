@@ -73,7 +73,7 @@ public class BnfDocumentationProvider implements DocumentationProvider {
       docBuilder.append("<code>").append(StringUtil.escapeXml(StringUtil.join(nextS, " | "))).append("</code>");
 
       BnfFile file = (BnfFile)rule.getContainingFile();
-      String recover = file.findAttributeValue(rule, KnownAttribute.RECOVER_WHILE, null);
+      String recover = file.findAttributeValue(file.getVersion(), rule, KnownAttribute.RECOVER_WHILE, null);
       if (BnfConstants.RECOVER_AUTO.equals(recover)) {
         docBuilder.append("<br><h1>#auto recovery predicate:</h1>");
         docBuilder.append("<code>");

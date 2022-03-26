@@ -16,25 +16,6 @@
 
 package org.intellij.grammar.livePreview;
 
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
-import static org.intellij.grammar.livePreview.LivePreviewParserDefinition.COMMENT;
-import static org.intellij.grammar.livePreview.LivePreviewParserDefinition.NUMBER;
-import static org.intellij.grammar.livePreview.LivePreviewParserDefinition.STRING;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.generator.Case;
-import org.intellij.grammar.generator.ParserGeneratorUtil;
-import org.intellij.grammar.psi.BnfFile;
 import com.intellij.lexer.LexerBase;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -42,6 +23,22 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.util.containers.ContainerUtil;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.generator.Case;
+import org.intellij.grammar.generator.ParserGeneratorUtil;
+import org.intellij.grammar.psi.BnfFile;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
+import static org.intellij.grammar.livePreview.LivePreviewParserDefinition.*;
 
 /**
  * @author gregsh
@@ -69,7 +66,7 @@ public class LivePreviewLexer extends LexerBase {
 
         Token[] tokens = new Token[map.size()];
         int i = 0;
-        String tokenConstantPrefix = getRootAttribute(bnfFile, KnownAttribute.ELEMENT_TYPE_PREFIX);
+        String tokenConstantPrefix = getRootAttribute(bnfFile.getVersion(), bnfFile, KnownAttribute.ELEMENT_TYPE_PREFIX);
         for (String pattern : map.keySet()) {
           String tokenName = map.get(pattern);
 

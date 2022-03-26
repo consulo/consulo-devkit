@@ -152,7 +152,7 @@ public class GrammarUtil
 		}
 		if(ParserGeneratorUtil.Rule.isMeta(rule))
 		{
-			String attr = getAttribute(rule, KnownAttribute.RECOVER_WHILE);
+			String attr = getAttribute(null, rule, KnownAttribute.RECOVER_WHILE);
 			if(isDoubleAngles(attr) && !result.contains(attr))
 			{
 				result.add(attr);
@@ -196,7 +196,7 @@ public class GrammarUtil
 			{
 				continue;
 			}
-			String nextName = ParserGeneratorUtil.isTokenSequence(rule, child) ? funcName :
+			String nextName = ParserGeneratorUtil.isTokenSequence(null, rule, child) ? funcName :
 					getNextName(funcName, isMeta ? i - 1 : i);
 			if(!processExpressionNames(rule, nextName, child, processor))
 			{
@@ -223,7 +223,7 @@ public class GrammarUtil
 			{
 				return true;
 			}
-			PinMatcher pinMatcher = new PinMatcher(rule, BNF_SEQUENCE, funcName);
+			PinMatcher pinMatcher = new PinMatcher(null, rule, BNF_SEQUENCE, funcName);
 			boolean pinApplied = false;
 			for(int i = 0, childExpressionsSize = children.size(); i < childExpressionsSize; i++)
 			{

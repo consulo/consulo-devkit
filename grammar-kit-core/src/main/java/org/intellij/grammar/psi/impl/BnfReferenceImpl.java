@@ -44,12 +44,13 @@ public class BnfReferenceImpl<T extends BnfComposite> extends PsiReferenceBase<T
     PsiFile containingFile = myElement.getContainingFile();
     String referenceName = getRangeInElement().substring(myElement.getText());
     PsiElement result = containingFile instanceof BnfFile? ((BnfFile)containingFile).getRule(referenceName) : null;
+    String version = containingFile instanceof BnfFile ? ((BnfFile) containingFile).getVersion() : null;
     if (result == null && GrammarUtil.isExternalReference(myElement)) {
       PsiElement parent = myElement.getParent();
       int paramCount = parent instanceof BnfSequence ? ((BnfSequence)parent).getExpressionList().size() - 1 :
         parent instanceof BnfExternalExpression? ((BnfExternalExpression)parent).getExpressionList().size() - 1 : 0;
       BnfRule rule = PsiTreeUtil.getParentOfType(myElement, BnfRule.class);
-      String parserClass = ParserGeneratorUtil.getAttribute(rule, KnownAttribute.PARSER_UTIL_CLASS);
+      String parserClass = ParserGeneratorUtil.getAttribute(version, rule, KnownAttribute.PARSER_UTIL_CLASS);
       // paramCount + 2 (builder and level)
       JavaHelper helper = JavaHelper.getJavaHelper(myElement);
       for (String className = parserClass; className != null; className = helper.getSuperClassName(className)) {

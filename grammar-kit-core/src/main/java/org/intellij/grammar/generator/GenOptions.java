@@ -37,20 +37,21 @@ public class GenOptions
 	public final boolean generateTokenAccessorsSet;
 	public final int javaVersion;
 
-	public GenOptions(BnfFile myFile)
+	public GenOptions(BnfFile bnfFile)
 	{
-		Map<String, String> genOptions = getRootAttribute(myFile, KnownAttribute.GENERATE).asMap();
+		String version = bnfFile.getVersion();
+		Map<String, String> genOptions = getRootAttribute(version, bnfFile, KnownAttribute.GENERATE).asMap(version);
 		names = Names.forName(genOptions.get("names"));
-		generatePsi = getGenerateOption(myFile, KnownAttribute.GENERATE_PSI, genOptions, "psi");
+		generatePsi = getGenerateOption(version, bnfFile, KnownAttribute.GENERATE_PSI, genOptions, "psi");
 		generatePsiFactory = !"no".equals(genOptions.get("psi-factory"));
 		generatePsiClassesMap = "yes".equals(genOptions.get("psi-classes-map"));
-		generateTokenTypes = getGenerateOption(myFile, KnownAttribute.GENERATE_TOKENS, genOptions, "tokens");
+		generateTokenTypes = getGenerateOption(version, bnfFile, KnownAttribute.GENERATE_TOKENS, genOptions, "tokens");
 		generateTokenSets = generateTokenTypes && "yes".equals(genOptions.get("token-sets"));
 		generateElementTypes = !"no".equals(genOptions.get("elements"));
 		generateExactTypes = StringUtil.notNullize(genOptions.get("exact-types"));
-		generateFirstCheck = getGenerateOption(myFile, KnownAttribute.GENERATE_FIRST_CHECK, genOptions, "first-check", "firstCheck");
-		generateExtendedPin = getGenerateOption(myFile, KnownAttribute.EXTENDED_PIN, genOptions, "extended-pin", "extendedPin");
-		generateTokenAccessors = getGenerateOption(myFile, KnownAttribute.GENERATE_TOKEN_ACCESSORS, genOptions, "token-accessors", "tokenAccessors");
+		generateFirstCheck = getGenerateOption(version, bnfFile, KnownAttribute.GENERATE_FIRST_CHECK, genOptions, "first-check", "firstCheck");
+		generateExtendedPin = getGenerateOption(version, bnfFile, KnownAttribute.EXTENDED_PIN, genOptions, "extended-pin", "extendedPin");
+		generateTokenAccessors = getGenerateOption(version, bnfFile, KnownAttribute.GENERATE_TOKEN_ACCESSORS, genOptions, "token-accessors", "tokenAccessors");
 		generateTokenAccessorsSet = genOptions.containsKey("token-accessors") || genOptions.containsKey("tokenAccessors");
 		generateVisitor = !"no".equals(genOptions.get("visitor"));
 		visitorValue = "void".equals(genOptions.get("visitor-value")) ? null : StringUtil.nullize(genOptions.get("visitor-value"));

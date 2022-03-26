@@ -45,7 +45,6 @@ public class NodeCalls
 
 	static class ConsumeTokenCall implements NodeCall
 	{
-
 		final ParserGeneratorUtil.ConsumeType consumeType;
 		final String token;
 
@@ -59,7 +58,7 @@ public class NodeCalls
 		@Override
 		public String render(@Nonnull Names names)
 		{
-			return String.format("%s(%s, %s)", consumeType.getMethodName(), names.builder, token);
+			return String.format("%s(%s, %s)", consumeType.getMethodName(null), names.builder, token);
 		}
 	}
 
@@ -79,7 +78,7 @@ public class NodeCalls
 		@Override
 		public String render(@Nonnull Names names)
 		{
-			return String.format("%s(%s, %s)", consumeType.getMethodName(), names.builder, tokenSetName);
+			return String.format("%s(%s, %s)", consumeType.getMethodName(null), names.builder, tokenSetName);
 		}
 	}
 

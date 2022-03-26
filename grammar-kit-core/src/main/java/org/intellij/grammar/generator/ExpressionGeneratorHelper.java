@@ -57,7 +57,7 @@ public class ExpressionGeneratorHelper
 		// main entry
 		String methodName = getFuncName(info.rootRule);
 		String kernelMethodName = getNextName(methodName, 0);
-		String frameName = quote(ParserGeneratorUtil.getRuleDisplayName(info.rootRule, true));
+		String frameName = quote(ParserGeneratorUtil.getRuleDisplayName(g.getVersion(), info.rootRule, true));
 		String shortPB = g.shorten(PlatformClass.PSI_BUILDER);
 		String shortMarker = !g.G.generateFQN ? "Marker" : g.getClassName(PlatformClass.PSI_BUILDER) + ".Marker";
 		g.out("public static boolean %s(%s %s, int %s, int %s) {", methodName, shortPB, g.N.builder, g.N.level, g.N.priority);
@@ -119,7 +119,7 @@ public class ExpressionGeneratorHelper
 			g.out("%sif (%s < %d%s && %s) {", first ? "" : "else ", g.N.priority, priority, substCheck, opCall);
 			first = false;
 			String elementType = g.getElementType(operator.rule);
-			boolean rightAssociative = ParserGeneratorUtil.getAttribute(operator.rule, KnownAttribute.RIGHT_ASSOCIATIVE);
+			boolean rightAssociative = ParserGeneratorUtil.getAttribute(g.getVersion(), operator.rule, KnownAttribute.RIGHT_ASSOCIATIVE);
 			String tailCall = operator.tail == null ? null : g.generateNodeCall(
 					operator.rule, operator.tail, getNextName(getFuncName(operator.rule), 1), ConsumeType.DEFAULT
 			).render(g.N);

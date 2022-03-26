@@ -137,7 +137,7 @@ public class GenerateAction extends AnAction
 			{
 				for(BnfFile file : bnfFiles)
 				{
-					String parserClass = getRootAttribute(file, KnownAttribute.PARSER_CLASS);
+					String parserClass = getRootAttribute(file.getVersion(), file, KnownAttribute.PARSER_CLASS);
 					VirtualFile target = getTargetDirectoryFor(project, file.getVirtualFile(), StringUtil.getShortName(parserClass) + ".java", StringUtil.getPackageName(parserClass), true);
 					rootMap.put(file, target);
 				}

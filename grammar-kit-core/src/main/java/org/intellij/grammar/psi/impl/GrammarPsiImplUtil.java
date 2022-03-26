@@ -51,7 +51,10 @@ public class GrammarPsiImplUtil
 		{
 			return PsiReference.EMPTY_ARRAY;
 		}
-		final String psiImplUtilClass = getRootAttribute(attr, KnownAttribute.PSI_IMPL_UTIL_CLASS);
+		PsiFile containingFile = o.getContainingFile();
+		String version = containingFile instanceof BnfFile ? ((BnfFile) containingFile).getVersion() : null;
+
+		final String psiImplUtilClass = getRootAttribute(version, attr, KnownAttribute.PSI_IMPL_UTIL_CLASS);
 		final JavaHelper javaHelper = JavaHelper.getJavaHelper(o);
 
 		return new PsiReference[]{
@@ -61,7 +64,7 @@ public class GrammarPsiImplUtil
 					private List<NavigatablePsiElement> getTargetMethods(String methodName)
 					{
 						BnfRule rule = PsiTreeUtil.getParentOfType(getElement(), BnfRule.class);
-						String mixinClass = rule == null ? null : getAttribute(rule, KnownAttribute.MIXIN);
+						String mixinClass = rule == null ? null : getAttribute(version, rule, KnownAttribute.MIXIN);
 						List<NavigatablePsiElement> implMethods = findRuleImplMethods(javaHelper, psiImplUtilClass, methodName, rule);
 						if(!implMethods.isEmpty())
 						{

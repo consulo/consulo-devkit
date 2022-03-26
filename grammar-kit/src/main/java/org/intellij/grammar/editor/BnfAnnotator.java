@@ -179,7 +179,7 @@ public class BnfAnnotator implements Annotator, DumbAware {
       annotationHolder.createInfoAnnotation(psiElement, null).setTextAttributes(BnfSyntaxHighlighter.RULE);
     }
     PsiFile file = rule.getContainingFile();
-    if (StringUtil.isNotEmpty(((BnfFile)file).findAttributeValue(rule, KnownAttribute.RECOVER_WHILE, null))) {
+    if (StringUtil.isNotEmpty(((BnfFile)file).findAttributeValue(null, rule, KnownAttribute.RECOVER_WHILE, null))) {
       annotationHolder.createInfoAnnotation(psiElement, null).setTextAttributes(BnfSyntaxHighlighter.RECOVER_MARKER);
     }
   }

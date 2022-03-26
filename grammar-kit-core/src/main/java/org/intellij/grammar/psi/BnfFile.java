@@ -37,8 +37,13 @@ public interface BnfFile extends PsiFile {
   BnfRule getRule(@Nullable String ruleName);
 
   @Nullable
-  BnfAttr findAttribute(@Nullable BnfRule rule, @Nonnull KnownAttribute<?> knownAttribute, @Nullable String match);
+  default String getVersion() {
+    return findAttributeValue(null, null, KnownAttribute.VERSION, null);
+  }
 
   @Nullable
-  <T> T findAttributeValue(@Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match);
+  BnfAttr findAttribute(@Nullable String version, @Nullable BnfRule rule, @Nonnull KnownAttribute<?> knownAttribute, @Nullable String match);
+
+  @Nullable
+  <T> T findAttributeValue(@Nullable String version, @Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match);
 }

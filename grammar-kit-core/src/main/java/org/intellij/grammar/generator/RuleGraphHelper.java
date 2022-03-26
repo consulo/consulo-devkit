@@ -62,6 +62,7 @@ public class RuleGraphHelper
 		}
 	};
 	private final BnfFile myFile;
+	private final String myVersion;
 	private final MultiMap<BnfRule, BnfRule> myRuleExtendsMap;
 	private final MultiMap<BnfRule, BnfRule> myRulesGraph = newMultiMap();
 	private final Map<BnfRule, Map<PsiElement, Cardinality>> myRuleContentsMap = new HashMap<>();
@@ -188,19 +189,20 @@ public class RuleGraphHelper
 
 	public static MultiMap<BnfRule, BnfRule> buildExtendsMap(BnfFile file)
 	{
+		String version = file.getVersion();
 		MultiMap<BnfRule, BnfRule> ruleExtendsMap = newMultiMap();
 		for(BnfRule rule : file.getRules())
 		{
-			if(isPrivateOrNoType(rule))
+			if(isPrivateOrNoType(rule, version))
 			{
 				continue;
 			}
-			BnfRule superRule = file.getRule(getAttribute(rule, KnownAttribute.EXTENDS));
+			BnfRule superRule = file.getRule(getAttribute(file.getVersion(), rule, KnownAttribute.EXTENDS));
 			if(superRule != null)
 			{
 				ruleExtendsMap.putValue(superRule, rule);
 			}
-			BnfRule target = getSynonymTargetOrSelf(rule);
+			BnfRule target = getSynonymTargetOrSelf(version, rule);
 			if(target != rule)
 			{
 				ruleExtendsMap.putValue(target, rule);
@@ -242,19 +244,19 @@ public class RuleGraphHelper
 	public static Map<String, String> getTokenNameToTextMap(final BnfFile file)
 	{
 		return CachedValuesManager.getCachedValue(file,
-				() -> new CachedValueProvider.Result<>(computeTokens(file).asMap(), file));
+				() -> new CachedValueProvider.Result<>(computeTokens(file).asMap(file.getVersion()), file));
 	}
 
 	@Nonnull
 	public static Map<String, String> getTokenTextToNameMap(final BnfFile file)
 	{
-		return CachedValuesManager.getCachedValue(file, () -> new CachedValueProvider.Result<>(computeTokens(file).asInverseMap(), file));
+		return CachedValuesManager.getCachedValue(file, () -> new CachedValueProvider.Result<>(computeTokens(file).asInverseMap(file.getVersion()), file));
 	}
 
 	// string value to constant name
 	public static KnownAttribute.ListValue computeTokens(BnfFile file)
 	{
-		return getRootAttribute(file, KnownAttribute.TOKENS);
+		return getRootAttribute(file.getVersion(), file, KnownAttribute.TOKENS);
 	}
 
 	private static final Key<CachedValue<RuleGraphHelper>> RULE_GRAPH_HELPER_KEY = Key.create("RULE_GRAPH_HELPER_KEY");
@@ -278,6 +280,7 @@ public class RuleGraphHelper
 	public RuleGraphHelper(BnfFile file, MultiMap<BnfRule, BnfRule> ruleExtendsMap)
 	{
 		myFile = file;
+		myVersion = file.getVersion();
 		myRuleExtendsMap = ruleExtendsMap;
 
 		buildRulesGraph();
@@ -365,7 +368,7 @@ public class RuleGraphHelper
 		{
 			result = collectMembers(rule, rule.getExpression(), visited);
 		}
-		if(visited.size() > 1 && visited.contains(RECURSION_MARKER) && isPrivateOrNoType(rule))
+		if(visited.size() > 1 && visited.contains(RECURSION_MARKER) && isPrivateOrNoType(rule, myVersion))
 		{
 			return result;
 		}
@@ -419,7 +422,7 @@ public class RuleGraphHelper
 		}
 		for(BnfRule rule : myFile.getRules())
 		{
-			if(Rule.isLeft(rule) && !isPrivateOrNoType(rule) && !Rule.isInner(rule))
+			if(Rule.isLeft(rule) && !isPrivateOrNoType(rule, myVersion) && !Rule.isInner(rule))
 			{
 				for(BnfRule r : getRulesToTheLeft(rule).keySet())
 				{
@@ -481,8 +484,8 @@ public class RuleGraphHelper
 	{
 		boolean firstNonTrivial = tree == Rule.firstNotTrivial(rule);
 		boolean outerLeft = (firstNonTrivial || rule.getExpression() == tree) &&
-				Rule.isLeft(rule) && !isPrivateOrNoType(rule) && !Rule.isInner(rule);
-		boolean tryCollapse = firstNonTrivial && !outerLeft && !isPrivateOrNoType(rule) && !Rule.isFake(rule);
+				Rule.isLeft(rule) && !isPrivateOrNoType(rule, myVersion) && !Rule.isInner(rule);
+		boolean tryCollapse = firstNonTrivial && !outerLeft && !isPrivateOrNoType(rule, myVersion) && !Rule.isFake(rule);
 
 		Map<PsiElement, Cardinality> result;
 		if(tree instanceof BnfReferenceOrToken)
@@ -496,10 +499,10 @@ public class RuleGraphHelper
 				}
 				else if(Rule.isLeft(targetRule))
 				{
-					if(!Rule.isInner(targetRule) && !isPrivateOrNoType(targetRule))
+					if(!Rule.isInner(targetRule) && !isPrivateOrNoType(targetRule, myVersion))
 					{
 						result = psiMap();
-						result.put(getSynonymTargetOrSelf(targetRule), REQUIRED);
+						result.put(getSynonymTargetOrSelf(myVersion, targetRule), REQUIRED);
 						result.put(LEFT_MARKER, REQUIRED);
 					}
 					else
@@ -507,7 +510,7 @@ public class RuleGraphHelper
 						result = Collections.emptyMap();
 					}
 				}
-				else if(isPrivateOrNoType(targetRule))
+				else if(isPrivateOrNoType(targetRule, myVersion))
 				{
 					result = collectMembers(targetRule, visited);
 				}
@@ -517,7 +520,7 @@ public class RuleGraphHelper
 				}
 				else
 				{
-					result = psiMap(getSynonymTargetOrSelf(targetRule), REQUIRED);
+					result = psiMap(getSynonymTargetOrSelf(myVersion, targetRule), REQUIRED);
 				}
 			}
 			else
@@ -545,7 +548,7 @@ public class RuleGraphHelper
 				{
 					result = psiMap(newExternalPsi("#" + ruleRef.getText()), REQUIRED);
 				}
-				else if(isPrivateOrNoType(metaRule))
+				else if(isPrivateOrNoType(metaRule, myVersion))
 				{
 					result = psiMap();
 					Map<PsiElement, Cardinality> metaResults = collectMembers(metaRule, visited);
@@ -636,7 +639,7 @@ public class RuleGraphHelper
 		return result;
 	}
 
-	private static Map<BnfRule, Cardinality> getRulesToTheLeft(BnfRule rule)
+	private Map<BnfRule, Cardinality> getRulesToTheLeft(BnfRule rule)
 	{
 		Map<BnfRule, Cardinality> result = new LinkedHashMap<>();
 		Map<BnfExpression, BnfExpression> nextMap = new BnfFirstNextAnalyzer().setBackward(true).setPublicRuleOpaque(true).calcNext(rule);
@@ -647,7 +650,7 @@ public class RuleGraphHelper
 				continue;
 			}
 			BnfRule r = ((BnfReferenceOrToken) e).resolveRule();
-			if(r == null || isPrivateOrNoType(r))
+			if(r == null || isPrivateOrNoType(r, myVersion))
 			{
 				continue;
 			}
@@ -896,7 +899,7 @@ public class RuleGraphHelper
 					BnfRule rule = myFile.getRule(text);
 					if(Rule.isExternal(rule))
 					{
-						r = myFile.getRule(getAttribute(rule, KnownAttribute.EXTENDS));
+						r = myFile.getRule(getAttribute(myFile.getVersion(), rule, KnownAttribute.EXTENDS));
 						if(r != null)
 						{
 							externalMap.put(element, r);
@@ -954,7 +957,7 @@ public class RuleGraphHelper
 		for(Map.Entry<BnfRule, BnfRule> e : new ArrayList<>(rulesAndAlts.entrySet()))
 		{
 			BnfRule rule = e.getKey();
-			e.setValue(getSynonymTargetOrSelf(rule));
+			e.setValue(getSynonymTargetOrSelf(myVersion, rule));
 			hasSynonyms |= rule != e.getValue();
 			for(PsiElement r : myRulesCollapseMap.get(rule))
 			{
@@ -1133,9 +1136,9 @@ public class RuleGraphHelper
 		return result;
 	}
 
-	public static BnfRule getSynonymTargetOrSelf(BnfRule rule)
+	public static BnfRule getSynonymTargetOrSelf(String version, BnfRule rule)
 	{
-		String attr = getAttribute(rule, KnownAttribute.ELEMENT_TYPE);
+		String attr = getAttribute(version, rule, KnownAttribute.ELEMENT_TYPE);
 		if(attr != null)
 		{
 			BnfRule realRule = ((BnfFile) rule.getContainingFile()).getRule(attr);
@@ -1157,9 +1160,9 @@ public class RuleGraphHelper
 		return shouldGeneratePsi(rule, false);
 	}
 
-	public static boolean isPrivateOrNoType(BnfRule rule)
+	public static boolean isPrivateOrNoType(BnfRule rule, String version)
 	{
-		return Rule.isPrivate(rule) || "".equals(getAttribute(rule, KnownAttribute.ELEMENT_TYPE));
+		return Rule.isPrivate(rule) || "".equals(getAttribute(version, rule, KnownAttribute.ELEMENT_TYPE));
 	}
 
 	private static boolean shouldGeneratePsi(BnfRule rule, boolean psiClasses)
@@ -1174,7 +1177,7 @@ public class RuleGraphHelper
 		{
 			return false;
 		}
-		String attr = getAttribute(rule, KnownAttribute.ELEMENT_TYPE);
+		String attr = getAttribute(containingFile.getVersion(), rule, KnownAttribute.ELEMENT_TYPE);
 		if(!psiClasses)
 		{
 			return !"".equals(attr);

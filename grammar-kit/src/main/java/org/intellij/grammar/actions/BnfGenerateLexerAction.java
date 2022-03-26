@@ -16,31 +16,6 @@
 
 package org.intellij.grammar.actions;
 
-import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
-
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.generator.BnfConstants;
-import org.intellij.grammar.generator.Case;
-import org.intellij.grammar.generator.ParserGeneratorUtil;
-import org.intellij.grammar.generator.RuleGraphHelper;
-import org.intellij.grammar.psi.BnfAttrs;
-import org.intellij.grammar.psi.BnfFile;
-import org.intellij.grammar.psi.BnfReferenceOrToken;
-import org.intellij.grammar.psi.impl.GrammarUtil;
-
-import javax.annotation.Nullable;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -61,17 +36,35 @@ import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileWrapper;
-import com.intellij.psi.JavaDirectoryService;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
+import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.ProjectScope;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.ContainerUtil;
 import consulo.psi.PsiPackage;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.intellij.grammar.KnownAttribute;
+import org.intellij.grammar.generator.BnfConstants;
+import org.intellij.grammar.generator.Case;
+import org.intellij.grammar.generator.ParserGeneratorUtil;
+import org.intellij.grammar.generator.RuleGraphHelper;
+import org.intellij.grammar.psi.BnfAttrs;
+import org.intellij.grammar.psi.BnfFile;
+import org.intellij.grammar.psi.BnfReferenceOrToken;
+import org.intellij.grammar.psi.impl.GrammarUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
 
 /**
  * @author greg
@@ -181,13 +174,14 @@ public class BnfGenerateLexerAction extends AnAction {
 
     VelocityEngine ve = new VelocityEngine();
     ve.init();
-    
+
+    String version = bnfFile.getVersion();
     VelocityContext context = new VelocityContext();
     context.put("lexerClass", getLexerName(bnfFile));
-    context.put("packageName", StringUtil.notNullize(packageName, StringUtil.getPackageName(getRootAttribute(bnfFile, KnownAttribute.PARSER_CLASS))));
-    context.put("tokenPrefix", getRootAttribute(bnfFile, KnownAttribute.ELEMENT_TYPE_PREFIX));
-    context.put("typesClass", getRootAttribute(bnfFile, KnownAttribute.ELEMENT_TYPE_HOLDER_CLASS));
-    context.put("tokenPrefix", getRootAttribute(bnfFile, KnownAttribute.ELEMENT_TYPE_PREFIX));
+    context.put("packageName", StringUtil.notNullize(packageName, StringUtil.getPackageName(getRootAttribute(version, bnfFile, KnownAttribute.PARSER_CLASS))));
+    context.put("tokenPrefix", getRootAttribute(version, bnfFile, KnownAttribute.ELEMENT_TYPE_PREFIX));
+    context.put("typesClass", getRootAttribute(version, bnfFile, KnownAttribute.ELEMENT_TYPE_HOLDER_CLASS));
+    context.put("tokenPrefix", getRootAttribute(version, bnfFile, KnownAttribute.ELEMENT_TYPE_PREFIX));
     context.put("simpleTokens", simpleTokens);
     context.put("regexpTokens", regexpTokens);
     context.put("StringUtil", StringUtil.class);
