@@ -58,7 +58,7 @@ public class KnownAttribute<T>
 	public static final KnownAttribute<String> ELEMENT_TYPE_CLASS = create(true, String.class, "elementTypeClass", PlatformClass.IELEMENT_TYPE);
 	public static final KnownAttribute<String> TOKEN_TYPE_CLASS = create(true, String.class, "tokenTypeClass", PlatformClass.IELEMENT_TYPE);
 	public static final KnownAttribute<String> PARSER_CLASS = create(true, String.class, "parserClass", "generated.GeneratedParser");
-	public static final KnownAttribute<String> PARSER_UTIL_CLASS = create(true, String.class, "parserUtilClass", BnfConstants.GPUB_CLASS);
+	public static final KnownAttribute<String> PARSER_UTIL_CLASS = create(true, String.class, "parserUtilClass", PlatformClass.GENERATED_PARSER_UTIL_BASE);
 	public static final KnownAttribute<String> ELEMENT_TYPE_HOLDER_CLASS = create(true, String.class, "elementTypeHolderClass", "generated.GeneratedTypes");
 	public static final KnownAttribute<String> ELEMENT_TYPE_PREFIX = create(true, String.class, "elementTypePrefix", "");
 	public static final KnownAttribute<String> ELEMENT_TYPE_FACTORY = create(true, String.class, "elementTypeFactory", (String) null);

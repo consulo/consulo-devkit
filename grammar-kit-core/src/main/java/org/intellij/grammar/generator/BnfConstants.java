@@ -21,8 +21,6 @@ public interface BnfConstants
 
 	String REGEXP_PREFIX = "regexp:";
 
-	String GPUB_CLASS = "com.intellij.lang.parser.GeneratedParserUtilBase";
-
 	String OVERRIDE_ANNO = "@java.lang.Override";
 	String NOTNULL_ANNO = "@" + Nonnull.class.getName();
 	String NULLABLE_ANNO = "@" + Nullable.class.getName();

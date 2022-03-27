@@ -38,9 +38,9 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.Consumer;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.ContainerUtil;
+import consulo.devkit.grammarKit.generator.PlatformClass;
 import consulo.ui.annotation.RequiredUIAccess;
 import org.intellij.grammar.KnownAttribute;
-import org.intellij.grammar.generator.BnfConstants;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrs;
 import org.intellij.grammar.psi.BnfFile;
@@ -81,7 +81,7 @@ public class BnfGenerateParserUtilAction extends AnAction
 		Project project = file.getProject();
 		BnfFile bnfFile = (BnfFile) file;
 		final String qualifiedName = createClass(
-				bnfFile, "Create Parser Util Class", BnfConstants.GPUB_CLASS,
+				bnfFile, "Create Parser Util Class", PlatformClass.GENERATED_PARSER_UTIL_BASE.select(bnfFile.getVersion()),
 				getGrammarName(bnfFile) + "ParserUtil",
 				getGrammarPackage(bnfFile));
 		if(qualifiedName == null)
