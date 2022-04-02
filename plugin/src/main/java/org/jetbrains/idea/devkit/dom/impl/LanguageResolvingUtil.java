@@ -15,23 +15,11 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.swing.Icon;
-
-import consulo.ui.image.Image;
-import org.jetbrains.idea.devkit.dom.Extension;
-import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import com.intellij.codeInsight.completion.CompletionContributorEP;
 import com.intellij.icons.AllIcons;
 import com.intellij.lang.DependentLanguage;
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.util.Condition;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScopesCore;
@@ -42,11 +30,25 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.DomJavaUtil;
 import com.intellij.util.xml.GenericAttributeValue;
-import consulo.awt.TargetAWT;
+import consulo.ui.image.Image;
+import org.jetbrains.idea.devkit.dom.Extension;
+import org.jetbrains.idea.devkit.dom.ExtensionPoint;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 class LanguageResolvingUtil
 {
 	private static String ANY_LANGUAGE_DEFAULT_ID = Language.ANY.getID();
+
+	private static String[] ourLanguageClasses = {
+			// v2 - will removed in future
+			"com.intellij.lang.Language",
+			// v3
+			"consulo.language.Language"
+	};
 
 	static Collection<LanguageDefinition> getAllLanguageDefinitions(ConvertContext context)
 	{
@@ -67,40 +69,45 @@ class LanguageResolvingUtil
 
 	private static List<LanguageDefinition> collectLibraryLanguages(final ConvertContext context)
 	{
-		return ContainerUtil.mapNotNull(Language.getRegisteredLanguages(), new NullableFunction<Language, LanguageDefinition>()
+		return ContainerUtil.mapNotNull(Language.getRegisteredLanguages(), language ->
 		{
-			@Override
-			public LanguageDefinition fun(Language language)
+			if(language.getID().isEmpty() || language instanceof DependentLanguage)
 			{
-				if(language.getID().isEmpty() || language instanceof DependentLanguage)
-				{
-					return null;
-				}
-				final PsiClass psiClass = DomJavaUtil.findClass(language.getClass().getName(), context.getInvocationElement());
-				if(psiClass == null)
-				{
-					return null;
-				}
-
-				final LanguageFileType type = language.getAssociatedFileType();
-				final Image icon = type != null ? type.getIcon() : null;
-				return new LanguageDefinition(language.getID(), psiClass, icon, language.getDisplayName());
+				return null;
 			}
+			final PsiClass psiClass = DomJavaUtil.findClass(language.getClass().getName(), context.getInvocationElement());
+			if(psiClass == null)
+			{
+				return null;
+			}
+
+			final LanguageFileType type = language.getAssociatedFileType();
+			final Image icon = type != null ? type.getIcon() : null;
+			return new LanguageDefinition(language.getID(), psiClass, icon, language.getDisplayName());
 		});
 	}
 
 	private static List<LanguageDefinition> collectProjectLanguages(ConvertContext context, final List<LanguageDefinition> libraryLanguages)
 	{
-		final PsiClass languageClass = DomJavaUtil.findClass(Language.class.getName(), context.getInvocationElement());
-		if(languageClass == null)
-		{
-			return Collections.emptyList();
-		}
+		List<PsiClass> languagesPsiClasses = new ArrayList<>();
 
 		GlobalSearchScope scope = GlobalSearchScopesCore.projectProductionScope(context.getProject());
-		final Collection<PsiClass> languages = ClassInheritorsSearch.search(languageClass, scope, true).findAll();
 
-		return ContainerUtil.mapNotNull(languages, new NullableFunction<PsiClass, LanguageDefinition>()
+		for(String languageClassName : ourLanguageClasses)
+		{
+			final PsiClass languageClass = DomJavaUtil.findClass(languageClassName, context.getInvocationElement());
+			if(languageClass == null)
+			{
+				continue;
+			}
+
+			ClassInheritorsSearch.search(languageClass, scope, true).forEach(it -> {
+				languagesPsiClasses.add(it);
+				return true;
+			});
+		}
+
+		return ContainerUtil.mapNotNull(languagesPsiClasses, new NullableFunction<PsiClass, LanguageDefinition>()
 		{
 			@Nullable
 			@Override
@@ -111,14 +118,7 @@ class LanguageResolvingUtil
 					return null;
 				}
 
-				if(ContainerUtil.exists(libraryLanguages, new Condition<LanguageDefinition>()
-				{
-					@Override
-					public boolean value(LanguageDefinition definition)
-					{
-						return definition.clazz.equals(language);
-					}
-				}))
+				if(ContainerUtil.exists(libraryLanguages, definition -> definition.clazz.equals(language)))
 				{
 					return null;
 				}
@@ -239,7 +239,17 @@ class LanguageResolvingUtil
 	@Nullable
 	private static LanguageDefinition createAnyLanguageDefinition(ConvertContext context)
 	{
-		final PsiClass languageClass = DomJavaUtil.findClass(Language.class.getName(), context.getInvocationElement());
+		PsiClass languageClass = null;
+		for(String languageClassName : ourLanguageClasses)
+		{
+			final PsiClass temp = DomJavaUtil.findClass(languageClassName, context.getInvocationElement());
+			if(temp != null)
+			{
+				languageClass = temp;
+				break;
+			}
+		}
+
 		if(languageClass == null)
 		{
 			return null;

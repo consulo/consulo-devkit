@@ -58,7 +58,7 @@ public class PluginModuleUtil
 		{
 			return false;
 		}
-		return JavaPsiFacade.getInstance(module.getProject()).findClass("consulo.application.Application", GlobalSearchScope.moduleScope(module)) != null;
+		return JavaPsiFacade.getInstance(module.getProject()).findClass("consulo.application.Application", GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module)) != null;
 	}
 
 	public static Module[] getAllPluginModules(final Project project)
