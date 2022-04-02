@@ -15,7 +15,6 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -34,6 +33,8 @@ import com.intellij.util.xml.reflect.DomExtender;
 import com.intellij.util.xml.reflect.DomExtension;
 import com.intellij.util.xml.reflect.DomExtensionsRegistrar;
 import com.intellij.util.xmlb.Constants;
+import consulo.devkit.DevKitConstants;
+import consulo.devkit.util.PluginModuleUtil;
 import org.jetbrains.idea.devkit.dom.*;
 
 import javax.annotation.Nonnull;
@@ -117,7 +118,8 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 		String prefix = getEpPrefix(extensions);
 		for(IdeaPlugin plugin : getVisiblePlugins(ideaPlugin))
 		{
-			final String pluginId = StringUtil.notNullize(plugin.getPluginId(), PluginManager.CORE_PLUGIN_ID);
+			String basePlugin = PluginModuleUtil.isConsuloV3(extensions) ? DevKitConstants.BASE_PLUGIN_ID_V3 : DevKitConstants.BASE_PLUGIN_ID;
+			final String pluginId = StringUtil.notNullize(plugin.getPluginId(), basePlugin);
 			for(ExtensionPoints points : plugin.getExtensionPoints())
 			{
 				for(ExtensionPoint point : points.getExtensionPoints())
@@ -448,7 +450,14 @@ public class ExtensionDomExtender extends DomExtender<Extensions>
 	{
 		Set<String> result = new HashSet<>();
 
-		result.add(PluginManager.CORE_PLUGIN_ID);
+		if(PluginModuleUtil.isConsuloV3(ideaPlugin))
+		{
+			result.add(DevKitConstants.BASE_PLUGIN_ID_V3);
+		}
+		else
+		{
+			result.add(DevKitConstants.BASE_PLUGIN_ID);
+		}
 
 		for(Dependency dependency : ideaPlugin.getDependencies())
 		{

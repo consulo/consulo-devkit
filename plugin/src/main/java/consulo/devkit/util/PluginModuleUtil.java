@@ -28,6 +28,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.xml.XmlFile;
+import com.intellij.util.xml.DomElement;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.java.module.extension.JavaModuleExtension;
@@ -49,6 +50,16 @@ import java.util.Set;
 public class PluginModuleUtil
 {
 	public static final String PLUGIN_XML = "plugin.xml";
+
+	public static boolean isConsuloV3(@Nonnull DomElement element)
+	{
+		Module module = element.getModule();
+		if(module == null)
+		{
+			return false;
+		}
+		return JavaPsiFacade.getInstance(module.getProject()).findClass("consulo.application.Application", GlobalSearchScope.moduleScope(module)) != null;
+	}
 
 	public static Module[] getAllPluginModules(final Project project)
 	{

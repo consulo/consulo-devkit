@@ -15,12 +15,14 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.intellij.openapi.util.text.StringUtil;
+import consulo.devkit.DevKitConstants;
+import consulo.devkit.util.PluginModuleUtil;
 import org.jetbrains.idea.devkit.dom.ExtensionPoint;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-import com.intellij.openapi.util.text.StringUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class ExtensionPointImpl implements ExtensionPoint
 {
@@ -34,7 +36,8 @@ public abstract class ExtensionPointImpl implements ExtensionPoint
 			return null;
 		}
 
-		return StringUtil.notNullize(plugin.getPluginId(), "com.intellij");
+		String basePluginId = PluginModuleUtil.isConsuloV3(plugin) ? DevKitConstants.BASE_PLUGIN_ID_V3 : DevKitConstants.BASE_PLUGIN_ID;
+		return StringUtil.notNullize(plugin.getPluginId(), basePluginId);
 	}
 
 	@Nonnull

@@ -1,6 +1,5 @@
 package consulo.devkit.inspections.util.service;
 
-import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.extensions.impl.ExtensionAreaId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -18,6 +17,8 @@ import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
 import com.intellij.util.xml.DomService;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.devkit.DevKitConstants;
+import consulo.devkit.util.PluginModuleUtil;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.Extensions;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
@@ -118,7 +119,9 @@ public class ServiceLocator
 			for(Extensions extensions : rootElement.getExtensions())
 			{
 				String extensionNs = extensions.getDefaultExtensionNs().getStringValue();
-				if(!PluginManagerCore.CORE_PLUGIN_ID.equals(extensionNs))
+
+				String basePlugin = PluginModuleUtil.isConsuloV3(rootElement) ? DevKitConstants.BASE_PLUGIN_ID_V3 : DevKitConstants.BASE_PLUGIN_ID;
+				if(!basePlugin.equals(extensionNs))
 				{
 					continue;
 				}
