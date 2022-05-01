@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.psi.*;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.util.IncorrectOperationException;
@@ -101,7 +102,13 @@ public class ExportAllPackageIntention implements IntentionAction
 
 		PsiManager psiManager = PsiManager.getInstance(project);
 
-		Set<String> packages = new TreeSet<>();
+		Set<String> alreadyExported = new HashSet<>();
+		for(PsiPackageAccessibilityStatement statement : javaModule.getExports())
+		{
+			alreadyExported.add(statement.getPackageName());
+		}
+
+		Set<String> packages = new TreeSet<>(Comparator.reverseOrder());
 		for(VirtualFile packageDirectory : packageDirectories)
 		{
 			PsiDirectory directory = psiManager.findDirectory(packageDirectory);
@@ -109,9 +116,16 @@ public class ExportAllPackageIntention implements IntentionAction
 			{
 				continue;
 			}
+
 			PsiPackage psiPackage = PsiPackageManager.getInstance(project).findPackage(directory, JavaModuleExtension.class);
-			if(psiPackage != null)
+			if(psiPackage instanceof PsiJavaPackage psiJavaPackage)
 			{
+				PsiClass[] classes = psiJavaPackage.getClasses(GlobalSearchScope.moduleScope(module));
+				if(classes.length == 0 || alreadyExported.contains(psiPackage.getQualifiedName()))
+				{
+					continue;
+				}
+
 				packages.add(psiPackage.getQualifiedName());
 			}
 		}
@@ -121,7 +135,7 @@ public class ExportAllPackageIntention implements IntentionAction
 			PsiElement anchor = getLastItem(javaModule.getExports());
 			if(anchor == null)
 			{
-				ASTNode lbrace = javaModule.getNode().findChildByType(JavaTokenType.LBRACE);
+				ASTNode lbrace = javaModule.getNode().findChildByType(JavaTokenType.RBRACE);
 				anchor = lbrace == null ? null : lbrace.getPsi();
 			}
 
@@ -134,7 +148,7 @@ public class ExportAllPackageIntention implements IntentionAction
 			{
 				PsiStatement statement = psiElementFactory.createModuleStatementFromText("exports " + aPackage + ";", psiFile);
 
-				anchor = javaModule.addAfter(statement, anchor);
+				anchor = javaModule.addBefore(statement, anchor);
 			}
 		});
 	}
