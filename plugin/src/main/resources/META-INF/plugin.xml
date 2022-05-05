@@ -27,6 +27,8 @@
 		<coverageEngineExtension implementation="consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
 		<overrideImplementsAnnotationsHandler
 				implementation="consulo.devkit.codeInsight.generation.XActionOverrideImplementsAnnotationsHandler"/>
+
+		<predefinedMigrationMapProvider implementation="consulo.devkit.Consulo3MigrationProvider"/>
 	</extensions>
 
 	<extensions defaultExtensionNs="com.intellij">
