@@ -50,6 +50,9 @@ public interface ExtensionPoint extends DomElement
 	GenericAttributeValue<PsiClass> getBeanClass();
 
 	@Nonnull
+	GenericAttributeValue<Boolean> getInternal();
+
+	@Nonnull
 	GenericAttributeValue<Area> getArea();
 
 	@Nonnull
