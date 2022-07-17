@@ -288,7 +288,8 @@ public class ParserGenerator
 			String implSuperRaw = getRawClassName(implSuper);
 			String stubName =
 					StringUtil.isNotEmpty(stubClass) ? stubClass :
-							implSuper.indexOf("<") < implSuper.indexOf(">") && !myJavaHelper.findClassMethods(implSuperRaw, JavaHelper.MethodType.INSTANCE, "getParentByStub", 0).isEmpty() ?
+							implSuper.indexOf("<") < implSuper.indexOf(">") && !myJavaHelper.findClassMethods(myVersion, implSuperRaw, JavaHelper.MethodType.INSTANCE, "getParentByStub", 0).isEmpty
+									() ?
 									implSuper.substring(implSuper.indexOf("<") + 1, implSuper.indexOf(">")) : null;
 			if(StringUtil.isNotEmpty(stubName))
 			{
@@ -2300,7 +2301,7 @@ public class ParserGenerator
 				continue;
 			}
 			topSuperClass = getRawClassName(superClass);
-			constructors = myJavaHelper.findClassMethods(topSuperClass, JavaHelper.MethodType.CONSTRUCTOR, "*", -1);
+			constructors = myJavaHelper.findClassMethods(myVersion, topSuperClass, JavaHelper.MethodType.CONSTRUCTOR, "*", -1);
 			if(!constructors.isEmpty())
 			{
 				break;
@@ -2364,7 +2365,7 @@ public class ParserGenerator
 		{
 			for(NavigatablePsiElement m : constructors)
 			{
-				List<String> types = myJavaHelper.getMethodTypes(m);
+				List<String> types = myJavaHelper.getMethodTypes(myVersion, m);
 				Function<Integer, List<String>> annoProvider = i -> myJavaHelper.getParameterAnnotations(m, (i - 1) / 2);
 				out("public " + shortName + "(" + getParametersString(this, types, 1, 3, substitutor, annoProvider, myShortener) + ") {");
 				out("super(" + getParametersString(this, types, 1, 2, substitutor, annoProvider, myShortener) + ");");
@@ -2381,10 +2382,10 @@ public class ParserGenerator
 			boolean addOverride = topSuperRule != rule && info.mixin == null;
 			if(!addOverride && topSuperClass != null)
 			{
-				for(NavigatablePsiElement m : myJavaHelper.findClassMethods(
+				for(NavigatablePsiElement m : myJavaHelper.findClassMethods(myVersion,
 						topSuperClass, JavaHelper.MethodType.INSTANCE, "accept", 1, myVisitorClassName))
 				{
-					String paramType = myJavaHelper.getMethodTypes(m).get(1);
+					String paramType = myJavaHelper.getMethodTypes(myVersion, m).get(1);
 					if(paramType.endsWith(myVisitorClassName + r))
 					{
 						addOverride = true;
@@ -2435,14 +2436,14 @@ public class ParserGenerator
 					if(intf)
 					{
 						String mixinClass = getAttribute(myVersion, rule, KnownAttribute.MIXIN);
-						List<NavigatablePsiElement> methods = myJavaHelper.findClassMethods(mixinClass, JavaHelper.MethodType.INSTANCE, methodInfo.name, -1);
+						List<NavigatablePsiElement> methods = myJavaHelper.findClassMethods(myVersion, mixinClass, JavaHelper.MethodType.INSTANCE, methodInfo.name, -1);
 						for(NavigatablePsiElement method : methods)
 						{
 							generateUtilMethod(methodInfo.name, method, true, false, visited);
 							found = true;
 						}
 					}
-					List<NavigatablePsiElement> methods = findRuleImplMethods(myJavaHelper, myPsiImplUtilClass, methodInfo.name, rule);
+					List<NavigatablePsiElement> methods = findRuleImplMethods(myVersion, myJavaHelper, myPsiImplUtilClass, methodInfo.name, rule);
 					for(NavigatablePsiElement method : methods)
 					{
 						generateUtilMethod(methodInfo.name, method, intf, true, visited);
@@ -2509,8 +2510,8 @@ public class ParserGenerator
 				continue;
 			}
 
-			List<NavigatablePsiElement> mixinMethods = myJavaHelper.findClassMethods(mixinClass, JavaHelper.MethodType.INSTANCE, methodInfo.name, -1);
-			List<NavigatablePsiElement> implMethods = findRuleImplMethods(myJavaHelper, myPsiImplUtilClass, methodInfo.name, rule);
+			List<NavigatablePsiElement> mixinMethods = myJavaHelper.findClassMethods(myVersion, mixinClass, JavaHelper.MethodType.INSTANCE, methodInfo.name, -1);
+			List<NavigatablePsiElement> implMethods = findRuleImplMethods(myVersion, myJavaHelper, myPsiImplUtilClass, methodInfo.name, rule);
 
 			collectMethodTypesToImport(mixinMethods, false, result);
 			collectMethodTypesToImport(implMethods, true, result);
@@ -2522,7 +2523,7 @@ public class ParserGenerator
 	{
 		for(NavigatablePsiElement method : methods)
 		{
-			List<String> types = myJavaHelper.getMethodTypes(method);
+			List<String> types = myJavaHelper.getMethodTypes(myVersion, method);
 			String returnType = ContainerUtil.getFirstItem(types);
 			addTypeToImports(returnType, myJavaHelper.getAnnotations(method), result);
 
@@ -2857,7 +2858,7 @@ public class ParserGenerator
 									boolean isInPsiUtil,
 									Set<String> visited)
 	{
-		List<String> methodTypes = method == null ? Collections.emptyList() : myJavaHelper.getMethodTypes(method);
+		List<String> methodTypes = method == null ? Collections.emptyList() : myJavaHelper.getMethodTypes(myVersion, method);
 		String returnType = methodTypes.isEmpty() ? "void" : shorten(methodTypes.get(0));
 		int offset = methodTypes.isEmpty() || isInPsiUtil && methodTypes.size() < 3 ? 0 :
 				isInPsiUtil ? 3 : 1;

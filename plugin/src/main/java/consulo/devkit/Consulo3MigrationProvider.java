@@ -18,3 +18,4 @@ public class Consulo3MigrationProvider implements PredefinedMigrationProvider
 		return getClass().getResource("Consulo2-Consulo3.xml");
 	}
 }
+

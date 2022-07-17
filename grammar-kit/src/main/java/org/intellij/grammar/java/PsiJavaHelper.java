@@ -1,12 +1,5 @@
 package org.intellij.grammar.java;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.IndexNotReadyException;
 import com.intellij.openapi.util.text.StringUtil;
@@ -16,12 +9,22 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.ContainerUtilRt;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+@Singleton
 public class PsiJavaHelper extends JavaHelper
 {
 	private final JavaPsiFacade myFacade;
 	private final PsiElementFactory myElementFactory;
 
+	@Inject
 	private PsiJavaHelper(JavaPsiFacade facade, PsiElementFactory elementFactory)
 	{
 		myFacade = facade;
@@ -67,7 +70,7 @@ public class PsiJavaHelper extends JavaHelper
 
 	@Nonnull
 	@Override
-	public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @Nonnull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
+	public List<NavigatablePsiElement> findClassMethods(@Nullable String version, @Nullable String className, @Nonnull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
 	{
 		if(methodName == null)
 		{
@@ -76,7 +79,7 @@ public class PsiJavaHelper extends JavaHelper
 		PsiClass aClass = findClassSafe(className);
 		if(aClass == null)
 		{
-			return super.findClassMethods(className, methodType, methodName, paramCount, paramTypes);
+			return super.findClassMethods(version, className, methodType, methodName, paramCount, paramTypes);
 		}
 		List<NavigatablePsiElement> result = ContainerUtil.newArrayList();
 		PsiMethod[] methods = methodType == MethodType.CONSTRUCTOR ? aClass.getConstructors() : aClass.getMethods();
@@ -156,11 +159,11 @@ public class PsiJavaHelper extends JavaHelper
 
 	@Nonnull
 	@Override
-	public List<String> getMethodTypes(NavigatablePsiElement method)
+	public List<String> getMethodTypes(String version, NavigatablePsiElement method)
 	{
 		if(!(method instanceof PsiMethod))
 		{
-			return super.getMethodTypes(method);
+			return super.getMethodTypes(version, method);
 		}
 		PsiMethod psiMethod = (PsiMethod) method;
 		PsiType returnType = psiMethod.getReturnType();

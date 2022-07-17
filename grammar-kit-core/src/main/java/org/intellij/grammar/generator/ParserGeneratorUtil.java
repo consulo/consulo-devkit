@@ -501,7 +501,8 @@ public class ParserGeneratorUtil
 	}
 
 	@Nonnull
-	public static List<NavigatablePsiElement> findRuleImplMethods(@Nonnull JavaHelper helper,
+	public static List<NavigatablePsiElement> findRuleImplMethods(String version,
+																  @Nonnull JavaHelper helper,
 																  @Nullable String psiImplUtilClass,
 																  @Nullable String methodName,
 																  @Nullable BnfRule rule)
@@ -517,7 +518,7 @@ public class ParserGeneratorUtil
 		{
 			for(String utilClass = psiImplUtilClass; utilClass != null; utilClass = helper.getSuperClassName(utilClass))
 			{
-				methods = helper.findClassMethods(utilClass, JavaHelper.MethodType.STATIC, methodName, -1, ruleClass);
+				methods = helper.findClassMethods(version, utilClass, JavaHelper.MethodType.STATIC, methodName, -1, ruleClass);
 				selectedSuperClass = ruleClass;
 				if(!methods.isEmpty())
 				{
@@ -525,11 +526,12 @@ public class ParserGeneratorUtil
 				}
 			}
 		}
-		return filterOutShadowedRuleImplMethods(selectedSuperClass, methods, helper);
+		return filterOutShadowedRuleImplMethods(version, selectedSuperClass, methods, helper);
 	}
 
 	@Nonnull
-	private static List<NavigatablePsiElement> filterOutShadowedRuleImplMethods(String selectedClass,
+	private static List<NavigatablePsiElement> filterOutShadowedRuleImplMethods(@Nullable String version,
+																				String selectedClass,
 																				List<NavigatablePsiElement> methods,
 																				@Nonnull JavaHelper helper)
 	{
@@ -544,7 +546,7 @@ public class ParserGeneratorUtil
 		Map<String, NavigatablePsiElement> prototypes = new LinkedHashMap<>();
 		for(NavigatablePsiElement m2 : methods)
 		{
-			List<String> types = helper.getMethodTypes(m2);
+			List<String> types = helper.getMethodTypes(version, m2);
 			String proto = m2.getName() + types.subList(3, types.size());
 			NavigatablePsiElement m1 = prototypes.get(proto);
 			if(m1 == null)
@@ -552,7 +554,7 @@ public class ParserGeneratorUtil
 				prototypes.put(proto, m2);
 				continue;
 			}
-			String type1 = helper.getMethodTypes(m1).get(1);
+			String type1 = helper.getMethodTypes(version, m1).get(1);
 			String type2 = types.get(1);
 			if(Objects.equals(type1, type2))
 			{

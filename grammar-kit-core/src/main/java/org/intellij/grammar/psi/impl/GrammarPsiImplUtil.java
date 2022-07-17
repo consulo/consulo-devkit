@@ -26,8 +26,8 @@ import com.intellij.util.containers.ContainerUtil;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.*;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
@@ -58,19 +58,19 @@ public class GrammarPsiImplUtil
 		final JavaHelper javaHelper = JavaHelper.getJavaHelper(o);
 
 		return new PsiReference[]{
-				new PsiPolyVariantReferenceBase<BnfListEntry>(o, TextRange.from(id.getStartOffsetInParent(), id.getTextLength()))
+				new PsiPolyVariantReferenceBase<>(o, TextRange.from(id.getStartOffsetInParent(), id.getTextLength()))
 				{
 
 					private List<NavigatablePsiElement> getTargetMethods(String methodName)
 					{
 						BnfRule rule = PsiTreeUtil.getParentOfType(getElement(), BnfRule.class);
 						String mixinClass = rule == null ? null : getAttribute(version, rule, KnownAttribute.MIXIN);
-						List<NavigatablePsiElement> implMethods = findRuleImplMethods(javaHelper, psiImplUtilClass, methodName, rule);
+						List<NavigatablePsiElement> implMethods = findRuleImplMethods(version, javaHelper, psiImplUtilClass, methodName, rule);
 						if(!implMethods.isEmpty())
 						{
 							return implMethods;
 						}
-						List<NavigatablePsiElement> mixinMethods = javaHelper.findClassMethods(mixinClass, JavaHelper.MethodType.INSTANCE, methodName, -1);
+						List<NavigatablePsiElement> mixinMethods = javaHelper.findClassMethods(version, mixinClass, JavaHelper.MethodType.INSTANCE, methodName, -1);
 						return ContainerUtil.concat(implMethods, mixinMethods);
 					}
 

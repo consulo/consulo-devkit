@@ -131,7 +131,7 @@ public abstract class JavaHelper
 	}
 
 	@Nonnull
-	public List<NavigatablePsiElement> findClassMethods(@Nullable String className, @Nonnull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
+	public List<NavigatablePsiElement> findClassMethods(@Nullable String version, @Nullable String className, @Nonnull MethodType methodType, @Nullable String methodName, int paramCount, String... paramTypes)
 	{
 		return Collections.emptyList();
 	}
@@ -153,7 +153,7 @@ public abstract class JavaHelper
 	}
 
 	@Nonnull
-	public List<String> getMethodTypes(@Nullable NavigatablePsiElement method)
+	public List<String> getMethodTypes(String version, @Nullable NavigatablePsiElement method)
 	{
 		return Collections.emptyList();
 	}

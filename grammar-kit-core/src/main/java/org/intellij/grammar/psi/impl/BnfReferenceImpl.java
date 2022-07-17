@@ -54,7 +54,7 @@ public class BnfReferenceImpl<T extends BnfComposite> extends PsiReferenceBase<T
       // paramCount + 2 (builder and level)
       JavaHelper helper = JavaHelper.getJavaHelper(myElement);
       for (String className = parserClass; className != null; className = helper.getSuperClassName(className)) {
-        List<NavigatablePsiElement> methods = helper.findClassMethods(className, JavaHelper.MethodType.STATIC, referenceName, paramCount + 2);
+        List<NavigatablePsiElement> methods = helper.findClassMethods(version, className, JavaHelper.MethodType.STATIC, referenceName, paramCount + 2);
         result = ContainerUtil.getFirstItem(methods);
         if (result != null) break;
       }
