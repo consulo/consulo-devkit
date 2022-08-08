@@ -10,6 +10,7 @@ import com.intellij.psi.PsiElementVisitor;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
+import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
 import jakarta.inject.Singleton;
 
 import javax.annotation.Nonnull;
@@ -33,13 +34,7 @@ public class NoSingletonAnnotationInspection extends LocalInspectionTool
 		@RequiredReadAction
 		public void visitClass(PsiClass aClass)
 		{
-			ServiceInfo serviceInfo = ServiceLocator.findImplementationService(aClass);
-			if(serviceInfo == null)
-			{
-				return;
-			}
-
-			if(!AnnotationUtil.isAnnotated(aClass, Singleton.class.getName(), 0))
+			if(isSingleton(aClass) && !AnnotationUtil.isAnnotated(aClass, Singleton.class.getName(), 0))
 			{
 				myHolder.registerProblem(aClass.getNameIdentifier(), "Missed @Singleton annotation", new AddAnnotationFix(Singleton.class.getName(), aClass));
 			}
@@ -51,5 +46,22 @@ public class NoSingletonAnnotationInspection extends LocalInspectionTool
 	public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new Visitor(holder);
+	}
+
+	@RequiredReadAction
+	private static boolean isSingleton(PsiClass psiClass)
+	{
+		ServiceInfo serviceInfo = ServiceLocator.findImplementationService(psiClass);
+		if(serviceInfo != null)
+		{
+			// old XML service
+			return true;
+		}
+
+		if(AnnotationUtil.isAnnotated(psiClass, ValhallaAnnotations.ServiceImpl, 0))
+		{
+			return true;
+		}
+		return false;
 	}
 }
