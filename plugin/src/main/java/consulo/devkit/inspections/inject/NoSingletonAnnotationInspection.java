@@ -10,7 +10,6 @@ import com.intellij.psi.PsiElementVisitor;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
-import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
 import jakarta.inject.Singleton;
 
 import javax.annotation.Nonnull;
@@ -52,16 +51,6 @@ public class NoSingletonAnnotationInspection extends LocalInspectionTool
 	private static boolean isSingleton(PsiClass psiClass)
 	{
 		ServiceInfo serviceInfo = ServiceLocator.findImplementationService(psiClass);
-		if(serviceInfo != null)
-		{
-			// old XML service
-			return true;
-		}
-
-		if(AnnotationUtil.isAnnotated(psiClass, ValhallaAnnotations.ServiceImpl, 0))
-		{
-			return true;
-		}
-		return false;
+		return serviceInfo != null;
 	}
 }

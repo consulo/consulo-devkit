@@ -1,8 +1,10 @@
 package consulo.devkit.inspections.util.service;
 
+import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.extensions.impl.ExtensionAreaId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -10,6 +12,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.CachedValueProvider;
 import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiModificationTracker;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.ObjectUtil;
@@ -18,6 +21,7 @@ import com.intellij.util.xml.DomManager;
 import com.intellij.util.xml.DomService;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.DevKitConstants;
+import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
 import consulo.devkit.util.PluginModuleUtil;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.Extensions;
@@ -72,6 +76,19 @@ public class ServiceLocator
 		if(qualifiedName == null)
 		{
 			return null;
+		}
+
+		if(AnnotationUtil.isAnnotated(psiClass, ValhallaAnnotations.ServiceImpl, 0))
+		{
+			PsiAnnotation apiAnnotation = AnnotationUtil.findAnnotationInHierarchy(psiClass, Set.of(ValhallaAnnotations.ServiceAPI));
+			if(apiAnnotation != null)
+			{
+				PsiClass apiClass = PsiTreeUtil.getParentOfType(apiAnnotation, PsiClass.class);
+				if(apiClass != null)
+				{
+					return new ServiceInfo(apiClass.getQualifiedName(), psiClass.getQualifiedName(), apiClass);
+				}
+			}
 		}
 
 		List<ServiceInfo> services = ServiceLocator.getServices(psiClass.getProject());
@@ -150,7 +167,7 @@ public class ServiceLocator
 					{
 						serviceInterface = serviceImplementation;
 					}
-					list.add(new ServiceInfo(area, serviceInterface, serviceImplementation, tag));
+					list.add(new ServiceInfo(serviceInterface, serviceImplementation, tag));
 				}
 			}
 		}

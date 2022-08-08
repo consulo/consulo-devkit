@@ -230,6 +230,8 @@
 										implementationClass="org.jetbrains.idea.devkit.navigation.ExtensionPointDeclarationRelatedItemLineMarkerProvider"/>
 		<codeInsight.lineMarkerProvider language="JAVA"
 										implementationClass="consulo.devkit.codeInsight.daemon.ServiceLineMarkerProvider"/>
+		<codeInsight.lineMarkerProvider language="JAVA"
+										implementationClass="consulo.devkit.codeInsight.daemon.ImplToAPILineMarkerProvider"/>
 
 		<colorProvider implementation="consulo.devkit.codeInsight.daemon.UIColorLineMarkerProvider"/>
 

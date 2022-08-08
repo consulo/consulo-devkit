@@ -101,7 +101,7 @@ public class MigratedExtensionsToInspection extends InternalInspection
 
 			codeBlock.append("}");
 
-			PsiCodeBlock newBlock = PsiElementFactory.SERVICE.getInstance(method.getProject()).createCodeBlockFromText(codeBlock.toString(), method);
+			PsiCodeBlock newBlock = PsiElementFactory.getInstance(method.getProject()).createCodeBlockFromText(codeBlock.toString(), method);
 
 			WriteAction.run(() ->
 			{
