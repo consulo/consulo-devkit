@@ -15,17 +15,6 @@
  */
 package org.jetbrains.idea.devkit.navigation;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
-import org.jetbrains.idea.devkit.inspections.DescriptionCheckerUtil;
-import org.jetbrains.idea.devkit.inspections.DescriptionType;
-import org.jetbrains.idea.devkit.inspections.InspectionDescriptionInfo;
-import org.jetbrains.idea.devkit.util.PsiUtil;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
@@ -35,41 +24,28 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
+import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.InheritanceUtil;
 import com.intellij.util.NotNullFunction;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.containers.SortedList;
+import org.jetbrains.idea.devkit.inspections.DescriptionCheckerUtil;
+import org.jetbrains.idea.devkit.inspections.DescriptionType;
+import org.jetbrains.idea.devkit.inspections.InspectionDescriptionInfo;
+import org.jetbrains.idea.devkit.util.PsiUtil;
+
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLineMarkerProvider
 {
 
-	private static final NotNullFunction<PsiFile, Collection<? extends PsiElement>> CONVERTER = new NotNullFunction<PsiFile,
-			Collection<? extends PsiElement>>()
-	{
-		@Nonnull
-		@Override
-		public Collection<? extends PsiElement> fun(PsiFile psiFile)
-		{
-			return ContainerUtil.createMaybeSingletonList(psiFile);
-		}
-	};
+	private static final NotNullFunction<PsiFile, Collection<? extends PsiElement>> CONVERTER = psiFile -> ContainerUtil.createMaybeSingletonList(psiFile);
 
-	private static final NotNullFunction<PsiFile, Collection<? extends GotoRelatedItem>> RELATED_ITEM_PROVIDER = new NotNullFunction<PsiFile,
-			Collection<? extends GotoRelatedItem>>()
-	{
-		@Nonnull
-		@Override
-		public Collection<? extends GotoRelatedItem> fun(PsiFile psiFile)
-		{
-			return GotoRelatedItem.createItems(Collections.singleton(psiFile), "DevKit");
-		}
-	};
+	private static final NotNullFunction<PsiFile, Collection<? extends GotoRelatedItem>> RELATED_ITEM_PROVIDER = psiFile -> GotoRelatedItem.createItems(Collections.singleton(psiFile), "DevKit");
 
 	@Override
 	protected void collectNavigationMarkers(@Nonnull PsiElement element, Collection<? super RelatedItemLineMarkerInfo> result)
@@ -94,7 +70,7 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
 		}
 
 		final GlobalSearchScope scope = GlobalSearchScope.moduleRuntimeScope(module, false);
-		final PsiClass actionClass = JavaPsiFacade.getInstance(psiClass.getProject()).findClass(DescriptionType.INSPECTION.getClassName(), scope);
+		final PsiClass actionClass = DescriptionType.INSPECTION.findClass(psiClass.getProject(), scope);
 		if(actionClass == null)
 		{
 			return;
@@ -108,7 +84,7 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
 
 		for(DescriptionType type : DescriptionType.values())
 		{
-			if(!InheritanceUtil.isInheritor(psiClass, type.getClassName()))
+			if(!type.isInheritor(psiClass))
 			{
 				continue;
 			}

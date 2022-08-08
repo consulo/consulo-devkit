@@ -16,10 +16,11 @@
 
 package org.jetbrains.idea.devkit.util;
 
+import com.intellij.lang.jvm.JvmModifier;
+import com.intellij.psi.*;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import com.intellij.psi.*;
 
 /**
  * @author Konstantin Bulenkov
@@ -30,42 +31,14 @@ public class PsiUtil
 	{
 	}
 
-	public static boolean isInstantiable(@Nonnull PsiClass cls)
+	public static boolean isInstantiable(@Nonnull PsiClass aClass)
 	{
-		final PsiModifierList modList = cls.getModifierList();
-		if(modList == null || cls.isInterface() || modList.hasModifierProperty(PsiModifier.ABSTRACT) || !isPublicOrStaticInnerClass(cls))
+		if(aClass.hasModifier(JvmModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord())
 		{
 			return false;
 		}
-
-		final PsiMethod[] constructors = cls.getConstructors();
-		if(constructors.length == 0)
-		{
-			return true;
-		}
-
-		for(PsiMethod constructor : constructors)
-		{
-			if(constructor.getParameterList().getParameters().length == 0 && constructor.hasModifierProperty(PsiModifier.PUBLIC))
-			{
-				return true;
-			}
-		}
-		return false;
+		return true;
 	}
-
-	public static boolean isPublicOrStaticInnerClass(@Nonnull PsiClass cls)
-	{
-		final PsiModifierList modifiers = cls.getModifierList();
-		if(modifiers == null)
-		{
-			return false;
-		}
-
-		return modifiers.hasModifierProperty(PsiModifier.PUBLIC) && (cls.getParent() instanceof PsiFile || modifiers.hasModifierProperty(PsiModifier
-				.STATIC));
-	}
-
 	public static boolean isOneStatementMethod(@Nonnull PsiMethod method)
 	{
 		final PsiCodeBlock body = method.getBody();

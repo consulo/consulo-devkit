@@ -15,27 +15,53 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import javax.annotation.Nullable;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.roots.ContentFolder;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.JavaPsiFacade;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiJavaPackage;
-import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.PsiManager;
+import com.intellij.util.containers.ContainerUtil;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.roots.ContentFolderScopes;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DescriptionCheckerUtil
 {
-
+	@Nonnull
+	@RequiredReadAction
 	public static PsiDirectory[] getDescriptionsDirs(Module module, DescriptionType descriptionType)
 	{
-		final JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(module.getProject());
-		final PsiJavaPackage psiPackage = javaPsiFacade.findPackage(descriptionType.getDescriptionFolder());
-		if(psiPackage != null)
+		List<PsiDirectory> dirs = new ArrayList<>();
+		ModuleRootManager manager = ModuleRootManager.getInstance(module);
+		PsiManager psiManager = PsiManager.getInstance(module.getProject());
+
+		for(ContentFolder folder : manager.getContentFolders(ContentFolderScopes.production()))
 		{
-			return psiPackage.getDirectories(GlobalSearchScope.moduleWithDependenciesScope(module));
+			VirtualFile file = folder.getFile();
+			if(file == null)
+			{
+				continue;
+			}
+
+			VirtualFile childDir = file.findFileByRelativePath(descriptionType.getDescriptionFolder());
+			if(childDir != null)
+			{
+				PsiDirectory dir = psiManager.findDirectory(childDir);
+				if(dir != null)
+				{
+					dirs.add(dir);
+				}
+			}
 		}
-		return PsiDirectory.EMPTY_ARRAY;
+
+		return ContainerUtil.toArray(dirs, PsiDirectory.EMPTY_ARRAY);
 	}
 
 	@Nullable

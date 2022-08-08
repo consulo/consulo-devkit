@@ -15,17 +15,13 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import javax.annotation.Nullable;
-
-import org.jetbrains.idea.devkit.util.PsiUtil;
 import com.intellij.codeInspection.InspectionProfileEntry;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
+import org.jetbrains.idea.devkit.util.PsiUtil;
+
+import javax.annotation.Nullable;
 
 public class InspectionDescriptionInfo
 {
@@ -44,12 +40,12 @@ public class InspectionDescriptionInfo
 	public static InspectionDescriptionInfo create(Module module, PsiClass psiClass)
 	{
 		PsiMethod method = PsiUtil.findNearestMethod("getShortName", psiClass);
-		if(method != null && DescriptionType.INSPECTION.getClassName().equals(method.getContainingClass().getQualifiedName()))
+		if(method != null && DescriptionType.INSPECTION.getClassNames().contains(method.getContainingClass().getQualifiedName()))
 		{
 			method = null;
 		}
-		final String filename = method == null ? InspectionProfileEntry.getShortName(psiClass.getName()) : PsiUtil.getReturnedLiteral(method,
-				psiClass);
+
+		final String filename = method == null ? InspectionProfileEntry.getShortName(psiClass.getName()) : PsiUtil.getReturnedLiteral(method, psiClass);
 
 		PsiFile descriptionFile = resolveInspectionDescriptionFile(module, filename);
 		return new InspectionDescriptionInfo(filename, method, descriptionFile);

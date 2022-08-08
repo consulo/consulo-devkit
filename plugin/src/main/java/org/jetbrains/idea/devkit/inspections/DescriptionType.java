@@ -15,31 +15,39 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import com.intellij.codeInsight.intention.IntentionAction;
-import com.intellij.codeInsight.template.postfix.templates.PostfixTemplate;
-import com.intellij.codeInspection.InspectionProfileEntry;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.InheritanceUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Set;
 
 public enum DescriptionType
 {
+	INTENTION(Set.of("com.intellij.codeInsight.intention.IntentionAction", "consulo.language.editor.intention.IntentionAction"), "intentionDescriptions", true),
+	INSPECTION(Set.of("com.intellij.codeInspection.InspectionProfileEntry", "consulo.language.editor.inspection.scheme.InspectionProfileEntry"),
+			"inspectionDescriptions", false),
+	POSTFIX_TEMPLATES(Set.of("com.intellij.codeInsight.template.postfix.templates.PostfixTemplate", "consulo.language.editor.postfixTemplate.PostfixTemplate"),
+			"postfixTemplates", true);
 
-	INTENTION(IntentionAction.class.getName(), "intentionDescriptions", true),
-	INSPECTION(InspectionProfileEntry.class.getName(), "inspectionDescriptions", false),
-	POSTFIX_TEMPLATES(PostfixTemplate.class.getName(), "postfixTemplates", true);
-
-	private final String myClassName;
+	private final Set<String> myClassNames;
 	private final String myDescriptionFolder;
 	private final boolean myFixedDescriptionFilename;
 
-	DescriptionType(String className, String descriptionFolder, boolean fixedDescriptionFilename)
+	DescriptionType(Set<String> classes, String descriptionFolder, boolean fixedDescriptionFilename)
 	{
-		myFixedDescriptionFilename = fixedDescriptionFilename;
-		myClassName = className;
+		myClassNames = classes;
 		myDescriptionFolder = descriptionFolder;
+		myFixedDescriptionFilename = fixedDescriptionFilename;
 	}
 
-	public String getClassName()
+	@Nonnull
+	public Set<String> getClassNames()
 	{
-		return myClassName;
+		return myClassNames;
 	}
 
 	public String getDescriptionFolder()
@@ -50,5 +58,32 @@ public enum DescriptionType
 	public boolean isFixedDescriptionFilename()
 	{
 		return myFixedDescriptionFilename;
+	}
+
+	@Nullable
+	public PsiClass findClass(@Nonnull Project project, @Nonnull GlobalSearchScope scope)
+	{
+		JavaPsiFacade psiFacade = JavaPsiFacade.getInstance(project);
+		for(String className : myClassNames)
+		{
+			PsiClass aClass = psiFacade.findClass(className, scope);
+			if(aClass != null)
+			{
+				return aClass;
+			}
+		}
+		return null;
+	}
+
+	public boolean isInheritor(PsiClass psiClass)
+	{
+		for(String className : myClassNames)
+		{
+			if(InheritanceUtil.isInheritor(psiClass, className))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }
