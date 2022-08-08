@@ -11,6 +11,7 @@ import com.intellij.psi.PsiMethod;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
+import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
 import jakarta.inject.Inject;
 
 import javax.annotation.Nonnull;
@@ -34,8 +35,7 @@ public class NoInjectAnnotationInspection extends LocalInspectionTool
 		@RequiredReadAction
 		public void visitClass(PsiClass aClass)
 		{
-			ServiceInfo serviceInfo = ServiceLocator.findImplementationService(aClass);
-			if(serviceInfo == null)
+			if(!isInjectionTarget(aClass))
 			{
 				return;
 			}
@@ -80,5 +80,25 @@ public class NoInjectAnnotationInspection extends LocalInspectionTool
 	public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new Visitor(holder);
+	}
+
+	@RequiredReadAction
+	private static boolean isInjectionTarget(PsiClass psiClass)
+	{
+		ServiceInfo serviceInfo = ServiceLocator.findImplementationService(psiClass);
+		if(serviceInfo != null)
+		{
+			// old XML service
+			return true;
+		}
+
+		for(String annotation : ValhallaAnnotations.Impl)
+		{
+			if(AnnotationUtil.isAnnotated(psiClass, annotation, 0))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }
