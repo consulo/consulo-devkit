@@ -95,6 +95,11 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
 						 implementationClass="org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection"/>
+		<localInspection language="JAVA" shortName="ExtensionImplIsNotAnnotatedInspection"
+						 displayName="Extension implementation is not annotated by @ExtensionImpl"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
+						 implementationClass="consulo.devkit.inspections.valhalla.ExtensionImplIsNotAnnotatedInspection"/>
 
 		<localInspection language="JAVA" shortName="DialogTitleCapitalization"
 						 bundle="messages.DevKitBundle"

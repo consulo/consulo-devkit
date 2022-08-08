@@ -6,6 +6,8 @@ package consulo.devkit.inspections.valhalla;
  */
 public interface ValhallaAnnotations
 {
+	String ExtensionAPI = "consulo.annotation.component.ExtensionAPI";
+
 	String ExtensionImpl = "consulo.annotation.component.ExtensionImpl";
 	String ServiceImpl = "consulo.annotation.component.ServiceImpl";
 	String ActionImpl = "consulo.annotation.component.ActionImpl";
