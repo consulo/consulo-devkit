@@ -114,6 +114,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>org.jetbrains.idea.maven</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>consulo.java</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>

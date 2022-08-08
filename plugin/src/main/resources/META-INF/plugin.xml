@@ -12,6 +12,7 @@
 	<depends>com.intellij.xml</depends>
 	<depends>com.intellij.uiDesigner</depends>
 	<depends>org.jetbrains.plugins.yaml</depends>
+	<depends optional="true">org.jetbrains.idea.maven</depends>
 
 	<resource-bundle>messages.DevKitBundle</resource-bundle>
 
@@ -22,6 +23,11 @@
 	<permissions>
 		<permission type="GET_ENV"/>
 	</permissions>
+
+	<extensions defaultExtensionNs="org.jetbrains.idea.maven">
+		<importer implementation="consulo.devkit.maven.DevKitMavenImporterFromDependency"/>
+		<importer implementation="consulo.devkit.maven.DevKit3MavenImporterFromDependency"/>
+	</extensions>
 
 	<extensions defaultExtensionNs="consulo.java">
 		<coverageEngineExtension implementation="consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
