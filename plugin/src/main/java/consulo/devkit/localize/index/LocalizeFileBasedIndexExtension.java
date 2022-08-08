@@ -41,26 +41,38 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
 		{
 			VirtualFile file = fileContent.getFile();
 
-			VirtualFile localizeDirectory = findLocalizeDirectory(file);
-			if(localizeDirectory == null)
+			if(isNewLocalize(file))
 			{
-				return Collections.emptyMap();
+				String fileName = file.getNameWithoutExtension();
+
+				String packageName = StringUtil.getPackageName(fileName);
+
+				String id = packageName + ".localize." + StringUtil.getShortName(fileName);
+				return Collections.singletonMap(id, null);
 			}
-
-			String relativeLocation = VfsUtil.getRelativeLocation(file.getParent(), localizeDirectory);
-
-			if(relativeLocation == null)
+			else
 			{
-				return Collections.emptyMap();
+				VirtualFile localizeDirectory = findLocalizeDirectory(file);
+				if(localizeDirectory == null)
+				{
+					return Collections.emptyMap();
+				}
+
+				String relativeLocation = VfsUtil.getRelativeLocation(file.getParent(), localizeDirectory);
+
+				if(relativeLocation == null)
+				{
+					return Collections.emptyMap();
+				}
+
+				// com/intellij/images
+
+				relativeLocation = relativeLocation.replace("/", ".");
+
+				String id = relativeLocation + ".localize." + file.getNameWithoutExtension();
+
+				return Collections.singletonMap(id, null);
 			}
-
-			// com/intellij/images
-
-			relativeLocation = relativeLocation.replace("/", ".");
-
-			String id = relativeLocation + ".localize." + file.getNameWithoutExtension();
-
-			return Collections.singletonMap(id, null);
 		};
 	}
 
@@ -81,7 +93,7 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
 	@Override
 	public int getVersion()
 	{
-		return 3;
+		return 4;
 	}
 
 	@Nonnull
@@ -123,8 +135,26 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
 					LOG.error(e);
 				}
 			}
+			else
+			{
+				return isNewLocalize(file);
+			}
 			return false;
 		};
+	}
+
+	private boolean isNewLocalize(VirtualFile file)
+	{
+		VirtualFile parentDir = file.getParent();
+		if(parentDir != null && "en_US".equals(parentDir.getName()))
+		{
+			VirtualFile localizeLibParent = parentDir.getParent();
+			if(localizeLibParent != null && "LOCALIZE-LIB".equals(localizeLibParent.getName()))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Nullable
