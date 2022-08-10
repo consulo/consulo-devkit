@@ -208,6 +208,14 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name"
 						 enabledByDefault="true"
+						 displayName="Wrong inject binding inside constructor"
+						 implementationClass="consulo.devkit.inspections.inject.WrongInjectBindingInspection"/>
+
+		<localInspection language="JAVA"
+						 level="ERROR"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name"
+						 enabledByDefault="true"
 						 displayName="Missed @Inject annotation for services &amp; extensions"
 						 implementationClass="consulo.devkit.inspections.inject.NoInjectAnnotationInspection"/>
 

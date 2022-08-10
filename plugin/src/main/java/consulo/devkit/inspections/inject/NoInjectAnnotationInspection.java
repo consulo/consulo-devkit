@@ -1,7 +1,6 @@
 package consulo.devkit.inspections.inject;
 
 import com.intellij.codeInsight.AnnotationUtil;
-import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.lang.jvm.JvmModifier;
 import com.intellij.psi.JavaElementVisitor;
@@ -12,16 +11,19 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
 import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
-import jakarta.inject.Inject;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * @author VISTALL
  * @since 2018-09-02
  */
-public class NoInjectAnnotationInspection extends LocalInspectionTool
+public class NoInjectAnnotationInspection extends InternalInspection
 {
+	public static final List<String> INJECT_ANNOTATIONS = List.of("jakarta.inject.Inject", "javax.inject.Inject");
+
 	private static class Visitor extends JavaElementVisitor
 	{
 		private final ProblemsHolder myHolder;
@@ -59,7 +61,7 @@ public class NoInjectAnnotationInspection extends LocalInspectionTool
 						defaultConstructor = constructor;
 					}
 
-					if(AnnotationUtil.isAnnotated(constructor, Inject.class.getName(), 0))
+					if(AnnotationUtil.isAnnotated(constructor, INJECT_ANNOTATIONS, 0))
 					{
 						return;
 					}
@@ -75,9 +77,8 @@ public class NoInjectAnnotationInspection extends LocalInspectionTool
 		}
 	}
 
-	@Nonnull
 	@Override
-	public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
+	public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
 	{
 		return new Visitor(holder);
 	}
