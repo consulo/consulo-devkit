@@ -28,10 +28,11 @@ public class WrongInjectBindingInspection extends InternalInspection
 	private static final Set<String> PROVIDERS = Set.of("jakarta.inject.Provider", "javax.inject.Provider");
 
 	private static final String FILE_TYPE_REGISTRY = "consulo.virtualFileSystem.fileType.FileTypeRegistry";
+	private static final String CONTAINER_PATH_MANAGER = "consulo.container.boot.ContainerPathManager";
 
-	private static final Set<String> APPLICATION_IMPLICIT = Set.of("consulo.application.Application", FILE_TYPE_REGISTRY);
-	private static final Set<String> PROJECT_IMPLICIT = Set.of("consulo.application.Application", "consulo.project.Project", FILE_TYPE_REGISTRY);
-	private static final Set<String> MODULE_IMPLICIT = Set.of("consulo.application.Application", "consulo.project.Project", "consulo.module.Module", FILE_TYPE_REGISTRY);
+	private static final Set<String> APPLICATION_IMPLICIT = Set.of("consulo.application.Application", FILE_TYPE_REGISTRY, CONTAINER_PATH_MANAGER);
+	private static final Set<String> PROJECT_IMPLICIT = Set.of("consulo.application.Application", "consulo.project.Project", FILE_TYPE_REGISTRY, CONTAINER_PATH_MANAGER);
+	private static final Set<String> MODULE_IMPLICIT = Set.of("consulo.application.Application", "consulo.project.Project", "consulo.module.Module", FILE_TYPE_REGISTRY, CONTAINER_PATH_MANAGER);
 
 	@Override
 	public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
