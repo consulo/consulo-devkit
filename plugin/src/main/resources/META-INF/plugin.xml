@@ -249,6 +249,8 @@
 
 		<colorProvider implementation="consulo.devkit.codeInsight.daemon.UIColorLineMarkerProvider"/>
 
+		<implicitUsageProvider implementation="consulo.devkit.inspections.valhalla.ImplClassImplicitUsageProvider"/>
+
 		<intentionAction>
 			<className>consulo.devkit.intentation.ExportAllPackageIntention</className>
 			<category>Java 9 Modules</category>
