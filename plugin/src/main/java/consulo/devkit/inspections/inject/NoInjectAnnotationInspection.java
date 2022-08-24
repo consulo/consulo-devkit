@@ -2,11 +2,7 @@ package consulo.devkit.inspections.inject;
 
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.lang.jvm.JvmModifier;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
@@ -46,7 +42,7 @@ public class NoInjectAnnotationInspection extends InternalInspection
 			if(constructors.length == 0)
 			{
 				// default constructor
-				if(aClass.hasModifier(JvmModifier.PUBLIC))
+				if(aClass.hasModifierProperty(PsiModifier.PUBLIC))
 				{
 					return;
 				}
@@ -56,7 +52,7 @@ public class NoInjectAnnotationInspection extends InternalInspection
 				PsiMethod defaultConstructor = null;
 				for(PsiMethod constructor : constructors)
 				{
-					if(constructor.hasModifier(JvmModifier.PUBLIC) && constructor.getParameterList().getParametersCount() == 0)
+					if(constructor.hasModifierProperty(PsiModifier.PUBLIC) && constructor.getParameterList().getParametersCount() == 0)
 					{
 						defaultConstructor = constructor;
 					}

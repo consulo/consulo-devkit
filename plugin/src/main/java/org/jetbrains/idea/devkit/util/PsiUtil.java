@@ -16,7 +16,6 @@
 
 package org.jetbrains.idea.devkit.util;
 
-import com.intellij.lang.jvm.JvmModifier;
 import com.intellij.psi.*;
 
 import javax.annotation.Nonnull;
@@ -33,7 +32,7 @@ public class PsiUtil
 
 	public static boolean isInstantiable(@Nonnull PsiClass aClass)
 	{
-		if(aClass.hasModifier(JvmModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord())
+		if(aClass.hasModifierProperty(PsiModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord())
 		{
 			return false;
 		}

@@ -4,11 +4,7 @@ import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInsight.intention.AddAnnotationFix;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.lang.jvm.JvmModifier;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiIdentifier;
+import com.intellij.psi.*;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
@@ -33,7 +29,7 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection
 					return;
 				}
 
-				if(aClass.hasModifier(JvmModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord())
+				if(aClass.hasModifierProperty(PsiModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord())
 				{
 					return;
 				}

@@ -4,7 +4,6 @@ import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.lang.jvm.JvmModifier;
 import com.intellij.lang.jvm.JvmParameter;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.project.Project;
@@ -44,7 +43,7 @@ public class MigratedExtensionsToInspection extends InternalInspection
 			PsiMethod method = (PsiMethod) psiElement;
 
 			PsiClass containingClass = method.getContainingClass();
-			if(containingClass == null || !method.hasModifier(JvmModifier.STATIC) || !method.hasModifier(JvmModifier.PUBLIC))
+			if(containingClass == null || !method.hasModifierProperty(PsiModifier.STATIC) || !method.hasModifierProperty(PsiModifier.PUBLIC))
 			{
 				return;
 			}
