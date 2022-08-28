@@ -30,7 +30,6 @@ import com.intellij.util.xml.ConvertContext;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomService;
 import com.intellij.util.xml.ResolvingConverter;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
@@ -62,7 +61,7 @@ public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
 	}
 
 	@Override
-	public IdeaPlugin fromString(@Nullable @NonNls final String s, final ConvertContext context)
+	public IdeaPlugin fromString(@Nullable final String s, final ConvertContext context)
 	{
 		for(IdeaPlugin ideaPlugin : getAllPluginsWithoutSelf(context))
 		{
@@ -90,7 +89,7 @@ public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin>
 		final IdeaPlugin self = context.getInvocationElement().getParentOfType(IdeaPlugin.class, true);
 		if(self == null)
 		{
-			return Collections.emptyList();
+			return getAllPlugins(context.getProject());
 		}
 
 		final Collection<IdeaPlugin> plugins = getAllPlugins(context.getProject());

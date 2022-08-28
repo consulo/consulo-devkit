@@ -19,18 +19,19 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import javax.annotation.Nonnull;
-
-import org.jetbrains.idea.devkit.dom.impl.IdeaPluginConverter;
 import com.intellij.openapi.paths.PathReference;
 import com.intellij.util.xml.Convert;
 import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.GenericDomValue;
 import com.intellij.util.xml.Stubbed;
+import consulo.container.plugin.PluginDescriptor;
+import consulo.devkit.dom.impl.PluginDescriptorResolver;
+
+import javax.annotation.Nonnull;
 
 @Stubbed
-@Convert(IdeaPluginConverter.class)
-public interface Dependency extends GenericDomValue<IdeaPlugin>
+@Convert(PluginDescriptorResolver.class)
+public interface Dependency extends GenericDomValue<PluginDescriptor>
 {
 	@Nonnull
 	GenericAttributeValue<Boolean> getOptional();

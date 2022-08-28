@@ -62,6 +62,11 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
 						 implementationClass="org.jetbrains.idea.devkit.inspections.PluginXmlDomInspection"/>
+		<localInspection language="XML" shortName="PluginXmlValidity" displayName="plugin-requires.xml Validity"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
+						 implementationClass="consulo.devkit.inspections.valhalla.PluginRequiresXmlDomElementsInspection"/>
+
 		<localInspection language="JAVA" shortName="ComponentNotRegistered" bundle="messages.DevKitBundle"
 						 key="inspections.component.not.registered.name" groupKey="inspections.group.name" enabledByDefault="true"
 						 level="WARNING" implementationClass="org.jetbrains.idea.devkit.inspections.ComponentNotRegisteredInspection"/>
@@ -259,6 +264,8 @@
 
 	<extensions defaultExtensionNs="com.intellij.xml.dom">
 		<fileDescription implementation="consulo.devkit.dom.impl.ConsuloPluginXmlDomFileDescriptor"/>
+
+		<fileDescription implementation="consulo.devkit.requires.dom.PluginRequiresDomDescriptor"/>
 
 		<extender domClass="org.jetbrains.idea.devkit.dom.Extensions"
 				  extenderClass="org.jetbrains.idea.devkit.dom.impl.ExtensionDomExtender"/>

@@ -15,13 +15,13 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import javax.annotation.Nonnull;
-
 import com.intellij.util.xml.highlighting.BasicDomElementsInspection;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author mike
