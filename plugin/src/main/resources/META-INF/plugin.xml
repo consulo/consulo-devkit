@@ -62,7 +62,7 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
 						 implementationClass="org.jetbrains.idea.devkit.inspections.PluginXmlDomInspection"/>
-		<localInspection language="XML" shortName="PluginXmlValidity" displayName="plugin-requires.xml Validity"
+		<localInspection language="XML" shortName="PluginRequiresXmlValidity" displayName="plugin-requires.xml Validity"
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
 						 implementationClass="consulo.devkit.inspections.valhalla.PluginRequiresXmlDomElementsInspection"/>

@@ -3,7 +3,6 @@ package consulo.devkit.inspections.valhalla;
 import com.intellij.util.xml.highlighting.BasicDomElementsInspection;
 import consulo.devkit.requires.dom.PluginRequires;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
@@ -33,10 +32,9 @@ public class PluginRequiresXmlDomElementsInspection extends BasicDomElementsInsp
 		return "Plugin Requires.xml Validity";
 	}
 
-	@NonNls
 	@Nonnull
 	public String getShortName()
 	{
-		return "PluginRequiresXml";
+		return "PluginRequiresXmlValidity";
 	}
 }
