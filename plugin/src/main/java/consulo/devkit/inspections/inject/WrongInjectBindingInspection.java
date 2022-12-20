@@ -11,7 +11,7 @@ import com.intellij.psi.util.PsiModificationTracker;
 import com.intellij.util.containers.ContainerUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.DevKitComponentScope;
-import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
+import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import consulo.util.lang.Pair;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
@@ -98,7 +98,7 @@ public class WrongInjectBindingInspection extends InternalInspection
 		}
 
 		// it's service api
-		PsiAnnotation serviceApiAnno = AnnotationUtil.findAnnotationInHierarchy(element, Set.of(ValhallaAnnotations.ServiceAPI));
+		PsiAnnotation serviceApiAnno = AnnotationUtil.findAnnotationInHierarchy(element, Set.of(ValhallaClasses.ServiceAPI));
 		if(serviceApiAnno != null)
 		{
 			PsiAnnotationMemberValue value = serviceApiAnno.findDeclaredAttributeValue(PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
@@ -158,7 +158,7 @@ public class WrongInjectBindingInspection extends InternalInspection
 		// owner contains inject annotation
 		if(AnnotationUtil.isAnnotated(method, NoInjectAnnotationInspection.INJECT_ANNOTATIONS, 0))
 		{
-			for(Pair<String, String> apiAndImpl : ValhallaAnnotations.ApiToImpl)
+			for(Pair<String, String> apiAndImpl : ValhallaClasses.ApiToImpl)
 			{
 				PsiAnnotation implAnno = AnnotationUtil.findAnnotation(containingClass, apiAndImpl.getSecond());
 				if(implAnno != null)

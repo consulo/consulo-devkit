@@ -21,7 +21,7 @@ import com.intellij.util.xml.DomManager;
 import com.intellij.util.xml.DomService;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.DevKitConstants;
-import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
+import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import consulo.devkit.util.PluginModuleUtil;
 import org.jetbrains.idea.devkit.dom.Extension;
 import org.jetbrains.idea.devkit.dom.Extensions;
@@ -78,9 +78,9 @@ public class ServiceLocator
 			return null;
 		}
 
-		if(AnnotationUtil.isAnnotated(psiClass, ValhallaAnnotations.ServiceImpl, 0))
+		if(AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.ServiceImpl, 0))
 		{
-			PsiAnnotation apiAnnotation = AnnotationUtil.findAnnotationInHierarchy(psiClass, Set.of(ValhallaAnnotations.ServiceAPI));
+			PsiAnnotation apiAnnotation = AnnotationUtil.findAnnotationInHierarchy(psiClass, Set.of(ValhallaClasses.ServiceAPI));
 			if(apiAnnotation != null)
 			{
 				PsiClass apiClass = PsiTreeUtil.getParentOfType(apiAnnotation, PsiClass.class);

@@ -4,6 +4,7 @@ import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.codeInsight.daemon.ImplicitUsageProvider;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import consulo.annotation.access.RequiredReadAction;
 
 /**
  * @author VISTALL
@@ -12,11 +13,12 @@ import com.intellij.psi.PsiElement;
 public class ImplClassImplicitUsageProvider implements ImplicitUsageProvider
 {
 	@Override
+	@RequiredReadAction
 	public boolean isImplicitUsage(PsiElement psiElement)
 	{
 		if(psiElement instanceof PsiClass)
 		{
-			if(AnnotationUtil.isAnnotated((PsiClass)psiElement, ValhallaAnnotations.Impl, 0))
+			if(ExtensionImplUtil.isTargetClass((PsiClass) psiElement) && AnnotationUtil.isAnnotated((PsiClass)psiElement, ValhallaClasses.Impl, 0))
 			{
 				return true;
 			}
@@ -25,6 +27,7 @@ public class ImplClassImplicitUsageProvider implements ImplicitUsageProvider
 	}
 
 	@Override
+	@RequiredReadAction
 	public boolean isImplicitRead(PsiElement psiElement)
 	{
 		return isImplicitUsage(psiElement);

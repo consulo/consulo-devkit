@@ -6,7 +6,7 @@ import com.intellij.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
-import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
+import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
@@ -89,7 +89,7 @@ public class NoInjectAnnotationInspection extends InternalInspection
 			return true;
 		}
 
-		for(String annotation : ValhallaAnnotations.Impl)
+		for(String annotation : ValhallaClasses.Impl)
 		{
 			if(AnnotationUtil.isAnnotated(psiClass, annotation, 0))
 			{

@@ -10,7 +10,7 @@ import java.util.Set;
  * @author VISTALL
  * @since 08-Aug-22
  */
-public interface ValhallaAnnotations
+public interface ValhallaClasses
 {
 	String ExtensionAPI = "consulo.annotation.component.ExtensionAPI";
 	String ServiceAPI = "consulo.annotation.component.ServiceAPI";
@@ -21,6 +21,10 @@ public interface ValhallaAnnotations
 	String ServiceImpl = "consulo.annotation.component.ServiceImpl";
 	String ActionImpl = "consulo.annotation.component.ActionImpl";
 	String TopicImpl = "consulo.annotation.component.TopicImpl";
+
+	String SyntheticIntentionAction = "consulo.language.editor.intention.SyntheticIntentionAction";
+	String IntentionAction = "consulo.language.editor.intention.IntentionAction";
+	String IntentionMetaData = "consulo.language.editor.intention.IntentionMetaData";
 
 	Set<String> Impl = ContainerUtil.newHashSet(ExtensionImpl, ServiceImpl, ActionImpl, TopicImpl);
 

@@ -111,6 +111,11 @@
 						 bundle="messages.DevKitBundle"
 						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
 						 implementationClass="consulo.devkit.inspections.valhalla.ExtensionImplIsNotAnnotatedInspection"/>
+		<localInspection language="JAVA" shortName="IntentionMetaDataMissedInspection"
+						 displayName="Missing @IntentionMetaData annotation"
+						 bundle="messages.DevKitBundle"
+						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
+						 implementationClass="consulo.devkit.inspections.valhalla.IntentionMetaDataMissedInspection"/>
 
 		<localInspection language="JAVA" shortName="DialogTitleCapitalization"
 						 bundle="messages.DevKitBundle"

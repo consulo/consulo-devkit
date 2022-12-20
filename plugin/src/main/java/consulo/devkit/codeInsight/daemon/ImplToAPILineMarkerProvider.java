@@ -14,7 +14,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiUtilCore;
 import com.intellij.util.PsiNavigateUtil;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.devkit.inspections.valhalla.ValhallaAnnotations;
+import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import consulo.util.lang.Pair;
 
 import javax.annotation.Nonnull;
@@ -56,7 +56,7 @@ public class ImplToAPILineMarkerProvider implements LineMarkerProvider
 	@Nullable
 	private Pair<PsiElement, String> findAPIElement(PsiClass psiClass)
 	{
-		for(Pair<String, String> apiPair : ValhallaAnnotations.ApiToImpl)
+		for(Pair<String, String> apiPair : ValhallaClasses.ApiToImpl)
 		{
 			if(AnnotationUtil.isAnnotated(psiClass, apiPair.getSecond(), 0))
 			{

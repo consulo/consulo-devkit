@@ -5,6 +5,7 @@ import com.intellij.codeInsight.intention.AddAnnotationFix;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.psi.*;
+import consulo.annotation.access.RequiredReadAction;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
@@ -21,6 +22,7 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection
 		return new JavaElementVisitor()
 		{
 			@Override
+			@RequiredReadAction
 			public void visitClass(PsiClass aClass)
 			{
 				PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
@@ -29,17 +31,23 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection
 					return;
 				}
 
-				if(aClass.hasModifierProperty(PsiModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord())
+				if(!ExtensionImplUtil.isTargetClass(aClass))
 				{
 					return;
 				}
 
 				// not annotated by @ExtensionAPI, and not annotated by @ExtensionImpl, but has @ExtensionAPI in class hierarchy
-				if(!AnnotationUtil.isAnnotated(aClass, ValhallaAnnotations.ExtensionAPI, 0) &&
-						!AnnotationUtil.isAnnotated(aClass, ValhallaAnnotations.ExtensionImpl, 0) &&
-						AnnotationUtil.isAnnotated(aClass, ValhallaAnnotations.ExtensionAPI, AnnotationUtil.CHECK_HIERARCHY))
+				if(!AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, 0) &&
+						!AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionImpl, 0) &&
+						AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, AnnotationUtil.CHECK_HIERARCHY))
 				{
-					AddAnnotationFix addAnnotationFix = new AddAnnotationFix(ValhallaAnnotations.ExtensionImpl, aClass);
+					PsiClass syntheticAction = JavaPsiFacade.getInstance(aClass.getProject()).findClass(ValhallaClasses.SyntheticIntentionAction, aClass.getResolveScope());
+					if(syntheticAction != null && aClass.isInheritor(syntheticAction, true))
+					{
+						return;
+					}
+
+					AddAnnotationFix addAnnotationFix = new AddAnnotationFix(ValhallaClasses.ExtensionImpl, aClass);
 					holder.registerProblem(nameIdentifier, "Extension implementation not annotated by @ExtensionImpl", ProblemHighlightType.GENERIC_ERROR_OR_WARNING, addAnnotationFix);
 				}
 			}
