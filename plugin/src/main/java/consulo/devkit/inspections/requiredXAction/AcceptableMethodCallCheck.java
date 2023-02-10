@@ -16,55 +16,46 @@
 
 package consulo.devkit.inspections.requiredXAction;
 
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiMethodCallExpression;
+import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.PsiMethod;
+import com.intellij.java.language.psi.PsiMethodCallExpression;
+import consulo.language.psi.PsiElement;
 
 /**
  * @author VISTALL
  * @since 22-Jun-16
  */
-public class AcceptableMethodCallCheck
-{
-	private final String myParentClass;
-	private final String myMethodName;
+public class AcceptableMethodCallCheck {
+  private final String myParentClass;
+  private final String myMethodName;
 
-	public AcceptableMethodCallCheck(String parentClass, String methodName)
-	{
-		myParentClass = parentClass;
-		myMethodName = methodName;
-	}
+  public AcceptableMethodCallCheck(String parentClass, String methodName) {
+    myParentClass = parentClass;
+    myMethodName = methodName;
+  }
 
-	public AcceptableMethodCallCheck(Class<?> parentClass, String methodName)
-	{
-		this(parentClass.getName(), methodName);
-	}
+  public AcceptableMethodCallCheck(Class<?> parentClass, String methodName) {
+    this(parentClass.getName(), methodName);
+  }
 
-	public boolean accept(PsiElement parent)
-	{
-		if(parent instanceof PsiMethodCallExpression)
-		{
-			PsiMethod psiMethod = ((PsiMethodCallExpression) parent).resolveMethod();
-			if(psiMethod == null)
-			{
-				return false;
-			}
+  public boolean accept(PsiElement parent) {
+    if (parent instanceof PsiMethodCallExpression) {
+      PsiMethod psiMethod = ((PsiMethodCallExpression)parent).resolveMethod();
+      if (psiMethod == null) {
+        return false;
+      }
 
-			if(myMethodName.equals(psiMethod.getName()))
-			{
-				PsiClass containingClass = psiMethod.getContainingClass();
-				if(containingClass == null)
-				{
-					return false;
-				}
+      if (myMethodName.equals(psiMethod.getName())) {
+        PsiClass containingClass = psiMethod.getContainingClass();
+        if (containingClass == null) {
+          return false;
+        }
 
-				if(myParentClass.equals(containingClass.getQualifiedName()))
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+        if (myParentClass.equals(containingClass.getQualifiedName())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }

@@ -15,104 +15,90 @@
  */
 package org.jetbrains.idea.devkit.util;
 
-import javax.annotation.Nullable;
-
+import com.intellij.java.language.psi.PsiClass;
+import consulo.devkit.module.extension.PluginModuleExtension;
+import consulo.devkit.util.PluginModuleUtil;
+import consulo.language.psi.PsiFile;
+import consulo.language.util.IncorrectOperationException;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
+import consulo.virtualFileSystem.ReadonlyStatusHandler;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.xml.psi.xml.XmlFile;
+import consulo.xml.psi.xml.XmlTag;
+import consulo.xml.util.xml.DomFileElement;
+import consulo.xml.util.xml.DomManager;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-import consulo.devkit.module.extension.PluginModuleExtension;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.vfs.ReadonlyStatusHandler;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.psi.xml.XmlTag;
-import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.xml.DomFileElement;
-import com.intellij.util.xml.DomManager;
-import consulo.devkit.util.PluginModuleUtil;
+
+import javax.annotation.Nullable;
 
 /**
  * @author swr
  */
-public class DescriptorUtil
-{
-	public static void processActions(XmlTag root, ActionType.Processor processor)
-	{
-		final ActionType[] types = ActionType.values();
-		for(ActionType type : types)
-		{
-			type.process(root, processor);
-		}
-	}
+public class DescriptorUtil {
+  public static void processActions(XmlTag root, ActionType.Processor processor) {
+    final ActionType[] types = ActionType.values();
+    for (ActionType type : types) {
+      type.process(root, processor);
+    }
+  }
 
-	public interface Patcher
-	{
-		void patchPluginXml(XmlFile pluginXml, PsiClass klass) throws IncorrectOperationException;
-	}
+  public interface Patcher {
+    void patchPluginXml(XmlFile pluginXml, PsiClass klass) throws IncorrectOperationException;
+  }
 
-	public static void patchPluginXml(Patcher patcher, PsiClass klass, XmlFile... pluginXmls) throws IncorrectOperationException
-	{
-		final VirtualFile[] files = new VirtualFile[pluginXmls.length];
-		int i = 0;
-		for(XmlFile pluginXml : pluginXmls)
-		{
-			files[i++] = pluginXml.getVirtualFile();
-		}
+  public static void patchPluginXml(Patcher patcher,
+                                    PsiClass klass,
+                                    XmlFile... pluginXmls) throws IncorrectOperationException {
+    final VirtualFile[] files = new VirtualFile[pluginXmls.length];
+    int i = 0;
+    for (XmlFile pluginXml : pluginXmls) {
+      files[i++] = pluginXml.getVirtualFile();
+    }
 
-		final ReadonlyStatusHandler readonlyStatusHandler = ReadonlyStatusHandler.getInstance(klass.getProject());
-		final ReadonlyStatusHandler.OperationStatus status = readonlyStatusHandler.ensureFilesWritable(files);
-		if(status.hasReadonlyFiles())
-		{
-			throw new IncorrectOperationException(DevKitBundle.message("error.plugin.xml.readonly"));
-		}
+    final ReadonlyStatusHandler readonlyStatusHandler = ReadonlyStatusHandler.getInstance(klass.getProject());
+    final ReadonlyStatusHandler.OperationStatus status = readonlyStatusHandler.ensureFilesWritable(files);
+    if (status.hasReadonlyFiles()) {
+      throw new IncorrectOperationException(DevKitBundle.message("error.plugin.xml.readonly"));
+    }
 
-		for(XmlFile pluginXml : pluginXmls)
-		{
-			patcher.patchPluginXml(pluginXml, klass);
-		}
-	}
+    for (XmlFile pluginXml : pluginXmls) {
+      patcher.patchPluginXml(pluginXml, klass);
+    }
+  }
 
-	@Nullable
-	public static DomFileElement<IdeaPlugin> getConsuloPlugin(XmlFile file)
-	{
-		return DomManager.getDomManager(file.getProject()).getFileElement(file, IdeaPlugin.class);
-	}
+  @Nullable
+  public static DomFileElement<IdeaPlugin> getConsuloPlugin(XmlFile file) {
+    return DomManager.getDomManager(file.getProject()).getFileElement(file, IdeaPlugin.class);
+  }
 
-	public static boolean isPluginXml(PsiFile file)
-	{
-		if(!(file instanceof XmlFile))
-		{
-			return false;
-		}
-		return getConsuloPlugin((XmlFile) file) != null;
-	}
+  public static boolean isPluginXml(PsiFile file) {
+    if (!(file instanceof XmlFile)) {
+      return false;
+    }
+    return getConsuloPlugin((XmlFile)file) != null;
+  }
 
-	@Nullable
-	public static String getPluginId(Module plugin)
-	{
-		assert ModuleUtil.getExtension(plugin, PluginModuleExtension.class) != null;
+  @Nullable
+  public static String getPluginId(Module plugin) {
+    assert ModuleUtilCore.getExtension(plugin, PluginModuleExtension.class) != null;
 
-		final XmlFile pluginXml = PluginModuleUtil.getPluginXml(plugin);
-		if(pluginXml != null)
-		{
-			final XmlTag rootTag = pluginXml.getDocument().getRootTag();
-			if(rootTag != null)
-			{
-				final XmlTag idTag = rootTag.findFirstSubTag("id");
-				if(idTag != null)
-				{
-					return idTag.getValue().getTrimmedText();
-				}
+    final XmlFile pluginXml = PluginModuleUtil.getPluginXml(plugin);
+    if (pluginXml != null) {
+      final XmlTag rootTag = pluginXml.getDocument().getRootTag();
+      if (rootTag != null) {
+        final XmlTag idTag = rootTag.findFirstSubTag("id");
+        if (idTag != null) {
+          return idTag.getValue().getTrimmedText();
+        }
 
-				final XmlTag nameTag = rootTag.findFirstSubTag("name");
-				if(nameTag != null)
-				{
-					return nameTag.getValue().getTrimmedText();
-				}
-			}
-		}
-		return null;
-	}
+        final XmlTag nameTag = rootTag.findFirstSubTag("name");
+        if (nameTag != null) {
+          return nameTag.getValue().getTrimmedText();
+        }
+      }
+    }
+    return null;
+  }
 }

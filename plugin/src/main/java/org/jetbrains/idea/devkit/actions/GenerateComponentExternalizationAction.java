@@ -15,147 +15,141 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
+import com.intellij.java.language.psi.*;
+import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.application.ApplicationManager;
+import consulo.codeEditor.Editor;
+import consulo.component.persist.StoragePathMacros;
+import consulo.dataContext.DataContext;
+import consulo.language.codeStyle.CodeStyleManager;
+import consulo.language.editor.LangDataKeys;
+import consulo.language.editor.PlatformDataKeys;
+import consulo.language.psi.PsiDocumentManager;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.util.PsiTreeUtil;
+import consulo.language.util.IncorrectOperationException;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.Presentation;
+import consulo.undoRedo.CommandProcessor;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.DevKitBundle;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.components.StoragePathMacros;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.*;
-import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.IncorrectOperationException;
 
 /**
  * @author max
  */
-public class GenerateComponentExternalizationAction extends AnAction
-{
-	private static final Logger LOG = Logger.getInstance("#org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction");
+public class GenerateComponentExternalizationAction extends AnAction {
+  private static final Logger LOG = Logger.getInstance(GenerateComponentExternalizationAction.class);
 
-	@NonNls
-	private final static String BASE_COMPONENT = "com.intellij.openapi.components.BaseComponent";
-	@NonNls
-	private final static String PERSISTENCE_STATE_COMPONENT = "com.intellij.openapi.components.PersistentStateComponent";
-	@NonNls
-	private final static String STATE = "com.intellij.openapi.components.State";
-	@NonNls
-	private final static String STORAGE = "com.intellij.openapi.components.Storage";
+  @NonNls
+  private final static String BASE_COMPONENT = "com.intellij.openapi.components.BaseComponent";
+  @NonNls
+  private final static String PERSISTENCE_STATE_COMPONENT = "com.intellij.openapi.components.PersistentStateComponent";
+  @NonNls
+  private final static String STATE = "com.intellij.openapi.components.State";
+  @NonNls
+  private final static String STORAGE = "com.intellij.openapi.components.Storage";
 
-	@Override
-	public void actionPerformed(@Nonnull AnActionEvent e)
-	{
-		final PsiClass target = getComponentInContext(e.getDataContext());
-		assert target != null;
+  @Override
+  public void actionPerformed(@Nonnull AnActionEvent e) {
+    final PsiClass target = getComponentInContext(e.getDataContext());
+    assert target != null;
 
-		final PsiElementFactory factory = JavaPsiFacade.getInstance(target.getProject()).getElementFactory();
-		final CodeStyleManager formatter = CodeStyleManager.getInstance(target.getManager().getProject());
-		final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(target.getProject());
-		final String qualifiedName = target.getQualifiedName();
-		Runnable runnable = new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				ApplicationManager.getApplication().runWriteAction(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						try
-						{
-							final PsiReferenceList implList = target.getImplementsList();
-							assert implList != null;
-							final PsiJavaCodeReferenceElement referenceElement = factory.createReferenceFromText(PERSISTENCE_STATE_COMPONENT + "<" + qualifiedName + ">", target);
-							implList.add(styler.shortenClassReferences(referenceElement.copy()));
-							PsiMethod read = factory.createMethodFromText("public void loadState(" + qualifiedName + " state) {\n" + "    com.intellij.util.xmlb.XmlSerializerUtil.copyBean(state, " +
-									"this);\n" + "}", target);
+    final PsiElementFactory factory = JavaPsiFacade.getInstance(target.getProject()).getElementFactory();
+    final CodeStyleManager formatter = CodeStyleManager.getInstance(target.getManager().getProject());
+    final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(target.getProject());
+    final String qualifiedName = target.getQualifiedName();
+    Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+        ApplicationManager.getApplication().runWriteAction(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              final PsiReferenceList implList = target.getImplementsList();
+              assert implList != null;
+              final PsiJavaCodeReferenceElement referenceElement =
+                factory.createReferenceFromText(PERSISTENCE_STATE_COMPONENT + "<" + qualifiedName + ">", target);
+              implList.add(styler.shortenClassReferences(referenceElement.copy()));
+              PsiMethod read =
+                factory.createMethodFromText("public void loadState(" + qualifiedName + " state) {\n" + "    com.intellij.util.xmlb.XmlSerializerUtil.copyBean(state, " +
+                                               "this);\n" + "}", target);
 
-							read = (PsiMethod) formatter.reformat(target.add(read));
-							styler.shortenClassReferences(read);
+              read = (PsiMethod)formatter.reformat(target.add(read));
+              styler.shortenClassReferences(read);
 
-							PsiMethod write = factory.createMethodFromText("public " + qualifiedName + " getState() {\n" + "    return this;\n" + "}\n", target);
-							write = (PsiMethod) formatter.reformat(target.add(write));
-							styler.shortenClassReferences(write);
+              PsiMethod write =
+                factory.createMethodFromText("public " + qualifiedName + " getState() {\n" + "    return this;\n" + "}\n", target);
+              write = (PsiMethod)formatter.reformat(target.add(write));
+              styler.shortenClassReferences(write);
 
-							PsiAnnotation annotation = target.getModifierList().addAnnotation(STATE);
+              PsiAnnotation annotation = target.getModifierList().addAnnotation(STATE);
 
-							annotation = (PsiAnnotation) formatter.reformat(annotation.replace(factory.createAnnotationFromText("@" + STATE + "(name = \"" + qualifiedName + "\", " + "storages = {@"
-									+ STORAGE + "(file = \"" + StoragePathMacros.WORKSPACE_FILE + "\"\n )})", target)));
-							styler.shortenClassReferences(annotation);
-						}
-						catch(IncorrectOperationException e1)
-						{
-							LOG.error(e1);
-						}
-					}
-				});
-			}
-		};
+              annotation =
+                (PsiAnnotation)formatter.reformat(annotation.replace(factory.createAnnotationFromText("@" + STATE + "(name = \"" + qualifiedName + "\", " + "storages = {@"
+                                                                                                        + STORAGE + "(file = \"" + StoragePathMacros.WORKSPACE_FILE + "\"\n )})",
+                                                                                                      target)));
+              styler.shortenClassReferences(annotation);
+            }
+            catch (IncorrectOperationException e1) {
+              LOG.error(e1);
+            }
+          }
+        });
+      }
+    };
 
-		CommandProcessor.getInstance().executeCommand(target.getProject(), runnable, DevKitBundle.message("command.implement.externalizable"), null);
-	}
+    CommandProcessor.getInstance()
+                    .executeCommand(target.getProject(), runnable, DevKitBundle.message("command.implement.externalizable"), null);
+  }
 
-	@Nullable
-	private PsiClass getComponentInContext(DataContext context)
-	{
-		Editor editor = context.getData(PlatformDataKeys.EDITOR);
-		Project project = context.getData(PlatformDataKeys.PROJECT);
-		if(editor == null || project == null)
-		{
-			return null;
-		}
+  @Nullable
+  private PsiClass getComponentInContext(DataContext context) {
+    Editor editor = context.getData(PlatformDataKeys.EDITOR);
+    Project project = context.getData(PlatformDataKeys.PROJECT);
+    if (editor == null || project == null) {
+      return null;
+    }
 
-		PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
+    PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
 
-		PsiFile file = context.getData(LangDataKeys.PSI_FILE);
-		if(file == null)
-		{
-			return null;
-		}
+    PsiFile file = context.getData(LangDataKeys.PSI_FILE);
+    if (file == null) {
+      return null;
+    }
 
-		PsiClass contextClass = PsiTreeUtil.findElementOfClassAtOffset(file, editor.getCaretModel().getOffset(), PsiClass.class, false);
-		if(contextClass == null || contextClass.isEnum() || contextClass.isInterface() || contextClass instanceof PsiAnonymousClass)
-		{
-			return null;
-		}
+    PsiClass contextClass = PsiTreeUtil.findElementOfClassAtOffset(file, editor.getCaretModel().getOffset(), PsiClass.class, false);
+    if (contextClass == null || contextClass.isEnum() || contextClass.isInterface() || contextClass instanceof PsiAnonymousClass) {
+      return null;
+    }
 
-		PsiClass componentClass = JavaPsiFacade.getInstance(file.getProject()).findClass(BASE_COMPONENT, file.getResolveScope());
-		if(componentClass == null || !contextClass.isInheritor(componentClass, true))
-		{
-			return null;
-		}
+    PsiClass componentClass = JavaPsiFacade.getInstance(file.getProject()).findClass(BASE_COMPONENT, file.getResolveScope());
+    if (componentClass == null || !contextClass.isInheritor(componentClass, true)) {
+      return null;
+    }
 
-		PsiClass externClass = JavaPsiFacade.getInstance(file.getProject()).findClass(PERSISTENCE_STATE_COMPONENT, file.getResolveScope());
-		if(externClass == null || contextClass.isInheritor(externClass, true))
-		{
-			return null;
-		}
+    PsiClass externClass = JavaPsiFacade.getInstance(file.getProject()).findClass(PERSISTENCE_STATE_COMPONENT, file.getResolveScope());
+    if (externClass == null || contextClass.isInheritor(externClass, true)) {
+      return null;
+    }
 
 
-		return contextClass;
-	}
+    return contextClass;
+  }
 
-	@Override
-	public void update(AnActionEvent e)
-	{
-		super.update(e);
-		final PsiClass target = getComponentInContext(e.getDataContext());
+  @Override
+  public void update(AnActionEvent e) {
+    super.update(e);
+    final PsiClass target = getComponentInContext(e.getDataContext());
 
-		final Presentation presentation = e.getPresentation();
-		presentation.setEnabled(target != null);
-		presentation.setVisible(target != null);
-	}
+    final Presentation presentation = e.getPresentation();
+    presentation.setEnabled(target != null);
+    presentation.setVisible(target != null);
+  }
 }
 

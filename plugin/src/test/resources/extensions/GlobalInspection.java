@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.intellij.codeInspection.GlobalInspectionTool;
 
 public class <warning descr="Class 'GlobalInspection' is never used">Global<caret>Inspection</warning> extends GlobalInspectionTool {
 }

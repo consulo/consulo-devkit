@@ -16,12 +16,13 @@
 
 package consulo.devkit.codeInsight.generation;
 
-import com.intellij.codeInsight.generation.OverrideImplementsAnnotationsHandler;
-import com.intellij.openapi.project.Project;
-import com.intellij.util.ArrayUtil;
+import com.intellij.java.impl.codeInsight.generation.OverrideImplementsAnnotationsHandler;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.access.RequiredWriteAction;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.util.collection.ArrayUtil;
 
 import javax.annotation.Nonnull;
 
@@ -29,29 +30,26 @@ import javax.annotation.Nonnull;
  * @author VISTALL
  * @since 10.06.2015
  */
-public class XActionOverrideImplementsAnnotationsHandler implements OverrideImplementsAnnotationsHandler
-{
-	private static final String[] ourAnnotations = new String[]{
-			RequiredReadAction.class.getName(),
-			RequiredWriteAction.class.getName(),
-			RequiredUIAccess.class.getName(),
-			RequiredUIAccess.class.getName()
-	};
+@ExtensionImpl
+public class XActionOverrideImplementsAnnotationsHandler implements OverrideImplementsAnnotationsHandler {
+  private static final String[] ourAnnotations = new String[]{
+    RequiredReadAction.class.getName(),
+    RequiredWriteAction.class.getName(),
+    RequiredUIAccess.class.getName(),
+    RequiredUIAccess.class.getName()
+  };
 
-	@Override
-	public String[] getAnnotations(Project project)
-	{
-		return ourAnnotations;
-	}
+  @Override
+  public String[] getAnnotations(Project project) {
+    return ourAnnotations;
+  }
 
-	@Nonnull
-	@Override
-	public String[] annotationsToRemove(Project project, @Nonnull String s)
-	{
-		if(ArrayUtil.contains(s, ourAnnotations))
-		{
-			return ourAnnotations;
-		}
-		return ArrayUtil.EMPTY_STRING_ARRAY;
-	}
+  @Nonnull
+  @Override
+  public String[] annotationsToRemove(Project project, @Nonnull String s) {
+    if (ArrayUtil.contains(s, ourAnnotations)) {
+      return ourAnnotations;
+    }
+    return ArrayUtil.EMPTY_STRING_ARRAY;
+  }
 }

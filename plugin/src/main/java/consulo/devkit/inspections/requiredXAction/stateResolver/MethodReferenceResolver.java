@@ -16,8 +16,8 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiMethodReferenceExpression;
+import com.intellij.java.language.psi.PsiExpression;
+import com.intellij.java.language.psi.PsiMethodReferenceExpression;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 
@@ -27,16 +27,16 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 01-Oct-16
  */
-public class MethodReferenceResolver extends StateResolver
-{
-	public static final StateResolver INSTANCE = new MethodReferenceResolver();
+public class MethodReferenceResolver extends StateResolver {
+  public static final StateResolver INSTANCE = new MethodReferenceResolver();
 
-	@RequiredReadAction
-	@Nullable
-	@Override
-	public Boolean resolveState(CallStateType actionType, PsiExpression expression)
-	{
-		PsiMethodReferenceExpression methodReferenceExpression = (PsiMethodReferenceExpression) expression;
-		return resolveByMaybeParameterListOrVariable(methodReferenceExpression.getParent(), actionType) || isAllowedFunctionCall(methodReferenceExpression, actionType);
-	}
+  @RequiredReadAction
+  @Nullable
+  @Override
+  public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
+    PsiMethodReferenceExpression methodReferenceExpression = (PsiMethodReferenceExpression)expression;
+    return resolveByMaybeParameterListOrVariable(methodReferenceExpression.getParent(), actionType) || isAllowedFunctionCall(
+      methodReferenceExpression,
+      actionType);
+  }
 }

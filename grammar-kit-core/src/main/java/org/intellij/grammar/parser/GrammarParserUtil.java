@@ -15,7 +15,8 @@
  */
 package org.intellij.grammar.parser;
 
-import com.intellij.lang.PsiBuilder;
+import consulo.language.impl.parser.GeneratedParserUtilBase;
+import consulo.language.parser.PsiBuilder;
 
 /**
  * @author gregsh

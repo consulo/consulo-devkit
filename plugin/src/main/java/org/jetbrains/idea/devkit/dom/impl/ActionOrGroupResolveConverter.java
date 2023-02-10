@@ -15,27 +15,27 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Comparing;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.CachedValueProvider;
-import com.intellij.psi.util.CachedValuesManager;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.util.ObjectUtil;
-import com.intellij.util.PairProcessor;
-import com.intellij.util.Processor;
-import com.intellij.util.xml.ConvertContext;
-import com.intellij.util.xml.DomUtil;
-import com.intellij.util.xml.ElementPresentationManager;
-import com.intellij.util.xml.ResolvingConverter;
-import com.intellij.util.xml.impl.DomImplUtil;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.application.util.CachedValueProvider;
+import consulo.application.util.function.Processor;
+import consulo.language.editor.completion.lookup.LookupElement;
+import consulo.language.editor.completion.lookup.LookupElementBuilder;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.language.psi.util.LanguageCachedValueUtil;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
+import consulo.project.Project;
+import consulo.util.lang.Comparing;
+import consulo.util.lang.ObjectUtil;
+import consulo.util.lang.StringUtil;
+import consulo.util.lang.function.PairProcessor;
+import consulo.xml.psi.xml.XmlFile;
+import consulo.xml.util.xml.ConvertContext;
+import consulo.xml.util.xml.DomUtil;
+import consulo.xml.util.xml.ElementPresentationManager;
+import consulo.xml.util.xml.ResolvingConverter;
+import consulo.xml.util.xml.impl.DomImplUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.dom.*;
 
@@ -43,217 +43,178 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGroup>
-{
-	@Nonnull
-	@Override
-	public Collection<? extends ActionOrGroup> getVariants(ConvertContext context)
-	{
-		final List<ActionOrGroup> variants = new ArrayList<ActionOrGroup>();
-		PairProcessor<String, ActionOrGroup> collectProcessor = new PairProcessor<String, ActionOrGroup>()
-		{
-			@Override
-			public boolean process(String s, ActionOrGroup actionOrGroup)
-			{
-				if(isRelevant(actionOrGroup))
-				{
-					variants.add(actionOrGroup);
-				}
-				return true;
-			}
-		};
-		processActionOrGroup(context, collectProcessor);
-		return variants;
-	}
+public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGroup> {
+  @Nonnull
+  @Override
+  public Collection<? extends ActionOrGroup> getVariants(ConvertContext context) {
+    final List<ActionOrGroup> variants = new ArrayList<ActionOrGroup>();
+    PairProcessor<String, ActionOrGroup> collectProcessor = new PairProcessor<String, ActionOrGroup>() {
+      @Override
+      public boolean process(String s, ActionOrGroup actionOrGroup) {
+        if (isRelevant(actionOrGroup)) {
+          variants.add(actionOrGroup);
+        }
+        return true;
+      }
+    };
+    processActionOrGroup(context, collectProcessor);
+    return variants;
+  }
 
-	@Nullable
-	@Override
-	public ActionOrGroup fromString(@Nullable @NonNls final String value, ConvertContext context)
-	{
-		if(StringUtil.isEmptyOrSpaces(value))
-		{
-			return null;
-		}
+  @Nullable
+  @Override
+  public ActionOrGroup fromString(@Nullable @NonNls final String value, ConvertContext context) {
+    if (StringUtil.isEmptyOrSpaces(value)) {
+      return null;
+    }
 
-		final ActionOrGroup[] result = {null};
-		PairProcessor<String, ActionOrGroup> findProcessor = new PairProcessor<String, ActionOrGroup>()
-		{
-			@Override
-			public boolean process(String s, ActionOrGroup actionOrGroup)
-			{
-				if(isRelevant(actionOrGroup) && Comparing.strEqual(value, s))
-				{
-					result[0] = actionOrGroup;
-					return false;
-				}
-				return true;
-			}
-		};
-		processActionOrGroup(context, findProcessor);
-		return result[0];
-	}
+    final ActionOrGroup[] result = {null};
+    PairProcessor<String, ActionOrGroup> findProcessor = new PairProcessor<String, ActionOrGroup>() {
+      @Override
+      public boolean process(String s, ActionOrGroup actionOrGroup) {
+        if (isRelevant(actionOrGroup) && Comparing.strEqual(value, s)) {
+          result[0] = actionOrGroup;
+          return false;
+        }
+        return true;
+      }
+    };
+    processActionOrGroup(context, findProcessor);
+    return result[0];
+  }
 
-	@Nullable
-	@Override
-	public String toString(@Nullable ActionOrGroup actionGroup, ConvertContext context)
-	{
-		return actionGroup == null ? null : getName(actionGroup);
-	}
+  @Nullable
+  @Override
+  public String toString(@Nullable ActionOrGroup actionGroup, ConvertContext context) {
+    return actionGroup == null ? null : getName(actionGroup);
+  }
 
-	@Override
-	public String getErrorMessage(@Nullable String s, ConvertContext context)
-	{
-		return "Cannot resolve action or group '" + s + "'";
-	}
+  @Override
+  public String getErrorMessage(@Nullable String s, ConvertContext context) {
+    return "Cannot resolve action or group '" + s + "'";
+  }
 
-	@Nullable
-	@Override
-	public LookupElement createLookupElement(ActionOrGroup actionOrGroup)
-	{
-		if(actionOrGroup instanceof Action)
-		{
-			Action action = (Action) actionOrGroup;
-			String msg = action.getId().getStringValue() + " in " + DomUtil.getFile(action) + " " + action.isValid() + " ";
-			DomImplUtil.assertValidity(action, msg);
-			final PsiElement element = getPsiElement(actionOrGroup);
-			if(element == null)
-			{
-				throw new IllegalStateException("no PSI: " + msg);
-			}
+  @Nullable
+  @Override
+  public LookupElement createLookupElement(ActionOrGroup actionOrGroup) {
+    if (actionOrGroup instanceof Action) {
+      Action action = (Action)actionOrGroup;
+      String msg = action.getId().getStringValue() + " in " + DomUtil.getFile(action) + " " + action.isValid() + " ";
+      DomImplUtil.assertValidity(action, msg);
+      final PsiElement element = getPsiElement(actionOrGroup);
+      if (element == null) {
+        throw new IllegalStateException("no PSI: " + msg);
+      }
 
-			LookupElementBuilder builder = LookupElementBuilder.create(ObjectUtil.assertNotNull(element), ObjectUtil.assertNotNull(getName(action)));
+      LookupElementBuilder builder =
+        LookupElementBuilder.create(ObjectUtil.assertNotNull(element), ObjectUtil.assertNotNull(getName(action)));
 
-			final String text = action.getText().getStringValue();
-			if(StringUtil.isNotEmpty(text))
-			{
-				String withoutMnemonic = StringUtil.replace(text, "_", "");
-				builder = builder.withTailText(" \"" + withoutMnemonic + "\"", true);
-			}
+      final String text = action.getText().getStringValue();
+      if (StringUtil.isNotEmpty(text)) {
+        String withoutMnemonic = StringUtil.replace(text, "_", "");
+        builder = builder.withTailText(" \"" + withoutMnemonic + "\"", true);
+      }
 
-			return builder;
-		}
+      return builder;
+    }
 
-		return super.createLookupElement(actionOrGroup);
-	}
+    return super.createLookupElement(actionOrGroup);
+  }
 
-	protected boolean isRelevant(ActionOrGroup actionOrGroup)
-	{
-		return true;
-	}
+  protected boolean isRelevant(ActionOrGroup actionOrGroup) {
+    return true;
+  }
 
-	public static class OnlyActions extends ActionOrGroupResolveConverter
-	{
-		@Override
-		protected boolean isRelevant(ActionOrGroup actionOrGroup)
-		{
-			return actionOrGroup instanceof Action;
-		}
+  public static class OnlyActions extends ActionOrGroupResolveConverter {
+    @Override
+    protected boolean isRelevant(ActionOrGroup actionOrGroup) {
+      return actionOrGroup instanceof Action;
+    }
 
-		@Override
-		public String getErrorMessage(@Nullable String s, ConvertContext context)
-		{
-			return "Cannot resolve action '" + s + "'";
-		}
-	}
+    @Override
+    public String getErrorMessage(@Nullable String s, ConvertContext context) {
+      return "Cannot resolve action '" + s + "'";
+    }
+  }
 
-	public static class OnlyGroups extends ActionOrGroupResolveConverter
-	{
-		@Override
-		protected boolean isRelevant(ActionOrGroup actionOrGroup)
-		{
-			return actionOrGroup instanceof Group;
-		}
+  public static class OnlyGroups extends ActionOrGroupResolveConverter {
+    @Override
+    protected boolean isRelevant(ActionOrGroup actionOrGroup) {
+      return actionOrGroup instanceof Group;
+    }
 
-		@Override
-		public String getErrorMessage(@Nullable String s, ConvertContext context)
-		{
-			return "Cannot resolve group '" + s + "'";
-		}
-	}
+    @Override
+    public String getErrorMessage(@Nullable String s, ConvertContext context) {
+      return "Cannot resolve group '" + s + "'";
+    }
+  }
 
-	@RequiredReadAction
-	private static boolean processActionOrGroup(ConvertContext context, final PairProcessor<String, ActionOrGroup> processor)
-	{
-		final Project project = context.getProject();
+  @RequiredReadAction
+  private static boolean processActionOrGroup(ConvertContext context, final PairProcessor<String, ActionOrGroup> processor) {
+    final Project project = context.getProject();
 
-		Module module = context.getModule();
-		if(module == null)
-		{
-			final Collection<IdeaPlugin> plugins = IdeaPluginConverter.getAllPlugins(project);
-			return processPlugins(plugins, processor);
-		}
+    Module module = context.getModule();
+    if (module == null) {
+      final Collection<IdeaPlugin> plugins = IdeaPluginConverter.getAllPlugins(project);
+      return processPlugins(plugins, processor);
+    }
 
-		return ModuleUtilCore.visitMeAndDependentModules(module, new Processor<Module>()
-		{
-			@Override
-			public boolean process(Module module)
-			{
-				final Collection<IdeaPlugin> dependenciesAndLibs = IdeaPluginConverter.getPlugins(project, GlobalSearchScope.moduleRuntimeScope(module, false));
-				return processPlugins(dependenciesAndLibs, processor);
-			}
-		});
-	}
+    return ModuleUtilCore.visitMeAndDependentModules(module, new Processor<Module>() {
+      @Override
+      public boolean process(Module module) {
+        final Collection<IdeaPlugin> dependenciesAndLibs =
+          IdeaPluginConverter.getPlugins(project, GlobalSearchScope.moduleRuntimeScope(module, false));
+        return processPlugins(dependenciesAndLibs, processor);
+      }
+    });
+  }
 
-	private static boolean processPlugins(Collection<IdeaPlugin> plugins, PairProcessor<String, ActionOrGroup> processor)
-	{
-		for(IdeaPlugin plugin : plugins)
-		{
-			final Map<String, ActionOrGroup> forFile = collectForFile(plugin);
-			for(Map.Entry<String, ActionOrGroup> entry : forFile.entrySet())
-			{
-				if(!processor.process(entry.getKey(), entry.getValue()))
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+  private static boolean processPlugins(Collection<IdeaPlugin> plugins, PairProcessor<String, ActionOrGroup> processor) {
+    for (IdeaPlugin plugin : plugins) {
+      final Map<String, ActionOrGroup> forFile = collectForFile(plugin);
+      for (Map.Entry<String, ActionOrGroup> entry : forFile.entrySet()) {
+        if (!processor.process(entry.getKey(), entry.getValue())) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
-	private static Map<String, ActionOrGroup> collectForFile(final IdeaPlugin plugin)
-	{
-		final XmlFile xmlFile = DomUtil.getFile(plugin);
-		return CachedValuesManager.getCachedValue(xmlFile, new CachedValueProvider<Map<String, ActionOrGroup>>()
-		{
-			@Nullable
-			@Override
-			public Result<Map<String, ActionOrGroup>> compute()
-			{
-				Map<String, ActionOrGroup> result = new HashMap<String, ActionOrGroup>();
-				for(Actions actions : plugin.getActions())
-				{
-					collectRecursive(result, actions);
-				}
+  private static Map<String, ActionOrGroup> collectForFile(final IdeaPlugin plugin) {
+    final XmlFile xmlFile = DomUtil.getFile(plugin);
+    return LanguageCachedValueUtil.getCachedValue(xmlFile, new CachedValueProvider<Map<String, ActionOrGroup>>() {
+      @Nullable
+      @Override
+      public Result<Map<String, ActionOrGroup>> compute() {
+        Map<String, ActionOrGroup> result = new HashMap<String, ActionOrGroup>();
+        for (Actions actions : plugin.getActions()) {
+          collectRecursive(result, actions);
+        }
 
-				return Result.create(result, xmlFile);
-			}
-		});
-	}
+        return Result.create(result, xmlFile);
+      }
+    });
+  }
 
-	private static void collectRecursive(Map<String, ActionOrGroup> result, Actions actions)
-	{
-		for(Action action : actions.getActions())
-		{
-			final String name = getName(action);
-			if(!StringUtil.isEmptyOrSpaces(name))
-			{
-				result.put(name, action);
-			}
-		}
-		for(Group group : actions.getGroups())
-		{
-			final String name = getName(group);
-			if(!StringUtil.isEmptyOrSpaces(name))
-			{
-				result.put(name, group);
-			}
-			collectRecursive(result, group);
-		}
-	}
+  private static void collectRecursive(Map<String, ActionOrGroup> result, Actions actions) {
+    for (Action action : actions.getActions()) {
+      final String name = getName(action);
+      if (!StringUtil.isEmptyOrSpaces(name)) {
+        result.put(name, action);
+      }
+    }
+    for (Group group : actions.getGroups()) {
+      final String name = getName(group);
+      if (!StringUtil.isEmptyOrSpaces(name)) {
+        result.put(name, group);
+      }
+      collectRecursive(result, group);
+    }
+  }
 
-	@Nullable
-	private static String getName(@Nonnull ActionOrGroup actionOrGroup)
-	{
-		return ElementPresentationManager.getElementName(actionOrGroup);
-	}
+  @Nullable
+  private static String getName(@Nonnull ActionOrGroup actionOrGroup) {
+    return ElementPresentationManager.getElementName(actionOrGroup);
+  }
 }

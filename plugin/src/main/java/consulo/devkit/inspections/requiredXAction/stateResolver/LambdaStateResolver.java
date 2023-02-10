@@ -16,12 +16,12 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiLambdaExpression;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.java.language.psi.PsiExpression;
+import com.intellij.java.language.psi.PsiLambdaExpression;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.util.PsiTreeUtil;
 
 import javax.annotation.Nullable;
 
@@ -29,22 +29,20 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 01-Oct-16
  */
-public class LambdaStateResolver extends StateResolver
-{
-	public static final StateResolver INSTANCE = new LambdaStateResolver();
+public class LambdaStateResolver extends StateResolver {
+  public static final StateResolver INSTANCE = new LambdaStateResolver();
 
-	@RequiredReadAction
-	@Nullable
-	@Override
-	public Boolean resolveState(CallStateType actionType, PsiExpression expression)
-	{
-		PsiLambdaExpression lambdaExpression = PsiTreeUtil.getParentOfType(expression, PsiLambdaExpression.class);
-		if(lambdaExpression == null)
-		{
-			return null;
-		}
+  @RequiredReadAction
+  @Nullable
+  @Override
+  public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
+    PsiLambdaExpression lambdaExpression = PsiTreeUtil.getParentOfType(expression, PsiLambdaExpression.class);
+    if (lambdaExpression == null) {
+      return null;
+    }
 
-		PsiElement maybeParameterListOrVariable = lambdaExpression.getParent();
-		return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType) || isAllowedFunctionCall(lambdaExpression, actionType);
-	}
+    PsiElement maybeParameterListOrVariable = lambdaExpression.getParent();
+    return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType) || isAllowedFunctionCall(lambdaExpression,
+                                                                                                                    actionType);
+  }
 }

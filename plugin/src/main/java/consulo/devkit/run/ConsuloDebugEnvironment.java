@@ -16,10 +16,10 @@
 
 package consulo.devkit.run;
 
-import com.intellij.debugger.DefaultDebugEnvironment;
-import com.intellij.execution.configurations.RemoteConnection;
-import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.java.debugger.impl.DefaultDebugEnvironment;
+import com.intellij.java.execution.configurations.RemoteConnection;
+import consulo.content.bundle.Sdk;
+import consulo.execution.runner.ExecutionEnvironment;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,20 +28,20 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 23-May-17
  */
-class ConsuloDebugEnvironment extends DefaultDebugEnvironment
-{
-	private final ConsuloSandboxRunState myState;
+class ConsuloDebugEnvironment extends DefaultDebugEnvironment {
+  private final ConsuloSandboxRunState myState;
 
-	public ConsuloDebugEnvironment(@Nonnull ExecutionEnvironment environment, @Nonnull ConsuloSandboxRunState state, RemoteConnection remoteConnection, boolean pollConnection)
-	{
-		super(environment, state, remoteConnection, pollConnection);
-		myState = state;
-	}
+  public ConsuloDebugEnvironment(@Nonnull ExecutionEnvironment environment,
+                                 @Nonnull ConsuloSandboxRunState state,
+                                 RemoteConnection remoteConnection,
+                                 boolean pollConnection) {
+    super(environment, state, remoteConnection, pollConnection);
+    myState = state;
+  }
 
-	@Nullable
-	@Override
-	public Sdk getRunJre()
-	{
-		return myState.getJavaSdk();
-	}
+  @Nullable
+  @Override
+  public Sdk getRunJre() {
+    return myState.getJavaSdk();
+  }
 }

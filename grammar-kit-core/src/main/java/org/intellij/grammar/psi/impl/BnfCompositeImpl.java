@@ -3,10 +3,11 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
-import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.text.StringUtil;
+import consulo.language.ast.ASTNode;
+import consulo.language.impl.psi.ASTWrapperPsiElement;
+import consulo.util.lang.StringUtil;
 import org.intellij.grammar.psi.*;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -15,39 +16,32 @@ import javax.annotation.Nonnull;
  * Date: 13.07.11
  * Time: 19:11
  */
-public class BnfCompositeImpl extends ASTWrapperPsiElement implements BnfComposite
-{
-	public BnfCompositeImpl(@Nonnull ASTNode node)
-	{
-		super(node);
-	}
+public class BnfCompositeImpl extends ASTWrapperPsiElement implements BnfComposite {
+  public BnfCompositeImpl(@Nonnull ASTNode node) {
+    super(node);
+  }
 
-	/**
-	 * @noinspection InstanceofThis
-	 */
-	@Override
-	public String toString()
-	{
-		String elementType = getNode().getElementType().toString();
-		boolean addText = this instanceof BnfExpression && !(this instanceof BnfValueList);
-		if(addText)
-		{
-			String text = getText();
-			if(!(this instanceof BnfLiteralExpression) && text.length() > 50)
-			{
-				text = text.substring(0, 30) + " ... " + text.substring(text.length() - 20, text.length());
-			}
-			return elementType + (StringUtil.isEmptyOrSpaces(text) ? "" : ": " + text);
-		}
-		else
-		{
-			return elementType;
-		}
-	}
+  /**
+   * @noinspection InstanceofThis
+   */
+  @Override
+  public String toString() {
+    String elementType = getNode().getElementType().toString();
+    boolean addText = this instanceof BnfExpression && !(this instanceof BnfValueList);
+    if (addText) {
+      String text = getText();
+      if (!(this instanceof BnfLiteralExpression) && text.length() > 50) {
+        text = text.substring(0, 30) + " ... " + text.substring(text.length() - 20, text.length());
+      }
+      return elementType + (StringUtil.isEmptyOrSpaces(text) ? "" : ": " + text);
+    }
+    else {
+      return elementType;
+    }
+  }
 
-	@Override
-	public <R> R accept(@Nonnull BnfVisitor<R> visitor)
-	{
-		return visitor.visitComposite(this);
-	}
+  @Override
+  public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
+    return visitor.visitComposite(this);
+  }
 }

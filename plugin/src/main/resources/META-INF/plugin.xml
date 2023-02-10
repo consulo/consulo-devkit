@@ -1,318 +1,91 @@
 <consulo-plugin url="https://github.com/consulo/consulo-devkit">
-	<id>consulo.devkit</id>
-	<name>Consulo Plugin DevKit</name>
-	<version>SNAPSHOT</version>
-	<category>IDE Frameworks</category>
-	<vendor>JetBrains &amp; consulo.io</vendor>
+  <id>consulo.devkit</id>
+  <name>Consulo Plugin DevKit</name>
+  <version>SNAPSHOT</version>
+  <category>IDE Frameworks</category>
+  <vendor>JetBrains &amp; consulo.io</vendor>
 
-	<import path="/META-INF/grammar-kit.xml"/>
+  <depends>consulo.java</depends>
+  <depends>com.intellij.properties</depends>
+  <depends>com.intellij.xml</depends>
+  <depends>org.jetbrains.plugins.yaml</depends>
+  <depends>org.jetbrains.idea.maven</depends>
 
-	<depends>consulo.java</depends>
-	<depends>com.intellij.properties</depends>
-	<depends>com.intellij.xml</depends>
-	<depends>com.intellij.uiDesigner</depends>
-	<depends>org.jetbrains.plugins.yaml</depends>
-	<depends optional="true">org.jetbrains.idea.maven</depends>
+  <resource-bundle>messages.DevKitBundle</resource-bundle>
 
-	<resource-bundle>messages.DevKitBundle</resource-bundle>
+  <tags>
+    <tag>ide.framework</tag>
+  </tags>
 
-	<tags>
-		<tag>ide.framework</tag>
-	</tags>
+  <permissions>
+    <permission type="GET_ENV"/>
+  </permissions>
 
-	<permissions>
-		<permission type="GET_ENV"/>
-	</permissions>
+  <actions>
+    <action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
+      <add-to-group anchor="last" group-id="NewGroup"/>
+    </action>
 
-	<extensions defaultExtensionNs="org.jetbrains.idea.maven">
-		<importer implementation="consulo.devkit.maven.DevKitMavenImporterFromDependency"/>
-		<importer implementation="consulo.devkit.maven.DevKit3MavenImporterFromDependency"/>
-	</extensions>
+    <action class="org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction" text="Generate Externalization"
+            id="GenerateExternalization">
+      <add-to-group anchor="last" group-id="GenerateGroup"/>
+    </action>
 
-	<extensions defaultExtensionNs="consulo.java">
-		<coverageEngineExtension implementation="consulo.devkit.run.ConsuloRunCoverageEngineExtension"/>
-		<overrideImplementsAnnotationsHandler
-				implementation="consulo.devkit.codeInsight.generation.XActionOverrideImplementsAnnotationsHandler"/>
+    <group id="Internal.DevKit" class="consulo.devkit.action.InternalGroup" text="DevKit" popup="true">
+      <!--<action class="org.jetbrains.idea.devkit.actions.ToggleHighlightingMarkupAction"-->
+      <!--text="Toggle Expected Highlighting Markup"-->
+      <!--id="ToggleHighlightingMarkup"/>-->
 
-		<predefinedMigrationMapProvider implementation="consulo.devkit.Consulo3MigrationProvider"/>
-	</extensions>
+      <!--<action class="org.jetbrains.idea.devkit.actions.ShuffleNamesAction" text="Shuffle Names"-->
+      <!--id="ShuffleNamesAction"/>-->
 
-	<extensions defaultExtensionNs="com.intellij">
-		<useScopeEnlarger implementation="org.jetbrains.idea.devkit.DevKitUseScopeEnlarger"/>
 
-		<programRunner implementation="consulo.devkit.run.ConsuloDebuggerRunner"/>
+      <action class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
+              id="GenerateDomModel"/>
 
-		<configurationType implementation="org.jetbrains.idea.devkit.run.PluginConfigurationType"/>
+      <add-to-group group-id="ToolsMenu" anchor="last"/>
+    </group>
 
-		<sdkType implementation="org.jetbrains.idea.devkit.sdk.ConsuloSdkType"/>
-		<fileTemplateGroup implementation="org.jetbrains.idea.devkit.DevKitFileTemplatesFactory"/>
-		<documentationProvider implementation="org.jetbrains.idea.devkit.references.extensions.ExtensionPointQuickDocProvider"/>
+    <action id="ConvertResourceBundleToYamlAction" class="consulo.devkit.action.ConvertResourceBundleToYamlAction">
+      <add-to-group group-id="ProjectViewPopupMenu"/>
+    </action>
 
-		<lang.foldingBuilder language="JAVA" implementationClass="consulo.devkit.localize.folding.LocalizeFoldingBuilder"/>
-		<fileBasedIndex implementation="consulo.devkit.localize.index.LocalizeFileBasedIndexExtension"/>
-		<fileBasedIndex implementation="consulo.devkit.icon.index.IconFileBasedIndexExtension"/>
+    <group id="grammar.file.group" popup="false">
+      <action id="grammar.Generate" class="org.intellij.grammar.impl.actions.GenerateAction" text="Generate Parser Code">
+        <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
+      </action>
+      <separator/>
+      <action id="grammar.LivePreview" class="org.intellij.grammar.impl.actions.LivePreviewAction" text="Live Preview">
+        <keyboard-shortcut keymap="$default" first-keystroke="control alt P"/>
+      </action>
+      <separator/>
+      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </group>
+    <action id="grammar.HighlightGrammarAtCaretAction" class="org.intellij.grammar.impl.actions.HighlightGrammarAtCaretAction"
+            text="Grammar Highlighting">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="control alt F7"/>
+    </action>
+    <group id="grammar.RefactoringGroup" popup="false">
+      <add-to-group group-id="RefactoringMenu" anchor="first"/>
+      <action id="grammars.IntroduceRule" class="org.intellij.grammar.impl.refactor.BnfIntroduceRuleAction" text="Introduce Rule"
+              description="Introduce Rule">
+        <keyboard-shortcut keymap="$default" first-keystroke="control alt R"/>
+      </action>
+      <action id="grammars.IntroduceToken" class="org.intellij.grammar.impl.refactor.BnfIntroduceTokenAction" text="Introduce Token"
+              description="Introduce Token">
+        <keyboard-shortcut keymap="$default" first-keystroke="control alt C"/>
+      </action>
+    </group>
 
-		<moduleExtensionProvider key="consulo-plugin"
-								 parentKey="java"
-								 icon="consulo.platform.base.PlatformIconGroup@icon16"
-								 name="Consulo Plugin"
-								 immutableClass="consulo.devkit.module.extension.PluginModuleExtension"
-								 mutableClass="consulo.devkit.module.extension.PluginMutableModuleExtension"/>
-		<localInspection language="XML" shortName="PluginXmlValidity" displayName="Plugin.xml Validity"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.PluginXmlDomInspection"/>
-		<localInspection language="XML" shortName="PluginRequiresXmlValidity" displayName="plugin-requires.xml Validity"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
-						 implementationClass="consulo.devkit.inspections.valhalla.PluginRequiresXmlDomElementsInspection"/>
-
-		<localInspection language="JAVA" shortName="ComponentNotRegistered" bundle="messages.DevKitBundle"
-						 key="inspections.component.not.registered.name" groupKey="inspections.group.name" enabledByDefault="true"
-						 level="WARNING" implementationClass="org.jetbrains.idea.devkit.inspections.ComponentNotRegisteredInspection"/>
-		<localInspection language="JAVA" shortName="InspectionDescriptionNotFoundInspection" displayName="Inspection Description Checker"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection"/>
-		<localInspection language="JAVA" shortName="InspectionUsingGrayColors" displayName="Using new Color(a,a,a)"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseGrayInspection"/>
-		<localInspection language="JAVA" shortName="UsePrimitiveTypes" displayName="Use .equals with primitive types"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UsePrimitiveTypesInspection"/>
-		<localInspection language="JAVA" shortName="UseDPIAwareInsets" displayName="Use DPI-aware insets"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseDPIAwareInsetsInspection"/>
-		<localInspection language="JAVA" shortName="UseCouple" displayName="Use Couple instead of Pair"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="false" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseCoupleInspection"/>
-		<localInspection language="JAVA" shortName="DontUsePairConstructor" displayName="Don't use constructor of Pair class"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.DontUseNewPairInspection"/>
-		<localInspection language="JAVA" shortName="StatefulEp" displayName="Stateful Extension"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.StatefulEpInspection"/>
-		<localInspection language="JAVA" shortName="UseJBColor" displayName="Use Darcula aware JBColor"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UseJBColorInspection"/>
-		<localInspection language="JAVA" shortName="IntentionDescriptionNotFoundInspection" displayName="Intention Description Checker"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection"/>
-		<localInspection language="JAVA" shortName="ExtensionImplIsNotAnnotatedInspection"
-						 displayName="Extension implementation is not annotated by @ExtensionImpl"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="consulo.devkit.inspections.valhalla.ExtensionImplIsNotAnnotatedInspection"/>
-		<localInspection language="JAVA" shortName="IntentionMetaDataMissedInspection"
-						 displayName="Missing @IntentionMetaData annotation"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
-						 implementationClass="consulo.devkit.inspections.valhalla.IntentionMetaDataMissedInspection"/>
-
-		<localInspection language="JAVA" shortName="DialogTitleCapitalization"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 displayName="Incorrect dialog title capitalization"
-						 enabledByDefault="true"
-						 level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.TitleCapitalizationInspection"/>
-		<localInspection language="XML" shortName="InspectionMappingConsistency"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 displayName="&lt;inspection&gt; tag consistency"
-						 enabledByDefault="true"
-						 level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.InspectionMappingConsistencyInspection"/>
-		<localInspection language="XML" shortName="ExtensionPointBeanClass"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 displayName="&lt;extensionPoint&gt; beanClass specification"
-						 enabledByDefault="true"
-						 level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.ExtensionPointBeanClassInspection"/>
-		<localInspection language="XML" shortName="DevKitIconNotResolved"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 displayName="Icon not Resolved"
-						 enabledByDefault="true"
-						 level="ERROR"
-						 implementationClass="consulo.devkit.icon.inspection.IconNotResolvedInspection"/>
-		<localInspection language="JAVA"
-						 level="WARNING"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Invocation state(read, write, dispatch) validate inspection"
-						 implementationClass="consulo.devkit.inspections.requiredXAction.RequiredXActionInspection"/>
-		<localInspection language="JAVA"
-						 level="WARNING"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Invocation state(read, write, dispatch) annotation place inspection"
-						 implementationClass="consulo.devkit.inspections.PlaceXActionAnnotationInspection"/>
-		<localInspection language="JAVA"
-						 level="WARNING"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Localize TODO inspection"
-						 implementationClass="consulo.devkit.localize.inspection.LocalizeTODOInspection"/>
-		<localInspection language="JAVA"
-						 level="WARNING"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="@MigratedExtensionsTo helper"
-						 implementationClass="consulo.devkit.inspections.MigratedExtensionsToInspection"/>
-		<localInspection language="JAVA"
-						 level="WARNING"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Complicated Logger Initialization"
-						 implementationClass="consulo.devkit.inspections.ComplicatedLoggerInitializationInspection"/>
-
-		<localInspection language="JAVA"
-						 level="ERROR"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="false"
-						 displayName="AWT &amp; Swing implementation error reporting"
-						 implementationClass="consulo.devkit.inspections.internal.AWTErrorInspection"/>
-
-		<localInspection language="JAVA"
-						 level="ERROR"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Wrong cast - require explicit conversion"
-						 implementationClass="consulo.devkit.inspections.internal.WrongCastRequireExplicitConversionInspection"/>
-
-		<localInspection language="JAVA"
-						 level="ERROR"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Platform method specific restriction"
-						 implementationClass="consulo.devkit.inspections.internal.PlatformErrorInspection"/>
-
-		<localInspection language="JAVA"
-						 level="ERROR"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Missed @Singleton annotation for services"
-						 implementationClass="consulo.devkit.inspections.inject.NoSingletonAnnotationInspection"/>
-
-		<localInspection language="JAVA"
-						 level="ERROR"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Wrong inject binding inside constructor"
-						 implementationClass="consulo.devkit.inspections.inject.WrongInjectBindingInspection"/>
-
-		<localInspection language="JAVA"
-						 level="ERROR"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name"
-						 enabledByDefault="true"
-						 displayName="Missed @Inject annotation for services &amp; extensions"
-						 implementationClass="consulo.devkit.inspections.inject.NoInjectAnnotationInspection"/>
-
-		<localInspection language="JAVA" shortName="UndesirableClassUsage" displayName="Undesirable class usage"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UndesirableClassUsageInspection"/>
-		<localInspection language="JAVA" shortName="FileEqualsUsage" displayName="File.equals() usage"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.FileEqualsUsageInspection"/>
-		<localInspection language="JAVA" shortName="UnsafeVfsRecursion" displayName="Unsafe VFS recursion"
-						 bundle="messages.DevKitBundle"
-						 groupKey="inspections.group.name" enabledByDefault="true" level="WARNING"
-						 implementationClass="org.jetbrains.idea.devkit.inspections.internal.UnsafeVfsRecursionInspection"/>
-
-		<implicitUsageProvider implementation="org.jetbrains.idea.devkit.inspections.DevKitEntryPoints"/>
-		<psi.referenceContributor implementation="org.jetbrains.idea.devkit.dom.impl.InspectionsPropertiesReferenceProviderContributor"/>
-		<psi.referenceContributor implementation="consulo.devkit.icon.references.IconPsiReferenceContributor"/>
-		<projectService serviceImplementation="consulo.devkit.icon.IconResolver"/>
-		<unusedDeclarationFixProvider implementation="org.jetbrains.idea.devkit.inspections.quickfix.RegisterExtensionFixProvider"/>
-
-		<codeInsight.lineMarkerProvider language="JAVA"
-										implementationClass="org.jetbrains.idea.devkit.navigation.DescriptionTypeRelatedItemLineMarkerProvider"/>
-		<codeInsight.lineMarkerProvider language="JAVA"
-										implementationClass="org.jetbrains.idea.devkit.navigation.ExtensionPointDeclarationRelatedItemLineMarkerProvider"/>
-		<codeInsight.lineMarkerProvider language="JAVA"
-										implementationClass="consulo.devkit.codeInsight.daemon.ServiceLineMarkerProvider"/>
-		<codeInsight.lineMarkerProvider language="JAVA"
-										implementationClass="consulo.devkit.codeInsight.daemon.ImplToAPILineMarkerProvider"/>
-
-		<colorProvider implementation="consulo.devkit.codeInsight.daemon.UIColorLineMarkerProvider"/>
-
-		<implicitUsageProvider implementation="consulo.devkit.inspections.valhalla.ImplClassImplicitUsageProvider"/>
-
-		<intentionAction>
-			<className>consulo.devkit.intentation.ExportAllPackageIntention</className>
-			<category>Java 9 Modules</category>
-		</intentionAction>
-	</extensions>
-
-	<extensions defaultExtensionNs="com.intellij.xml.dom">
-		<fileDescription implementation="consulo.devkit.dom.impl.ConsuloPluginXmlDomFileDescriptor"/>
-
-		<fileDescription implementation="consulo.devkit.requires.dom.PluginRequiresDomDescriptor"/>
-
-		<extender domClass="org.jetbrains.idea.devkit.dom.Extensions"
-				  extenderClass="org.jetbrains.idea.devkit.dom.impl.ExtensionDomExtender"/>
-		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.IdeaPlugin"
-						implementationClass="org.jetbrains.idea.devkit.dom.impl.IdeaPluginImpl"/>
-		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.Extension"
-						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionImpl"/>
-		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.Extensions"
-						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionsImpl"/>
-		<implementation interfaceClass="org.jetbrains.idea.devkit.dom.ExtensionPoint"
-						implementationClass="org.jetbrains.idea.devkit.dom.impl.ExtensionPointImpl"/>
-	</extensions>
-
-	<actions>
-		<action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
-			<add-to-group anchor="last" group-id="NewGroup"/>
-		</action>
-
-		<action class="org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction" text="Generate Externalization"
-				id="GenerateExternalization">
-			<add-to-group anchor="last" group-id="GenerateGroup"/>
-		</action>
-
-		<group id="Internal.DevKit" class="consulo.devkit.action.InternalGroup" text="DevKit" popup="true">
-			<action class="org.jetbrains.idea.devkit.actions.ToggleHighlightingMarkupAction"
-					text="Toggle Expected Highlighting Markup"
-					id="ToggleHighlightingMarkup"/>
-
-			<action class="org.jetbrains.idea.devkit.actions.ShuffleNamesAction" text="Shuffle Names"
-					id="ShuffleNamesAction"/>
-
-			<action class="org.jetbrains.idea.devkit.actions.ShowSerializedXmlAction" text="Show Serialized XML for Class"
-					id="ShowSerializedXml"/>
-
-			<action class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
-					id="GenerateDomModel"/>
-
-			<add-to-group group-id="ToolsMenu" anchor="last"/>
-		</group>
-
-		<action id="ConvertResourceBundleToYamlAction" class="consulo.devkit.action.ConvertResourceBundleToYamlAction">
-			<add-to-group group-id="ProjectViewPopupMenu"/>
-		</action>
-	</actions>
+    <action id="grammar.Generate.ParserUtil" class="org.intellij.grammar.impl.actions.BnfGenerateParserUtilAction"
+            text="Generate Parser Util">
+      <add-to-group group-id="grammar.file.group" anchor="after" relative-to-action="grammar.Generate"/>
+    </action>
+    <action id="grammar.Generate.JFlexLexer" class="org.intellij.grammar.impl.actions.BnfGenerateLexerAction" text="Generate JFlex Lexer">
+      <add-to-group group-id="grammar.file.group" anchor="after" relative-to-action="grammar.Generate"/>
+    </action>
+  </actions>
 </consulo-plugin>

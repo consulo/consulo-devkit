@@ -15,12 +15,12 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
-import com.intellij.psi.util.PsiTreeUtil;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiFileFactory;
+import consulo.language.psi.util.PsiTreeUtil;
+import consulo.logging.Logger;
+import consulo.project.Project;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrs;
@@ -62,7 +62,7 @@ public class BnfElementFactory {
     PsiElement firstChild = createFile(project, "{\n  " + text + "\n}").getFirstChild();
     LOG.assertTrue(firstChild instanceof BnfAttrs, text);
     //noinspection ConstantConditions
-    List<BnfAttr> attrList = ((BnfAttrs) firstChild).getAttrList();
+    List<BnfAttr> attrList = ((BnfAttrs)firstChild).getAttrList();
     LOG.assertTrue(attrList.size() == 1, text);
     return attrList.get(0);
   }

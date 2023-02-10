@@ -15,7 +15,7 @@
  */
 package org.intellij.grammar.psi;
 
-import com.intellij.psi.tree.IElementType;
+import consulo.language.ast.IElementType;
 import org.intellij.grammar.BnfLanguage;
 
 /**

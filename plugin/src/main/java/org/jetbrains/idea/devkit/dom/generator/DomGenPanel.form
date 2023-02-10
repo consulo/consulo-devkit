@@ -68,7 +68,7 @@
           <text value="Output Dir:"/>
         </properties>
       </component>
-      <component id="6a48b" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="myOutputDir" custom-create="true">
+      <component id="6a48b" class="consulo.ui.ex.awt.TextFieldWithBrowseButton" binding="myOutputDir" custom-create="true">
         <constraints>
           <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="327" height="22"/>
@@ -76,7 +76,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="7fb9d" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="mySchemaLocation" custom-create="true">
+      <component id="7fb9d" class="consulo.ui.ex.awt.TextFieldWithBrowseButton" binding="mySchemaLocation" custom-create="true">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="327" height="22"/>

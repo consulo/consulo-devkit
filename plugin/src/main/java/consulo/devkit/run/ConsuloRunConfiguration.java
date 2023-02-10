@@ -16,48 +16,44 @@
 
 package consulo.devkit.run;
 
+import com.intellij.java.coverage.CoverageConfigurable;
+import consulo.content.bundle.Sdk;
+import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.RunConfiguration;
+import consulo.execution.configuration.log.ui.LogConfigurationPanel;
+import consulo.execution.configuration.ui.SettingsEditor;
+import consulo.execution.configuration.ui.SettingsEditorGroup;
+import consulo.execution.executor.Executor;
+import consulo.execution.runner.ExecutionEnvironment;
+import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
+import consulo.process.ExecutionException;
+import consulo.project.Project;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import com.intellij.diagnostic.logging.LogConfigurationPanel;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.coverage.CoverageConfigurable;
-import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.options.SettingsEditor;
-import com.intellij.openapi.options.SettingsEditorGroup;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.packaging.artifacts.Artifact;
-import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
 
-public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase implements GenericDebugRunnerConfiguration
-{
-	public ConsuloRunConfiguration(Project project, ConfigurationFactory factory, String name)
-	{
-		super(project, factory, name);
-	}
+public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase implements GenericDebugRunnerConfiguration {
+  public ConsuloRunConfiguration(Project project, ConfigurationFactory factory, String name) {
+    super(project, factory, name);
+  }
 
-	@Nonnull
-	@Override
-	@SuppressWarnings("unchecked")
-	public SettingsEditor<? extends RunConfiguration> getConfigurationEditor()
-	{
-		SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
-		settingsEditorGroup.addEditor("General", new ConsuloRunConfigurationEditor(getProject()));
-		settingsEditorGroup.addEditor("Coverage", new CoverageConfigurable(this));
-		settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfiguration>());
-		return settingsEditorGroup;
-	}
+  @Nonnull
+  @Override
+  @SuppressWarnings("unchecked")
+  public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
+    SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
+    settingsEditorGroup.addEditor("General", new ConsuloRunConfigurationEditor(getProject()));
+    settingsEditorGroup.addEditor("Coverage", new CoverageConfigurable(this));
+    settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfiguration>());
+    return settingsEditorGroup;
+  }
 
-	@Nonnull
-	@Override
-	public ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
-			@Nonnull Sdk javaSdk,
-			@Nonnull String consuloHome,
-			@Nullable String pluginsHomePath) throws ExecutionException
-	{
-		return new ConsuloSandboxRunState(env, javaSdk, consuloHome, pluginsHomePath);
-	}
+  @Nonnull
+  @Override
+  public ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
+                                            @Nonnull Sdk javaSdk,
+                                            @Nonnull String consuloHome,
+                                            @Nullable String pluginsHomePath) throws ExecutionException {
+    return new ConsuloSandboxRunState(env, javaSdk, consuloHome, pluginsHomePath);
+  }
 }

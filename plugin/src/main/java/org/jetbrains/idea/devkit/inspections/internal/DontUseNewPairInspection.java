@@ -15,56 +15,57 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import java.util.Arrays;
+import com.intellij.java.language.psi.*;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.editor.inspection.ProblemHighlightType;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.psi.PsiElementVisitor;
+import consulo.util.lang.Pair;
+import org.jetbrains.idea.devkit.inspections.quickfix.ChangeToPairCreateQuickFix;
 
 import javax.annotation.Nonnull;
-
-import org.jetbrains.idea.devkit.inspections.quickfix.ChangeToPairCreateQuickFix;
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiClassType;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiExpressionList;
-import com.intellij.psi.PsiNewExpression;
-import com.intellij.psi.PsiType;
+import java.util.Arrays;
 
 /**
  * @author Konstantin Bulenkov
  */
-public class DontUseNewPairInspection extends InternalInspection
-{
-	private static final String PAIR_FQN = "com.intellij.openapi.util.Pair";
+@ExtensionImpl
+public class DontUseNewPairInspection extends InternalInspection {
+  private static final String PAIR_FQN = Pair.class.getName();
 
-	@Override
-	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
-	{
-		return new JavaElementVisitor()
-		{
-			@Override
-			public void visitNewExpression(PsiNewExpression expression)
-			{
-				final PsiType type = expression.getType();
-				final PsiExpressionList params = expression.getArgumentList();
-				if(type instanceof PsiClassType && ((PsiClassType) type).rawType().equalsToText(PAIR_FQN) && params != null && expression.getArgumentList() != null
-					//&& !PsiUtil.getLanguageLevel(expression).isAtLeast(LanguageLevel.JDK_1_7) //diamonds
-						)
-				{
-					final PsiType[] types = ((PsiClassType) type).getParameters();
-					if(Arrays.equals(types, params.getExpressionTypes()))
-					{
-						holder.registerProblem(expression, "Replace to Pair.create()", ProblemHighlightType.GENERIC_ERROR_OR_WARNING, new ChangeToPairCreateQuickFix());
-					}
-				}
-				super.visitNewExpression(expression);
-			}
-		};
-	}
+  @Nonnull
+  @Override
+  public String getDisplayName() {
+    return "Don't use constructor of Pair class";
+  }
 
-	@Nonnull
-	@Override
-	public String getShortName()
-	{
-		return "DontUsePairConstructor";
-	}
+  @Override
+  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
+    return new JavaElementVisitor() {
+      @Override
+      public void visitNewExpression(PsiNewExpression expression) {
+        final PsiType type = expression.getType();
+        final PsiExpressionList params = expression.getArgumentList();
+        if (type instanceof PsiClassType && ((PsiClassType)type).rawType()
+                                                                .equalsToText(PAIR_FQN) && params != null && expression.getArgumentList() != null
+          //&& !PsiUtil.getLanguageLevel(expression).isAtLeast(LanguageLevel.JDK_1_7) //diamonds
+        ) {
+          final PsiType[] types = ((PsiClassType)type).getParameters();
+          if (Arrays.equals(types, params.getExpressionTypes())) {
+            holder.registerProblem(expression,
+                                   "Replace to Pair.create()",
+                                   ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                                   new ChangeToPairCreateQuickFix());
+          }
+        }
+        super.visitNewExpression(expression);
+      }
+    };
+  }
+
+  @Nonnull
+  @Override
+  public String getShortName() {
+    return "DontUsePairConstructor";
+  }
 }

@@ -15,9 +15,9 @@
  */
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.NameValue;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.GenericAttributeValue;
+import consulo.xml.util.xml.NameValue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,26 +25,24 @@ import javax.annotation.Nullable;
 /**
  * @author mike
  */
-public interface Extension extends DomElement
-{
-	String IMPLEMENTATION_ATTRIBUTE = "implementation";
+public interface Extension extends DomElement {
+  String IMPLEMENTATION_ATTRIBUTE = "implementation";
 
-	@NameValue
+  @NameValue
 	GenericAttributeValue<String> getId();
 
-	GenericAttributeValue<String> getOrder();
+  GenericAttributeValue<String> getOrder();
 
-	@Nullable
-	ExtensionPoint getExtensionPoint();
+  @Nullable
+  ExtensionPoint getExtensionPoint();
 
-	static boolean isClassField(@Nonnull String fieldName)
-	{
-		return fieldName.equals(IMPLEMENTATION_ATTRIBUTE) ||
-				fieldName.equals("className") ||
-				fieldName.equals("serviceInterface") ||
-				fieldName.equals("serviceImplementation") ||
-				fieldName.equals("class") ||
-				fieldName.endsWith("ClassName") ||
-				(fieldName.endsWith("Class") && !fieldName.equals("forClass"));
-	}
+  static boolean isClassField(@Nonnull String fieldName) {
+    return fieldName.equals(IMPLEMENTATION_ATTRIBUTE) ||
+      fieldName.equals("className") ||
+      fieldName.equals("serviceInterface") ||
+      fieldName.equals("serviceImplementation") ||
+      fieldName.equals("class") ||
+      fieldName.endsWith("ClassName") ||
+      (fieldName.endsWith("Class") && !fieldName.equals("forClass"));
+  }
 }

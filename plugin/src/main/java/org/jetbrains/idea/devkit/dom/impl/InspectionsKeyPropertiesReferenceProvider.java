@@ -20,17 +20,17 @@ import com.intellij.lang.properties.IProperty;
 import com.intellij.lang.properties.PropertiesReferenceManager;
 import com.intellij.lang.properties.psi.PropertiesFile;
 import com.intellij.lang.properties.references.PropertyReference;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiReferenceProvider;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.xml.XmlAttribute;
-import com.intellij.psi.xml.XmlAttributeValue;
-import com.intellij.psi.xml.XmlTag;
-import com.intellij.util.ProcessingContext;
-import javax.annotation.Nonnull;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiReference;
+import consulo.language.psi.PsiReferenceProvider;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.language.util.ProcessingContext;
+import consulo.project.Project;
+import consulo.xml.psi.xml.XmlAttribute;
+import consulo.xml.psi.xml.XmlAttributeValue;
+import consulo.xml.psi.xml.XmlTag;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -83,7 +83,9 @@ public class InspectionsKeyPropertiesReferenceProvider extends PsiReferenceProvi
           protected List<PropertiesFile> retrievePropertyFilesByBundleName(String bundleName, PsiElement element) {
             final Project project = element.getProject();
             return PropertiesReferenceManager.getInstance(project)
-              .findPropertiesFiles(GlobalSearchScope.projectScope(project), bundleName, BundleNameEvaluator.DEFAULT);
+                                             .findPropertiesFiles(GlobalSearchScope.projectScope(project),
+                                                                  bundleName,
+                                                                  BundleNameEvaluator.DEFAULT);
           }
         }};
       }

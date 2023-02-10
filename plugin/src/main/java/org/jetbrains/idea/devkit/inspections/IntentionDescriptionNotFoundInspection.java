@@ -15,49 +15,50 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.PsiIdentifier;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.content.LanguageContentFolderScopes;
+import consulo.language.editor.inspection.LocalQuickFix;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.ProblemHighlightType;
+import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.editor.intention.IntentionAction;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiPackage;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
+import consulo.module.content.ModuleRootManager;
+import consulo.project.Project;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
-import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiIdentifier;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.containers.ContainerUtil;
-import consulo.psi.PsiPackage;
-import consulo.roots.ContentFolderScopes;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Konstantin Bulenkov
  */
+@ExtensionImpl
 public class IntentionDescriptionNotFoundInspection extends DevKitInspectionBase {
-  @NonNls private static final String INTENTION = "com.intellij.codeInsight.intention.IntentionAction";
-  @NonNls private static final String INSPECTION_DESCRIPTIONS = "intentionDescriptions";
+  private static final String INTENTION = IntentionAction.class.getName();
+  private static final String INSPECTION_DESCRIPTIONS = "intentionDescriptions";
 
   @Override
   public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly) {
     final Project project = aClass.getProject();
     final PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
-    final Module module = ModuleUtil.findModuleForPsiElement(aClass);
+    final Module module = ModuleUtilCore.findModuleForPsiElement(aClass);
 
     if (nameIdentifier == null || module == null || !PsiUtil.isInstantiable(aClass)) return null;
 
@@ -79,7 +80,8 @@ public class IntentionDescriptionNotFoundInspection extends DevKitInspectionBase
           PsiElement problem = aClass.getNameIdentifier();
           ProblemDescriptor problemDescriptor = manager.createProblemDescriptor(problem == null ? nameIdentifier : problem,
                                                                                 "Intention must have 'before.*.template' and 'after.*.template' beside 'description.html'",
-                                                                                isOnTheFly, ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                                                                                isOnTheFly,
+                                                                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                                                                                 false);
           return new ProblemDescriptor[]{problemDescriptor};
         }
@@ -141,7 +143,8 @@ public class IntentionDescriptionNotFoundInspection extends DevKitInspectionBase
       }
     }
     else {
-      ContainerUtil.addAll(result, ModuleRootManager.getInstance(module).getContentFolderFiles(ContentFolderScopes.productionAndTest()));
+      ContainerUtil.addAll(result,
+                           ModuleRootManager.getInstance(module).getContentFolderFiles(LanguageContentFolderScopes.productionAndTest()));
     }
     return result;
   }

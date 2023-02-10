@@ -15,7 +15,8 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import com.intellij.util.xml.highlighting.BasicDomElementsInspection;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.xml.util.xml.highlighting.BasicDomElementsInspection;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
@@ -26,6 +27,7 @@ import javax.annotation.Nonnull;
 /**
  * @author mike
  */
+@ExtensionImpl
 public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugin> {
   public PluginXmlDomInspection() {
     super(IdeaPlugin.class);

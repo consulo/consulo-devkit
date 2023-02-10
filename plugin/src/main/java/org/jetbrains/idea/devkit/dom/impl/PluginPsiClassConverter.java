@@ -15,15 +15,15 @@
  */
 package org.jetbrains.idea.devkit.dom.impl;
 
-import javax.annotation.Nonnull;
+import com.intellij.java.impl.psi.impl.source.resolve.reference.impl.providers.JavaClassReferenceProvider;
+import com.intellij.java.impl.util.xml.ExtendClass;
+import com.intellij.java.impl.util.xml.PsiClassConverter;
+import com.intellij.java.language.psi.PsiClass;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.xml.util.xml.ConvertContext;
+import consulo.xml.util.xml.GenericDomValue;
 
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.impl.source.resolve.reference.impl.providers.JavaClassReferenceProvider;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.xml.ConvertContext;
-import com.intellij.util.xml.ExtendClass;
-import com.intellij.util.xml.GenericDomValue;
-import com.intellij.util.xml.PsiClassConverter;
+import javax.annotation.Nonnull;
 
 /**
  * @author peter

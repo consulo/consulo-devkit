@@ -15,106 +15,85 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
-import javax.annotation.Nonnull;
+import com.intellij.java.language.psi.*;
+import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.codeEditor.Editor;
+import consulo.language.editor.inspection.LocalQuickFixBase;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.util.PsiUtilBase;
+import consulo.language.psi.PsiElement;
+import consulo.project.Project;
+import consulo.ui.ex.awt.JBUI;
 
-import com.intellij.codeInspection.LocalQuickFixBase;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementFactory;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiExpressionList;
-import com.intellij.psi.PsiNewExpression;
-import com.intellij.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.psi.util.PsiUtilBase;
-import com.intellij.util.ui.JBUI;
+import javax.annotation.Nonnull;
 
 /**
  * @author Konstantin Bulenkov
  */
-public class ConvertToJBInsetsQuickFix extends LocalQuickFixBase
-{
-	public ConvertToJBInsetsQuickFix()
-	{
-		super("Convert to JBUI.insets(...)");
-	}
+public class ConvertToJBInsetsQuickFix extends LocalQuickFixBase {
+  public ConvertToJBInsetsQuickFix() {
+    super("Convert to JBUI.insets(...)");
+  }
 
-	@Override
-	public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor)
-	{
-		final PsiNewExpression newExpression = (PsiNewExpression) descriptor.getPsiElement();
-		PsiExpressionList list = newExpression.getArgumentList();
-		String text = null;
-		if(list != null && list.getExpressions().length == 4)
-		{
-			String top = list.getExpressions()[0].getText();
-			String left = list.getExpressions()[1].getText();
-			String bottom = list.getExpressions()[2].getText();
-			String right = list.getExpressions()[3].getText();
+  @Override
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+    final PsiNewExpression newExpression = (PsiNewExpression)descriptor.getPsiElement();
+    PsiExpressionList list = newExpression.getArgumentList();
+    String text = null;
+    if (list != null && list.getExpressions().length == 4) {
+      String top = list.getExpressions()[0].getText();
+      String left = list.getExpressions()[1].getText();
+      String bottom = list.getExpressions()[2].getText();
+      String right = list.getExpressions()[3].getText();
 
-			if(isZero(top, left, bottom, right))
-			{
-				text = "emptyInsets()";
-			}
-			else if(isZero(left, bottom, right))
-			{
-				text = "insetsTop(" + top + ")";
-			}
-			else if(isZero(top, bottom, right))
-			{
-				text = "insetsLeft(" + left + ")";
-			}
-			else if(isZero(top, left, right))
-			{
-				text = "insetsBottom(" + bottom + ")";
-			}
-			else if(isZero(top, left, bottom))
-			{
-				text = "insetsRight(" + right + ")";
-			}
-			else if(top.equals(left) && left.equals(bottom) && bottom.equals(right) && right.equals(top))
-			{
-				text = "insets(" + top + ")";
-			}
-			else if(top.equals(bottom) && right.equals(left))
-			{
-				text = String.format("insets(%s, %s)", top, left);
-			}
-			else
-			{
-				text = String.format("insets(%s, %s, %s, %s)", top, left, bottom, right);
-			}
+      if (isZero(top, left, bottom, right)) {
+        text = "emptyInsets()";
+      }
+      else if (isZero(left, bottom, right)) {
+        text = "insetsTop(" + top + ")";
+      }
+      else if (isZero(top, bottom, right)) {
+        text = "insetsLeft(" + left + ")";
+      }
+      else if (isZero(top, left, right)) {
+        text = "insetsBottom(" + bottom + ")";
+      }
+      else if (isZero(top, left, bottom)) {
+        text = "insetsRight(" + right + ")";
+      }
+      else if (top.equals(left) && left.equals(bottom) && bottom.equals(right) && right.equals(top)) {
+        text = "insets(" + top + ")";
+      }
+      else if (top.equals(bottom) && right.equals(left)) {
+        text = String.format("insets(%s, %s)", top, left);
+      }
+      else {
+        text = String.format("insets(%s, %s, %s, %s)", top, left, bottom, right);
+      }
 
-			text = JBUI.class.getName() + "." + text;
+      text = JBUI.class.getName() + "." + text;
 
-			final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-			final PsiExpression expression = factory.createExpressionFromText(text, newExpression.getContext());
-			final PsiElement newElement = newExpression.replace(expression);
-			final PsiElement el = JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-			final int offset = el.getTextOffset() + el.getText().length() - 2;
-			final Editor editor = PsiUtilBase.findEditor(el);
-			if(editor != null)
-			{
-				editor.getCaretModel().moveToOffset(offset);
-			}
-		}
-	}
+      final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+      final PsiExpression expression = factory.createExpressionFromText(text, newExpression.getContext());
+      final PsiElement newElement = newExpression.replace(expression);
+      final PsiElement el = JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+      final int offset = el.getTextOffset() + el.getText().length() - 2;
+      final Editor editor = PsiUtilBase.findEditor(el);
+      if (editor != null) {
+        editor.getCaretModel().moveToOffset(offset);
+      }
+    }
+  }
 
-	private static boolean isZero(String... args)
-	{
-		if(args.length == 0)
-		{
-			return false;
-		}
-		for(String arg : args)
-		{
-			if(!"0".equals(arg))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+  private static boolean isZero(String... args) {
+    if (args.length == 0) {
+      return false;
+    }
+    for (String arg : args) {
+      if (!"0".equals(arg)) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

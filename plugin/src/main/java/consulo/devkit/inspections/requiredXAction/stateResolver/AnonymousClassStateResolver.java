@@ -16,11 +16,12 @@
 
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
-import com.intellij.psi.*;
-import com.intellij.psi.util.InheritanceUtil;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.java.language.psi.*;
+import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.util.PsiTreeUtil;
 
 import javax.annotation.Nullable;
 
@@ -28,69 +29,57 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 01-Oct-16
  */
-public class AnonymousClassStateResolver extends StateResolver
-{
-	public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
+public class AnonymousClassStateResolver extends StateResolver {
+  public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
 
-	@RequiredReadAction
-	@Override
-	@Nullable
-	public Boolean resolveState(CallStateType actionType, PsiExpression expression)
-	{
-		PsiMethod callMethod = PsiTreeUtil.getParentOfType(expression, PsiMethod.class);
-		if(callMethod == null)
-		{
-			return null;
-		}
+  @RequiredReadAction
+  @Override
+  @Nullable
+  public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
+    PsiMethod callMethod = PsiTreeUtil.getParentOfType(expression, PsiMethod.class);
+    if (callMethod == null) {
+      return null;
+    }
 
-		// method annotated by annotation
-		CallStateType callMethodActionType = CallStateType.findActionType(callMethod);
-		if(actionType.isAcceptableActionType(callMethodActionType))
-		{
-			return true;
-		}
+    // method annotated by annotation
+    CallStateType callMethodActionType = CallStateType.findActionType(callMethod);
+    if (actionType.isAcceptableActionType(callMethodActionType)) {
+      return true;
+    }
 
-		if(callMethod.getParameterList().getParametersCount() == 0)
-		{
-			Class[] qualifiedNames = ourInterfaces.get(callMethod.getName());
-			if(qualifiedNames == null)
-			{
-				return false;
-			}
+    if (callMethod.getParameterList().getParametersCount() == 0) {
+      Class[] qualifiedNames = ourInterfaces.get(callMethod.getName());
+      if (qualifiedNames == null) {
+        return false;
+      }
 
-			PsiClass containingClass = callMethod.getContainingClass();
-			if(containingClass == null)
-			{
-				return false;
-			}
+      PsiClass containingClass = callMethod.getContainingClass();
+      if (containingClass == null) {
+        return false;
+      }
 
-			boolean inherit = false;
-			for(Class clazz : qualifiedNames)
-			{
-				if(InheritanceUtil.isInheritor(containingClass, clazz.getName()))
-				{
-					inherit = true;
-					break;
-				}
-			}
+      boolean inherit = false;
+      for (Class clazz : qualifiedNames) {
+        if (InheritanceUtil.isInheritor(containingClass, clazz.getName())) {
+          inherit = true;
+          break;
+        }
+      }
 
-			if(inherit)
-			{
-				// non anonym class - cant handle
-				if(!(containingClass instanceof PsiAnonymousClass))
-				{
-					return false;
-				}
+      if (inherit) {
+        // non anonym class - cant handle
+        if (!(containingClass instanceof PsiAnonymousClass)) {
+          return false;
+        }
 
-				PsiElement parent = containingClass.getParent();
-				if(parent instanceof PsiNewExpression)
-				{
-					PsiElement maybeParameterListOrVariable = parent.getParent();
-					return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
-				}
-			}
-		}
+        PsiElement parent = containingClass.getParent();
+        if (parent instanceof PsiNewExpression) {
+          PsiElement maybeParameterListOrVariable = parent.getParent();
+          return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
+        }
+      }
+    }
 
-		return false;
-	}
+    return false;
+  }
 }

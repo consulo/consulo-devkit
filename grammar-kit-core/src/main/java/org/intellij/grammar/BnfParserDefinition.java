@@ -15,30 +15,29 @@
  */
 package org.intellij.grammar;
 
-import javax.annotation.Nonnull;
-
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.Language;
+import consulo.language.ast.*;
+import consulo.language.file.FileViewProvider;
+import consulo.language.lexer.Lexer;
+import consulo.language.parser.ParserDefinition;
+import consulo.language.parser.PsiParser;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.version.LanguageVersion;
 import org.intellij.grammar.parser.BnfLexer;
 import org.intellij.grammar.parser.GrammarParser;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.impl.BnfFileImpl;
-import com.intellij.lang.ASTNode;
-import com.intellij.lang.ParserDefinition;
-import com.intellij.lang.PsiParser;
-import com.intellij.lexer.Lexer;
-import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.TokenType;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.IFileElementType;
-import com.intellij.psi.tree.TokenSet;
-import consulo.lang.LanguageVersion;
+
+import javax.annotation.Nonnull;
 
 /**
  * User: gregory
  * Date: 13.07.11
  * Time: 22:43
  */
+@ExtensionImpl
 public class BnfParserDefinition implements ParserDefinition {
 
   public static final IFileElementType BNF_FILE_ELEMENT_TYPE = new IFileElementType("BNF_FILE", BnfLanguage.INSTANCE);
@@ -47,6 +46,12 @@ public class BnfParserDefinition implements ParserDefinition {
   public static final IElementType BNF_BLOCK_COMMENT = BnfTypes.BNF_BLOCK_COMMENT;
   public static final TokenSet COMMENTS = TokenSet.create(BNF_LINE_COMMENT, BNF_BLOCK_COMMENT);
   public static final TokenSet LITERALS = TokenSet.create(BnfTypes.BNF_STRING);
+
+  @Nonnull
+  @Override
+  public Language getLanguage() {
+    return BnfLanguage.INSTANCE;
+  }
 
   @Nonnull
   @Override

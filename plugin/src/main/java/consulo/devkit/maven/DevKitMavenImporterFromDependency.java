@@ -1,8 +1,10 @@
 package consulo.devkit.maven;
 
-import com.intellij.openapi.module.Module;
+import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.maven.importing.MavenImporterFromDependency;
+import consulo.module.Module;
+import jakarta.inject.Inject;
 import org.jetbrains.idea.maven.importing.MavenModifiableModelsProvider;
 import org.jetbrains.idea.maven.importing.MavenRootModelAdapter;
 import org.jetbrains.idea.maven.project.MavenProject;
@@ -17,34 +19,34 @@ import java.util.Map;
  * @author VISTALL
  * @since 09-Aug-22
  */
-public class DevKitMavenImporterFromDependency extends MavenImporterFromDependency
-{
-	public DevKitMavenImporterFromDependency()
-	{
-		super("consulo", "consulo-core-api");
-	}
+@ExtensionImpl
+public class DevKitMavenImporterFromDependency extends MavenImporterFromDependency {
+  @Inject
+  public DevKitMavenImporterFromDependency() {
+    super("consulo", "consulo-core-api");
+  }
 
-	public DevKitMavenImporterFromDependency(String groupId, String artifactId)
-	{
-		super(groupId, artifactId);
-	}
+  public DevKitMavenImporterFromDependency(String groupId, String artifactId) {
+    super(groupId, artifactId);
+  }
 
-	@Override
-	public void preProcess(Module module, MavenProject mavenProject, MavenProjectChanges mavenProjectChanges, MavenModifiableModelsProvider mavenModifiableModelsProvider)
-	{
+  @Override
+  public void preProcess(Module module,
+                         MavenProject mavenProject,
+                         MavenProjectChanges mavenProjectChanges,
+                         MavenModifiableModelsProvider mavenModifiableModelsProvider) {
 
-	}
+  }
 
-	@Override
-	public void process(MavenModifiableModelsProvider mavenModifiableModelsProvider,
-						Module module,
-						MavenRootModelAdapter mavenRootModelAdapter,
-						MavenProjectsTree mavenProjectsTree,
-						MavenProject mavenProject,
-						MavenProjectChanges mavenProjectChanges,
-						Map<MavenProject, String> map,
-						List<MavenProjectsProcessorTask> list)
-	{
-		enableModuleExtension(module, mavenModifiableModelsProvider, PluginModuleExtension.class);
-	}
+  @Override
+  public void process(MavenModifiableModelsProvider mavenModifiableModelsProvider,
+                      Module module,
+                      MavenRootModelAdapter mavenRootModelAdapter,
+                      MavenProjectsTree mavenProjectsTree,
+                      MavenProject mavenProject,
+                      MavenProjectChanges mavenProjectChanges,
+                      Map<MavenProject, String> map,
+                      List<MavenProjectsProcessorTask> list) {
+    enableModuleExtension(module, mavenModifiableModelsProvider, PluginModuleExtension.class);
+  }
 }

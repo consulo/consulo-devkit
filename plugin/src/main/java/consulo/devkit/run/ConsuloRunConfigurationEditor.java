@@ -16,7 +16,7 @@
 
 package consulo.devkit.run;
 
-import com.intellij.openapi.project.Project;
+import consulo.project.Project;
 
 /**
  * @author VISTALL

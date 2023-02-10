@@ -16,24 +16,23 @@
 
 package consulo.devkit.util;
 
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.module.ModuleUtilCore;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.util.xml.DomElement;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiClass;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.module.extension.PluginModuleExtension;
-import consulo.java.module.extension.JavaModuleExtension;
-import consulo.java.roots.SpecialDirUtil;
+import consulo.java.impl.roots.SpecialDirUtil;
+import consulo.java.language.module.extension.JavaModuleExtension;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
+import consulo.module.ModuleManager;
 import consulo.module.extension.ModuleExtension;
+import consulo.project.Project;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.xml.psi.xml.XmlFile;
+import consulo.xml.util.xml.DomElement;
 import org.jetbrains.idea.devkit.build.PluginBuildUtil;
 
 import javax.annotation.Nonnull;
@@ -47,152 +46,127 @@ import java.util.Set;
  * @author VISTALL
  * @since 13:48/23.05.13
  */
-public class PluginModuleUtil
-{
-	public static final String PLUGIN_XML = "plugin.xml";
+public class PluginModuleUtil {
+  public static final String PLUGIN_XML = "plugin.xml";
 
-	public static boolean isConsuloV3(@Nonnull DomElement element)
-	{
-		Module module = element.getModule();
-		if(module == null)
-		{
-			return false;
-		}
-		return JavaPsiFacade.getInstance(module.getProject()).findClass("consulo.application.Application", GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module)) != null;
-	}
+  public static boolean isConsuloV3(@Nonnull DomElement element) {
+    Module module = element.getModule();
+    if (module == null) {
+      return false;
+    }
+    return JavaPsiFacade.getInstance(module.getProject())
+                        .findClass("consulo.application.Application", GlobalSearchScope
+                          .moduleWithDependenciesAndLibrariesScope(module)) != null;
+  }
 
-	public static Module[] getAllPluginModules(final Project project)
-	{
-		List<Module> modules = new ArrayList<Module>();
-		Module[] allModules = ModuleManager.getInstance(project).getModules();
-		for(Module module : allModules)
-		{
-			if(ModuleUtil.getExtension(module, PluginModuleExtension.class) != null)
-			{
-				modules.add(module);
-			}
-		}
-		return modules.toArray(new Module[modules.size()]);
-	}
+  public static Module[] getAllPluginModules(final Project project) {
+    List<Module> modules = new ArrayList<Module>();
+    Module[] allModules = ModuleManager.getInstance(project).getModules();
+    for (Module module : allModules) {
+      if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
+        modules.add(module);
+      }
+    }
+    return modules.toArray(new Module[modules.size()]);
+  }
 
-	@Nullable
-	public static XmlFile getPluginXml(Module module)
-	{
-		if(module == null)
-		{
-			return null;
-		}
-		if(ModuleUtil.getExtension(module, PluginModuleExtension.class) == null)
-		{
-			return null;
-		}
+  @Nullable
+  public static XmlFile getPluginXml(Module module) {
+    if (module == null) {
+      return null;
+    }
+    if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) == null) {
+      return null;
+    }
 
-		PsiManager psiManager = PsiManager.getInstance(module.getProject());
+    PsiManager psiManager = PsiManager.getInstance(module.getProject());
 
-		List<VirtualFile> virtualFiles = SpecialDirUtil.collectSpecialDirs(module, SpecialDirUtil.META_INF);
-		for(VirtualFile virtualFile : virtualFiles)
-		{
-			VirtualFile child = virtualFile.findChild(PLUGIN_XML);
-			if(child == null)
-			{
-				continue;
-			}
+    List<VirtualFile> virtualFiles = SpecialDirUtil.collectSpecialDirs(module, SpecialDirUtil.META_INF);
+    for (VirtualFile virtualFile : virtualFiles) {
+      VirtualFile child = virtualFile.findChild(PLUGIN_XML);
+      if (child == null) {
+        continue;
+      }
 
-			PsiFile file = psiManager.findFile(child);
-			if(file instanceof XmlFile)
-			{
-				return (XmlFile) file;
-			}
-		}
-		return null;
-	}
+      PsiFile file = psiManager.findFile(child);
+      if (file instanceof XmlFile) {
+        return (XmlFile)file;
+      }
+    }
+    return null;
+  }
 
-	@RequiredReadAction
-	public static boolean isPluginModuleOrDependency(@Nullable Module module)
-	{
-		if(module == null)
-		{
-			return false;
-		}
+  @RequiredReadAction
+  public static boolean isPluginModuleOrDependency(@Nullable Module module) {
+    if (module == null) {
+      return false;
+    }
 
-		if(ModuleUtil.getExtension(module, PluginModuleExtension.class) != null)
-		{
-			return true;
-		}
+    if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
+      return true;
+    }
 
-		return getCandidateModules(module).size() > 0;
-	}
+    return getCandidateModules(module).size() > 0;
+  }
 
-	@RequiredReadAction
-	@Nonnull
-	public static List<Module> getCandidateModules(Module module)
-	{
-		final Module[] modules = ModuleManager.getInstance(module.getProject()).getModules();
-		final List<Module> candidates = new ArrayList<Module>(modules.length);
-		final Set<Module> deps = new HashSet<Module>(modules.length);
-		for(Module m : modules)
-		{
-			if(ModuleUtil.getExtension(module, PluginModuleExtension.class) != null)
-			{
-				deps.clear();
-				PluginBuildUtil.getDependencies(m, deps);
+  @RequiredReadAction
+  @Nonnull
+  public static List<Module> getCandidateModules(Module module) {
+    final Module[] modules = ModuleManager.getInstance(module.getProject()).getModules();
+    final List<Module> candidates = new ArrayList<Module>(modules.length);
+    final Set<Module> deps = new HashSet<Module>(modules.length);
+    for (Module m : modules) {
+      if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
+        deps.clear();
+        PluginBuildUtil.getDependencies(m, deps);
 
-				if(deps.contains(module) && getPluginXml(m) != null)
-				{
-					candidates.add(m);
-				}
-			}
-		}
-		return candidates;
-	}
+        if (deps.contains(module) && getPluginXml(m) != null) {
+          candidates.add(m);
+        }
+      }
+    }
+    return candidates;
+  }
 
-	public static boolean isConsuloProject(Project project)
-	{
-		return project.getName().equals("consulo");
-	}
+  public static boolean isConsuloProject(Project project) {
+    return project.getName().equals("consulo");
+  }
 
-	@RequiredReadAction
-	public static boolean isConsuloOrPluginProject(@Nonnull Project project, @Nullable Module module)
-	{
-		if(PluginModuleUtil.isConsuloProject(project))
-		{
-			return true;
-		}
+  @RequiredReadAction
+  public static boolean isConsuloOrPluginProject(@Nonnull Project project, @Nullable Module module) {
+    if (PluginModuleUtil.isConsuloProject(project)) {
+      return true;
+    }
 
-		if(module != null)
-		{
-			PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(ModuleExtension.class.getName(), GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module, false));
-			if(psiClass != null)
-			{
-				return true;
-			}
+    if (module != null) {
+      PsiClass psiClass = JavaPsiFacade.getInstance(project)
+                                       .findClass(ModuleExtension.class.getName(),
+                                                  GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module, false));
+      if (psiClass != null) {
+        return true;
+      }
 
-			if(PluginModuleUtil.isPluginModuleOrDependency(module))
-			{
-				return true;
-			}
-		}
+      if (PluginModuleUtil.isPluginModuleOrDependency(module)) {
+        return true;
+      }
+    }
 
-		for(Module temp : ModuleManager.getInstance(project).getModules())
-		{
-			if(PluginModuleUtil.isPluginModuleOrDependency(temp))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+    for (Module temp : ModuleManager.getInstance(project).getModules()) {
+      if (PluginModuleUtil.isPluginModuleOrDependency(temp)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	@RequiredReadAction
-	@Nullable
-	public static PsiClass searchClassInFileUseScope(@Nonnull PsiFile file, @Nonnull String qName)
-	{
-		JavaModuleExtension extension = ModuleUtilCore.getExtension(file, JavaModuleExtension.class);
-		if(extension == null)
-		{
-			return null;
-		}
+  @RequiredReadAction
+  @Nullable
+  public static PsiClass searchClassInFileUseScope(@Nonnull PsiFile file, @Nonnull String qName) {
+    JavaModuleExtension extension = ModuleUtilCore.getExtension(file, JavaModuleExtension.class);
+    if (extension == null) {
+      return null;
+    }
 
-		return JavaPsiFacade.getInstance(file.getProject()).findClass(qName, file.getResolveScope());
-	}
+    return JavaPsiFacade.getInstance(file.getProject()).findClass(qName, file.getResolveScope());
+  }
 }

@@ -22,7 +22,7 @@
  */
 package org.jetbrains.idea.devkit.dom.generator;
 
-import com.intellij.util.ArrayUtil;
+import consulo.util.collection.ArrayUtil;
 
 import java.io.*;
 import java.util.ArrayList;

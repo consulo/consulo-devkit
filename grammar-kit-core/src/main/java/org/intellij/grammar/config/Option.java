@@ -16,14 +16,15 @@
 
 package org.intellij.grammar.config;
 
-import com.intellij.openapi.util.Getter;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.ObjectUtils;
+import consulo.util.lang.ObjectUtil;
+import consulo.util.lang.StringUtil;
+
+import java.util.function.Supplier;
 
 /**
  * @author gregsh
  */
-abstract class Option<T> implements Getter<T> {
+abstract class Option<T> implements Supplier<T> {
   public final String id;
   public final T defValue;
 
@@ -51,7 +52,7 @@ abstract class Option<T> implements Getter<T> {
     return new Option<String>(id, def) {
       @Override
       public String get() {
-        return ObjectUtils.chooseNotNull(innerValue(), defValue);
+        return ObjectUtil.chooseNotNull(innerValue(), defValue);
       }
     };
   }

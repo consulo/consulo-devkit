@@ -15,8 +15,8 @@
  */
 package org.intellij.grammar.psi;
 
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNameIdentifierOwner;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiNameIdentifierOwner;
 
 import javax.annotation.Nonnull;
 
@@ -25,11 +25,10 @@ import javax.annotation.Nonnull;
  * Date: 13.07.11
  * Time: 19:02
  */
-public interface BnfNamedElement extends BnfComposite, PsiNameIdentifierOwner
-{
-	@Nonnull
-	String getName();
+public interface BnfNamedElement extends BnfComposite, PsiNameIdentifierOwner {
+  @Nonnull
+  String getName();
 
-	@Nonnull
-	PsiElement getId();
+  @Nonnull
+  PsiElement getId();
 }

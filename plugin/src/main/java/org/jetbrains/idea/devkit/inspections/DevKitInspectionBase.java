@@ -15,40 +15,34 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.intellij.java.analysis.impl.codeInspection.BaseJavaLocalInspectionTool;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.PsiModifier;
+import com.intellij.java.language.psi.PsiModifierListOwner;
+import consulo.devkit.util.PluginModuleUtil;
+import consulo.java.language.module.extension.JavaModuleExtension;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiErrorElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.language.util.ModuleUtilCore;
+import consulo.module.Module;
+import consulo.project.Project;
+import consulo.ui.ex.action.ActionGroup;
+import consulo.ui.ex.action.AnAction;
+import consulo.util.collection.ContainerUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.xml.psi.xml.*;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionType;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
-import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiErrorElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiModifier;
-import com.intellij.psi.PsiModifierListOwner;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.xml.XmlAttribute;
-import com.intellij.psi.xml.XmlAttributeValue;
-import com.intellij.psi.xml.XmlDocument;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.psi.xml.XmlTag;
-import com.intellij.psi.xml.XmlToken;
-import com.intellij.util.containers.ContainerUtil;
-import consulo.devkit.util.PluginModuleUtil;
-import consulo.java.module.extension.JavaModuleExtension;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author swr
@@ -61,6 +55,11 @@ public abstract class DevKitInspectionBase extends BaseJavaLocalInspectionTool {
     return DevKitBundle.message("inspections.group.name");
   }
 
+  @Override
+  public boolean isEnabledByDefault() {
+    return true;
+  }
+
   @Nullable
   protected static Set<PsiClass> getRegistrationTypes(PsiClass psiClass, boolean includeActions) {
     final Project project = psiClass.getProject();
@@ -70,11 +69,11 @@ public abstract class DevKitInspectionBase extends BaseJavaLocalInspectionTool {
 
     final VirtualFile virtualFile = psiFile.getVirtualFile();
     if (virtualFile == null) return null;
-    final Module module = ModuleUtil.findModuleForFile(virtualFile, project);
+    final Module module = ModuleUtilCore.findModuleForFile(virtualFile, project);
 
     if (module == null) return null;
 
-    if (ModuleUtil.getExtension(module, JavaModuleExtension.class) != null) {
+    if (ModuleUtilCore.getExtension(module, JavaModuleExtension.class) != null) {
       return checkModule(module, psiClass, null, includeActions);
     }
     else {

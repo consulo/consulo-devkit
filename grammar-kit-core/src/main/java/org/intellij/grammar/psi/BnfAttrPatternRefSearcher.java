@@ -16,14 +16,15 @@
 
 package org.intellij.grammar.psi;
 
-import com.intellij.openapi.application.QueryExecutorBase;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.search.LocalSearchScope;
-import com.intellij.psi.search.SearchScope;
-import com.intellij.psi.search.searches.ReferencesSearch;
-import com.intellij.util.Processor;
+import consulo.application.util.function.Processor;
+import consulo.content.scope.SearchScope;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiReference;
+import consulo.language.psi.scope.LocalSearchScope;
+import consulo.language.psi.search.ReferencesSearch;
+import consulo.language.psi.search.ReferencesSearchQueryExecutor;
+import consulo.project.util.query.QueryExecutorBase;
 import org.intellij.grammar.psi.impl.BnfStringImpl;
 
 import javax.annotation.Nonnull;
@@ -31,7 +32,7 @@ import javax.annotation.Nonnull;
 /**
  * @author gregsh
  */
-public class BnfAttrPatternRefSearcher extends QueryExecutorBase<PsiReference, ReferencesSearch.SearchParameters> {
+public class BnfAttrPatternRefSearcher extends QueryExecutorBase<PsiReference, ReferencesSearch.SearchParameters> implements ReferencesSearchQueryExecutor {
   public BnfAttrPatternRefSearcher() {
     super(true);
   }

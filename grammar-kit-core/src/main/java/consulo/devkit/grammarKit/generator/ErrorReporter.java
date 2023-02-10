@@ -1,8 +1,8 @@
 package consulo.devkit.grammarKit.generator;
 
-import javax.annotation.Nonnull;
+import consulo.project.Project;
 
-import com.intellij.openapi.project.Project;
+import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL

@@ -15,23 +15,18 @@
  */
 package org.jetbrains.idea.devkit.util;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.MultiLineLabelUI;
-import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.ui.ColoredListCellRenderer;
-import com.intellij.ui.ScrollPaneFactory;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBList;
-import com.intellij.ui.table.JBTable;
+import consulo.application.AllIcons;
 import consulo.devkit.util.PluginModuleUtil;
+import consulo.module.Module;
+import consulo.project.Project;
+import consulo.ui.ex.SimpleTextAttributes;
+import consulo.ui.ex.awt.*;
+import consulo.ui.ex.awt.internal.laf.MultiLineLabelUI;
+import consulo.ui.ex.awt.table.JBTable;
 import consulo.ui.image.Image;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
@@ -189,8 +184,8 @@ public class ChooseModulesDialog extends DialogWrapper {
           assert virtualFile != null;
           final VirtualFile projectPath = myProject.getBaseDir();
           assert projectPath != null;
-          if (VfsUtilCore.isAncestor(projectPath, virtualFile, false)) {
-            append(" (" + VfsUtilCore.getRelativePath(virtualFile, projectPath, File.separatorChar) + ")",
+          if (VirtualFileUtil.isAncestor(projectPath, virtualFile, false)) {
+            append(" (" + VirtualFileUtil.getRelativePath(virtualFile, projectPath, File.separatorChar) + ")",
                    SimpleTextAttributes.GRAYED_ATTRIBUTES);
           }
           else {

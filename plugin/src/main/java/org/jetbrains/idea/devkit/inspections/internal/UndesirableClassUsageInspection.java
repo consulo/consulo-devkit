@@ -15,15 +15,21 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.application.QueryExecutorBase;
-import com.intellij.psi.*;
-import com.intellij.ui.components.JBList;
-import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.table.JBTable;
-import com.intellij.ui.treeStructure.Tree;
-import com.intellij.util.QueryExecutor;
+import com.intellij.java.language.psi.JavaElementVisitor;
+import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.PsiJavaCodeReferenceElement;
+import com.intellij.java.language.psi.PsiNewExpression;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.application.util.query.QueryExecutor;
+import consulo.language.editor.inspection.ProblemHighlightType;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiElementVisitor;
+import consulo.project.util.query.QueryExecutorBase;
+import consulo.ui.ex.awt.JBList;
+import consulo.ui.ex.awt.JBScrollPane;
+import consulo.ui.ex.awt.table.JBTable;
+import consulo.ui.ex.awt.tree.Tree;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
@@ -31,55 +37,53 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UndesirableClassUsageInspection extends InternalInspection
-{
-	private static final Map<String, String> CLASSES = new HashMap<String, String>();
+@ExtensionImpl
+public class UndesirableClassUsageInspection extends InternalInspection {
+  private static final Map<String, String> CLASSES = new HashMap<String, String>();
 
-	static
-	{
-		CLASSES.put(JList.class.getName(), JBList.class.getName());
-		CLASSES.put(JTable.class.getName(), JBTable.class.getName());
-		CLASSES.put(JTree.class.getName(), Tree.class.getName());
-		CLASSES.put(JScrollPane.class.getName(), JBScrollPane.class.getName());
-		CLASSES.put(QueryExecutor.class.getName(), QueryExecutorBase.class.getName());
-		CLASSES.put(BufferedImage.class.getName(), "UIUtil.createImage()");
-	}
+  static {
+    CLASSES.put(JList.class.getName(), JBList.class.getName());
+    CLASSES.put(JTable.class.getName(), JBTable.class.getName());
+    CLASSES.put(JTree.class.getName(), Tree.class.getName());
+    CLASSES.put(JScrollPane.class.getName(), JBScrollPane.class.getName());
+    CLASSES.put(QueryExecutor.class.getName(), QueryExecutorBase.class.getName());
+    CLASSES.put(BufferedImage.class.getName(), "UIUtil.createImage()");
+  }
 
-	@Override
-	@Nonnull
-	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
-	{
-		return new JavaElementVisitor()
-		{
-			@Override
-			public void visitNewExpression(PsiNewExpression expression)
-			{
-				PsiJavaCodeReferenceElement ref = expression.getClassReference();
-				if(ref == null)
-				{
-					return;
-				}
+  @Nonnull
+  @Override
+  public String getDisplayName() {
+    return "Undesirable class usage";
+  }
 
-				PsiElement res = ref.resolve();
-				if(res == null)
-				{
-					return;
-				}
+  @Override
+  @Nonnull
+  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
+    return new JavaElementVisitor() {
+      @Override
+      public void visitNewExpression(PsiNewExpression expression) {
+        PsiJavaCodeReferenceElement ref = expression.getClassReference();
+        if (ref == null) {
+          return;
+        }
 
-				String name = ((PsiClass) res).getQualifiedName();
-				if(name == null)
-				{
-					return;
-				}
+        PsiElement res = ref.resolve();
+        if (res == null) {
+          return;
+        }
 
-				String replacement = CLASSES.get(name);
-				if(replacement == null)
-				{
-					return;
-				}
+        String name = ((PsiClass)res).getQualifiedName();
+        if (name == null) {
+          return;
+        }
 
-				holder.registerProblem(expression, "Please use '" + replacement + "' instead", ProblemHighlightType.LIKE_DEPRECATED);
-			}
-		};
-	}
+        String replacement = CLASSES.get(name);
+        if (replacement == null) {
+          return;
+        }
+
+        holder.registerProblem(expression, "Please use '" + replacement + "' instead", ProblemHighlightType.LIKE_DEPRECATED);
+      }
+    };
+  }
 }

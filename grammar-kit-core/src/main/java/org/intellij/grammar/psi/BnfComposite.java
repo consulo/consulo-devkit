@@ -3,7 +3,8 @@
  */
 package org.intellij.grammar.psi;
 
-import com.intellij.psi.PsiElement;
+import consulo.language.psi.PsiElement;
+
 import javax.annotation.Nonnull;
 
 /**

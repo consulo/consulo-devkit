@@ -15,23 +15,23 @@
  */
 package org.jetbrains.idea.devkit.dom.generator;
 
-import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
-import com.intellij.openapi.fileChooser.FileTypeDescriptor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.TextFieldWithBrowseButton;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.IdeFocusManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.xml.XmlAttribute;
-import com.intellij.psi.xml.XmlDocument;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.psi.xml.XmlTag;
-import com.intellij.util.ArrayUtil;
+import consulo.application.ApplicationPropertiesComponent;
+import consulo.application.ui.wm.ApplicationIdeFocusManager;
+import consulo.fileChooser.FileChooserDescriptorFactory;
+import consulo.fileChooser.FileTypeDescriptor;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.project.Project;
+import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.TextFieldWithBrowseButton;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.xml.psi.xml.XmlAttribute;
+import consulo.xml.psi.xml.XmlDocument;
+import consulo.xml.psi.xml.XmlFile;
+import consulo.xml.psi.xml.XmlTag;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -135,11 +135,11 @@ public class DomGenPanel {
   }
 
   private static String getValue(String name, String defaultValue) {
-    return PropertiesComponent.getInstance().getOrInit(PREFIX + name, defaultValue);
+    return ApplicationPropertiesComponent.getInstance().getOrInit(PREFIX + name, defaultValue);
   }
 
   private static void setValue(String name, String value) {
-    PropertiesComponent.getInstance().setValue(PREFIX + name, value);
+    ApplicationPropertiesComponent.getInstance().setValue(PREFIX + name, value);
   }
 
   public void saveAll() {
@@ -155,13 +155,13 @@ public class DomGenPanel {
   public boolean validate() {
     if (!new File(mySchemaLocation.getText()).exists()) {
       Messages.showErrorDialog(myProject, "Schema location doesn't exist", "Error");
-      IdeFocusManager.getInstance(myProject).requestFocus(mySchemaLocation, true);
+      ApplicationIdeFocusManager.getInstance().getInstanceForProject(myProject).requestFocus(mySchemaLocation, true);
       return false;
     }
 
     if (!new File(myOutputDir.getText()).exists()) {
       Messages.showErrorDialog(myProject, "Output dir doesn't exist", "Error");
-      IdeFocusManager.getInstance(myProject).requestFocus(myOutputDir, true);
+      ApplicationIdeFocusManager.getInstance().getInstanceForProject(myProject).requestFocus(myOutputDir, true);
       return false;
     }
 

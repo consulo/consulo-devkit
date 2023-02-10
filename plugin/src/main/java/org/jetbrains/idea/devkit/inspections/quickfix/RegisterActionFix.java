@@ -15,16 +15,16 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
-import javax.annotation.Nonnull;
-
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.util.IncorrectOperationException;
+import com.intellij.java.language.psi.PsiClass;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.util.IncorrectOperationException;
+import consulo.project.Project;
+import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.actions.NewActionDialog;
 import org.jetbrains.idea.devkit.util.ActionType;
+
+import javax.annotation.Nonnull;
 
 public class RegisterActionFix extends AbstractRegisterFix {
   private NewActionDialog myDialog;

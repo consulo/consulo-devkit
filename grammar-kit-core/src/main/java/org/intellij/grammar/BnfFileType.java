@@ -15,8 +15,8 @@
  */
 package org.intellij.grammar;
 
-import com.intellij.openapi.fileTypes.LanguageFileType;
 import consulo.devkit.grammarKit.icon.GrammarKitIconGroup;
+import consulo.language.file.LanguageFileType;
 import consulo.localize.LocalizeValue;
 import consulo.ui.image.Image;
 
@@ -29,7 +29,6 @@ import javax.annotation.Nonnull;
  * Time: 22:46
  */
 public class BnfFileType extends LanguageFileType {
-
   public static final BnfFileType INSTANCE = new BnfFileType();
 
   protected BnfFileType() {
@@ -56,6 +55,6 @@ public class BnfFileType extends LanguageFileType {
 
   @Override
   public Image getIcon() {
-    return GrammarKitIconGroup.grammarFile();
+    return GrammarKitIconGroup.grammarfile();
   }
 }

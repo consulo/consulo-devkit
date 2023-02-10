@@ -16,10 +16,11 @@
 
 package org.intellij.grammar.generator;
 
-import com.intellij.lang.Language;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.util.PsiUtilCore;
+import consulo.language.Language;
+import consulo.language.ast.IElementType;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiUtilCore;
+
 import javax.annotation.Nullable;
 
 /**

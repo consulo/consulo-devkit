@@ -15,23 +15,24 @@
  */
 package org.jetbrains.idea.devkit;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.ide.fileTemplates.FileTemplateDescriptor;
-import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor;
-import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory;
-import com.intellij.ide.highlighter.HtmlFileType;
-import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.java.language.impl.JavaFileType;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.application.AllIcons;
+import consulo.fileTemplate.FileTemplateDescriptor;
+import consulo.fileTemplate.FileTemplateGroupDescriptor;
+import consulo.fileTemplate.FileTemplateGroupDescriptorFactory;
+import consulo.xml.ide.highlighter.HtmlFileType;
 
-public class DevKitFileTemplatesFactory implements FileTemplateGroupDescriptorFactory
-{
-	@Override
-	public FileTemplateGroupDescriptor getFileTemplatesDescriptor()
-	{
-		FileTemplateGroupDescriptor descriptor = new FileTemplateGroupDescriptor(DevKitBundle.message("plugin.descriptor"), AllIcons.Nodes.Plugin);
+@ExtensionImpl
+public class DevKitFileTemplatesFactory implements FileTemplateGroupDescriptorFactory {
+  @Override
+  public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
+    FileTemplateGroupDescriptor descriptor =
+      new FileTemplateGroupDescriptor(DevKitBundle.message("plugin.descriptor"), AllIcons.Nodes.Plugin);
 
-		descriptor.addTemplate(new FileTemplateDescriptor("Action.java", JavaFileType.INSTANCE.getIcon()));
-		descriptor.addTemplate(new FileTemplateDescriptor("InspectionDescription.html", HtmlFileType.INSTANCE.getIcon()));
-		return descriptor;
-	}
+    descriptor.addTemplate(new FileTemplateDescriptor("Action.java", JavaFileType.INSTANCE.getIcon()));
+    descriptor.addTemplate(new FileTemplateDescriptor("InspectionDescription.html", HtmlFileType.INSTANCE.getIcon()));
+    return descriptor;
+  }
 
 }

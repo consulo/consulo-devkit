@@ -15,95 +15,85 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import com.intellij.codeInspection.InspectionProfileEntry;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
+import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.PsiMethod;
+import consulo.language.editor.inspection.scheme.InspectionProfileEntry;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.module.Module;
+import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.idea.devkit.util.PsiUtil;
 
 import javax.annotation.Nullable;
 
-public class InspectionDescriptionInfo
-{
+public class InspectionDescriptionInfo {
 
-	private final String myFilename;
-	private final PsiMethod myMethod;
-	private final PsiFile myDescriptionFile;
+  private final String myFilename;
+  private final PsiMethod myMethod;
+  private final PsiFile myDescriptionFile;
 
-	private InspectionDescriptionInfo(String filename, @Nullable PsiMethod method, @Nullable PsiFile descriptionFile)
-	{
-		myFilename = filename;
-		myMethod = method;
-		myDescriptionFile = descriptionFile;
-	}
+  private InspectionDescriptionInfo(String filename, @Nullable PsiMethod method, @Nullable PsiFile descriptionFile) {
+    myFilename = filename;
+    myMethod = method;
+    myDescriptionFile = descriptionFile;
+  }
 
-	public static InspectionDescriptionInfo create(Module module, PsiClass psiClass)
-	{
-		PsiMethod method = PsiUtil.findNearestMethod("getShortName", psiClass);
-		if(method != null && DescriptionType.INSPECTION.getClassNames().contains(method.getContainingClass().getQualifiedName()))
-		{
-			method = null;
-		}
+  public static InspectionDescriptionInfo create(Module module, PsiClass psiClass) {
+    PsiMethod method = PsiUtil.findNearestMethod("getShortName", psiClass);
+    if (method != null && DescriptionType.INSPECTION.getClassNames().contains(method.getContainingClass().getQualifiedName())) {
+      method = null;
+    }
 
-		final String filename = method == null ? InspectionProfileEntry.getShortName(psiClass.getName()) : PsiUtil.getReturnedLiteral(method, psiClass);
+    final String filename =
+      method == null ? InspectionProfileEntry.getShortName(psiClass.getName()) : PsiUtil.getReturnedLiteral(method, psiClass);
 
-		PsiFile descriptionFile = resolveInspectionDescriptionFile(module, filename);
-		return new InspectionDescriptionInfo(filename, method, descriptionFile);
-	}
+    PsiFile descriptionFile = resolveInspectionDescriptionFile(module, filename);
+    return new InspectionDescriptionInfo(filename, method, descriptionFile);
+  }
 
-	@Nullable
-	private static PsiFile resolveInspectionDescriptionFile(Module module, @Nullable String filename)
-	{
-		if(filename == null)
-		{
-			return null;
-		}
+  @Nullable
+  private static PsiFile resolveInspectionDescriptionFile(Module module, @Nullable String filename) {
+    if (filename == null) {
+      return null;
+    }
 
-		for(PsiDirectory description : DescriptionCheckerUtil.getDescriptionsDirs(module, DescriptionType.INSPECTION))
-		{
-			final PsiFile file = description.findFile(filename + ".html");
-			if(file == null)
-			{
-				continue;
-			}
-			final VirtualFile vf = file.getVirtualFile();
-			if(vf == null)
-			{
-				continue;
-			}
-			if(vf.getNameWithoutExtension().equals(filename))
-			{
-				return PsiManager.getInstance(module.getProject()).findFile(vf);
-			}
-		}
-		return null;
-	}
+    for (PsiDirectory description : DescriptionCheckerUtil.getDescriptionsDirs(module, DescriptionType.INSPECTION)) {
+      final PsiFile file = description.findFile(filename + ".html");
+      if (file == null) {
+        continue;
+      }
+      final VirtualFile vf = file.getVirtualFile();
+      if (vf == null) {
+        continue;
+      }
+      if (vf.getNameWithoutExtension().equals(filename)) {
+        return PsiManager.getInstance(module.getProject()).findFile(vf);
+      }
+    }
+    return null;
+  }
 
-	public boolean isValid()
-	{
-		return myFilename != null;
-	}
+  public boolean isValid() {
+    return myFilename != null;
+  }
 
-	public String getFilename()
-	{
-		assert isValid();
-		return myFilename;
-	}
+  public String getFilename() {
+    assert isValid();
+    return myFilename;
+  }
 
-	@Nullable
-	public PsiMethod getShortNameMethod()
-	{
-		return myMethod;
-	}
+  @Nullable
+  public PsiMethod getShortNameMethod() {
+    return myMethod;
+  }
 
-	@Nullable
-	public PsiFile getDescriptionFile()
-	{
-		return myDescriptionFile;
-	}
+  @Nullable
+  public PsiFile getDescriptionFile() {
+    return myDescriptionFile;
+  }
 
-	public boolean hasDescriptionFile()
-	{
-		return getDescriptionFile() != null;
-	}
+  public boolean hasDescriptionFile() {
+    return getDescriptionFile() != null;
+  }
 }

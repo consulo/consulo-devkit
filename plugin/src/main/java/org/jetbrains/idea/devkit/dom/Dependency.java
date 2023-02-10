@@ -19,24 +19,23 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.openapi.paths.PathReference;
-import com.intellij.util.xml.Convert;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.GenericDomValue;
-import com.intellij.util.xml.Stubbed;
 import consulo.container.plugin.PluginDescriptor;
 import consulo.devkit.dom.impl.PluginDescriptorResolver;
+import consulo.language.psi.path.PathReference;
+import consulo.xml.util.xml.Convert;
+import consulo.xml.util.xml.GenericAttributeValue;
+import consulo.xml.util.xml.GenericDomValue;
+import consulo.xml.util.xml.Stubbed;
 
 import javax.annotation.Nonnull;
 
 @Stubbed
 @Convert(PluginDescriptorResolver.class)
-public interface Dependency extends GenericDomValue<PluginDescriptor>
-{
-	@Nonnull
-	GenericAttributeValue<Boolean> getOptional();
+public interface Dependency extends GenericDomValue<PluginDescriptor> {
+  @Nonnull
+  GenericAttributeValue<Boolean> getOptional();
 
-	@Nonnull
-	@Convert(DependencyConfigFileConverter.class)
-	GenericAttributeValue<PathReference> getConfigFile();
+  @Nonnull
+  @Convert(DependencyConfigFileConverter.class)
+  GenericAttributeValue<PathReference> getConfigFile();
 }

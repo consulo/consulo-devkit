@@ -15,39 +15,36 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiElementFactory;
+import com.intellij.java.language.psi.PsiExpression;
+import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.language.editor.inspection.LocalQuickFixBase;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.psi.PsiElement;
+import consulo.project.Project;
+
 import javax.annotation.Nonnull;
-import com.intellij.codeInspection.LocalQuickFixBase;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementFactory;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 
 /**
  * @author Konstantin Bulenkov
  */
-public class ChangeToPairCreateQuickFix extends LocalQuickFixBase
-{
-	public ChangeToPairCreateQuickFix()
-	{
-		super("Change to Pair.create(..., ...)");
-	}
+public class ChangeToPairCreateQuickFix extends LocalQuickFixBase {
+  public ChangeToPairCreateQuickFix() {
+    super("Change to Pair.create(..., ...)");
+  }
 
-	@Override
-	public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor)
-	{
-		PsiElement element = descriptor.getPsiElement();
-		if(element == null)
-		{
-			return;
-		}
-		String text = element.getText();
-		String newText = "com.intellij.openapi.util.Pair.create(" + text.substring(text.indexOf('(') + 1);
-		PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-		PsiExpression expression = factory.createExpressionFromText(newText, element.getContext());
-		PsiElement newElement = element.replace(expression);
-		JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-	}
+  @Override
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+    PsiElement element = descriptor.getPsiElement();
+    if (element == null) {
+      return;
+    }
+    String text = element.getText();
+    String newText = "com.intellij.openapi.util.Pair.create(" + text.substring(text.indexOf('(') + 1);
+    PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+    PsiExpression expression = factory.createExpressionFromText(newText, element.getContext());
+    PsiElement newElement = element.replace(expression);
+    JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+  }
 }

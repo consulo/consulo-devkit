@@ -19,9 +19,10 @@
 
 package org.jetbrains.idea.devkit.dom;
 
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.GenericAttributeValue;
+
 import javax.annotation.Nonnull;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
 
 /**
  * plugin.dtd:vendor interface.

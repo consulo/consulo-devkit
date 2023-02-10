@@ -19,30 +19,28 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import java.util.List;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.Stubbed;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.Stubbed;
+public interface Actions extends DomElement {
+  @Nonnull
+  @Stubbed
+  List<Action> getActions();
 
-public interface Actions extends DomElement
-{
-	@Nonnull
-	@Stubbed
-	List<Action> getActions();
-
-	Action addAction();
+  Action addAction();
 
 
-	@Nonnull
-	@Stubbed
-	List<Group> getGroups();
+  @Nonnull
+  @Stubbed
+  List<Group> getGroups();
 
-	Group addGroup();
+  Group addGroup();
 
-	@Nonnull
-	List<Reference> getReferences();
+  @Nonnull
+  List<Reference> getReferences();
 
-	Reference addReference();
+  Reference addReference();
 }

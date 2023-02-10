@@ -2,6 +2,7 @@
   classHeader="license.txt"
   generate=[java="8" names="long" visitor-value="R"]
 
+  version="3"
   parserClass="org.intellij.grammar.parser.GrammarParser"
   parserUtilClass="org.intellij.grammar.parser.GrammarParserUtil"
 

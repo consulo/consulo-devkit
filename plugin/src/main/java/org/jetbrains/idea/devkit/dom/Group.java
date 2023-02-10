@@ -19,9 +19,12 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.ide.presentation.Presentation;
-import com.intellij.psi.PsiClass;
-import com.intellij.util.xml.*;
+import com.intellij.java.impl.util.xml.ExtendClass;
+import com.intellij.java.language.psi.PsiClass;
+import consulo.xml.util.xml.Attribute;
+import consulo.xml.util.xml.Convert;
+import consulo.xml.util.xml.GenericAttributeValue;
+import consulo.xml.util.xml.GenericDomValue;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 
 import javax.annotation.Nonnull;
@@ -30,102 +33,100 @@ import java.util.List;
 /**
  * plugin.dtd:group interface.
  */
-@Presentation(icon = "AllIcons.Actions.GroupByPackage")
-public interface Group extends Actions, ActionOrGroup
-{
+public interface Group extends Actions, ActionOrGroup {
 
-	/**
-	 * Returns the value of the popup child.
-	 * Attribute popup
-	 *
-	 * @return the value of the popup child.
-	 */
-	@Nonnull
-	GenericAttributeValue<Boolean> getPopup();
+  /**
+   * Returns the value of the popup child.
+   * Attribute popup
+   *
+   * @return the value of the popup child.
+   */
+  @Nonnull
+  GenericAttributeValue<Boolean> getPopup();
 
-	/**
-	 * Returns the value of the compact child.
-	 * Attribute popup
-	 *
-	 * @return the value of the compact child.
-	 */
-	@Nonnull
-	GenericAttributeValue<Boolean> getCompact();
+  /**
+   * Returns the value of the compact child.
+   * Attribute popup
+   *
+   * @return the value of the compact child.
+   */
+  @Nonnull
+  GenericAttributeValue<Boolean> getCompact();
 
 
-	/**
-	 * Returns the value of the icon child.
-	 * Attribute icon
-	 *
-	 * @return the value of the icon child.
-	 */
-	@Nonnull
-	GenericAttributeValue<String> getIcon();
+  /**
+   * Returns the value of the icon child.
+   * Attribute icon
+   *
+   * @return the value of the icon child.
+   */
+  @Nonnull
+  GenericAttributeValue<String> getIcon();
 
 
-	/**
-	 * Returns the value of the description child.
-	 * Attribute description
-	 *
-	 * @return the value of the description child.
-	 */
-	@Nonnull
-	GenericAttributeValue<String> getDescription();
+  /**
+   * Returns the value of the description child.
+   * Attribute description
+   *
+   * @return the value of the description child.
+   */
+  @Nonnull
+  GenericAttributeValue<String> getDescription();
 
 
-	/**
-	 * Returns the value of the class child.
-	 * Attribute class
-	 *
-	 * @return the value of the class child.
-	 */
-	@Nonnull
-	@Attribute("class")
-	@ExtendClass(value = "com.intellij.openapi.actionSystem.AnAction", instantiatable = false, allowNonPublic = true, allowAbstract = false, allowInterface = false)
-	@Convert(PluginPsiClassConverter.class)
-	GenericAttributeValue<PsiClass> getClazz();
+  /**
+   * Returns the value of the class child.
+   * Attribute class
+   *
+   * @return the value of the class child.
+   */
+  @Nonnull
+  @Attribute("class")
+  @ExtendClass(value = "com.intellij.openapi.actionSystem.AnAction", instantiatable = false, allowNonPublic = true, allowAbstract = false, allowInterface = false)
+  @Convert(PluginPsiClassConverter.class)
+  GenericAttributeValue<PsiClass> getClazz();
 
 
-	/**
-	 * Returns the value of the text child.
-	 * Attribute text
-	 *
-	 * @return the value of the text child.
-	 */
-	@Nonnull
-	GenericAttributeValue<String> getText();
+  /**
+   * Returns the value of the text child.
+   * Attribute text
+   *
+   * @return the value of the text child.
+   */
+  @Nonnull
+  GenericAttributeValue<String> getText();
 
 
-	/**
-	 * Returns the value of the separator child.
-	 *
-	 * @return the value of the separator child.
-	 */
-	@Nonnull
-	List<GenericDomValue<String>> getSeparators();
+  /**
+   * Returns the value of the separator child.
+   *
+   * @return the value of the separator child.
+   */
+  @Nonnull
+  List<GenericDomValue<String>> getSeparators();
 
 
-	/**
-	 * Returns the list of add-to-group children.
-	 *
-	 * @return the list of add-to-group children.
-	 */
-	@Nonnull
-	List<AddToGroup> getAddToGroups();
+  /**
+   * Returns the list of add-to-group children.
+   *
+   * @return the list of add-to-group children.
+   */
+  @Nonnull
+  List<AddToGroup> getAddToGroups();
 
-	/**
-	 * Adds new child to the list of add-to-group children.
-	 *
-	 * @return created child
-	 */
-	AddToGroup addAddToGroup();
+  /**
+   * Adds new child to the list of add-to-group children.
+   *
+   * @return created child
+   */
+  AddToGroup addAddToGroup();
 
-	@Nonnull
-	GenericAttributeValue<Boolean> isInternal();
+  @Nonnull
+  GenericAttributeValue<Boolean> isInternal();
 
-	@Nonnull
-	GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
+  @Nonnull
+  GenericAttributeValue<Boolean> isCanUseProjectAsDefault();
 
-	@Nonnull
-	GenericAttributeValue<String> getRequireModuleExtensions();
+  @Nonnull
+  GenericAttributeValue<String> getRequireModuleExtensions();
 }

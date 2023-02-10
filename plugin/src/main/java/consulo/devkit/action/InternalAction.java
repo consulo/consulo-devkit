@@ -16,13 +16,13 @@
 
 package consulo.devkit.action;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
 import consulo.devkit.util.PluginModuleUtil;
+import consulo.language.editor.CommonDataKeys;
+import consulo.module.Module;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.image.Image;
 
 import javax.annotation.Nonnull;
@@ -32,33 +32,27 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 28-Jan-17
  */
-public abstract class InternalAction extends AnAction
-{
-	protected InternalAction()
-	{
-	}
+public abstract class InternalAction extends AnAction {
+  protected InternalAction() {
+  }
 
-	protected InternalAction(Image icon)
-	{
-		super(icon);
-	}
+  protected InternalAction(Image icon) {
+    super(icon);
+  }
 
-	protected InternalAction(@Nullable String text)
-	{
-		super(text);
-	}
+  protected InternalAction(@Nullable String text) {
+    super(text);
+  }
 
-	protected InternalAction(@Nullable String text, @Nullable String description, @Nullable Image icon)
-	{
-		super(text, description, icon);
-	}
+  protected InternalAction(@Nullable String text, @Nullable String description, @Nullable Image icon) {
+    super(text, description, icon);
+  }
 
-	@RequiredUIAccess
-	@Override
-	public void update(@Nonnull AnActionEvent e)
-	{
-		Project project = e.getProject();
-		Module module = e.getData(CommonDataKeys.MODULE);
-		e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, module));
-	}
+  @RequiredUIAccess
+  @Override
+  public void update(@Nonnull AnActionEvent e) {
+    Project project = e.getData(Project.KEY);
+    Module module = e.getData(CommonDataKeys.MODULE);
+    e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, module));
+  }
 }

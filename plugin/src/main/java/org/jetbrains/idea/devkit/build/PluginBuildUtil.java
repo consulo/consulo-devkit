@@ -15,15 +15,14 @@
  */
 package org.jetbrains.idea.devkit.build;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.OrderEnumerator;
-import com.intellij.openapi.roots.libraries.Library;
-import com.intellij.openapi.util.Computable;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.Processor;
+import consulo.application.ApplicationManager;
+import consulo.application.util.function.Computable;
+import consulo.content.library.Library;
+import consulo.module.Module;
+import consulo.module.ModuleManager;
+import consulo.module.content.ModuleRootManager;
+import consulo.module.content.layer.OrderEnumerator;
+import consulo.util.collection.ArrayUtil;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -37,40 +36,32 @@ public class PluginBuildUtil {
   }
 
   public static void getDependencies(Module module, final Set<Module> modules) {
-    productionRuntimeDependencies(module).forEachModule(new Processor<Module>() {
-      @Override
-      public boolean process(Module dep) {
-        if (!modules.contains(dep)) {
-          modules.add(dep);
-          getDependencies(dep, modules);
-        }
-        return true;
+    productionRuntimeDependencies(module).forEachModule(dep -> {
+      if (!modules.contains(dep)) {
+        modules.add(dep);
+        getDependencies(dep, modules);
       }
+      return true;
     });
   }
 
   public static Module[] getWrongSetDependencies(final Module module) {
-    return ApplicationManager.getApplication().runReadAction(new Computable<Module[]>() {
-      public Module[] compute() {
-        ArrayList<Module> result = new ArrayList<Module>();
-        final Module[] projectModules = ModuleManager.getInstance(module.getProject()).getModules();
-        for (Module projectModule : projectModules) {
-          if (ArrayUtil.find(ModuleRootManager.getInstance(projectModule).getDependencies(), module) > -1) {
-            result.add(projectModule);
-          }
+    return ApplicationManager.getApplication().runReadAction((Computable<Module[]>)() -> {
+      ArrayList<Module> result = new ArrayList<Module>();
+      final Module[] projectModules = ModuleManager.getInstance(module.getProject()).getModules();
+      for (Module projectModule : projectModules) {
+        if (ArrayUtil.find(ModuleRootManager.getInstance(projectModule).getDependencies(), module) > -1) {
+          result.add(projectModule);
         }
-        return result.toArray(new Module[result.size()]);
       }
+      return result.toArray(new Module[result.size()]);
     });
   }
 
   public static void getLibraries(Module module, final Set<Library> libs) {
-    productionRuntimeDependencies(module).forEachLibrary(new Processor<Library>() {
-      @Override
-      public boolean process(Library library) {
-        libs.add(library);
-        return true;
-      }
+    productionRuntimeDependencies(module).forEachLibrary(library -> {
+      libs.add(library);
+      return true;
     });
   }
 

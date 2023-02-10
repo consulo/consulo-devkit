@@ -1,8 +1,10 @@
+import consulo.util.xml.serializer.annotation.Attribute;
+
 public class MyExtBean {
   @java.lang.Deprecated
-  @com.intellij.util.xmlb.annotations.Attribute("old")
+  @Attribute("old")
   public String myOld;
 
-  @com.intellij.util.xmlb.annotations.Attribute("attr")
+  @Attribute("attr")
   public String myAttr;
 }

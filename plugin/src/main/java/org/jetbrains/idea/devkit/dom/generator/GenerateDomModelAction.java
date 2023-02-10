@@ -15,26 +15,23 @@
  */
 package org.jetbrains.idea.devkit.dom.generator;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
 import consulo.devkit.action.InternalAction;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.AnActionEvent;
 
 import javax.annotation.Nonnull;
 
 /**
  * @author Konstantin Bulenkov
  */
-public class GenerateDomModelAction extends InternalAction
-{
-	@RequiredUIAccess
-	@Override
-	public void actionPerformed(@Nonnull AnActionEvent e)
-	{
-		final Project project = e.getProject();
-		if(project != null)
-		{
-			new DomGenDialog(project).show();
-		}
-	}
+public class GenerateDomModelAction extends InternalAction {
+  @RequiredUIAccess
+  @Override
+  public void actionPerformed(@Nonnull AnActionEvent e) {
+    final Project project = e.getData(Project.KEY);
+    if (project != null) {
+      new DomGenDialog(project).show();
+    }
+  }
 }

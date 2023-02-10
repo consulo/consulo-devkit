@@ -16,15 +16,15 @@
 
 package org.intellij.grammar.config;
 
-import com.intellij.openapi.util.Getter;
+import java.util.function.Supplier;
 
 /**
  * @author gregsh
  */
 public interface Options {
 
-  Getter<String> GEN_DIR = Option.strOption("grammar.kit.gen.dir", "gen");
-  Getter<String> GEN_JFLEX_ARGS = Option.strOption("grammar.kit.gen.jflex.args", "");
+  Supplier<String> GEN_DIR = Option.strOption("grammar.kit.gen.dir", "gen");
+  Supplier<String> GEN_JFLEX_ARGS = Option.strOption("grammar.kit.gen.jflex.args", "");
 
-  Getter<Integer> GPUB_MAX_LEVEL = Option.intOption("grammar.kit.gpub.max.level", 1000);
+  Supplier<Integer> GPUB_MAX_LEVEL = Option.intOption("grammar.kit.gpub.max.level", 1000);
 }

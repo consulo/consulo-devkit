@@ -15,37 +15,49 @@
   - limitations under the License.
   -->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>consulo</groupId>
-		<artifactId>arch.managment</artifactId>
-		<version>2-SNAPSHOT</version>
-		<relativePath/>
-	</parent>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>consulo</groupId>
+    <artifactId>arch.managment</artifactId>
+    <version>3-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
 
-	<groupId>consulo.plugin</groupId>
-	<artifactId>consulo.devkit-grammar.kit.hacky.api</artifactId>
-	<version>2-SNAPSHOT</version>
-	<packaging>jar</packaging>
+  <groupId>consulo.plugin</groupId>
+  <artifactId>consulo.devkit-grammar.kit.hacky.api</artifactId>
+  <version>3-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
-	<repositories>
-		<repository>
-			<id>consulo</id>
-			<url>https://maven.consulo.io/repository/snapshots/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>interval:60</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
+  <repositories>
+    <repository>
+      <id>consulo</id>
+      <url>https://maven.consulo.io/repository/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>interval:60</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>consulo</groupId>
-			<artifactId>consulo-core-api</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>consulo</groupId>
+      <artifactId>consulo-application-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>consulo</groupId>
+      <artifactId>consulo-project-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>consulo</groupId>
+      <artifactId>consulo-language-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>

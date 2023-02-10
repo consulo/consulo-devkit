@@ -1,9 +1,11 @@
+import consulo.util.xml.serializer.annotation.Attribute;
+
 import java.lang.String;
 
 public class ExtBeanWithAccessors {
   private String field;
 
-  @com.intellij.util.xmlb.annotations.Attribute("param")
+  @Attribute("param")
   public String getField() {
     return field;
   }

@@ -10,23 +10,20 @@ import javax.annotation.Nullable;
 /**
  * @author gregsh
  */
-public interface BnfConstants
-{
-	String BNF_DISPLAY_NAME = "Grammar-Kit BNF";
-	String LP_DISPLAY_NAME = "Grammar-Kit Live Preview";
+public interface BnfConstants {
+  String BNF_DISPLAY_NAME = "Grammar-Kit BNF";
+  String LP_DISPLAY_NAME = "Grammar-Kit Live Preview";
 
-	String GENERATION_GROUP = "Grammar Generator";
+  String CLASS_HEADER_DEF = "// This is a generated file. Not intended for manual editing.";
 
-	String CLASS_HEADER_DEF = "// This is a generated file. Not intended for manual editing.";
+  String REGEXP_PREFIX = "regexp:";
 
-	String REGEXP_PREFIX = "regexp:";
+  String OVERRIDE_ANNO = "@java.lang.Override";
+  String NOTNULL_ANNO = "@" + Nonnull.class.getName();
+  String NULLABLE_ANNO = "@" + Nullable.class.getName();
+  String SUPPRESS_WARNINGS_ANNO = "@java.lang.SuppressWarnings";
 
-	String OVERRIDE_ANNO = "@java.lang.Override";
-	String NOTNULL_ANNO = "@" + Nonnull.class.getName();
-	String NULLABLE_ANNO = "@" + Nullable.class.getName();
-	String SUPPRESS_WARNINGS_ANNO = "@java.lang.SuppressWarnings";
+  String RECOVER_AUTO = "#auto";
 
-	String RECOVER_AUTO = "#auto";
-
-	String TOKEN_SET_HOLDER_NAME = "TokenSets";
+  String TOKEN_SET_HOLDER_NAME = "TokenSets";
 }

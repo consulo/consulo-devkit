@@ -15,75 +15,69 @@
  */
 package org.jetbrains.idea.devkit.run;
 
-import com.intellij.diagnostic.VMOptions;
-import com.intellij.execution.configuration.ConfigurationFactoryEx;
-import com.intellij.execution.configurations.ConfigurationTypeBase;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.openapi.project.Project;
+import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.run.ConsuloRunConfiguration;
+import consulo.execution.configuration.ConfigurationFactoryEx;
+import consulo.execution.configuration.ConfigurationTypeBase;
+import consulo.execution.configuration.RunConfiguration;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.platform.base.icon.PlatformIconGroup;
+import consulo.project.Project;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 
-public class PluginConfigurationType extends ConfigurationTypeBase
-{
-	@Nonnull
-	public static PluginConfigurationType getInstance()
-	{
-		return EP_NAME.findExtensionOrFail(PluginConfigurationType.class);
-	}
+@ExtensionImpl
+public class PluginConfigurationType extends ConfigurationTypeBase {
+  @Nonnull
+  public static PluginConfigurationType getInstance() {
+    return EP_NAME.findExtensionOrFail(PluginConfigurationType.class);
+  }
 
-	private String myVmParameters;
+  private String myVmParameters;
 
-	public PluginConfigurationType()
-	{
-		super("#org.jetbrains.idea.devkit.run.PluginConfigurationType", DevKitBundle.message("run.configuration.title"), DevKitBundle.message("run.configuration.type.description"), PlatformIconGroup.icon16_sandbox());
-		addFactory(new ConfigurationFactoryEx(this)
-		{
-			@Override
-			public RunConfiguration createTemplateConfiguration(Project project)
-			{
-				final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName());
+  public PluginConfigurationType() {
+    super("#org.jetbrains.idea.devkit.run.PluginConfigurationType",
+          DevKitBundle.message("run.configuration.title"),
+          DevKitBundle.message("run.configuration.type.description"),
+          PlatformIconGroup.icon16_sandbox());
+    addFactory(new ConfigurationFactoryEx(this) {
+      @Override
+      public RunConfiguration createTemplateConfiguration(Project project) {
+        final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName());
 
-				if(runConfiguration.VM_PARAMETERS == null)
-				{
-					runConfiguration.VM_PARAMETERS = getVmParameters();
-				}
-				else
-				{
-					runConfiguration.VM_PARAMETERS += getVmParameters();
-				}
-				return runConfiguration;
-			}
+        if (runConfiguration.VM_PARAMETERS == null) {
+          runConfiguration.VM_PARAMETERS = getVmParameters();
+        }
+        else {
+          runConfiguration.VM_PARAMETERS += getVmParameters();
+        }
+        return runConfiguration;
+      }
 
-			@Override
-			public boolean isApplicable(@Nonnull Project project)
-			{
-				return ModuleExtensionHelper.getInstance(project).hasModuleExtension(PluginModuleExtension.class);
-			}
+      @Override
+      public boolean isApplicable(@Nonnull Project project) {
+        return ModuleExtensionHelper.getInstance(project).hasModuleExtension(PluginModuleExtension.class);
+      }
 
-			@Override
-			public void onNewConfigurationCreated(@Nonnull RunConfiguration configuration)
-			{
-				ConsuloRunConfiguration runConfiguration = (ConsuloRunConfiguration) configuration;
+      @Override
+      public void onNewConfigurationCreated(@Nonnull RunConfiguration configuration) {
+        ConsuloRunConfiguration runConfiguration = (ConsuloRunConfiguration)configuration;
 
-				runConfiguration.addPredefinedLogFile(ConsuloRunConfiguration.CONSULO_LOG);
-			}
-		});
-	}
+        runConfiguration.addPredefinedLogFile(ConsuloRunConfiguration.CONSULO_LOG);
+      }
+    });
+  }
 
-	@Nonnull
-	private String getVmParameters()
-	{
-		if(myVmParameters == null)
-		{
-			String vmOptions = VMOptions.read();
-			myVmParameters = vmOptions != null ? vmOptions.trim() : "";
-		}
+  @Nonnull
+  private String getVmParameters() {
+    if (myVmParameters == null) {
+//      String vmOptions = VMOptions.read();
+//      myVmParameters = vmOptions != null ? vmOptions.trim() : "";
+      myVmParameters = "";
+    }
 
-		return myVmParameters;
-	}
+    return myVmParameters;
+  }
 }

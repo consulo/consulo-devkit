@@ -15,28 +15,30 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
-import java.awt.Color;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.intellij.java.language.psi.*;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.ProblemHighlightType;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiElementVisitor;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.project.Project;
+import consulo.ui.ex.JBColor;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorConstantQuickFix;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBColorQuickFix;
-import com.intellij.codeInspection.InspectionManager;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.*;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.ui.JBColor;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.awt.*;
 
 /**
  * @author Konstantin Bulenkov
  */
-public class UseJBColorInspection extends InternalInspection
-{
+@ExtensionImpl
+public class UseJBColorInspection extends InternalInspection {
   @Nonnull
   @Override
   public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
@@ -71,9 +73,9 @@ public class UseJBColorInspection extends InternalInspection
               text = "DARK_GRAY";
             }
             final ProblemDescriptor descriptor = holder.getManager()
-              .createProblemDescriptor(expression, "Change to JBColor." + text.toUpperCase(),
-                                       new ConvertToJBColorConstantQuickFix(text.toUpperCase()),
-                                       ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly);
+                                                       .createProblemDescriptor(expression, "Change to JBColor." + text.toUpperCase(),
+                                                                                new ConvertToJBColorConstantQuickFix(text.toUpperCase()),
+                                                                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly);
             holder.registerProblem(descriptor);
           }
         }

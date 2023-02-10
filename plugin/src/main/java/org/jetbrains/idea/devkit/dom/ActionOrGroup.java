@@ -15,23 +15,18 @@
  */
 package org.jetbrains.idea.devkit.dom;
 
-import javax.annotation.Nonnull;
+import consulo.xml.util.xml.*;
 
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.NameValue;
-import com.intellij.util.xml.Required;
-import com.intellij.util.xml.Stubbed;
+import javax.annotation.Nonnull;
 
 /**
  * @since 15
  */
-public interface ActionOrGroup extends DomElement
-{
+public interface ActionOrGroup extends DomElement {
 
-	@Nonnull
-	@NameValue
-	@Stubbed
-	@Required(value = false, nonEmpty = true)
-	GenericAttributeValue<String> getId();
+  @Nonnull
+  @NameValue
+  @Stubbed
+  @Required(value = false, nonEmpty = true)
+  GenericAttributeValue<String> getId();
 }

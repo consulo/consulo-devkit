@@ -16,11 +16,11 @@
 
 package org.intellij.grammar.psi.impl;
 
-import javax.annotation.Nonnull;
+import consulo.document.util.ProperTextRange;
+import consulo.document.util.TextRange;
+import consulo.language.psi.LiteralTextEscaper;
 
-import com.intellij.openapi.util.ProperTextRange;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.LiteralTextEscaper;
+import javax.annotation.Nonnull;
 
 /**
  * @author gregsh

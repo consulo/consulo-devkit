@@ -15,33 +15,40 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jetbrains.annotations.Nls;
-import com.intellij.codeInspection.BaseJavaLocalInspectionTool;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.codeInspection.ProblemsHolder;
+import com.intellij.java.analysis.impl.codeInspection.BaseJavaLocalInspectionTool;
+import com.intellij.java.language.psi.*;
+import com.intellij.java.language.psi.util.PropertyUtil;
 import com.intellij.lang.properties.psi.Property;
 import com.intellij.lang.properties.references.PropertyReference;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.ReadonlyStatusHandler;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
-import com.intellij.psi.util.PropertyUtil;
-import com.intellij.util.ArrayUtil;
-import com.intellij.util.IncorrectOperationException;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.fileChooser.FileChooserDescriptor;
+import consulo.language.editor.inspection.LocalQuickFix;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.ProblemHighlightType;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiElementVisitor;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiReference;
+import consulo.language.psi.ResolveResult;
+import consulo.language.util.IncorrectOperationException;
+import consulo.logging.Logger;
+import consulo.project.Project;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.ui.ex.awt.Messages;
+import consulo.util.collection.ArrayUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.ReadonlyStatusHandler;
+import consulo.virtualFileSystem.VirtualFile;
+import org.jetbrains.annotations.Nls;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * @author yole
  */
+@ExtensionImpl
 public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
   @Override
   public boolean isEnabledByDefault() {
@@ -102,8 +109,8 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
               String titleValue = getTitleValue(args[i]);
               if (!hasTitleCapitalization(titleValue)) {
                 holder.registerProblem(args[i], "Message title '" +
-                                                titleValue +
-                                                "' is not properly capitalized. It should have title capitalization",
+                                         titleValue +
+                                         "' is not properly capitalized. It should have title capitalization",
                                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING, new TitleCapitalizationFix(titleValue));
               }
               break;

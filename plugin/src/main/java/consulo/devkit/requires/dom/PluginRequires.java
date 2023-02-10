@@ -1,8 +1,8 @@
 package consulo.devkit.requires.dom;
 
-import com.intellij.util.xml.DefinesXml;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.SubTagList;
+import consulo.xml.util.xml.DefinesXml;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.SubTagList;
 
 import java.util.List;
 
@@ -11,8 +11,7 @@ import java.util.List;
  * @since 28-Aug-22
  */
 @DefinesXml
-public interface PluginRequires extends DomElement
-{
-	@SubTagList("plugins")
-	List<Plugins> getPlugins();
+public interface PluginRequires extends DomElement {
+  @SubTagList("plugins")
+  List<Plugins> getPlugins();
 }

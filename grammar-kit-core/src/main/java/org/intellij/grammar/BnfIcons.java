@@ -15,18 +15,17 @@
  */
 package org.intellij.grammar;
 
-import com.intellij.icons.AllIcons;
+import consulo.application.AllIcons;
 import consulo.ui.image.Image;
 
 /**
  * @author gregory
- *         Date: 17.07.11 2:55
+ * Date: 17.07.11 2:55
  */
-public interface BnfIcons
-{
-	Image RULE = AllIcons.Nodes.Method;
-	Image EXTERNAL_RULE = AllIcons.Nodes.AbstractMethod;
-	Image ATTRIBUTE = AllIcons.Nodes.Attribute;
+public interface BnfIcons {
+  Image RULE = AllIcons.Nodes.Method;
+  Image EXTERNAL_RULE = AllIcons.Nodes.AbstractMethod;
+  Image ATTRIBUTE = AllIcons.Nodes.Attribute;
 
-	Image RELATED_METHOD = AllIcons.Gutter.ImplementedMethod;
+  Image RELATED_METHOD = AllIcons.Gutter.ImplementedMethod;
 }

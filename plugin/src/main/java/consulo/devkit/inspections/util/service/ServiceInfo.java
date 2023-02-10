@@ -1,6 +1,6 @@
 package consulo.devkit.inspections.util.service;
 
-import com.intellij.psi.PsiElement;
+import consulo.language.psi.PsiElement;
 
 /**
  * @author VISTALL

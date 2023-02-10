@@ -16,20 +16,20 @@
 
 package consulo.devkit.run;
 
-import javax.annotation.Nullable;
+import com.intellij.java.coverage.JavaCoverageEngineExtension;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.execution.configuration.RunConfigurationBase;
 
-import com.intellij.coverage.JavaCoverageEngineExtension;
-import com.intellij.execution.configurations.RunConfigurationBase;
+import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
  * @since 12.04.2015
  */
-public class ConsuloRunCoverageEngineExtension extends JavaCoverageEngineExtension
-{
-	@Override
-	public boolean isApplicableTo(@Nullable RunConfigurationBase runConfigurationBase)
-	{
-		return runConfigurationBase instanceof ConsuloRunConfigurationBase;
-	}
+@ExtensionImpl
+public class ConsuloRunCoverageEngineExtension extends JavaCoverageEngineExtension {
+  @Override
+  public boolean isApplicableTo(@Nullable RunConfigurationBase runConfigurationBase) {
+    return runConfigurationBase instanceof ConsuloRunConfigurationBase;
+  }
 }

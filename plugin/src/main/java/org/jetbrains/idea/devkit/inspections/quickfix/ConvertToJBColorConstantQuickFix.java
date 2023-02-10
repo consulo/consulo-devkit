@@ -15,15 +15,16 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
-import com.intellij.codeInspection.LocalQuickFixBase;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementFactory;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.ui.JBColor;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiElementFactory;
+import com.intellij.java.language.psi.PsiExpression;
+import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.language.editor.inspection.LocalQuickFixBase;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.psi.PsiElement;
+import consulo.project.Project;
+import consulo.ui.ex.JBColor;
+
 import javax.annotation.Nonnull;
 
 /**

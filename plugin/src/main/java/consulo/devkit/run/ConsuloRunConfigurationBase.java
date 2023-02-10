@@ -16,26 +16,28 @@
 
 package consulo.devkit.run;
 
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.LocatableConfigurationBase;
-import com.intellij.execution.configurations.LogFileOptions;
-import com.intellij.execution.configurations.PredefinedLogFile;
-import com.intellij.execution.runners.ExecutionEnvironment;
-import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.util.*;
-import com.intellij.openapi.util.text.StringUtil;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.bundle.SdkPointerManager;
-import consulo.bundle.SdkUtil;
+import consulo.component.util.pointer.NamedPointer;
+import consulo.content.bundle.Sdk;
+import consulo.content.bundle.SdkPointerManager;
+import consulo.content.bundle.SdkUtil;
+import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.LocatableConfigurationBase;
+import consulo.execution.configuration.log.LogFileOptions;
+import consulo.execution.configuration.log.PredefinedLogFile;
+import consulo.execution.executor.Executor;
+import consulo.execution.runner.ExecutionEnvironment;
+import consulo.ide.ServiceManager;
 import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
-import consulo.util.pointers.NamedPointer;
-import consulo.util.pointers.NamedPointerManager;
+import consulo.module.Module;
+import consulo.module.ModuleManager;
+import consulo.process.ExecutionException;
+import consulo.project.Project;
+import consulo.util.lang.Comparing;
+import consulo.util.lang.StringUtil;
+import consulo.util.xml.serializer.DefaultJDOMExternalizer;
+import consulo.util.xml.serializer.InvalidDataException;
+import consulo.util.xml.serializer.WriteExternalException;
 import org.jdom.Element;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
@@ -46,164 +48,130 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 12.04.2015
  */
-public abstract class ConsuloRunConfigurationBase extends LocatableConfigurationBase implements GenericDebugRunnerConfiguration
-{
-	public static final PredefinedLogFile CONSULO_LOG = new PredefinedLogFile("CONSULO_LOG", true);
+public abstract class ConsuloRunConfigurationBase extends LocatableConfigurationBase implements GenericDebugRunnerConfiguration {
+  public static final PredefinedLogFile CONSULO_LOG = new PredefinedLogFile("CONSULO_LOG", true);
 
-	public static final String LOG_FILE = "/system/log/consulo.log";
-	private static final String JAVA_SDK = "java-sdk";
-	private static final String CONSULO_SDK = "consulo-sdk";
+  public static final String LOG_FILE = "/system/log/consulo.log";
+  private static final String JAVA_SDK = "java-sdk";
+  private static final String CONSULO_SDK = "consulo-sdk";
 
-	public String VM_PARAMETERS;
-	public boolean ENABLED_JAVA9_MODULES;
-	public String PROGRAM_PARAMETERS;
-	public String PLUGINS_HOME_PATH;
-	protected NamedPointer<Sdk> myJavaSdkPointer;
-	protected NamedPointer<Sdk> myConsuloSdkPointer;
-	public boolean USE_ALT_CONSULO_SDK;
-	public String ALT_CONSULO_SDK_PATH;
+  public String VM_PARAMETERS;
+  public boolean ENABLED_JAVA9_MODULES;
+  public String PROGRAM_PARAMETERS;
+  public String PLUGINS_HOME_PATH;
+  protected NamedPointer<Sdk> myJavaSdkPointer;
+  protected NamedPointer<Sdk> myConsuloSdkPointer;
+  public boolean USE_ALT_CONSULO_SDK;
+  public String ALT_CONSULO_SDK_PATH;
 
-	public ConsuloRunConfigurationBase(Project project, ConfigurationFactory factory, String name)
-	{
-		super(project, factory, name);
-	}
+  public ConsuloRunConfigurationBase(Project project, ConfigurationFactory factory, String name) {
+    super(project, factory, name);
+  }
 
-	@Nonnull
-	public String getSandboxPath()
-	{
-		return getProject().getBasePath() + "/" + Project.DIRECTORY_STORE_FOLDER + "/sandbox";
-	}
+  @Nonnull
+  public String getSandboxPath() {
+    return getProject().getBasePath() + "/" + Project.DIRECTORY_STORE_FOLDER + "/sandbox";
+  }
 
-	@Nullable
-	@Override
-	public LogFileOptions getOptionsForPredefinedLogFile(PredefinedLogFile predefinedLogFile)
-	{
-		if(CONSULO_LOG.equals(predefinedLogFile))
-		{
-			String sandboxPath = getSandboxPath();
-			return new LogFileOptions("consulo.log", sandboxPath + LOG_FILE, true, false, true);
-		}
-		else
-		{
-			return null;
-		}
-	}
+  @Nullable
+  @Override
+  public LogFileOptions getOptionsForPredefinedLogFile(PredefinedLogFile predefinedLogFile) {
+    if (CONSULO_LOG.equals(predefinedLogFile)) {
+      String sandboxPath = getSandboxPath();
+      return new LogFileOptions("consulo.log", sandboxPath + LOG_FILE, true, false, true);
+    }
+    else {
+      return null;
+    }
+  }
 
-	public String getConsuloSdkHome()
-	{
-		if(USE_ALT_CONSULO_SDK)
-		{
-			if(StringUtil.isEmpty(ALT_CONSULO_SDK_PATH))
-			{
-				return null;
-			}
-			return ALT_CONSULO_SDK_PATH;
-		}
-		Sdk sdk = myConsuloSdkPointer == null ? null : myConsuloSdkPointer.get();
-		return sdk == null ? null : sdk.getHomePath();
-	}
+  public String getConsuloSdkHome() {
+    if (USE_ALT_CONSULO_SDK) {
+      if (StringUtil.isEmpty(ALT_CONSULO_SDK_PATH)) {
+        return null;
+      }
+      return ALT_CONSULO_SDK_PATH;
+    }
+    Sdk sdk = myConsuloSdkPointer == null ? null : myConsuloSdkPointer.get();
+    return sdk == null ? null : sdk.getHomePath();
+  }
 
-	@Nullable
-	@Override
-	public final ConsuloSandboxRunState getState(@Nonnull Executor executor, @Nonnull ExecutionEnvironment env) throws ExecutionException
-	{
-		final Sdk javaSdk = myJavaSdkPointer == null ? null : myJavaSdkPointer.get();
-		if(javaSdk == null)
-		{
-			throw new ExecutionException(DevKitBundle.message("run.configuration.no.java.sdk"));
-		}
+  @Nullable
+  @Override
+  public final ConsuloSandboxRunState getState(@Nonnull Executor executor, @Nonnull ExecutionEnvironment env) throws ExecutionException {
+    final Sdk javaSdk = myJavaSdkPointer == null ? null : myJavaSdkPointer.get();
+    if (javaSdk == null) {
+      throw new ExecutionException(DevKitBundle.message("run.configuration.no.java.sdk"));
+    }
 
-		final String consuloSdkHome = getConsuloSdkHome();
-		if(consuloSdkHome == null)
-		{
-			throw new ExecutionException(DevKitBundle.message("run.configuration.no.consulo.sdk"));
-		}
+    final String consuloSdkHome = getConsuloSdkHome();
+    if (consuloSdkHome == null) {
+      throw new ExecutionException(DevKitBundle.message("run.configuration.no.consulo.sdk"));
+    }
 
-		return createState(executor, env, javaSdk, consuloSdkHome, PLUGINS_HOME_PATH);
-	}
+    return createState(executor, env, javaSdk, consuloSdkHome, PLUGINS_HOME_PATH);
+  }
 
-	@Nonnull
-	public abstract ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
-			@Nonnull Sdk javaSdk,
-			@Nonnull String consuloHome,
-			@Nullable String pluginsHomePath) throws ExecutionException;
+  @Nonnull
+  public abstract ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
+                                                     @Nonnull Sdk javaSdk,
+                                                     @Nonnull String consuloHome,
+                                                     @Nullable String pluginsHomePath) throws ExecutionException;
 
-	@Override
-	public void readExternal(Element element) throws InvalidDataException
-	{
-		DefaultJDOMExternalizer.readExternal(this, element);
+  @Override
+  public void readExternal(Element element) throws InvalidDataException {
+    DefaultJDOMExternalizer.readExternal(this, element);
 
-		myJavaSdkPointer = PluginRunXmlConfigurationUtil.readPointer(JAVA_SDK, element, new NotNullFactory<NamedPointerManager<Sdk>>()
-		{
-			@Nonnull
-			@Override
-			public NamedPointerManager<Sdk> create()
-			{
-				return ServiceManager.getService(SdkPointerManager.class);
-			}
-		});
+    myJavaSdkPointer = PluginRunXmlConfigurationUtil.readPointer(JAVA_SDK,
+                                                                 element,
+                                                                 () -> ServiceManager.getService(SdkPointerManager.class));
 
-		myConsuloSdkPointer = PluginRunXmlConfigurationUtil.readPointer(CONSULO_SDK, element, new NotNullFactory<NamedPointerManager<Sdk>>()
-		{
-			@Nonnull
-			@Override
-			public NamedPointerManager<Sdk> create()
-			{
-				return ServiceManager.getService(SdkPointerManager.class);
-			}
-		});
+    myConsuloSdkPointer = PluginRunXmlConfigurationUtil.readPointer(CONSULO_SDK,
+                                                                    element, () -> ServiceManager.getService(SdkPointerManager.class));
 
-		super.readExternal(element);
-	}
+    super.readExternal(element);
+  }
 
-	@Override
-	public void writeExternal(Element element) throws WriteExternalException
-	{
-		DefaultJDOMExternalizer.writeExternal(this, element);
+  @Override
+  public void writeExternal(Element element) throws WriteExternalException {
+    DefaultJDOMExternalizer.writeExternal(this, element);
 
-		PluginRunXmlConfigurationUtil.writePointer(JAVA_SDK, element, myJavaSdkPointer);
-		PluginRunXmlConfigurationUtil.writePointer(CONSULO_SDK, element, myConsuloSdkPointer);
+    PluginRunXmlConfigurationUtil.writePointer(JAVA_SDK, element, myJavaSdkPointer);
+    PluginRunXmlConfigurationUtil.writePointer(CONSULO_SDK, element, myConsuloSdkPointer);
 
-		super.writeExternal(element);
-	}
+    super.writeExternal(element);
+  }
 
-	@Override
-	public boolean isGeneratedName()
-	{
-		return Comparing.equal(getName(), suggestedName());
-	}
+  @Override
+  public boolean isGeneratedName() {
+    return Comparing.equal(getName(), suggestedName());
+  }
 
-	@Nullable
-	public String getJavaSdkName()
-	{
-		return myJavaSdkPointer == null ? null : myJavaSdkPointer.getName();
-	}
+  @Nullable
+  public String getJavaSdkName() {
+    return myJavaSdkPointer == null ? null : myJavaSdkPointer.getName();
+  }
 
-	public void setJavaSdkName(@Nullable String name)
-	{
-		myJavaSdkPointer = name == null ? null : SdkUtil.createPointer(name);
-	}
+  public void setJavaSdkName(@Nullable String name) {
+    myJavaSdkPointer = name == null ? null : SdkUtil.createPointer(name);
+  }
 
-	@Nullable
-	public String getConsuloSdkName()
-	{
-		return myConsuloSdkPointer == null ? null : myConsuloSdkPointer.getName();
-	}
+  @Nullable
+  public String getConsuloSdkName() {
+    return myConsuloSdkPointer == null ? null : myConsuloSdkPointer.getName();
+  }
 
-	public void setConsuloSdkName(@Nullable String name)
-	{
-		myConsuloSdkPointer = name == null ? null : SdkUtil.createPointer(name);
-	}
+  public void setConsuloSdkName(@Nullable String name) {
+    myConsuloSdkPointer = name == null ? null : SdkUtil.createPointer(name);
+  }
 
-	@Nonnull
-	@Override
-	@RequiredReadAction
-	public Module[] getModules()
-	{
-		if(USE_ALT_CONSULO_SDK)
-		{
-			return ModuleManager.getInstance(getProject()).getModules();
-		}
-		return Module.EMPTY_ARRAY;
-	}
+  @Nonnull
+  @Override
+  @RequiredReadAction
+  public Module[] getModules() {
+    if (USE_ALT_CONSULO_SDK) {
+      return ModuleManager.getInstance(getProject()).getModules();
+    }
+    return Module.EMPTY_ARRAY;
+  }
 }

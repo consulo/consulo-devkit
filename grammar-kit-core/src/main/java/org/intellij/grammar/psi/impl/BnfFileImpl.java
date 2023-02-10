@@ -15,28 +15,25 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import com.intellij.extapi.psi.PsiFileBase;
-import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.util.CachedValue;
-import com.intellij.psi.util.CachedValueProvider;
-import com.intellij.psi.util.CachedValuesManager;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.application.util.CachedValue;
+import consulo.application.util.CachedValueProvider;
+import consulo.application.util.CachedValuesManager;
+import consulo.document.util.TextRange;
+import consulo.language.file.FileViewProvider;
+import consulo.language.impl.psi.PsiFileBase;
+import consulo.language.psi.util.PsiTreeUtil;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.fileType.FileType;
 import org.intellij.grammar.BnfFileType;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -45,7 +42,7 @@ import java.util.regex.Pattern;
  * Time: 23:55
  */
 public class BnfFileImpl extends PsiFileBase implements BnfFile {
-  
+
   private final CachedValue<Map<String, BnfRule>> myRules;
   private final CachedValue<List<BnfAttrs>> myGlobalAttributes;
   private final CachedValue<Map<String, List<AttributeInfo>>> myAttributeValues;
@@ -64,12 +61,13 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
         return Result.create(calcAttributes(), BnfFileImpl.this);
       }
     }, false);
-    myAttributeValues = CachedValuesManager.getManager(getProject()).createCachedValue(new CachedValueProvider<Map<String, List<AttributeInfo>>>() {
-      @Override
-      public Result<Map<String, List<AttributeInfo>>> compute() {
-        return Result.create(calcAttributeValues(), BnfFileImpl.this);
-      }
-    }, false);
+    myAttributeValues =
+      CachedValuesManager.getManager(getProject()).createCachedValue(new CachedValueProvider<Map<String, List<AttributeInfo>>>() {
+        @Override
+        public Result<Map<String, List<AttributeInfo>>> compute() {
+          return Result.create(calcAttributeValues(), BnfFileImpl.this);
+        }
+      }, false);
   }
 
   @Nonnull
@@ -92,35 +90,42 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
 
   @Override
   @Nullable
-  public BnfAttr findAttribute(@Nullable String version, @Nullable BnfRule rule, @Nonnull KnownAttribute<?> knownAttribute, @Nullable String match) {
+  public BnfAttr findAttribute(@Nullable String version,
+                               @Nullable BnfRule rule,
+                               @Nonnull KnownAttribute<?> knownAttribute,
+                               @Nullable String match) {
     AttributeInfo result = findAttributeInfo(rule, knownAttribute, match);
     if (result == null) return null;
     return PsiTreeUtil.getParentOfType(findElementAt(result.attrOffset), BnfAttr.class);
   }
 
-  public <T> T findAttributeValue(@Nullable String version, @Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match) {
+  public <T> T findAttributeValue(@Nullable String version,
+                                  @Nullable BnfRule rule,
+                                  @Nonnull KnownAttribute<T> knownAttribute,
+                                  @Nullable String match) {
     AttributeInfo result = findAttributeInfo(rule, knownAttribute, match);
     return result == null ? knownAttribute.getDefaultValue(version) : knownAttribute.ensureValue(result.value, version);
   }
 
   private static final Pattern SUB_EXPRESSION = Pattern.compile(".*(_\\d+)+");
+
   @Nullable
   public <T> AttributeInfo findAttributeInfo(@Nullable BnfRule rule, @Nonnull KnownAttribute<T> knownAttribute, @Nullable String match) {
     List<AttributeInfo> list = myAttributeValues.getValue().get(knownAttribute.getName());
     if (list == null) return null;
-    BnfAttrs globalAttrs = rule == null? ContainerUtil.getFirstItem(getAttributes()) : null;
-    int offset = rule == null ? globalAttrs == null? 0 : globalAttrs.getTextRange().getEndOffset() : rule.getTextRange().getEndOffset();
+    BnfAttrs globalAttrs = rule == null ? ContainerUtil.getFirstItem(getAttributes()) : null;
+    int offset = rule == null ? globalAttrs == null ? 0 : globalAttrs.getTextRange().getEndOffset() : rule.getTextRange().getEndOffset();
     if (offset == 0) return null;
     AttributeInfo key = new AttributeInfo(0, offset, true, null, null);
     int index = Collections.binarySearch(list, key);
-    int ruleStartOffset = rule == null? offset : rule.getTextRange().getStartOffset();
-    String toMatch = match == null ? rule == null? null : rule.getName() : match;
+    int ruleStartOffset = rule == null ? offset : rule.getTextRange().getStartOffset();
+    String toMatch = match == null ? rule == null ? null : rule.getName() : match;
     AttributeInfo result = null;
-    for (int i= Math.min(list.size() - 1, index < 0 ? -index - 1 : index); i >=0; i--) {
+    for (int i = Math.min(list.size() - 1, index < 0 ? -index - 1 : index); i >= 0; i--) {
       AttributeInfo info = list.get(i);
       if (offset < info.offset || !info.global && ruleStartOffset > info.offset) continue;
       if (info.pattern == null ||
-          toMatch != null && info.pattern.matcher(toMatch).matches()) {
+        toMatch != null && info.pattern.matcher(toMatch).matches()) {
         result = info;
         break;
       }
@@ -144,7 +149,7 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
   }
 
   private Map<String, BnfRule> calcRules() {
-    Map<String, BnfRule> result = ContainerUtil.newLinkedHashMap();
+    Map<String, BnfRule> result = new LinkedHashMap<>();
     for (BnfRule o : GrammarUtil.bnfTraverser(this).filter(BnfRule.class)) {
       if (!result.containsKey(o.getName())) {
         result.put(o.getName(), o);
@@ -158,13 +163,13 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
   }
 
   private Map<String, List<AttributeInfo>> calcAttributeValues() {
-    Map<String, List<AttributeInfo>> result = ContainerUtil.newTroveMap();
+    Map<String, List<AttributeInfo>> result = new HashMap<>();
     for (BnfAttrs attrs : GrammarUtil.bnfTraverser(this).filter(BnfAttrs.class)) {
       boolean isRule = attrs.getParent() instanceof BnfRule;
       TextRange baseRange = attrs.getTextRange();
       List<BnfAttr> attrList = attrs.getAttrList();
-      for (int pass = 0; pass < 2; pass ++) {
-        for (int i = attrList.size()-1; i >= 0; i --) {
+      for (int pass = 0; pass < 2; pass++) {
+        for (int i = attrList.size() - 1; i >= 0; i--) {
           BnfAttr attr = attrList.get(i);
           BnfAttrPattern attrPattern = attr.getAttrPattern();
           // pass 0: w/o patterns, pass 1: w/ pattern
@@ -173,13 +178,15 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
           Pattern pattern = null;
           if (attrPattern != null) {
             BnfLiteralExpression expression = attrPattern.getLiteralExpression();
-            pattern = expression == null ? null : ParserGeneratorUtil.compilePattern(StringUtil.stripQuotesAroundValue(expression.getText()));
+            pattern =
+              expression == null ? null : ParserGeneratorUtil.compilePattern(StringUtil.stripQuotesAroundValue(expression.getText()));
           }
           List<AttributeInfo> list = result.get(attr.getName());
           if (list == null) result.put(attr.getName(), list = new ArrayList<AttributeInfo>());
           Object value = ParserGeneratorUtil.getAttributeValue(attr.getExpression());
           int offset = attr.getTextRange().getStartOffset();
-          int infoOffset = pattern == null? baseRange.getStartOffset() + 1: baseRange.getStartOffset() + (baseRange.getEndOffset() - offset);
+          int infoOffset =
+            pattern == null ? baseRange.getStartOffset() + 1 : baseRange.getStartOffset() + (baseRange.getEndOffset() - offset);
           list.add(new AttributeInfo(offset, infoOffset, !isRule, pattern, value));
         }
       }
@@ -209,7 +216,7 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
 
     @Override
     public String toString() {
-      return (global ? "" : "rule:") + offset + (pattern == null? "" : " (" + pattern + ")") + " = " + value;
+      return (global ? "" : "rule:") + offset + (pattern == null ? "" : " (" + pattern + ")") + " = " + value;
     }
   }
 }

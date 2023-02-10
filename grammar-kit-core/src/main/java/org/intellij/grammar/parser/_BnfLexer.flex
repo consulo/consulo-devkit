@@ -1,9 +1,12 @@
 package org.intellij.grammar.parser;
-import com.intellij.lexer.*;
-import com.intellij.psi.tree.IElementType;
+
+import consulo.language.ast.IElementType;
+import consulo.language.ast.TokenType;
+import consulo.language.lexer.LexerBase;
 import org.intellij.grammar.psi.BnfTypes;
-import static org.intellij.grammar.BnfParserDefinition.BNF_LINE_COMMENT;
+
 import static org.intellij.grammar.BnfParserDefinition.BNF_BLOCK_COMMENT;
+import static org.intellij.grammar.BnfParserDefinition.BNF_LINE_COMMENT;
 
 %%
 
@@ -73,6 +76,6 @@ BAD_TOKENS={STRING_BAD1} | {STRING_BAD2}
   "|" {yybegin(YYINITIAL); return BnfTypes.BNF_OP_OR; }
 }
 
-{BAD_TOKENS} {yybegin(YYINITIAL); return com.intellij.psi.TokenType.BAD_CHARACTER; }
+{BAD_TOKENS} {yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }
 
-[^] {yybegin(YYINITIAL); return com.intellij.psi.TokenType.BAD_CHARACTER; }
+[^] {yybegin(YYINITIAL); return TokenType.BAD_CHARACTER; }

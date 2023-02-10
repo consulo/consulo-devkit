@@ -15,8 +15,8 @@
  */
 package org.jetbrains.idea.devkit.dom.generator;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
+import consulo.ui.ex.awt.DialogWrapper;
+import consulo.project.Project;
 
 import javax.swing.*;
 import java.io.File;

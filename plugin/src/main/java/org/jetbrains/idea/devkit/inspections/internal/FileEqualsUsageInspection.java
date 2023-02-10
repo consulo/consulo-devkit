@@ -15,54 +15,52 @@
  */
 package org.jetbrains.idea.devkit.inspections.internal;
 
+import com.intellij.java.language.psi.*;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.editor.inspection.ProblemHighlightType;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiElementVisitor;
+
 import javax.annotation.Nonnull;
-import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.CommonClassNames;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiMethodCallExpression;
-import com.intellij.psi.PsiReferenceExpression;
 
-public class FileEqualsUsageInspection extends InternalInspection
-{
-	private static final String MESSAGE = "Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. " + "Please use " +
-			"FileUtil.filesEquals/fileHashCode/compareFiles instead";
+@ExtensionImpl
+public class FileEqualsUsageInspection extends InternalInspection {
+  private static final String MESSAGE =
+    "Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. " + "Please use " +
+      "FileUtil.filesEquals/fileHashCode/compareFiles instead";
 
-	@Override
-	@Nonnull
-	public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly)
-	{
-		return new JavaElementVisitor()
-		{
-			@Override
-			public void visitMethodCallExpression(PsiMethodCallExpression expression)
-			{
-				PsiReferenceExpression methodExpression = expression.getMethodExpression();
-				PsiElement resolved = methodExpression.resolve();
-				if(!(resolved instanceof PsiMethod))
-				{
-					return;
-				}
+  @Override
+  @Nonnull
+  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
+    return new JavaElementVisitor() {
+      @Override
+      public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+        PsiReferenceExpression methodExpression = expression.getMethodExpression();
+        PsiElement resolved = methodExpression.resolve();
+        if (!(resolved instanceof PsiMethod)) {
+          return;
+        }
 
-				PsiMethod method = (PsiMethod) resolved;
+        PsiMethod method = (PsiMethod)resolved;
 
-				PsiClass clazz = method.getContainingClass();
-				if(clazz == null)
-				{
-					return;
-				}
+        PsiClass clazz = method.getContainingClass();
+        if (clazz == null) {
+          return;
+        }
 
-				String methodName = method.getName();
-				if(CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && ("equals".equals(methodName) || "compareTo".equals(methodName)
-						|| "hashCode".equals(methodName)))
-				{
-					holder.registerProblem(methodExpression, MESSAGE, ProblemHighlightType.LIKE_DEPRECATED);
-				}
-			}
-		};
-	}
+        String methodName = method.getName();
+        if (CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && ("equals".equals(methodName) || "compareTo".equals(methodName)
+          || "hashCode".equals(methodName))) {
+          holder.registerProblem(methodExpression, MESSAGE, ProblemHighlightType.LIKE_DEPRECATED);
+        }
+      }
+    };
+  }
+
+  @Nonnull
+  @Override
+  public String getDisplayName() {
+    return "File.equals() usage";
+  }
 }

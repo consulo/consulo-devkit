@@ -15,9 +15,9 @@
  */
 package org.intellij.grammar;
 
-import javax.annotation.Nonnull;
+import consulo.language.Language;
 
-import com.intellij.lang.Language;
+import javax.annotation.Nonnull;
 
 /**
  * Created by IntelliJ IDEA.

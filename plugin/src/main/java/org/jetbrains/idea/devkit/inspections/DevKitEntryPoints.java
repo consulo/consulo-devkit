@@ -15,43 +15,44 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import com.intellij.codeInsight.AnnotationUtil;
-import com.intellij.codeInsight.daemon.ImplicitUsageProvider;
-import com.intellij.psi.*;
+import com.intellij.java.language.codeInsight.AnnotationUtil;
+import com.intellij.java.language.psi.*;
 import consulo.annotation.UsedInPlugin;
+import consulo.annotation.component.ExtensionImpl;
+import consulo.language.editor.ImplicitUsageProvider;
+import consulo.language.psi.PsiElement;
+import consulo.xml.util.xml.DomElement;
 
 /**
  * User: anna
  */
-public class DevKitEntryPoints implements ImplicitUsageProvider
-{
-	@Override
-	public boolean isImplicitUsage(PsiElement element)
-	{
-		if(element instanceof PsiClass)
-		{
-			final PsiClass domClass = JavaPsiFacade.getInstance(element.getProject()).findClass("com.intellij.util.xml.DomElement", element.getResolveScope());
-			if(domClass != null && ((PsiClass) element).isInheritor(domClass, true))
-			{
-				return true;
-			}
-		}
-		if(element instanceof PsiField || element instanceof PsiMethod || element instanceof PsiClass)
-		{
-			return AnnotationUtil.isAnnotated((com.intellij.psi.PsiModifierListOwner) element, UsedInPlugin.class.getName(), 0);
-		}
-		return false;
-	}
+@ExtensionImpl
+public class DevKitEntryPoints implements ImplicitUsageProvider {
+  private static final String domClassName = DomElement.class.getName();
 
-	@Override
-	public boolean isImplicitRead(PsiElement element)
-	{
-		return false;
-	}
+  @Override
+  public boolean isImplicitUsage(PsiElement element) {
+    if (element instanceof PsiClass) {
+      final PsiClass domClass =
+        JavaPsiFacade.getInstance(element.getProject()).findClass(domClassName, element.getResolveScope());
 
-	@Override
-	public boolean isImplicitWrite(PsiElement element)
-	{
-		return false;
-	}
+      if (domClass != null && ((PsiClass)element).isInheritor(domClass, true)) {
+        return true;
+      }
+    }
+    if (element instanceof PsiField || element instanceof PsiMethod || element instanceof PsiClass) {
+      return AnnotationUtil.isAnnotated((PsiModifierListOwner)element, UsedInPlugin.class.getName(), 0);
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isImplicitRead(PsiElement element) {
+    return false;
+  }
+
+  @Override
+  public boolean isImplicitWrite(PsiElement element) {
+    return false;
+  }
 }

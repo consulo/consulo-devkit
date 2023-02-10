@@ -15,33 +15,32 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
+import com.intellij.java.language.psi.PsiClass;
+import consulo.devkit.module.extension.PluginModuleExtension;
+import consulo.devkit.util.PluginModuleUtil;
+import consulo.language.editor.FileModificationService;
+import consulo.language.editor.inspection.LocalQuickFix;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.psi.PsiFile;
+import consulo.language.util.IncorrectOperationException;
+import consulo.language.util.ModuleUtilCore;
+import consulo.logging.Logger;
+import consulo.module.Module;
+import consulo.project.Project;
+import consulo.ui.ex.awt.Messages;
+import consulo.undoRedo.CommandProcessor;
+import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
-import com.intellij.codeInsight.FileModificationService;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.util.IncorrectOperationException;
-import consulo.devkit.module.extension.PluginModuleExtension;
-import consulo.devkit.util.PluginModuleUtil;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patcher {
   protected final PsiClass myClass;
-  private static final Logger LOG = Logger.getInstance("org.jetbrains.idea.devkit.inspections.quickfix.AbstractRegisterFix");
+  private static final Logger LOG = Logger.getInstance(AbstractRegisterFix.class);
 
   public AbstractRegisterFix(PsiClass klass) {
     myClass = klass;
@@ -73,12 +72,12 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
     if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.getPsiElement())) return;
     final PsiFile psiFile = myClass.getContainingFile();
     LOG.assertTrue(psiFile != null);
-    final Module module = ModuleUtil.findModuleForFile(psiFile.getVirtualFile(), project);
+    final Module module = ModuleUtilCore.findModuleForFile(psiFile.getVirtualFile(), project);
 
     Runnable command = new Runnable() {
       public void run() {
         try {
-          if (ModuleUtil.getExtension(module, PluginModuleExtension.class) != null) {
+          if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
             final XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
             if (pluginXml != null) {
               DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXml);

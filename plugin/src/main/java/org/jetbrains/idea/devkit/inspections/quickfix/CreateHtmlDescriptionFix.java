@@ -16,221 +16,189 @@
 
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import consulo.application.AllIcons;
+import consulo.application.ApplicationManager;
+import consulo.codeEditor.Editor;
+import consulo.codeEditor.EditorPopupHelper;
+import consulo.component.util.Iconable;
+import consulo.fileEditor.FileEditorManager;
+import consulo.fileTemplate.FileTemplate;
+import consulo.fileTemplate.FileTemplateManager;
+import consulo.fileTemplate.FileTemplateUtil;
+import consulo.language.editor.inspection.LocalQuickFix;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiManager;
+import consulo.module.Module;
+import consulo.project.Project;
+import consulo.ui.ex.awt.JBList;
+import consulo.ui.ex.popup.JBPopup;
+import consulo.ui.ex.popup.JBPopupFactory;
+import consulo.ui.image.Image;
+import consulo.ui.image.ImageEffects;
+import consulo.util.collection.ArrayUtil;
+import consulo.virtualFileSystem.VirtualFile;
+import consulo.virtualFileSystem.util.VirtualFileUtil;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.idea.devkit.DevKitBundle;
+import org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection;
+import org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection;
+
+import javax.annotation.Nonnull;
+import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.swing.ListSelectionModel;
-
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection;
-import org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection;
-import com.intellij.codeInspection.LocalQuickFix;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.icons.AllIcons;
-import com.intellij.ide.fileTemplates.FileTemplate;
-import com.intellij.ide.fileTemplates.FileTemplateManager;
-import com.intellij.ide.fileTemplates.FileTemplateUtil;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.popup.JBPopup;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.util.Iconable;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.ui.components.JBList;
-import com.intellij.util.ArrayUtil;
-import consulo.ui.image.Image;
-import consulo.ui.image.ImageEffects;
-
 /**
  * @author Konstantin Bulenkov
  */
-public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable
-{
-	private final String myFilename;
-	private final Module myModule;
-	@NonNls
-	private static final String TEMPLATE_NAME = "InspectionDescription.html";
-	private final boolean isIntention;
+public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
+  private final String myFilename;
+  private final Module myModule;
+  @NonNls
+  private static final String TEMPLATE_NAME = "InspectionDescription.html";
+  private final boolean isIntention;
 
-	public CreateHtmlDescriptionFix(String filename, Module module, boolean isIntention)
-	{
-		myModule = module;
-		this.isIntention = isIntention;
-		myFilename = isIntention ? filename : filename + ".html";
-	}
+  public CreateHtmlDescriptionFix(String filename, Module module, boolean isIntention) {
+    myModule = module;
+    this.isIntention = isIntention;
+    myFilename = isIntention ? filename : filename + ".html";
+  }
 
-	@Override
-	@Nonnull
-	public String getName()
-	{
-		return DevKitBundle.message("create.description.file");
-	}
+  @Override
+  @Nonnull
+  public String getName() {
+    return DevKitBundle.message("create.description.file");
+  }
 
-	@Override
-	@Nonnull
-	public String getFamilyName()
-	{
-		return "DevKit";
-	}
+  @Override
+  @Nonnull
+  public String getFamilyName() {
+    return "DevKit";
+  }
 
-	@Override
-	public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor)
-	{
-		final List<VirtualFile> virtualFiles = isIntention ? IntentionDescriptionNotFoundInspection.getPotentialRoots(myModule) : InspectionDescriptionNotFoundInspection.getPotentialRoots(myModule);
-		final VirtualFile[] roots = prepare(VfsUtil.toVirtualFileArray(virtualFiles));
-		if(roots.length == 1)
-		{
-			ApplicationManager.getApplication().runWriteAction(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					createDescription(roots[0]);
-				}
-			});
+  @Override
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+    final List<VirtualFile> virtualFiles =
+      isIntention ? IntentionDescriptionNotFoundInspection.getPotentialRoots(myModule) : InspectionDescriptionNotFoundInspection.getPotentialRoots(
+        myModule);
+    final VirtualFile[] roots = prepare(VirtualFileUtil.toVirtualFileArray(virtualFiles));
+    if (roots.length == 1) {
+      ApplicationManager.getApplication().runWriteAction(new Runnable() {
+        @Override
+        public void run() {
+          createDescription(roots[0]);
+        }
+      });
 
-		}
-		else
-		{
-			List<String> options = new ArrayList<String>();
-			for(VirtualFile file : roots)
-			{
-				String path = file.getPresentableUrl() + File.separator + getDescriptionFolderName() + File.separator + myFilename;
-				if(isIntention)
-				{
-					path += File.separator + "description.html";
-				}
-				options.add(path);
-			}
-			final JBList files = new JBList(ArrayUtil.toStringArray(options));
-			files.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			final JBPopup popup = JBPopupFactory.getInstance().createListPopupBuilder(files).setTitle(DevKitBundle.message("select.target.location" + ".of.description", myFilename))
-					.setItemChoosenCallback(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					final int index = files.getSelectedIndex();
-					if(0 <= index && index < roots.length)
-					{
-						ApplicationManager.getApplication().runWriteAction(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								createDescription(roots[index]);
-							}
-						});
-					}
-				}
-			}).createPopup();
-			final Editor editor = FileEditorManager.getInstance(myModule.getProject()).getSelectedTextEditor();
-			if(editor == null)
-			{
-				return;
-			}
-			popup.showInBestPositionFor(editor);
-		}
-	}
+    }
+    else {
+      List<String> options = new ArrayList<String>();
+      for (VirtualFile file : roots) {
+        String path = file.getPresentableUrl() + File.separator + getDescriptionFolderName() + File.separator + myFilename;
+        if (isIntention) {
+          path += File.separator + "description.html";
+        }
+        options.add(path);
+      }
+      final JBList files = new JBList(ArrayUtil.toStringArray(options));
+      files.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      final JBPopup popup = JBPopupFactory.getInstance()
+                                          .createPopupChooserBuilder(options)
+                                          .setTitle(DevKitBundle.message("select.target.location" + ".of.description", myFilename))
+                                          .setItemChosenCallback(desc -> {
+                                            final int index = files.getSelectedIndex();
+                                            if (0 <= index && index < roots.length) {
+                                              ApplicationManager.getApplication().runWriteAction(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                  createDescription(roots[index]);
+                                                }
+                                              });
+                                            }
+                                          })
+                                          .createPopup();
+      final Editor editor = FileEditorManager.getInstance(myModule.getProject()).getSelectedTextEditor();
+      if (editor == null) {
+        return;
+      }
+      EditorPopupHelper.getInstance().showPopupInBestPositionFor(editor, popup);
+    }
+  }
 
-	private void createDescription(VirtualFile root)
-	{
-		if(!root.isDirectory())
-		{
-			return;
-		}
-		final PsiManager psiManager = PsiManager.getInstance(myModule.getProject());
-		final PsiDirectory psiRoot = psiManager.findDirectory(root);
-		PsiDirectory descrRoot = null;
-		if(psiRoot == null)
-		{
-			return;
-		}
-		for(PsiDirectory dir : psiRoot.getSubdirectories())
-		{
-			if(getDescriptionFolderName().equals(dir.getName()))
-			{
-				descrRoot = dir;
-				break;
-			}
-		}
+  private void createDescription(VirtualFile root) {
+    if (!root.isDirectory()) {
+      return;
+    }
+    final PsiManager psiManager = PsiManager.getInstance(myModule.getProject());
+    final PsiDirectory psiRoot = psiManager.findDirectory(root);
+    PsiDirectory descrRoot = null;
+    if (psiRoot == null) {
+      return;
+    }
+    for (PsiDirectory dir : psiRoot.getSubdirectories()) {
+      if (getDescriptionFolderName().equals(dir.getName())) {
+        descrRoot = dir;
+        break;
+      }
+    }
 
-		try
-		{
-			descrRoot = descrRoot == null ? psiRoot.createSubdirectory(getDescriptionFolderName()) : descrRoot;
-			if(isIntention)
-			{
-				PsiDirectory dir = descrRoot.findSubdirectory(myFilename);
-				if(dir == null)
-				{
-					descrRoot = descrRoot.createSubdirectory(myFilename);
-				}
-			}
-			final FileTemplate descrTemplate = FileTemplateManager.getInstance(myModule.getProject()).getJ2eeTemplate(TEMPLATE_NAME);
-			final PsiElement template = FileTemplateUtil.createFromTemplate(descrTemplate, isIntention ? "description.html" : myFilename, (Map<String, Object>) null, descrRoot);
-			if(template instanceof PsiFile)
-			{
-				final VirtualFile file = ((PsiFile) template).getVirtualFile();
-				if(file != null)
-				{
-					FileEditorManager.getInstance(myModule.getProject()).openFile(file, true);
-				}
-			}
-		}
-		catch(Exception e)
-		{//
-		}
-	}
+    try {
+      descrRoot = descrRoot == null ? psiRoot.createSubdirectory(getDescriptionFolderName()) : descrRoot;
+      if (isIntention) {
+        PsiDirectory dir = descrRoot.findSubdirectory(myFilename);
+        if (dir == null) {
+          descrRoot = descrRoot.createSubdirectory(myFilename);
+        }
+      }
+      final FileTemplate descrTemplate = FileTemplateManager.getInstance(myModule.getProject()).getJ2eeTemplate(TEMPLATE_NAME);
+      final PsiElement template = FileTemplateUtil.createFromTemplate(descrTemplate,
+                                                                      isIntention ? "description.html" : myFilename,
+                                                                      (Map<String, Object>)null,
+                                                                      descrRoot);
+      if (template instanceof PsiFile) {
+        final VirtualFile file = ((PsiFile)template).getVirtualFile();
+        if (file != null) {
+          FileEditorManager.getInstance(myModule.getProject()).openFile(file, true);
+        }
+      }
+    }
+    catch (Exception e) {//
+    }
+  }
 
-	@Override
-	public Image getIcon(int flags)
-	{
-		return ImageEffects.layered(AllIcons.FileTypes.Html, AllIcons.Actions.New);
-	}
+  @Override
+  public Image getIcon(int flags) {
+    return ImageEffects.layered(AllIcons.FileTypes.Html, AllIcons.Actions.New);
+  }
 
-	private VirtualFile[] prepare(VirtualFile[] roots)
-	{
-		List<VirtualFile> found = new ArrayList<VirtualFile>();
-		for(VirtualFile root : roots)
-		{
-			if(containsDescriptionDir(root))
-			{
-				found.add(root);
-			}
-		}
-		return found.size() > 0 ? VfsUtil.toVirtualFileArray(found) : roots;
-	}
+  private VirtualFile[] prepare(VirtualFile[] roots) {
+    List<VirtualFile> found = new ArrayList<VirtualFile>();
+    for (VirtualFile root : roots) {
+      if (containsDescriptionDir(root)) {
+        found.add(root);
+      }
+    }
+    return found.size() > 0 ? VirtualFileUtil.toVirtualFileArray(found) : roots;
+  }
 
-	private boolean containsDescriptionDir(VirtualFile root)
-	{
-		if(!root.isDirectory())
-		{
-			return false;
-		}
-		for(VirtualFile file : root.getChildren())
-		{
-			if(file.isDirectory() && getDescriptionFolderName().equals(file.getName()))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
+  private boolean containsDescriptionDir(VirtualFile root) {
+    if (!root.isDirectory()) {
+      return false;
+    }
+    for (VirtualFile file : root.getChildren()) {
+      if (file.isDirectory() && getDescriptionFolderName().equals(file.getName())) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-	private String getDescriptionFolderName()
-	{
-		return isIntention ? "intentionDescriptions" : "inspectionDescriptions";
-	}
+  private String getDescriptionFolderName() {
+    return isIntention ? "intentionDescriptions" : "inspectionDescriptions";
+  }
 }

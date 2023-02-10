@@ -15,12 +15,12 @@
  */
 package org.jetbrains.idea.devkit.actions;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.util.IncorrectOperationException;
+import com.intellij.java.language.psi.PsiClass;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiElement;
+import consulo.language.util.IncorrectOperationException;
+import consulo.project.Project;
+import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionType;
 
@@ -30,46 +30,38 @@ import java.util.function.Consumer;
 /**
  * @author yole
  */
-public class NewActionAction extends GeneratePluginClassAction
-{
-	private NewActionDialog myDialog;
+public class NewActionAction extends GeneratePluginClassAction {
+  private NewActionDialog myDialog;
 
-	public NewActionAction()
-	{
-		super(DevKitBundle.message("new.menu.action.text"), DevKitBundle.message("new.menu.action.description"), null);
-	}
+  public NewActionAction() {
+    super(DevKitBundle.message("new.menu.action.text"), DevKitBundle.message("new.menu.action.description"), null);
+  }
 
-	@Override
-	protected void invokeDialogImpl(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer)
-	{
-		final MyInputValidator validator = new MyInputValidator(project, directory);
+  @Override
+  protected void invokeDialogImpl(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer) {
+    final MyInputValidator validator = new MyInputValidator(project, directory);
 
-		myDialog = new NewActionDialog(project);
-		myDialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
-	}
+    myDialog = new NewActionDialog(project);
+    myDialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
+  }
 
-	protected String getClassTemplateName()
-	{
-		return "Action.java";
-	}
+  protected String getClassTemplateName() {
+    return "Action.java";
+  }
 
-	public void patchPluginXml(final XmlFile pluginXml, final PsiClass klass) throws IncorrectOperationException
-	{
-		ActionType.ACTION.patchPluginXml(pluginXml, klass, myDialog);
-	}
+  public void patchPluginXml(final XmlFile pluginXml, final PsiClass klass) throws IncorrectOperationException {
+    ActionType.ACTION.patchPluginXml(pluginXml, klass, myDialog);
+  }
 
-	protected String getErrorTitle()
-	{
-		return DevKitBundle.message("new.action.error");
-	}
+  protected String getErrorTitle() {
+    return DevKitBundle.message("new.action.error");
+  }
 
-	protected String getCommandName()
-	{
-		return DevKitBundle.message("new.action.command");
-	}
+  protected String getCommandName() {
+    return DevKitBundle.message("new.action.command");
+  }
 
-	protected String getActionName(PsiDirectory directory, String newName)
-	{
-		return DevKitBundle.message("new.action.action.name", directory, newName);
-	}
+  protected String getActionName(PsiDirectory directory, String newName) {
+    return DevKitBundle.message("new.action.action.name", directory, newName);
+  }
 }

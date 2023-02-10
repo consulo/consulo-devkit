@@ -16,47 +16,44 @@
 
 package consulo.devkit.run;
 
+import consulo.component.util.pointer.Named;
+import consulo.component.util.pointer.NamedPointer;
+import consulo.component.util.pointer.NamedPointerManager;
 import org.jdom.Element;
+
 import javax.annotation.Nullable;
-import com.intellij.openapi.util.NotNullFactory;
-import consulo.util.pointers.Named;
-import consulo.util.pointers.NamedPointer;
-import consulo.util.pointers.NamedPointerManager;
+import java.util.function.Supplier;
 
 /**
  * @author VISTALL
  * @since 29.05.14
  */
-public class PluginRunXmlConfigurationUtil
-{
-	private static final String NAME = "name";
+public class PluginRunXmlConfigurationUtil {
+  private static final String NAME = "name";
 
-	@Nullable
-	public static <T extends Named> NamedPointer<T> readPointer(String childName, Element parent, NotNullFactory<NamedPointerManager<T>> fun)
-	{
-		final NamedPointerManager<T> namedPointerManager = fun.create();
+  @Nullable
+  public static <T extends Named> NamedPointer<T> readPointer(String childName,
+                                                              Element parent,
+                                                              Supplier<NamedPointerManager<T>> fun) {
+    final NamedPointerManager<T> namedPointerManager = fun.get();
 
-		Element child = parent.getChild(childName);
-		if(child != null)
-		{
-			final String attributeValue = child.getAttributeValue(NAME);
-			if(attributeValue != null)
-			{
-				return namedPointerManager.create(attributeValue);
-			}
-		}
-		return null;
-	}
+    Element child = parent.getChild(childName);
+    if (child != null) {
+      final String attributeValue = child.getAttributeValue(NAME);
+      if (attributeValue != null) {
+        return namedPointerManager.create(attributeValue);
+      }
+    }
+    return null;
+  }
 
-	public static void writePointer(String childName, Element parent, NamedPointer<?> pointer)
-	{
-		if(pointer == null)
-		{
-			return;
-		}
-		Element element = new Element(childName);
-		element.setAttribute(NAME, pointer.getName());
+  public static void writePointer(String childName, Element parent, NamedPointer<?> pointer) {
+    if (pointer == null) {
+      return;
+    }
+    Element element = new Element(childName);
+    element.setAttribute(NAME, pointer.getName());
 
-		parent.addContent(element);
-	}
+    parent.addContent(element);
+  }
 }

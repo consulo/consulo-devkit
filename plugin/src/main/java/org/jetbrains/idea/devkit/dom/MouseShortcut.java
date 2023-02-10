@@ -19,9 +19,10 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.Required;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.GenericAttributeValue;
+import consulo.xml.util.xml.Required;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -49,6 +50,4 @@ public interface MouseShortcut extends DomElement {
   @Nonnull
   @Required
   GenericAttributeValue<String> getKeystroke();
-
-
 }

@@ -16,14 +16,14 @@
 
 package org.jetbrains.idea.devkit.util;
 
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.keymap.KeymapManager;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.psi.xml.XmlTag;
-import com.intellij.util.IncorrectOperationException;
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiClass;
+import consulo.language.util.IncorrectOperationException;
+import consulo.ui.ex.action.ActionGroup;
+import consulo.ui.ex.action.AnAction;
+import consulo.ui.ex.keymap.KeymapManager;
+import consulo.xml.psi.xml.XmlFile;
+import consulo.xml.psi.xml.XmlTag;
 import org.jetbrains.annotations.NonNls;
 
 /**

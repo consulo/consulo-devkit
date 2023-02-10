@@ -1,9 +1,9 @@
 package consulo.devkit.requires.dom;
 
-import com.intellij.util.xml.Convert;
-import com.intellij.util.xml.GenericDomValue;
 import consulo.container.plugin.PluginDescriptor;
 import consulo.devkit.dom.impl.PluginDescriptorResolver;
+import consulo.xml.util.xml.Convert;
+import consulo.xml.util.xml.GenericDomValue;
 
 /**
  * @author VISTALL

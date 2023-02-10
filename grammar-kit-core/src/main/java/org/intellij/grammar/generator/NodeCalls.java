@@ -4,10 +4,10 @@
 
 package org.intellij.grammar.generator;
 
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.containers.ContainerUtil;
-import javax.annotation.Nonnull;
+import consulo.util.collection.ContainerUtil;
+import consulo.util.lang.StringUtil;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
@@ -18,297 +18,250 @@ import static org.intellij.grammar.generator.ParserGeneratorUtil.getWrapperParse
 /**
  * @author Daniil Ovchinnikov
  */
-public class NodeCalls
-{
-	private NodeCalls()
-	{
-	}
+public class NodeCalls {
+  private NodeCalls() {
+  }
 
-	interface NodeCall
-	{
+  interface NodeCall {
 
-		@Nonnull
-		String render(@Nonnull Names names);
-	}
+    @Nonnull
+    String render(@Nonnull Names names);
+  }
 
-	interface NodeArgument
-	{
+  interface NodeArgument {
 
-		default boolean referencesMetaParameter()
-		{
-			return false;
-		}
+    default boolean referencesMetaParameter() {
+      return false;
+    }
 
-		@Nonnull
-		String render();
-	}
+    @Nonnull
+    String render();
+  }
 
-	static class ConsumeTokenCall implements NodeCall
-	{
-		final ParserGeneratorUtil.ConsumeType consumeType;
-		final String token;
+  static class ConsumeTokenCall implements NodeCall {
+    final ParserGeneratorUtil.ConsumeType consumeType;
+    final String token;
 
-		ConsumeTokenCall(@Nonnull ParserGeneratorUtil.ConsumeType consumeType, @Nonnull String token)
-		{
-			this.consumeType = consumeType;
-			this.token = token;
-		}
+    ConsumeTokenCall(@Nonnull ParserGeneratorUtil.ConsumeType consumeType, @Nonnull String token) {
+      this.consumeType = consumeType;
+      this.token = token;
+    }
 
-		@Nonnull
-		@Override
-		public String render(@Nonnull Names names)
-		{
-			return String.format("%s(%s, %s)", consumeType.getMethodName(null), names.builder, token);
-		}
-	}
+    @Nonnull
+    @Override
+    public String render(@Nonnull Names names) {
+      return String.format("%s(%s, %s)", consumeType.getMethodName(null), names.builder, token);
+    }
+  }
 
-	static class ConsumeTokenChoiceCall implements NodeCall
-	{
+  static class ConsumeTokenChoiceCall implements NodeCall {
 
-		final ParserGeneratorUtil.ConsumeType consumeType;
-		final String tokenSetName;
+    final ParserGeneratorUtil.ConsumeType consumeType;
+    final String tokenSetName;
 
-		ConsumeTokenChoiceCall(@Nonnull ParserGeneratorUtil.ConsumeType consumeType, @Nonnull String tokenSetName)
-		{
-			this.consumeType = consumeType;
-			this.tokenSetName = tokenSetName;
-		}
+    ConsumeTokenChoiceCall(@Nonnull ParserGeneratorUtil.ConsumeType consumeType, @Nonnull String tokenSetName) {
+      this.consumeType = consumeType;
+      this.tokenSetName = tokenSetName;
+    }
 
-		@Nonnull
-		@Override
-		public String render(@Nonnull Names names)
-		{
-			return String.format("%s(%s, %s)", consumeType.getMethodName(null), names.builder, tokenSetName);
-		}
-	}
+    @Nonnull
+    @Override
+    public String render(@Nonnull Names names) {
+      return String.format("%s(%s, %s)", consumeType.getMethodName(null), names.builder, tokenSetName);
+    }
+  }
 
-	static class ConsumeTokensCall implements NodeCall
-	{
+  static class ConsumeTokensCall implements NodeCall {
 
-		final String methodName;
-		final int pin;
-		final List<String> tokens;
+    final String methodName;
+    final int pin;
+    final List<String> tokens;
 
-		ConsumeTokensCall(@Nonnull String methodName, int pin, @Nonnull List<String> tokens)
-		{
-			this.methodName = methodName;
-			this.pin = pin;
-			this.tokens = Collections.unmodifiableList(tokens);
-		}
+    ConsumeTokensCall(@Nonnull String methodName, int pin, @Nonnull List<String> tokens) {
+      this.methodName = methodName;
+      this.pin = pin;
+      this.tokens = Collections.unmodifiableList(tokens);
+    }
 
-		@Nonnull
-		@Override
-		public String render(@Nonnull Names names)
-		{
-			return String.format("%s(%s, %d, %s)", methodName, names.builder, pin, StringUtil.join(tokens, ", "));
-		}
-	}
+    @Nonnull
+    @Override
+    public String render(@Nonnull Names names) {
+      return String.format("%s(%s, %d, %s)", methodName, names.builder, pin, StringUtil.join(tokens, ", "));
+    }
+  }
 
-	static class ExpressionMethodCall implements NodeCall
-	{
+  static class ExpressionMethodCall implements NodeCall {
 
-		final String methodName;
-		final int priority;
+    final String methodName;
+    final int priority;
 
-		ExpressionMethodCall(@Nonnull String methodName, int priority)
-		{
-			this.methodName = methodName;
-			this.priority = priority;
-		}
+    ExpressionMethodCall(@Nonnull String methodName, int priority) {
+      this.methodName = methodName;
+      this.priority = priority;
+    }
 
-		@Nonnull
-		@Override
-		public String render(@Nonnull Names names)
-		{
-			return String.format("%s(%s, %s + 1, %d)", methodName, names.builder, names.level, priority);
-		}
-	}
+    @Nonnull
+    @Override
+    public String render(@Nonnull Names names) {
+      return String.format("%s(%s, %s + 1, %d)", methodName, names.builder, names.level, priority);
+    }
+  }
 
-	static class MetaMethodCall extends MethodCallWithArguments
-	{
+  static class MetaMethodCall extends MethodCallWithArguments {
 
-		final
-		@Nullable
-		String targetClassName;
+    final
+    @Nullable
+    String targetClassName;
 
-		MetaMethodCall(@Nullable String targetClassName, @Nonnull String methodName, @Nonnull List<NodeArgument> arguments)
-		{
-			super(methodName, arguments);
-			this.targetClassName = targetClassName;
-		}
+    MetaMethodCall(@Nullable String targetClassName, @Nonnull String methodName, @Nonnull List<NodeArgument> arguments) {
+      super(methodName, arguments);
+      this.targetClassName = targetClassName;
+    }
 
-		boolean referencesMetaParameter()
-		{
-			return arguments.stream().anyMatch(NodeArgument::referencesMetaParameter);
-		}
+    boolean referencesMetaParameter() {
+      return arguments.stream().anyMatch(NodeArgument::referencesMetaParameter);
+    }
 
-		@Nullable
-		String getTargetClassName()
-		{
-			return targetClassName;
-		}
+    @Nullable
+    String getTargetClassName() {
+      return targetClassName;
+    }
 
-		@Nonnull
-		@Override
-		protected String getMethodRef()
-		{
-			String ref = super.getMethodRef();
-			return targetClassName == null ? ref : String.format("%s.%s", targetClassName, ref);
-		}
-	}
+    @Nonnull
+    @Override
+    protected String getMethodRef() {
+      String ref = super.getMethodRef();
+      return targetClassName == null ? ref : String.format("%s.%s", targetClassName, ref);
+    }
+  }
 
-	static class MetaMethodCallArgument implements NodeArgument
-	{
+  static class MetaMethodCallArgument implements NodeArgument {
 
-		final MetaMethodCall call;
+    final MetaMethodCall call;
 
-		MetaMethodCallArgument(@Nonnull MetaMethodCall call)
-		{
-			this.call = call;
-		}
+    MetaMethodCallArgument(@Nonnull MetaMethodCall call) {
+      this.call = call;
+    }
 
-		@Override
-		public boolean referencesMetaParameter()
-		{
-			return true;
-		}
+    @Override
+    public boolean referencesMetaParameter() {
+      return true;
+    }
 
-		@Nonnull
-		private String getMethodRef()
-		{
-			String ref = getWrapperParserMetaMethodName(call.methodName);
-			String className = call.getTargetClassName();
-			return className == null ? ref : String.format("%s.%s", className, ref);
-		}
+    @Nonnull
+    private String getMethodRef() {
+      String ref = getWrapperParserMetaMethodName(call.methodName);
+      String className = call.getTargetClassName();
+      return className == null ? ref : String.format("%s.%s", className, ref);
+    }
 
-		@Nonnull
-		@Override
-		public String render()
-		{
-			String arguments = String.join(", ", ContainerUtil.map(call.arguments, NodeArgument::render));
-			return String.format("%s(%s)", getMethodRef(), arguments);
-		}
-	}
+    @Nonnull
+    @Override
+    public String render() {
+      String arguments = String.join(", ", ContainerUtil.map(call.arguments, NodeArgument::render));
+      return String.format("%s(%s)", getMethodRef(), arguments);
+    }
+  }
 
-	static class MetaParameterCall implements NodeCall
-	{
+  static class MetaParameterCall implements NodeCall {
 
-		final String metaParameterName;
+    final String metaParameterName;
 
-		MetaParameterCall(@Nonnull String metaParameterName)
-		{
-			this.metaParameterName = metaParameterName;
-		}
+    MetaParameterCall(@Nonnull String metaParameterName) {
+      this.metaParameterName = metaParameterName;
+    }
 
-		@Nonnull
-		@Override
-		public String render(@Nonnull Names names)
-		{
-			return String.format("%s.parse(%s, %s)", metaParameterName, names.builder, names.level);
-		}
-	}
+    @Nonnull
+    @Override
+    public String render(@Nonnull Names names) {
+      return String.format("%s.parse(%s, %s)", metaParameterName, names.builder, names.level);
+    }
+  }
 
-	static class MethodCall implements NodeCall
-	{
+  static class MethodCall implements NodeCall {
 
-		final boolean renderClass;
-		final String className;
-		final String methodName;
+    final boolean renderClass;
+    final String className;
+    final String methodName;
 
-		MethodCall(boolean renderClass, @Nonnull String className, @Nonnull String methodName)
-		{
-			this.renderClass = renderClass;
-			this.className = className;
-			this.methodName = methodName;
-		}
+    MethodCall(boolean renderClass, @Nonnull String className, @Nonnull String methodName) {
+      this.renderClass = renderClass;
+      this.className = className;
+      this.methodName = methodName;
+    }
 
-		@Nonnull
-		String getMethodName()
-		{
-			return methodName;
-		}
+    @Nonnull
+    String getMethodName() {
+      return methodName;
+    }
 
-		@Nonnull
-		String getClassName()
-		{
-			return className;
-		}
+    @Nonnull
+    String getClassName() {
+      return className;
+    }
 
-		@Nonnull
-		public String render(@Nonnull Names names)
-		{
-			if(renderClass)
-			{
-				return String.format("%s.%s(%s, %s + 1)", className, methodName, names.builder, names.level);
-			}
-			else
-			{
-				return String.format("%s(%s, %s + 1)", methodName, names.builder, names.level);
-			}
-		}
-	}
+    @Nonnull
+    public String render(@Nonnull Names names) {
+      if (renderClass) {
+        return String.format("%s.%s(%s, %s + 1)", className, methodName, names.builder, names.level);
+      }
+      else {
+        return String.format("%s(%s, %s + 1)", methodName, names.builder, names.level);
+      }
+    }
+  }
 
-	static class MethodCallWithArguments implements NodeCall
-	{
+  static class MethodCallWithArguments implements NodeCall {
 
-		final String methodName;
-		final List<NodeArgument> arguments;
+    final String methodName;
+    final List<NodeArgument> arguments;
 
-		MethodCallWithArguments(@Nonnull String methodName, @Nonnull List<NodeArgument> arguments)
-		{
-			this.methodName = methodName;
-			this.arguments = Collections.unmodifiableList(arguments);
-		}
+    MethodCallWithArguments(@Nonnull String methodName, @Nonnull List<NodeArgument> arguments) {
+      this.methodName = methodName;
+      this.arguments = Collections.unmodifiableList(arguments);
+    }
 
-		@Nonnull
-		protected String getMethodRef()
-		{
-			return methodName;
-		}
+    @Nonnull
+    protected String getMethodRef() {
+      return methodName;
+    }
 
-		@Nonnull
-		@Override
-		public String render(@Nonnull Names names)
-		{
-			String argumentStr = arguments.stream()
-					.map(NodeArgument::render)
-					.map(it -> ", " + it)
-					.collect(Collectors.joining());
-			return String.format("%s(%s, %s + 1%s)", getMethodRef(), names.builder, names.level, argumentStr);
-		}
-	}
+    @Nonnull
+    @Override
+    public String render(@Nonnull Names names) {
+      String argumentStr = arguments.stream()
+                                    .map(NodeArgument::render)
+                                    .map(it -> ", " + it)
+                                    .collect(Collectors.joining());
+      return String.format("%s(%s, %s + 1%s)", getMethodRef(), names.builder, names.level, argumentStr);
+    }
+  }
 
 
-	static class TextArgument implements NodeArgument
-	{
+  static class TextArgument implements NodeArgument {
 
-		final String text;
+    final String text;
 
-		TextArgument(@Nonnull String text)
-		{
-			this.text = text;
-		}
+    TextArgument(@Nonnull String text) {
+      this.text = text;
+    }
 
-		@Nonnull
-		@Override
-		public String render()
-		{
-			return text;
-		}
-	}
+    @Nonnull
+    @Override
+    public String render() {
+      return text;
+    }
+  }
 
-	static class MetaParameterArgument extends TextArgument
-	{
+  static class MetaParameterArgument extends TextArgument {
 
-		MetaParameterArgument(@Nonnull String text)
-		{
-			super(text);
-		}
+    MetaParameterArgument(@Nonnull String text) {
+      super(text);
+    }
 
-		@Override
-		public boolean referencesMetaParameter()
-		{
-			return true;
-		}
-	}
+    @Override
+    public boolean referencesMetaParameter() {
+      return true;
+    }
+  }
 }

@@ -16,19 +16,22 @@
 
 package org.intellij.grammar.psi.impl;
 
-import com.intellij.patterns.PatternCondition;
-import com.intellij.psi.*;
-import com.intellij.util.ProcessingContext;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.language.Language;
+import consulo.language.pattern.PatternCondition;
+import consulo.language.psi.*;
+import consulo.language.util.ProcessingContext;
+import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrPattern;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
-import static com.intellij.patterns.PlatformPatterns.*;
+import static consulo.language.pattern.PlatformPatterns.or;
+import static consulo.language.pattern.PlatformPatterns.string;
+import static consulo.language.pattern.StandardPatterns.psiElement;
 import static org.intellij.grammar.KnownAttribute.*;
 
 /**
@@ -36,10 +39,10 @@ import static org.intellij.grammar.KnownAttribute.*;
  */
 public class BnfStringRefContributor extends PsiReferenceContributor {
 
-  private static final Set<KnownAttribute> RULE_ATTRIBUTES = ContainerUtil.<KnownAttribute>newHashSet(
+  private static final Set<KnownAttribute> RULE_ATTRIBUTES = Set.of(
     EXTENDS, IMPLEMENTS, RECOVER_WHILE, NAME);
 
-  private static final Set<KnownAttribute> JAVA_CLASS_ATTRIBUTES = ContainerUtil.<KnownAttribute>newHashSet(
+  private static final Set<KnownAttribute> JAVA_CLASS_ATTRIBUTES = Set.of(
     EXTENDS, IMPLEMENTS, MIXIN);
 
   @Override
@@ -88,5 +91,11 @@ public class BnfStringRefContributor extends PsiReferenceContributor {
         return attributes.contains(KnownAttribute.getCompatibleAttribute(s));
       }
     };
+  }
+
+  @Nonnull
+  @Override
+  public Language getLanguage() {
+    return BnfLanguage.INSTANCE;
   }
 }

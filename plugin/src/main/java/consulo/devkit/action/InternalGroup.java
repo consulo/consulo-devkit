@@ -16,11 +16,11 @@
 
 package consulo.devkit.action;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.project.Project;
 import consulo.devkit.util.PluginModuleUtil;
+import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.DefaultActionGroup;
 
 import javax.annotation.Nonnull;
 
@@ -28,13 +28,11 @@ import javax.annotation.Nonnull;
  * @author VISTALL
  * @since 28-Jan-17
  */
-public class InternalGroup extends DefaultActionGroup
-{
-	@RequiredUIAccess
-	@Override
-	public void update(@Nonnull AnActionEvent e)
-	{
-		Project project = e.getProject();
-		e.getPresentation().setVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
-	}
+public class InternalGroup extends DefaultActionGroup {
+  @RequiredUIAccess
+  @Override
+  public void update(@Nonnull AnActionEvent e) {
+    Project project = e.getData(Project.KEY);
+    e.getPresentation().setVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
+  }
 }

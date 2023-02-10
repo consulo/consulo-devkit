@@ -15,15 +15,16 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiReference;
-import com.intellij.util.IncorrectOperationException;
+import consulo.document.util.TextRange;
+import consulo.language.ast.ASTNode;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiReference;
+import consulo.language.util.IncorrectOperationException;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfReferenceOrToken;
 import org.intellij.grammar.psi.BnfRule;
+
 import javax.annotation.Nullable;
 
 /**

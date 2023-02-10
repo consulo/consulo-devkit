@@ -19,11 +19,11 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import javax.annotation.Nonnull;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.GenericAttributeValue;
+import consulo.xml.util.xml.Required;
 
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.Required;
+import javax.annotation.Nonnull;
 
 /**
  * plugin.dtd:helpset interface.

@@ -19,47 +19,47 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import javax.annotation.Nonnull;
+import consulo.xml.util.xml.Convert;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.GenericAttributeValue;
+import consulo.xml.util.xml.Required;
 import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
-import com.intellij.util.xml.Convert;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
-import com.intellij.util.xml.Required;
+
+import javax.annotation.Nonnull;
 
 /**
  * plugin.dtd:add-to-group interface.
  */
-public interface AddToGroup extends DomElement
-{
-	/**
-	 * Returns the value of the anchor child.
-	 * Attribute anchor
-	 *
-	 * @return the value of the anchor child.
-	 */
-	@Nonnull
-	GenericAttributeValue<Anchor> getAnchor();
+public interface AddToGroup extends DomElement {
+  /**
+   * Returns the value of the anchor child.
+   * Attribute anchor
+   *
+   * @return the value of the anchor child.
+   */
+  @Nonnull
+  GenericAttributeValue<Anchor> getAnchor();
 
 
-	/**
-	 * Returns the value of the relative-to-action child.
-	 * Attribute relative-to-action
-	 *
-	 * @return the value of the relative-to-action child.
-	 */
-	@Nonnull
-	@Convert(ActionOrGroupResolveConverter.class)
-	GenericAttributeValue<ActionOrGroup> getRelativeToAction();
+  /**
+   * Returns the value of the relative-to-action child.
+   * Attribute relative-to-action
+   *
+   * @return the value of the relative-to-action child.
+   */
+  @Nonnull
+  @Convert(ActionOrGroupResolveConverter.class)
+  GenericAttributeValue<ActionOrGroup> getRelativeToAction();
 
 
-	/**
-	 * Returns the value of the group-id child.
-	 * Attribute group-id
-	 *
-	 * @return the value of the group-id child.
-	 */
-	@Nonnull
-	@Required
-	@Convert(ActionOrGroupResolveConverter.OnlyGroups.class)
-	GenericAttributeValue<ActionOrGroup> getGroupId();
+  /**
+   * Returns the value of the group-id child.
+   * Attribute group-id
+   *
+   * @return the value of the group-id child.
+   */
+  @Nonnull
+  @Required
+  @Convert(ActionOrGroupResolveConverter.OnlyGroups.class)
+  GenericAttributeValue<ActionOrGroup> getGroupId();
 }

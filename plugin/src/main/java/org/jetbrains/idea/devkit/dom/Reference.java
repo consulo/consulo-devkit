@@ -19,28 +19,26 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import java.util.Collection;
+import consulo.xml.util.xml.Convert;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.GenericAttributeValue;
+import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
 
 import javax.annotation.Nonnull;
-
-import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
-import com.intellij.util.xml.Convert;
-import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.GenericAttributeValue;
+import java.util.Collection;
 
 /**
  * plugin.dtd:reference interface.
  */
-public interface Reference extends DomElement
-{
-	@Nonnull
-	@Convert(ActionOrGroupResolveConverter.class)
-	GenericAttributeValue<ActionOrGroup> getRef();
+public interface Reference extends DomElement {
+  @Nonnull
+  @Convert(ActionOrGroupResolveConverter.class)
+  GenericAttributeValue<ActionOrGroup> getRef();
 
-	@Nonnull
-	@Convert(ActionOrGroupResolveConverter.class)
-	GenericAttributeValue<ActionOrGroup> getId();
+  @Nonnull
+  @Convert(ActionOrGroupResolveConverter.class)
+  GenericAttributeValue<ActionOrGroup> getId();
 
-	@Nonnull
-	Collection<AddToGroup> getAddToGroups();
+  @Nonnull
+  Collection<AddToGroup> getAddToGroups();
 }

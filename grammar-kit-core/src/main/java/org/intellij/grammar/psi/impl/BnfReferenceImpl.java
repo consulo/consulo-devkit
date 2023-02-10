@@ -15,13 +15,13 @@
  */
 package org.intellij.grammar.psi.impl;
 
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.containers.ContainerUtil;
+import consulo.document.util.TextRange;
+import consulo.language.psi.NavigatablePsiElement;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiReferenceBase;
+import consulo.language.psi.util.PsiTreeUtil;
+import consulo.util.collection.ContainerUtil;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.java.JavaHelper;
@@ -43,18 +43,19 @@ public class BnfReferenceImpl<T extends BnfComposite> extends PsiReferenceBase<T
   public PsiElement resolve() {
     PsiFile containingFile = myElement.getContainingFile();
     String referenceName = getRangeInElement().substring(myElement.getText());
-    PsiElement result = containingFile instanceof BnfFile? ((BnfFile)containingFile).getRule(referenceName) : null;
-    String version = containingFile instanceof BnfFile ? ((BnfFile) containingFile).getVersion() : null;
+    PsiElement result = containingFile instanceof BnfFile ? ((BnfFile)containingFile).getRule(referenceName) : null;
+    String version = containingFile instanceof BnfFile ? ((BnfFile)containingFile).getVersion() : null;
     if (result == null && GrammarUtil.isExternalReference(myElement)) {
       PsiElement parent = myElement.getParent();
       int paramCount = parent instanceof BnfSequence ? ((BnfSequence)parent).getExpressionList().size() - 1 :
-        parent instanceof BnfExternalExpression? ((BnfExternalExpression)parent).getExpressionList().size() - 1 : 0;
+        parent instanceof BnfExternalExpression ? ((BnfExternalExpression)parent).getExpressionList().size() - 1 : 0;
       BnfRule rule = PsiTreeUtil.getParentOfType(myElement, BnfRule.class);
       String parserClass = ParserGeneratorUtil.getAttribute(version, rule, KnownAttribute.PARSER_UTIL_CLASS);
       // paramCount + 2 (builder and level)
       JavaHelper helper = JavaHelper.getJavaHelper(myElement);
       for (String className = parserClass; className != null; className = helper.getSuperClassName(className)) {
-        List<NavigatablePsiElement> methods = helper.findClassMethods(version, className, JavaHelper.MethodType.STATIC, referenceName, paramCount + 2);
+        List<NavigatablePsiElement> methods =
+          helper.findClassMethods(version, className, JavaHelper.MethodType.STATIC, referenceName, paramCount + 2);
         result = ContainerUtil.getFirstItem(methods);
         if (result != null) break;
       }

@@ -15,70 +15,60 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.roots.ContentFolder;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiManager;
-import com.intellij.util.containers.ContainerUtil;
+import com.intellij.java.language.psi.PsiClass;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.roots.ContentFolderScopes;
+import consulo.language.content.LanguageContentFolderScopes;
+import consulo.language.psi.PsiDirectory;
+import consulo.language.psi.PsiManager;
+import consulo.module.Module;
+import consulo.module.content.ModuleRootManager;
+import consulo.module.content.layer.ContentFolder;
+import consulo.util.lang.StringUtil;
+import consulo.virtualFileSystem.VirtualFile;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DescriptionCheckerUtil
-{
-	@Nonnull
-	@RequiredReadAction
-	public static PsiDirectory[] getDescriptionsDirs(Module module, DescriptionType descriptionType)
-	{
-		List<PsiDirectory> dirs = new ArrayList<>();
-		ModuleRootManager manager = ModuleRootManager.getInstance(module);
-		PsiManager psiManager = PsiManager.getInstance(module.getProject());
+public class DescriptionCheckerUtil {
+  @Nonnull
+  @RequiredReadAction
+  public static PsiDirectory[] getDescriptionsDirs(Module module, DescriptionType descriptionType) {
+    List<PsiDirectory> dirs = new ArrayList<>();
+    ModuleRootManager manager = ModuleRootManager.getInstance(module);
+    PsiManager psiManager = PsiManager.getInstance(module.getProject());
 
-		for(ContentFolder folder : manager.getContentFolders(ContentFolderScopes.production()))
-		{
-			VirtualFile file = folder.getFile();
-			if(file == null)
-			{
-				continue;
-			}
+    for (ContentFolder folder : manager.getContentFolders(LanguageContentFolderScopes.production())) {
+      VirtualFile file = folder.getFile();
+      if (file == null) {
+        continue;
+      }
 
-			VirtualFile childDir = file.findFileByRelativePath(descriptionType.getDescriptionFolder());
-			if(childDir != null)
-			{
-				PsiDirectory dir = psiManager.findDirectory(childDir);
-				if(dir != null)
-				{
-					dirs.add(dir);
-				}
-			}
-		}
+      VirtualFile childDir = file.findFileByRelativePath(descriptionType.getDescriptionFolder());
+      if (childDir != null) {
+        PsiDirectory dir = psiManager.findDirectory(childDir);
+        if (dir != null) {
+          dirs.add(dir);
+        }
+      }
+    }
 
-		return ContainerUtil.toArray(dirs, PsiDirectory.EMPTY_ARRAY);
-	}
+    return dirs.toArray(PsiDirectory.EMPTY_ARRAY);
+  }
 
-	@Nullable
-	public static String getDescriptionDirName(PsiClass aClass)
-	{
-		String descriptionDir = "";
-		PsiClass each = aClass;
-		while(each != null)
-		{
-			String name = each.getName();
-			if(StringUtil.isEmptyOrSpaces(name))
-			{
-				return null;
-			}
-			descriptionDir = name + descriptionDir;
-			each = each.getContainingClass();
-		}
-		return descriptionDir;
-	}
+  @Nullable
+  public static String getDescriptionDirName(PsiClass aClass) {
+    String descriptionDir = "";
+    PsiClass each = aClass;
+    while (each != null) {
+      String name = each.getName();
+      if (StringUtil.isEmptyOrSpaces(name)) {
+        return null;
+      }
+      descriptionDir = name + descriptionDir;
+      each = each.getContainingClass();
+    }
+    return descriptionDir;
+  }
 }

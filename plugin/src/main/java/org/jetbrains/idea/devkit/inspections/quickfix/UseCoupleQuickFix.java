@@ -15,48 +15,44 @@
  */
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import com.intellij.java.language.psi.JavaPsiFacade;
+import com.intellij.java.language.psi.PsiElementFactory;
+import com.intellij.java.language.psi.PsiExpression;
+import com.intellij.java.language.psi.PsiTypeElement;
+import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.language.editor.inspection.LocalQuickFixBase;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.psi.PsiElement;
+import consulo.project.Project;
+
 import javax.annotation.Nonnull;
-import com.intellij.codeInspection.LocalQuickFixBase;
-import com.intellij.codeInspection.ProblemDescriptor;
-import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiElementFactory;
-import com.intellij.psi.PsiExpression;
-import com.intellij.psi.PsiTypeElement;
-import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 
 /**
  * @author Konstantin Bulenkov
  */
-public class UseCoupleQuickFix extends LocalQuickFixBase
-{
-	private static final String COUPLE_FQN = "com.intellij.openapi.util.Couple";
+public class UseCoupleQuickFix extends LocalQuickFixBase {
+  private static final String COUPLE_FQN = "com.intellij.openapi.util.Couple";
 
-	public UseCoupleQuickFix(String text)
-	{
-		super(text);
-	}
+  public UseCoupleQuickFix(String text) {
+    super(text);
+  }
 
-	@Override
-	public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor)
-	{
-		final PsiElement element = descriptor.getPsiElement();
-		final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-		final PsiElement newElement;
-		if(element instanceof PsiTypeElement)
-		{
-			final String canonicalText = ((PsiTypeElement) element).getType().getCanonicalText();
-			final String type = canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.indexOf(','));
-			final PsiTypeElement newType = factory.createTypeElementFromText(COUPLE_FQN + "<" + type + ">", element.getContext());
-			newElement = element.replace(newType);
-		}
-		else
-		{
-			final String text = COUPLE_FQN + ".of" + element.getText().substring("Pair.create".length());
-			final PsiExpression expression = factory.createExpressionFromText(text, element.getContext());
-			newElement = element.replace(expression);
-		}
-		JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-	}
+  @Override
+  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+    final PsiElement element = descriptor.getPsiElement();
+    final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+    final PsiElement newElement;
+    if (element instanceof PsiTypeElement) {
+      final String canonicalText = ((PsiTypeElement)element).getType().getCanonicalText();
+      final String type = canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.indexOf(','));
+      final PsiTypeElement newType = factory.createTypeElementFromText(COUPLE_FQN + "<" + type + ">", element.getContext());
+      newElement = element.replace(newType);
+    }
+    else {
+      final String text = COUPLE_FQN + ".of" + element.getText().substring("Pair.create".length());
+      final PsiExpression expression = factory.createExpressionFromText(text, element.getContext());
+      newElement = element.replace(expression);
+    }
+    JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+  }
 }
