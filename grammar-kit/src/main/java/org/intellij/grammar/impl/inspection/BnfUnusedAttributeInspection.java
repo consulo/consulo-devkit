@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -34,6 +35,7 @@ import static org.intellij.grammar.KnownAttribute.getCompatibleAttribute;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfUnusedAttributeInspection extends LocalInspectionTool {
   @Nonnull
   @Override

@@ -16,6 +16,8 @@
 
 package org.intellij.grammar.java;
 
+import consulo.annotation.component.ComponentScope;
+import consulo.annotation.component.ServiceAPI;
 import consulo.language.impl.psi.FakePsiElement;
 import consulo.language.psi.NavigatablePsiElement;
 import consulo.language.psi.PsiElement;
@@ -31,6 +33,7 @@ import java.util.List;
 /**
  * @author gregsh
  */
+@ServiceAPI(ComponentScope.PROJECT)
 public abstract class JavaHelper {
   public static class TypeParameterInfo {
     private final String name;

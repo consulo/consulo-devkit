@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.refactor;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.Language;
 import consulo.language.editor.refactoring.RefactoringSupportProvider;
 import consulo.language.psi.PsiElement;
@@ -31,6 +32,7 @@ import javax.annotation.Nonnull;
  *
  * @author Vadim Romansky
  */
+@ExtensionImpl
 public class BnfRefactoringSupportProvider extends RefactoringSupportProvider {
   @Override
   public boolean isMemberInplaceRenameAvailable(PsiElement element, PsiElement context) {

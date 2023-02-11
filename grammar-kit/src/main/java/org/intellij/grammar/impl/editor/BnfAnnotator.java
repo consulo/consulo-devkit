@@ -19,6 +19,7 @@ import consulo.application.dumb.DumbAware;
 import consulo.language.editor.annotation.Annotator;
 import consulo.colorScheme.TextAttributes;
 import consulo.document.util.TextRange;
+import consulo.language.editor.annotation.HighlightSeverity;
 import consulo.language.psi.ElementManipulators;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
@@ -51,10 +52,10 @@ public class BnfAnnotator implements Annotator, DumbAware {
       addRuleHighlighting((BnfRule)parent, psiElement, annotationHolder);
     }
     else if (parent instanceof BnfAttr && ((BnfAttr)parent).getId() == psiElement) {
-      annotationHolder.createInfoAnnotation(psiElement, null).setTextAttributes(BnfSyntaxHighlighter.ATTRIBUTE);
+      annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION).textAttributes(BnfSyntaxHighlighter.ATTRIBUTE).range(psiElement).create();
     }
     else if (parent instanceof BnfModifier) {
-      annotationHolder.createInfoAnnotation(psiElement, null).setTextAttributes(BnfSyntaxHighlighter.KEYWORD);
+      annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION).textAttributes(BnfSyntaxHighlighter.KEYWORD).range(psiElement).create();
     }
     else if (parent instanceof BnfListEntry && ((BnfListEntry)parent).getId() == psiElement) {
       boolean hasValue = ((BnfListEntry)parent).getLiteralExpression() != null;
@@ -75,7 +76,7 @@ public class BnfAnnotator implements Annotator, DumbAware {
       if (parent instanceof BnfAttr) {
         String text = psiElement.getText();
         if (text.equals("true") || text.equals("false")) {
-          annotationHolder.createInfoAnnotation(psiElement, null).setTextAttributes(BnfSyntaxHighlighter.KEYWORD);
+          annotationHolder.newSilentAnnotation(HighlightSeverity.INFORMATION).textAttributes(BnfSyntaxHighlighter.KEYWORD).range(psiElement).create();
           return;
         }
       }

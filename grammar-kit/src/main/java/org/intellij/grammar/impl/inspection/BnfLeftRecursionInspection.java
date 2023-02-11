@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.LocalQuickFix;
 import consulo.language.editor.inspection.ProblemDescriptor;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfLeftRecursionInspection extends LocalInspectionTool {
 
   @Nls

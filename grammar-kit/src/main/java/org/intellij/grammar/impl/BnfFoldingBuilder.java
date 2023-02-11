@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.application.dumb.DumbAware;
 import consulo.document.Document;
 import consulo.document.util.TextRange;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
   @Nonnull
   @Override

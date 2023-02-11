@@ -2,6 +2,7 @@ package org.intellij.grammar.impl.java;
 
 import com.intellij.java.impl.psi.impl.source.resolve.reference.impl.providers.JavaClassReferenceProvider;
 import com.intellij.java.language.psi.*;
+import consulo.annotation.component.ServiceImpl;
 import consulo.application.dumb.IndexNotReadyException;
 import consulo.language.psi.NavigatablePsiElement;
 import consulo.language.psi.PsiReferenceProvider;
@@ -21,12 +22,13 @@ import java.util.Collections;
 import java.util.List;
 
 @Singleton
+@ServiceImpl
 public class PsiJavaHelper extends JavaHelper {
   private final JavaPsiFacade myFacade;
   private final PsiElementFactory myElementFactory;
 
   @Inject
-  private PsiJavaHelper(JavaPsiFacade facade, PsiElementFactory elementFactory) {
+  public PsiJavaHelper(JavaPsiFacade facade, PsiElementFactory elementFactory) {
     myFacade = facade;
     myElementFactory = elementFactory;
   }

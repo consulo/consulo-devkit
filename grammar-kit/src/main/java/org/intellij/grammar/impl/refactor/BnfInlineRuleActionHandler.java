@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.refactor;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.codeEditor.Editor;
 import consulo.language.Language;
 import consulo.language.editor.TargetElementUtil;
@@ -40,6 +41,7 @@ import java.util.Collection;
  *
  * @author Vadim Romansky
  */
+@ExtensionImpl
 public class BnfInlineRuleActionHandler extends InlineActionHandler {
   @Override
   public boolean isEnabledForLanguage(Language language) {

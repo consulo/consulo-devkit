@@ -16,15 +16,28 @@
 
 package org.intellij.grammar.impl.editor;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.ast.TokenType;
+import consulo.language.editor.action.FileQuoteHandler;
 import consulo.language.editor.action.SimpleTokenSetQuoteHandler;
+import consulo.virtualFileSystem.fileType.FileType;
+import org.intellij.grammar.BnfFileType;
 import org.intellij.grammar.psi.BnfTypes;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author gregsh
  */
-public class BnfQuoteHandler extends SimpleTokenSetQuoteHandler {
+@ExtensionImpl
+public class BnfQuoteHandler extends SimpleTokenSetQuoteHandler implements FileQuoteHandler {
   public BnfQuoteHandler() {
     super(BnfTypes.BNF_STRING, TokenType.BAD_CHARACTER);
+  }
+
+  @Nonnull
+  @Override
+  public FileType getFileType() {
+    return BnfFileType.INSTANCE;
   }
 }

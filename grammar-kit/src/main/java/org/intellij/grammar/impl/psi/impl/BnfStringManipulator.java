@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.psi.impl;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.document.util.TextRange;
 import consulo.language.psi.AbstractElementManipulator;
 import consulo.language.util.IncorrectOperationException;
@@ -26,6 +27,7 @@ import javax.annotation.Nonnull;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfStringManipulator extends AbstractElementManipulator<BnfStringImpl> {
   @Override
   public BnfStringImpl handleContentChange(BnfStringImpl psi, TextRange range, String newContent) throws IncorrectOperationException {

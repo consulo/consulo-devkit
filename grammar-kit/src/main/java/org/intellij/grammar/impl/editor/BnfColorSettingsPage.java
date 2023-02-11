@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.editor;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.colorScheme.TextAttributesKey;
 import consulo.colorScheme.setting.AttributesDescriptor;
 import consulo.colorScheme.setting.ColorDescriptor;
@@ -31,6 +32,7 @@ import static org.intellij.grammar.impl.editor.BnfSyntaxHighlighter.*;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfColorSettingsPage implements ColorSettingsPage {
   private static final AttributesDescriptor[] ATTRS;
 

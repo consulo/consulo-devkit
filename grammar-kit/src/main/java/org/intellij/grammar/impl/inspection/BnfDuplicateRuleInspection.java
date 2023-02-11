@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -38,6 +39,7 @@ import java.util.Set;
  *
  * @author Vadim Romansky
  */
+@ExtensionImpl
 public class BnfDuplicateRuleInspection extends LocalInspectionTool {
 
   @Nls

@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
@@ -41,6 +42,7 @@ import java.util.Set;
  *
  * @author Vadim Romansky
  */
+@ExtensionImpl
 public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
   @Nls
   @Nonnull

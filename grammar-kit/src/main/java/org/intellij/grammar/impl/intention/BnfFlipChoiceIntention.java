@@ -16,8 +16,10 @@
 
 package org.intellij.grammar.impl.intention;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.codeEditor.Editor;
 import consulo.language.editor.intention.IntentionAction;
+import consulo.language.editor.intention.IntentionMetaData;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.util.PsiTreeUtil;
@@ -35,6 +37,8 @@ import javax.annotation.Nullable;
  * @author Vadim Romansky
  * @author gregsh
  */
+@ExtensionImpl
+@IntentionMetaData(ignoreId = "bnf.flip.choice", fileExtensions = "bnf", categories = "Grammar/BNF")
 public class BnfFlipChoiceIntention implements IntentionAction {
   @Nonnull
   @Override

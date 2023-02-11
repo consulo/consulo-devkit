@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.psi;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.function.Processor;
 import consulo.content.scope.SearchScope;
 import consulo.language.psi.PsiElement;
@@ -32,6 +33,7 @@ import javax.annotation.Nonnull;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfAttrPatternRefSearcher extends QueryExecutorBase<PsiReference, ReferencesSearch.SearchParameters> implements ReferencesSearchQueryExecutor {
   public BnfAttrPatternRefSearcher() {
     super(true);

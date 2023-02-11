@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.ast.ASTNode;
 import consulo.document.util.TextRange;
 import consulo.language.editor.inspection.LocalInspectionTool;
@@ -42,6 +43,7 @@ import java.util.Set;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
 
   @Nls

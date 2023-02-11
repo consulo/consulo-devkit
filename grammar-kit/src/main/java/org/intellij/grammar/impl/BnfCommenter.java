@@ -15,6 +15,7 @@
  */
 package org.intellij.grammar.impl;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.CodeDocumentationAwareCommenter;
 import consulo.language.Language;
 import consulo.language.ast.IElementType;
@@ -27,6 +28,7 @@ import javax.annotation.Nonnull;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfCommenter implements CodeDocumentationAwareCommenter {
   public String getLineCommentPrefix() {
     return "//";

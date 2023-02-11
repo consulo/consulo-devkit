@@ -2,7 +2,7 @@
  * @author VISTALL
  * @since 10/02/2023
  */
-module consulo.devkit {
+open module consulo.devkit {
   requires consulo.java;
   requires com.intellij.xml;
   requires org.jetbrains.plugins.yaml;

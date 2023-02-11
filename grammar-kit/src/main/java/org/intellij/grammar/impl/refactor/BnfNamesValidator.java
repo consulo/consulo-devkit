@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.refactor;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.Language;
 import consulo.language.editor.refactoring.NamesValidator;
 import consulo.project.Project;
@@ -28,6 +29,7 @@ import javax.annotation.Nonnull;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfNamesValidator implements NamesValidator {
   @Override
   public boolean isKeyword(@Nonnull String s, Project project) {

@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -51,6 +52,7 @@ import static org.intellij.grammar.psi.impl.GrammarUtil.bnfTraverserNoAttrs;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfUnusedRuleInspection extends LocalInspectionTool {
   @Nonnull
   @Override

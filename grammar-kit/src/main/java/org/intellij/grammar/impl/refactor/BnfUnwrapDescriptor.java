@@ -17,6 +17,7 @@
 package org.intellij.grammar.impl.refactor;
 
 import com.intellij.java.language.psi.util.PsiUtil;
+import consulo.annotation.component.ExtensionImpl;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.SelectionModel;
 import consulo.language.Language;
@@ -42,6 +43,7 @@ import java.util.Set;
 /**
  * @author gregsh
  */
+@ExtensionImpl
 public class BnfUnwrapDescriptor implements UnwrapDescriptor, Unwrapper {
 
   @Override
