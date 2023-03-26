@@ -23,11 +23,11 @@ import com.intellij.java.language.psi.PsiModifier;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.content.LanguageContentFolderScopes;
+import consulo.language.editor.inspection.InspectionTool;
 import consulo.language.editor.inspection.LocalQuickFix;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.scheme.InspectionManager;
-import consulo.language.editor.inspection.scheme.InspectionProfileEntry;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
@@ -54,7 +54,7 @@ import java.util.Set;
 @ExtensionImpl
 public class InspectionDescriptionNotFoundInspection extends DevKitInspectionBase {
   @Override
-  public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
     final Project project = aClass.getProject();
     final PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
     final Module module = ModuleUtilCore.findModuleForPsiElement(aClass);
@@ -74,7 +74,7 @@ public class InspectionDescriptionNotFoundInspection extends DevKitInspectionBas
       method = null;
     }
     final String filename =
-      method == null ? InspectionProfileEntry.getShortName(aClass.getName()) : PsiUtil.getReturnedLiteral(method, aClass);
+      method == null ? InspectionTool.getShortName(aClass.getName()) : PsiUtil.getReturnedLiteral(method, aClass);
     if (filename == null) {
       return null;
     }

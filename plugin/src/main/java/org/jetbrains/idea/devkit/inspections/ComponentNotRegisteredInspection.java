@@ -98,7 +98,7 @@ public class ComponentNotRegisteredInspection extends DevKitInspectionBase {
 
   @Override
   @Nullable
-  public ProblemDescriptor[] checkClass(@Nonnull PsiClass checkedClass, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkClass(@Nonnull PsiClass checkedClass, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
     final PsiFile psiFile = checkedClass.getContainingFile();
     final PsiIdentifier classIdentifier = checkedClass.getNameIdentifier();
     if (checkedClass.getQualifiedName() != null &&

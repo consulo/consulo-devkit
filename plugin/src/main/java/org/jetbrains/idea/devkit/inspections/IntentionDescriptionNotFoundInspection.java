@@ -55,7 +55,7 @@ public class IntentionDescriptionNotFoundInspection extends DevKitInspectionBase
   private static final String INSPECTION_DESCRIPTIONS = "intentionDescriptions";
 
   @Override
-  public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
     final Project project = aClass.getProject();
     final PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
     final Module module = ModuleUtilCore.findModuleForPsiElement(aClass);

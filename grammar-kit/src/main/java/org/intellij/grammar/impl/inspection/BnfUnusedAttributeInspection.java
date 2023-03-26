@@ -58,7 +58,7 @@ public class BnfUnusedAttributeInspection extends LocalInspectionTool {
 
   @Nonnull
   @Override
-  public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session) {
+  public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, Object state) {
     return new BnfVisitor<Void>() {
       @Override
       public Void visitAttr(@Nonnull BnfAttr o) {

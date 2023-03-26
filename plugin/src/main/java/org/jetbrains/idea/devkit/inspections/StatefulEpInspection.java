@@ -22,7 +22,6 @@ import com.intellij.java.language.psi.PsiModifier;
 import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.inspections.valhalla.ValhallaClasses;
-import consulo.ide.ServiceManager;
 import consulo.language.editor.inspection.LocalQuickFix;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemHighlightType;
@@ -30,10 +29,10 @@ import consulo.language.editor.inspection.scheme.InspectionManager;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiReference;
 import consulo.project.Project;
-import consulo.util.collection.ContainerUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 @ExtensionImpl
@@ -46,17 +45,17 @@ public class StatefulEpInspection extends DevKitInspectionBase {
 
   @Nullable
   @Override
-  public ProblemDescriptor[] checkClass(@Nonnull PsiClass psiClass, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+  public ProblemDescriptor[] checkClass(@Nonnull PsiClass psiClass, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
     PsiField[] fields = psiClass.getFields();
     if (fields.length == 0) {
-      return super.checkClass(psiClass, manager, isOnTheFly);
+      return super.checkClass(psiClass, manager, isOnTheFly, state);
     }
 
     final boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
     if (isQuickFix || AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.Impl, 0)) {
       final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
 
-      List<ProblemDescriptor> result = ContainerUtil.newArrayList();
+      List<ProblemDescriptor> result = new ArrayList<>();
       for (final PsiField field : fields) {
         for (Class c : new Class[]{
           PsiElement.class,
@@ -76,7 +75,7 @@ public class StatefulEpInspection extends DevKitInspectionBase {
       }
       return result.toArray(new ProblemDescriptor[result.size()]);
     }
-    return super.checkClass(psiClass, manager, isOnTheFly);
+    return super.checkClass(psiClass, manager, isOnTheFly, state);
   }
 
   private static boolean isProjectServiceOrComponent(PsiClass psiClass) {

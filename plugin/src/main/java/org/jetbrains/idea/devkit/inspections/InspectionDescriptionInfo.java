@@ -17,7 +17,7 @@ package org.jetbrains.idea.devkit.inspections;
 
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiMethod;
-import consulo.language.editor.inspection.scheme.InspectionProfileEntry;
+import consulo.language.editor.inspection.InspectionTool;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
@@ -46,7 +46,7 @@ public class InspectionDescriptionInfo {
     }
 
     final String filename =
-      method == null ? InspectionProfileEntry.getShortName(psiClass.getName()) : PsiUtil.getReturnedLiteral(method, psiClass);
+      method == null ? InspectionTool.getShortName(psiClass.getName()) : PsiUtil.getReturnedLiteral(method, psiClass);
 
     PsiFile descriptionFile = resolveInspectionDescriptionFile(module, filename);
     return new InspectionDescriptionInfo(filename, method, descriptionFile);
