@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  * @author mike
  */
 @ExtensionImpl
-public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugin> {
+public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugin, Object> {
   public PluginXmlDomInspection() {
     super(IdeaPlugin.class);
   }

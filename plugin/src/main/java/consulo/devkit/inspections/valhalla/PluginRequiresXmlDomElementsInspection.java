@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  * @since 28-Aug-22
  */
 @ExtensionImpl
-public class PluginRequiresXmlDomElementsInspection extends BasicDomElementsInspection<PluginRequires> {
+public class PluginRequiresXmlDomElementsInspection extends BasicDomElementsInspection<PluginRequires, Object> {
   public PluginRequiresXmlDomElementsInspection() {
     super(PluginRequires.class);
   }
