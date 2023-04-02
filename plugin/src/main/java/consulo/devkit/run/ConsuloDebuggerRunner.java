@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 29.05.14
  */
-@ExtensionImpl
+@ExtensionImpl(order = "before defaultJavaDebugRunner")
 public class ConsuloDebuggerRunner extends GenericDebuggerRunner {
   @Nonnull
   @Override

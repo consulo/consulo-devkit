@@ -54,6 +54,7 @@
             <dependency>consulo.java</dependency>
             <dependency>consulo.jflex</dependency>
             <dependency>org.jetbrains.plugins.yaml</dependency>
+            <dependency>org.jetbrains.idea.maven</dependency>
           </dependencies>
           <packaging>
             <skip>${dev.mode}</skip>
