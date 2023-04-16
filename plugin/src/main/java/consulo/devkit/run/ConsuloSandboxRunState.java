@@ -18,7 +18,6 @@ package consulo.devkit.run;
 
 import com.intellij.java.execution.impl.RunConfigurationExtension;
 import com.intellij.java.language.projectRoots.OwnJdkVersionDetector;
-import consulo.application.ApplicationProperties;
 import consulo.content.bundle.Sdk;
 import consulo.execution.configuration.CommandLineState;
 import consulo.execution.runner.ExecutionEnvironment;
@@ -109,7 +108,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
     vm.defineProperty("consulo.home.path", selectedBuildPath);
     // define plugin installation to default path
     String installPluginPath = dataPath + "/config/plugins";
-    vm.defineProperty(ApplicationProperties.CONSULO_INSTALL_PLUGINS_PATH, installPluginPath);
+    vm.defineProperty("consulo.install.plugins.path", installPluginPath);
 
     List<String> pluginPaths = new ArrayList<>();
     pluginPaths.add(installPluginPath);
@@ -120,7 +119,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
     VirtualFile baseDir = env.getProject().getBaseDir();
     assert baseDir != null;
 
-    vm.defineProperty(ApplicationProperties.CONSULO_PLUGINS_PATHS, String.join(File.pathSeparator, pluginPaths));
+    vm.defineProperty("consulo.plugins.paths", String.join(File.pathSeparator, pluginPaths));
 
     File logFile = new File(dataPath, ConsuloRunConfigurationBase.LOG_FILE);
     FileUtil.createIfDoesntExist(logFile);
@@ -138,9 +137,9 @@ public class ConsuloSandboxRunState extends CommandLineState {
         vm.defineProperty("sun.awt.disablegrab", "true");
       }
     }
-    vm.defineProperty(ApplicationProperties.CONSULO_IN_SANDBOX, "true");
+    vm.defineProperty("consulo.in.sandbox", "true");
     // always define internal as sandbox, later just drop this flag
-    vm.defineProperty(ApplicationProperties.IDEA_IS_INTERNAL, "true");
+    vm.defineProperty("idea.is.internal", "true");
 
     params.setWorkingDirectory(consuloSdkHome);
 
