@@ -21,6 +21,7 @@ package org.jetbrains.idea.devkit.dom;
 
 import consulo.devkit.dom.Permissions;
 import consulo.devkit.dom.Tags;
+import consulo.util.lang.StringUtil;
 import consulo.xml.util.xml.*;
 
 import javax.annotation.Nonnull;
@@ -32,7 +33,7 @@ public interface IdeaPlugin extends DomElement {
   @Required
   @Nonnull
   default String getPluginId() {
-    return getId().getValue();
+    return StringUtil.notNullize(getId().getValue());
   }
 
   @Nonnull
