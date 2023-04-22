@@ -42,50 +42,7 @@ import java.util.List;
 /**
  * @author mike
  */
-public class IdeaPluginConverter extends ResolvingConverter<IdeaPlugin> {
-  private static final Condition<IdeaPlugin> NON_CORE_PLUGINS = plugin -> !"com.intellij".equals(plugin.getPluginId());
-
-  @Override
-  @Nonnull
-  public Collection<? extends IdeaPlugin> getVariants(final ConvertContext context) {
-    Collection<IdeaPlugin> plugins = getAllPluginsWithoutSelf(context);
-    return ContainerUtil.filter(plugins, NON_CORE_PLUGINS);
-  }
-
-  @Override
-  public String getErrorMessage(@Nullable final String s, final ConvertContext context) {
-    return DevKitBundle.message("error.cannot.resolve.plugin", s);
-  }
-
-  @Override
-  public IdeaPlugin fromString(@Nullable final String s, final ConvertContext context) {
-    for (IdeaPlugin ideaPlugin : getAllPluginsWithoutSelf(context)) {
-      final String otherId = ideaPlugin.getPluginId();
-      if (otherId == null) {
-        continue;
-      }
-      if (otherId.equals(s)) {
-        return ideaPlugin;
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public String toString(@Nullable final IdeaPlugin ideaPlugin, final ConvertContext context) {
-    return ideaPlugin != null ? ideaPlugin.getPluginId() : null;
-  }
-
-  private static Collection<IdeaPlugin> getAllPluginsWithoutSelf(final ConvertContext context) {
-    final IdeaPlugin self = context.getInvocationElement().getParentOfType(IdeaPlugin.class, true);
-    if (self == null) {
-      return getAllPlugins(context.getProject());
-    }
-
-    final Collection<IdeaPlugin> plugins = getAllPlugins(context.getProject());
-    return ContainerUtil.filter(plugins, plugin -> !Comparing.strEqual(self.getPluginId(), plugin.getPluginId()));
-  }
-
+public class IdeaPluginConverter  {
   public static Collection<IdeaPlugin> getAllPlugins(final Project project) {
     if (DumbService.isDumb(project)) {
       return Collections.emptyList();
