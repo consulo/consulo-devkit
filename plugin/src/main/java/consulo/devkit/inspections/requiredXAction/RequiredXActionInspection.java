@@ -31,7 +31,7 @@ import consulo.language.psi.PsiElementVisitor;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.lang.StringUtil;
 import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.inspections.DevKitInspectionBase;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
 
@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
  * @since 18.02.2015
  */
 @ExtensionImpl
-public class RequiredXActionInspection extends DevKitInspectionBase {
+public class RequiredXActionInspection extends InternalInspection {
   public static class RequiredXActionVisitor extends JavaElementVisitor {
     private final ProblemsHolder myHolder;
 
@@ -123,7 +123,7 @@ public class RequiredXActionInspection extends DevKitInspectionBase {
 
   @Nonnull
   @Override
-  public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
     return new RequiredXActionVisitor(holder);
   }
 }

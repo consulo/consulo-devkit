@@ -9,7 +9,7 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.localize.LocalizeValue;
 import consulo.util.lang.StringUtil;
-import org.jetbrains.idea.devkit.inspections.DevKitInspectionBase;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
 
@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
  * @since 08/10/2021
  */
 @ExtensionImpl
-public class LocalizeTODOInspection extends DevKitInspectionBase {
+public class LocalizeTODOInspection extends InternalInspection {
   private static final String localizeTODO = "localizeTODO";
 
   @Nonnull
@@ -29,7 +29,7 @@ public class LocalizeTODOInspection extends DevKitInspectionBase {
 
   @Nonnull
   @Override
-  public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
     return new JavaElementVisitor() {
       @Override
       @RequiredReadAction

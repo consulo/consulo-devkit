@@ -16,6 +16,7 @@
 package org.jetbrains.idea.devkit.inspections;
 
 import com.intellij.java.language.codeInsight.AnnotationUtil;
+import com.intellij.java.language.psi.JavaElementVisitor;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiField;
 import com.intellij.java.language.psi.PsiModifier;
@@ -23,63 +24,83 @@ import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import consulo.language.editor.inspection.LocalQuickFix;
-import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemHighlightType;
-import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiReference;
 import consulo.project.Project;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 @ExtensionImpl
-public class StatefulEpInspection extends DevKitInspectionBase {
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Stateful Extension";
-  }
+public class StatefulEpInspection extends InternalInspection
+{
+	@Nonnull
+	@Override
+	public String getDisplayName()
+	{
+		return "Stateful Extension";
+	}
 
-  @Nullable
-  @Override
-  public ProblemDescriptor[] checkClass(@Nonnull PsiClass psiClass, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
-    PsiField[] fields = psiClass.getFields();
-    if (fields.length == 0) {
-      return super.checkClass(psiClass, manager, isOnTheFly, state);
-    }
+	@Override
+	public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
+	{
+		return new JavaElementVisitor()
+		{
+			@Override
+			public void visitField(PsiField field)
+			{
+				checkField(field, holder);
+			}
+		};
+	}
 
-    final boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
-    if (isQuickFix || AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.Impl, 0)) {
-      final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
+	private void checkField(PsiField field, ProblemsHolder holder)
+	{
+		PsiClass psiClass = field.getContainingClass();
+		if(psiClass == null)
+		{
+			return;
+		}
 
-      List<ProblemDescriptor> result = new ArrayList<>();
-      for (final PsiField field : fields) {
-        for (Class c : new Class[]{
-          PsiElement.class,
-          PsiReference.class,
-          Project.class
-        }) {
-          if (c == Project.class && (field.hasModifierProperty(PsiModifier.FINAL) || isProjectComponent)) {
-            continue;
-          }
-          String message = c == PsiElement.class ? "Potential memory leak: don't hold PsiElement, use SmartPsiElementPointer instead" +
-            (isQuickFix ? "; also see LocalQuickFixOnPsiElement" : "") : "Don't use " + c.getSimpleName() + " as a field in " +
-            "extension";
-          if (InheritanceUtil.isInheritor(field.getType(), c.getCanonicalName())) {
-            result.add(manager.createProblemDescriptor(field, message, true, ProblemHighlightType.GENERIC_ERROR_OR_WARNING, isOnTheFly));
-          }
-        }
-      }
-      return result.toArray(new ProblemDescriptor[result.size()]);
-    }
-    return super.checkClass(psiClass, manager, isOnTheFly, state);
-  }
+		final boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
+		if(isQuickFix || AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.Impl, 0))
+		{
+			final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
 
-  private static boolean isProjectServiceOrComponent(PsiClass psiClass) {
+			for(Class c : new Class[]{
+					PsiElement.class,
+					PsiReference.class,
+					Project.class
+			})
+			{
+				if(c == Project.class && (field.hasModifierProperty(PsiModifier.FINAL) || isProjectComponent))
+				{
+					continue;
+				}
+				String message;
+				if(c != PsiElement.class)
+				{
+					message = "Don't use " + c.getSimpleName() + " as a field in extension";
+				}
+				else
+				{
+					message = "Potential memory leak: don't hold PsiElement, use SmartPsiElementPointer instead" + (isQuickFix ? "; also see LocalQuickFixOnPsiElement" : "");
+				}
 
-    return true;
-  }
+				if(InheritanceUtil.isInheritor(field.getType(), c.getCanonicalName()))
+				{
+					holder.registerProblem(field, message, ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
+				}
+			}
+		}
+	}
+
+	private static boolean isProjectServiceOrComponent(PsiClass psiClass)
+	{
+		// TODO check ServiceAPI
+		return true;
+	}
 }

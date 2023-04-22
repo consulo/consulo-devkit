@@ -16,20 +16,16 @@
 
 package org.jetbrains.idea.devkit.inspections;
 
-import com.intellij.java.language.psi.PsiClass;
-import com.intellij.java.language.psi.PsiIdentifier;
-import com.intellij.java.language.psi.PsiMethod;
-import com.intellij.java.language.psi.PsiModifier;
+import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.content.LanguageContentFolderScopes;
 import consulo.language.editor.inspection.InspectionTool;
-import consulo.language.editor.inspection.LocalQuickFix;
-import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemHighlightType;
-import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.ModuleUtilCore;
@@ -39,6 +35,7 @@ import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
 
@@ -52,136 +49,173 @@ import java.util.Set;
  * @author Konstantin Bulenkov
  */
 @ExtensionImpl
-public class InspectionDescriptionNotFoundInspection extends DevKitInspectionBase {
-  @Override
-  public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
-    final Project project = aClass.getProject();
-    final PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
-    final Module module = ModuleUtilCore.findModuleForPsiElement(aClass);
+public class InspectionDescriptionNotFoundInspection extends InternalInspection
+{
+	@Override
+	public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
+	{
+		return new JavaElementVisitor()
+		{
+			@Override
+			public void visitClass(PsiClass aClass)
+			{
+				checkClass(aClass, holder);
+			}
+		};
+	}
 
-    if (nameIdentifier == null || module == null || !PsiUtil.isInstantiable(aClass)) {
-      return null;
-    }
+	@RequiredReadAction
+	private void checkClass(PsiClass psiClass, ProblemsHolder holder)
+	{
+		final Project project = psiClass.getProject();
+		final PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
+		final Module module = ModuleUtilCore.findModuleForPsiElement(psiClass);
 
-    final PsiClass base = DescriptionType.INSPECTION.findClass(project, GlobalSearchScope.allScope(project));
+		if(nameIdentifier == null || module == null || !PsiUtil.isInstantiable(psiClass))
+		{
+			return;
+		}
 
-    if (base == null || !aClass.isInheritor(base, true) || isPathMethodsAreOverridden(aClass)) {
-      return null;
-    }
+		final PsiClass base = DescriptionType.INSPECTION.findClass(project, GlobalSearchScope.allScope(project));
 
-    PsiMethod method = findNearestMethod("getShortName", aClass);
-    if (method != null && DescriptionType.INSPECTION.getClassNames().contains(method.getContainingClass().getQualifiedName())) {
-      method = null;
-    }
-    final String filename =
-      method == null ? InspectionTool.getShortName(aClass.getName()) : PsiUtil.getReturnedLiteral(method, aClass);
-    if (filename == null) {
-      return null;
-    }
+		if(base == null || !psiClass.isInheritor(base, true) || isPathMethodsAreOverridden(psiClass))
+		{
+			return;
+		}
 
-    for (PsiDirectory description : getInspectionDescriptionsDirs(module)) {
-      final PsiFile file = description.findFile(filename + ".html");
-      if (file == null) {
-        continue;
-      }
-      final VirtualFile vf = file.getVirtualFile();
-      if (vf == null) {
-        continue;
-      }
-      if (vf.getNameWithoutExtension().equals(filename)) {
-        return null;
-      }
-    }
+		PsiMethod method = findNearestMethod("getShortName", psiClass);
+		if(method != null && DescriptionType.INSPECTION.getClassNames().contains(method.getContainingClass().getQualifiedName()))
+		{
+			method = null;
+		}
+		final String filename =
+				method == null ? InspectionTool.getShortName(psiClass.getName()) : PsiUtil.getReturnedLiteral(method, psiClass);
+		if(filename == null)
+		{
+			return;
+		}
 
-    final PsiElement problem = getProblemElement(aClass, method);
-    final ProblemDescriptor problemDescriptor = manager
-      .createProblemDescriptor(problem == null ? nameIdentifier : problem, "Inspection does not have a description", isOnTheFly,
-                               new LocalQuickFix[]{new CreateHtmlDescriptionFix(filename, module, false)},
-                               ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
-    return new ProblemDescriptor[]{problemDescriptor};
-  }
+		for(PsiDirectory description : getInspectionDescriptionsDirs(module))
+		{
+			final PsiFile file = description.findFile(filename + ".html");
+			if(file == null)
+			{
+				continue;
+			}
+			final VirtualFile vf = file.getVirtualFile();
+			if(vf == null)
+			{
+				continue;
+			}
+			if(vf.getNameWithoutExtension().equals(filename))
+			{
+				return;
+			}
+		}
 
-  @Nullable
-  private static PsiElement getProblemElement(PsiClass aClass, @Nullable PsiMethod method) {
-    if (method != null && method.getContainingClass() == aClass) {
-      return PsiUtil.getReturnedExpression(method);
-    }
-    else {
-      return aClass.getNameIdentifier();
-    }
-  }
+		final PsiElement problem = getProblemElement(psiClass, method);
+		holder.registerProblem(problem == null ? nameIdentifier : problem, "Inspection does not have a description",
+				ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+				new CreateHtmlDescriptionFix(filename, module, false));
+	}
 
-  private static boolean isPathMethodsAreOverridden(PsiClass aClass) {
-    return !(isLastMethodDefinitionIn("getStaticDescription", DescriptionType.INSPECTION.getClassNames(), aClass) &&
-      isLastMethodDefinitionIn("getDescriptionUrl", DescriptionType.INSPECTION.getClassNames(), aClass) &&
-      isLastMethodDefinitionIn("getDescriptionContextClass", DescriptionType.INSPECTION.getClassNames(), aClass) &&
-      isLastMethodDefinitionIn("getDescriptionFileName", DescriptionType.INSPECTION.getClassNames(), aClass));
-  }
+	@Nullable
+	private static PsiElement getProblemElement(PsiClass aClass, @Nullable PsiMethod method)
+	{
+		if(method != null && method.getContainingClass() == aClass)
+		{
+			return PsiUtil.getReturnedExpression(method);
+		}
+		else
+		{
+			return aClass.getNameIdentifier();
+		}
+	}
 
-  private static boolean isLastMethodDefinitionIn(@Nonnull String methodName, @Nonnull Set<String> classFQN, PsiClass cls) {
-    if (cls == null) {
-      return false;
-    }
-    for (PsiMethod method : cls.getMethods()) {
-      if (method.getName().equals(methodName)) {
-        final PsiClass containingClass = method.getContainingClass();
-        if (containingClass == null) {
-          return false;
-        }
-        return classFQN.contains(containingClass.getQualifiedName());
-      }
-    }
-    return isLastMethodDefinitionIn(methodName, classFQN, cls.getSuperClass());
-  }
+	private static boolean isPathMethodsAreOverridden(PsiClass aClass)
+	{
+		return !(isLastMethodDefinitionIn("getStaticDescription", DescriptionType.INSPECTION.getClassNames(), aClass) &&
+				isLastMethodDefinitionIn("getDescriptionUrl", DescriptionType.INSPECTION.getClassNames(), aClass) &&
+				isLastMethodDefinitionIn("getDescriptionContextClass", DescriptionType.INSPECTION.getClassNames(), aClass) &&
+				isLastMethodDefinitionIn("getDescriptionFileName", DescriptionType.INSPECTION.getClassNames(), aClass));
+	}
 
-  public static List<VirtualFile> getPotentialRoots(Module module) {
-    final PsiDirectory[] dirs = getInspectionDescriptionsDirs(module);
-    final List<VirtualFile> result = new ArrayList<>();
-    if (dirs.length != 0) {
-      for (PsiDirectory dir : dirs) {
-        final PsiDirectory parent = dir.getParentDirectory();
-        if (parent != null) {
-          result.add(parent.getVirtualFile());
-        }
-      }
-    }
-    else {
-      ContainerUtil.addAll(result, ModuleRootManager.getInstance(module).getContentFolderFiles(LanguageContentFolderScopes.productionAndTest()));
-    }
-    return result;
-  }
+	private static boolean isLastMethodDefinitionIn(@Nonnull String methodName, @Nonnull Set<String> classFQN, PsiClass cls)
+	{
+		if(cls == null)
+		{
+			return false;
+		}
+		for(PsiMethod method : cls.getMethods())
+		{
+			if(method.getName().equals(methodName))
+			{
+				final PsiClass containingClass = method.getContainingClass();
+				if(containingClass == null)
+				{
+					return false;
+				}
+				return classFQN.contains(containingClass.getQualifiedName());
+			}
+		}
+		return isLastMethodDefinitionIn(methodName, classFQN, cls.getSuperClass());
+	}
 
-  @RequiredReadAction
-  public static PsiDirectory[] getInspectionDescriptionsDirs(Module module) {
-    return DescriptionCheckerUtil.getDescriptionsDirs(module, DescriptionType.INSPECTION);
-  }
+	public static List<VirtualFile> getPotentialRoots(Module module)
+	{
+		final PsiDirectory[] dirs = getInspectionDescriptionsDirs(module);
+		final List<VirtualFile> result = new ArrayList<>();
+		if(dirs.length != 0)
+		{
+			for(PsiDirectory dir : dirs)
+			{
+				final PsiDirectory parent = dir.getParentDirectory();
+				if(parent != null)
+				{
+					result.add(parent.getVirtualFile());
+				}
+			}
+		}
+		else
+		{
+			ContainerUtil.addAll(result, ModuleRootManager.getInstance(module).getContentFolderFiles(LanguageContentFolderScopes.productionAndTest()));
+		}
+		return result;
+	}
 
-  @Nullable
-  private static PsiMethod findNearestMethod(String name, @Nullable PsiClass cls) {
-    if (cls == null) {
-      return null;
-    }
-    for (PsiMethod method : cls.getMethods()) {
-      if (method.getParameterList().getParametersCount() == 0 && method.getName().equals(name)) {
-        return method.getModifierList().hasModifierProperty(PsiModifier.ABSTRACT) ? null : method;
-      }
-    }
-    return findNearestMethod(name, cls.getSuperClass());
-  }
+	@RequiredReadAction
+	public static PsiDirectory[] getInspectionDescriptionsDirs(Module module)
+	{
+		return DescriptionCheckerUtil.getDescriptionsDirs(module, DescriptionType.INSPECTION);
+	}
 
-  @Nls
-  @Nonnull
-  public String getDisplayName() {
-    return "Inspection Description Checker";
-  }
+	@Nullable
+	private static PsiMethod findNearestMethod(String name, @Nullable PsiClass cls)
+	{
+		if(cls == null)
+		{
+			return null;
+		}
+		for(PsiMethod method : cls.getMethods())
+		{
+			if(method.getParameterList().getParametersCount() == 0 && method.getName().equals(name))
+			{
+				return method.getModifierList().hasModifierProperty(PsiModifier.ABSTRACT) ? null : method;
+			}
+		}
+		return findNearestMethod(name, cls.getSuperClass());
+	}
 
-  @Nonnull
-  public String getShortName() {
-    return "InspectionDescriptionNotFoundInspection";
-  }
+	@Nls
+	@Nonnull
+	public String getDisplayName()
+	{
+		return "Inspection Description Checker";
+	}
 
-  @Override
-  public boolean isEnabledByDefault() {
-    return true;
-  }
+	@Nonnull
+	public String getShortName()
+	{
+		return "InspectionDescriptionNotFoundInspection";
+	}
 }

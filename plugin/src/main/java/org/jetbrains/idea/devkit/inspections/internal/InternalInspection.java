@@ -17,8 +17,8 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import com.intellij.java.analysis.impl.codeInspection.BaseJavaLocalInspectionTool;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.application.ApplicationManager;
 import consulo.devkit.util.PluginModuleUtil;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.util.ModuleUtilCore;
@@ -26,37 +26,37 @@ import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 
-public abstract class InternalInspection extends BaseJavaLocalInspectionTool {
-  @Nonnull
-  @Override
-  public String getGroupDisplayName() {
-    return DevKitBundle.message("inspections.group.name");
-  }
+public abstract class InternalInspection extends BaseJavaLocalInspectionTool<Object>
+{
+	@Nonnull
+	@Override
+	public String getGroupDisplayName()
+	{
+		return DevKitBundle.message("inspections.group.name");
+	}
 
-  @Override
-  public boolean isEnabledByDefault() {
-    return true;
-  }
+	@Override
+	public boolean isEnabledByDefault()
+	{
+		return true;
+	}
 
-  @Nonnull
-  @Override
-  @RequiredReadAction
-  public final PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
-    return isAllowed(holder) ? buildInternalVisitor(holder, isOnTheFly) : new PsiElementVisitor() {
-    };
-  }
+	@Nonnull
+	@Override
+	public PsiElementVisitor buildVisitorImpl(@Nonnull ProblemsHolder holder, boolean isOnTheFly, LocalInspectionToolSession session, Object o)
+	{
+		if(!isAllowed(holder))
+		{
+			return PsiElementVisitor.EMPTY_VISITOR;
+		}
+		return buildInternalVisitor(holder, isOnTheFly);
+	}
 
-  @RequiredReadAction
-  protected boolean isAllowed(ProblemsHolder holder) {
-    //seems that internal inspection tests should test in most cases the inspection
-    //and not that internal inspections are not available in non-idea non-plugin projects
-    return isAllowedByDefault() || PluginModuleUtil.isConsuloOrPluginProject(holder.getProject(),
-                                                                             ModuleUtilCore.findModuleForPsiElement(holder.getFile()));
-  }
+	@RequiredReadAction
+	protected boolean isAllowed(ProblemsHolder holder)
+	{
+		return PluginModuleUtil.isConsuloOrPluginProject(holder.getProject(), ModuleUtilCore.findModuleForPsiElement(holder.getFile()));
+	}
 
-  protected boolean isAllowedByDefault() {
-    return ApplicationManager.getApplication().isUnitTestMode();
-  }
-
-  public abstract PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly);
+	public abstract PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly);
 }

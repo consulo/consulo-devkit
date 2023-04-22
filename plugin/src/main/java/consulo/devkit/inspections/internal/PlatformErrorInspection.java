@@ -29,7 +29,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.platform.Platform;
 import consulo.util.collection.MultiMap;
-import org.jetbrains.idea.devkit.inspections.DevKitInspectionBase;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -39,7 +39,7 @@ import java.util.Collection;
  * @since 23-Aug-17
  */
 @ExtensionImpl
-public class PlatformErrorInspection extends DevKitInspectionBase {
+public class PlatformErrorInspection extends InternalInspection {
   private final MultiMap<String, String> myRestrictedMethodList = MultiMap.create();
 
   public PlatformErrorInspection() {
@@ -65,7 +65,7 @@ public class PlatformErrorInspection extends DevKitInspectionBase {
   @Nonnull
   @Override
   @RequiredReadAction
-  public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
     if (PluginModuleUtil.searchClassInFileUseScope(holder.getFile(), Platform.class.getName()) == null) {
       return PsiElementVisitor.EMPTY_VISITOR;
     }

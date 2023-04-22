@@ -15,20 +15,16 @@
  */
 package org.jetbrains.idea.devkit.inspections;
 
+import com.intellij.java.language.psi.JavaElementVisitor;
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiIdentifier;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.content.LanguageContentFolderScopes;
-import consulo.language.editor.inspection.LocalQuickFix;
-import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemHighlightType;
-import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.intention.IntentionAction;
-import consulo.language.psi.PsiDirectory;
-import consulo.language.psi.PsiElement;
-import consulo.language.psi.PsiFile;
-import consulo.language.psi.PsiPackage;
+import consulo.language.psi.*;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
@@ -38,6 +34,7 @@ import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
 
@@ -50,128 +47,164 @@ import java.util.List;
  * @author Konstantin Bulenkov
  */
 @ExtensionImpl
-public class IntentionDescriptionNotFoundInspection extends DevKitInspectionBase {
-  private static final String INTENTION = IntentionAction.class.getName();
-  private static final String INSPECTION_DESCRIPTIONS = "intentionDescriptions";
+public class IntentionDescriptionNotFoundInspection extends InternalInspection
+{
+	private static final String INTENTION = IntentionAction.class.getName();
+	private static final String INSPECTION_DESCRIPTIONS = "intentionDescriptions";
 
-  @Override
-  public ProblemDescriptor[] checkClass(@Nonnull PsiClass aClass, @Nonnull InspectionManager manager, boolean isOnTheFly, Object state) {
-    final Project project = aClass.getProject();
-    final PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
-    final Module module = ModuleUtilCore.findModuleForPsiElement(aClass);
+	@Override
+	public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
+	{
+		return new JavaElementVisitor()
+		{
+			@Override
+			public void visitClass(PsiClass aClass)
+			{
+				checkClass(aClass, holder, isOnTheFly);
+			}
+		};
+	}
 
-    if (nameIdentifier == null || module == null || !PsiUtil.isInstantiable(aClass)) return null;
+	private void checkClass(PsiClass psiClass, ProblemsHolder holder, boolean isOnTheFly)
+	{
+		final Project project = psiClass.getProject();
+		final PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
+		final Module module = ModuleUtilCore.findModuleForPsiElement(psiClass);
 
-    final PsiClass base = JavaPsiFacade.getInstance(project).findClass(INTENTION, GlobalSearchScope.allScope(project));
+		if(nameIdentifier == null || module == null || !PsiUtil.isInstantiable(psiClass))
+		{
+			return;
+		}
 
-    if (base == null || !aClass.isInheritor(base, true)) return null;
+		final PsiClass base = JavaPsiFacade.getInstance(project).findClass(INTENTION, GlobalSearchScope.allScope(project));
 
-    String descriptionDir = getDescriptionDirName(aClass);
-    if (StringUtil.isEmptyOrSpaces(descriptionDir)) {
-      return null;
-    }
+		if(base == null || !psiClass.isInheritor(base, true))
+		{
+			return;
+		}
 
-    for (PsiDirectory description : getIntentionDescriptionsDirs(module)) {
-      PsiDirectory dir = description.findSubdirectory(descriptionDir);
-      if (dir == null) continue;
-      final PsiFile descr = dir.findFile("description.html");
-      if (descr != null) {
-        if (!hasBeforeAndAfterTemplate(dir.getVirtualFile())) {
-          PsiElement problem = aClass.getNameIdentifier();
-          ProblemDescriptor problemDescriptor = manager.createProblemDescriptor(problem == null ? nameIdentifier : problem,
-                                                                                "Intention must have 'before.*.template' and 'after.*.template' beside 'description.html'",
-                                                                                isOnTheFly,
-                                                                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                                                                false);
-          return new ProblemDescriptor[]{problemDescriptor};
-        }
+		String descriptionDir = getDescriptionDirName(psiClass);
+		if(StringUtil.isEmptyOrSpaces(descriptionDir))
+		{
+			return;
+		}
 
-        return null;
-      }
-    }
+		for(PsiDirectory description : getIntentionDescriptionsDirs(module))
+		{
+			PsiDirectory dir = description.findSubdirectory(descriptionDir);
+			if(dir == null)
+			{
+				continue;
+			}
+			final PsiFile descr = dir.findFile("description.html");
+			if(descr != null)
+			{
+				if(!hasBeforeAndAfterTemplate(dir.getVirtualFile()))
+				{
+					PsiElement problem = psiClass.getNameIdentifier();
+					holder.registerProblem(problem == null ? nameIdentifier : problem,
+							"Intention must have 'before.*.template' and 'after.*.template' beside 'description.html'",
+							ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
+				}
+
+				return;
+			}
+		}
 
 
-    final PsiElement problem = aClass.getNameIdentifier();
-    final ProblemDescriptor problemDescriptor = manager
-      .createProblemDescriptor(problem == null ? nameIdentifier : problem, "Intention does not have a description", isOnTheFly,
-                               new LocalQuickFix[]{new CreateHtmlDescriptionFix(descriptionDir, module, true)},
-                               ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
-    return new ProblemDescriptor[]{problemDescriptor};
-  }
+		final PsiElement problem = psiClass.getNameIdentifier();
+		holder.registerProblem(problem == null ? nameIdentifier : problem, "Intention does not have a description",
+				ProblemHighlightType.GENERIC_ERROR_OR_WARNING, new CreateHtmlDescriptionFix(descriptionDir, module, true));
+	}
 
-  @Nullable
-  private static String getDescriptionDirName(PsiClass aClass) {
-    String descriptionDir = "";
-    PsiClass each = aClass;
-    while (each != null) {
-      String name = each.getName();
-      if (StringUtil.isEmptyOrSpaces(name)) {
-        return null;
-      }
-      descriptionDir = name + descriptionDir;
-      each = each.getContainingClass();
-    }
-    return descriptionDir;
-  }
+	@Nullable
+	private static String getDescriptionDirName(PsiClass aClass)
+	{
+		String descriptionDir = "";
+		PsiClass each = aClass;
+		while(each != null)
+		{
+			String name = each.getName();
+			if(StringUtil.isEmptyOrSpaces(name))
+			{
+				return null;
+			}
+			descriptionDir = name + descriptionDir;
+			each = each.getContainingClass();
+		}
+		return descriptionDir;
+	}
 
-  private static boolean hasBeforeAndAfterTemplate(@Nonnull VirtualFile dir) {
-    boolean hasBefore = false;
-    boolean hasAfter = false;
+	private static boolean hasBeforeAndAfterTemplate(@Nonnull VirtualFile dir)
+	{
+		boolean hasBefore = false;
+		boolean hasAfter = false;
 
-    for (VirtualFile file : dir.getChildren()) {
-      String name = file.getName();
-      if (name.endsWith(".template")) {
-        if (name.startsWith("before.")) {
-          hasBefore = true;
-        }
-        else if (name.startsWith("after.")) {
-          hasAfter = true;
-        }
-      }
-    }
+		for(VirtualFile file : dir.getChildren())
+		{
+			String name = file.getName();
+			if(name.endsWith(".template"))
+			{
+				if(name.startsWith("before."))
+				{
+					hasBefore = true;
+				}
+				else if(name.startsWith("after."))
+				{
+					hasAfter = true;
+				}
+			}
+		}
 
-    return hasBefore && hasAfter;
-  }
+		return hasBefore && hasAfter;
+	}
 
-  public static List<VirtualFile> getPotentialRoots(Module module) {
-    final PsiDirectory[] dirs = getIntentionDescriptionsDirs(module);
-    final List<VirtualFile> result = new ArrayList<VirtualFile>();
-    if (dirs.length != 0) {
-      for (PsiDirectory dir : dirs) {
-        final PsiDirectory parent = dir.getParentDirectory();
-        if (parent != null) result.add(parent.getVirtualFile());
-      }
-    }
-    else {
-      ContainerUtil.addAll(result,
-                           ModuleRootManager.getInstance(module).getContentFolderFiles(LanguageContentFolderScopes.productionAndTest()));
-    }
-    return result;
-  }
+	public static List<VirtualFile> getPotentialRoots(Module module)
+	{
+		final PsiDirectory[] dirs = getIntentionDescriptionsDirs(module);
+		final List<VirtualFile> result = new ArrayList<VirtualFile>();
+		if(dirs.length != 0)
+		{
+			for(PsiDirectory dir : dirs)
+			{
+				final PsiDirectory parent = dir.getParentDirectory();
+				if(parent != null)
+				{
+					result.add(parent.getVirtualFile());
+				}
+			}
+		}
+		else
+		{
+			ContainerUtil.addAll(result,
+					ModuleRootManager.getInstance(module).getContentFolderFiles(LanguageContentFolderScopes.productionAndTest()));
+		}
+		return result;
+	}
 
-  public static PsiDirectory[] getIntentionDescriptionsDirs(Module module) {
-    final PsiPackage aPackage = JavaPsiFacade.getInstance(module.getProject()).findPackage(INSPECTION_DESCRIPTIONS);
-    if (aPackage != null) {
-      return aPackage.getDirectories(GlobalSearchScope.moduleWithDependenciesScope(module));
-    }
-    else {
-      return PsiDirectory.EMPTY_ARRAY;
-    }
-  }
+	public static PsiDirectory[] getIntentionDescriptionsDirs(Module module)
+	{
+		final PsiPackage aPackage = JavaPsiFacade.getInstance(module.getProject()).findPackage(INSPECTION_DESCRIPTIONS);
+		if(aPackage != null)
+		{
+			return aPackage.getDirectories(GlobalSearchScope.moduleWithDependenciesScope(module));
+		}
+		else
+		{
+			return PsiDirectory.EMPTY_ARRAY;
+		}
+	}
 
-  @Nls
-  @Nonnull
-  public String getDisplayName() {
-    return "Intention Description Checker";
-  }
+	@Nls
+	@Nonnull
+	public String getDisplayName()
+	{
+		return "Intention Description Checker";
+	}
 
-  @Nonnull
-  public String getShortName() {
-    return "IntentionDescriptionNotFoundInspection";
-  }
-
-  @Override
-  public boolean isEnabledByDefault() {
-    return true;
-  }
+	@Nonnull
+	public String getShortName()
+	{
+		return "IntentionDescriptionNotFoundInspection";
+	}
 }
