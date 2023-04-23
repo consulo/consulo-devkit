@@ -159,7 +159,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
             if (yamlValue instanceof YAMLMapping) {
               YAMLKeyValue text = ((YAMLMapping)yamlValue).getKeyValueByKey("text");
               if (text != null) {
-                map.put(key, text.getValueText());
+                map.put(key.toLowerCase(Locale.ROOT), text.getValueText());
               }
             }
           }

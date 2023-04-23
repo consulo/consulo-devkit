@@ -6,15 +6,13 @@ import consulo.index.io.data.DataExternalizer;
 import consulo.language.psi.stub.FileBasedIndex;
 import consulo.language.psi.stub.FileBasedIndexExtension;
 import consulo.language.psi.stub.FileContent;
-import consulo.logging.Logger;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.virtualFileSystem.util.VirtualFileUtil;
 import org.jetbrains.yaml.YAMLFileType;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author VISTALL
@@ -22,8 +20,6 @@ import java.util.Collections;
  */
 @ExtensionImpl
 public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<String, Void> {
-  private static final Logger LOG = Logger.getInstance(LocalizeFileBasedIndexExtension.class);
-
   public static final ID<String, Void> INDEX = ID.create("consulo.localize.file.index");
 
   @Nonnull
@@ -35,11 +31,10 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
   @Nonnull
   @Override
   public DataIndexer<String, Void, FileContent> getIndexer() {
-    return fileContent ->
-    {
+    return fileContent -> {
       VirtualFile file = fileContent.getFile();
 
-      if (isNewLocalize(file)) {
+      if (isLocalizeFile(file)) {
         String fileName = file.getNameWithoutExtension();
 
         String packageName = StringUtil.getPackageName(fileName);
@@ -47,26 +42,8 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
         String id = packageName + ".localize." + StringUtil.getShortName(fileName);
         return Collections.singletonMap(id, null);
       }
-      else {
-        VirtualFile localizeDirectory = findLocalizeDirectory(file);
-        if (localizeDirectory == null) {
-          return Collections.emptyMap();
-        }
 
-        String relativeLocation = VirtualFileUtil.getRelativeLocation(file.getParent(), localizeDirectory);
-
-        if (relativeLocation == null) {
-          return Collections.emptyMap();
-        }
-
-        // com/intellij/images
-
-        relativeLocation = relativeLocation.replace("/", ".");
-
-        String id = relativeLocation + ".localize." + file.getNameWithoutExtension();
-
-        return Collections.singletonMap(id, null);
-      }
+      return Map.of();
     };
   }
 
@@ -90,8 +67,7 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
   @Nonnull
   @Override
   public FileBasedIndex.InputFilter getInputFilter() {
-    return (project, file) ->
-    {
+    return (project, file) -> {
       if (file.getFileType() != YAMLFileType.YML) {
         return false;
       }
@@ -101,26 +77,11 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
         return false;
       }
 
-      VirtualFile localizeDirectory = findLocalizeDirectory(file);
-      if (localizeDirectory != null) {
-        VirtualFile idTxt = localizeDirectory.findChild("id.txt");
-        if (idTxt == null) {
-          return false;
-        }
-
-        CharSequence text = idTxt.loadText();
-        if (StringUtil.equals("en", text)) {
-          return true;
-        }
-      }
-      else {
-        return isNewLocalize(file);
-      }
-      return false;
+      return isLocalizeFile(file);
     };
   }
 
-  private boolean isNewLocalize(VirtualFile file) {
+  private boolean isLocalizeFile(VirtualFile file) {
     VirtualFile parentDir = file.getParent();
     if (parentDir != null && "en_US".equals(parentDir.getName())) {
       VirtualFile localizeLibParent = parentDir.getParent();
@@ -129,18 +90,6 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
       }
     }
     return false;
-  }
-
-  @Nullable
-  private static VirtualFile findLocalizeDirectory(VirtualFile file) {
-    VirtualFile parent = file;
-    while ((parent = parent.getParent()) != null) {
-      if (StringUtil.equals(parent.getNameSequence(), "localize")) {
-        return parent;
-      }
-    }
-
-    return null;
   }
 
   @Override
