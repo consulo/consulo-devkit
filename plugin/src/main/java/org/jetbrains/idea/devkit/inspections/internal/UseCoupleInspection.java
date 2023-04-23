@@ -28,6 +28,7 @@ import org.jetbrains.idea.devkit.inspections.quickfix.UseCoupleQuickFix;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Konstantin Bulenkov
@@ -75,7 +76,7 @@ public class UseCoupleInspection extends InternalInspection {
               final PsiClass psiClass = ((PsiMethod)method).getContainingClass();
               if (psiClass != null && PAIR_FQN.equals(psiClass.getQualifiedName())) {
                 final PsiType[] types = expression.getArgumentList().getExpressionTypes();
-                if (types.length == 2 && types[0].equals(types[1])) {
+                if (types.length == 2 && Objects.equals(types[0], types[1])) {
                   final String name = "Change to Couple.of";
                   holder.registerProblem(expression, name, ProblemHighlightType.GENERIC_ERROR_OR_WARNING, new UseCoupleQuickFix(name));
                 }
