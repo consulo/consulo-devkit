@@ -29,8 +29,6 @@ open module consulo.devkit {
   exports consulo.devkit.dom;
   exports consulo.devkit.dom.impl;
   exports consulo.devkit.icon;
-  exports consulo.devkit.icon.index;
-  exports consulo.devkit.icon.references;
   exports consulo.devkit.inspections;
   exports consulo.devkit.inspections.inject;
   exports consulo.devkit.inspections.internal;

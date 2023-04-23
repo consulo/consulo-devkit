@@ -17,9 +17,11 @@ package org.jetbrains.idea.devkit.navigation;
 
 import com.intellij.java.language.JavaLanguage;
 import com.intellij.java.language.psi.PsiClass;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.AllIcons;
 import consulo.codeEditor.markup.GutterIconRenderer;
+import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.Language;
 import consulo.language.editor.gutter.RelatedItemLineMarkerInfo;
 import consulo.language.editor.gutter.RelatedItemLineMarkerProvider;
@@ -53,6 +55,12 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
 
   private static final Function<PsiFile, Collection<? extends GotoRelatedItem>> RELATED_ITEM_PROVIDER =
     psiFile -> GotoRelatedItem.createItems(Collections.singleton(psiFile), "DevKit");
+
+  @Override
+  @RequiredReadAction
+  public boolean isAvailable(@Nonnull PsiFile file) {
+    return PluginModuleUtil.isConsuloOrPluginProject(file);
+  }
 
   @Override
   protected void collectNavigationMarkers(@Nonnull PsiElement element,

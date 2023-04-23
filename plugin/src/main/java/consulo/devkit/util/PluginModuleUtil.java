@@ -19,12 +19,16 @@ package consulo.devkit.util;
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiClass;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.application.util.CachedValueProvider;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.java.impl.roots.SpecialDirUtil;
 import consulo.java.language.module.extension.JavaModuleExtension;
+import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
+import consulo.language.psi.PsiModificationTracker;
 import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.language.psi.util.LanguageCachedValueUtil;
 import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
@@ -130,6 +134,14 @@ public class PluginModuleUtil {
 
   public static boolean isConsuloProject(Project project) {
     return project.getName().equals("consulo");
+  }
+
+  @RequiredReadAction
+  public static boolean isConsuloOrPluginProject(@Nonnull PsiElement element) {
+    return LanguageCachedValueUtil.getCachedValue(element, () -> {
+      Module module = ModuleUtilCore.findModuleForPsiElement(element);
+      return CachedValueProvider.Result.create(isConsuloOrPluginProject(element.getProject(), module), PsiModificationTracker.MODIFICATION_COUNT);
+    });
   }
 
   @RequiredReadAction

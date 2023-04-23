@@ -21,42 +21,38 @@ import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
-import consulo.language.util.ModuleUtilCore;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 
-public abstract class InternalInspection extends BaseJavaLocalInspectionTool<Object>
-{
-	@Nonnull
-	@Override
-	public String getGroupDisplayName()
-	{
-		return DevKitBundle.message("inspections.group.name");
-	}
+public abstract class InternalInspection extends BaseJavaLocalInspectionTool<Object> {
+  @Nonnull
+  @Override
+  public String getGroupDisplayName() {
+    return DevKitBundle.message("inspections.group.name");
+  }
 
-	@Override
-	public boolean isEnabledByDefault()
-	{
-		return true;
-	}
+  @Override
+  public boolean isEnabledByDefault() {
+    return true;
+  }
 
-	@Nonnull
-	@Override
-	public PsiElementVisitor buildVisitorImpl(@Nonnull ProblemsHolder holder, boolean isOnTheFly, LocalInspectionToolSession session, Object o)
-	{
-		if(!isAllowed(holder))
-		{
-			return PsiElementVisitor.EMPTY_VISITOR;
-		}
-		return buildInternalVisitor(holder, isOnTheFly);
-	}
+  @Nonnull
+  @Override
+  public PsiElementVisitor buildVisitorImpl(@Nonnull ProblemsHolder holder,
+                                            boolean isOnTheFly,
+                                            LocalInspectionToolSession session,
+                                            Object o) {
+    if (!isAllowed(holder)) {
+      return PsiElementVisitor.EMPTY_VISITOR;
+    }
+    return buildInternalVisitor(holder, isOnTheFly);
+  }
 
-	@RequiredReadAction
-	protected boolean isAllowed(ProblemsHolder holder)
-	{
-		return PluginModuleUtil.isConsuloOrPluginProject(holder.getProject(), ModuleUtilCore.findModuleForPsiElement(holder.getFile()));
-	}
+  @RequiredReadAction
+  protected boolean isAllowed(ProblemsHolder holder) {
+    return PluginModuleUtil.isConsuloOrPluginProject(holder.getFile());
+  }
 
-	public abstract PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly);
+  public abstract PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly);
 }

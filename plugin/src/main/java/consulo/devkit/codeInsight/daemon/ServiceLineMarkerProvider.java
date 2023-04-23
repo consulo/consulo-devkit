@@ -9,11 +9,13 @@ import consulo.application.AllIcons;
 import consulo.codeEditor.markup.GutterIconRenderer;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
+import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.Language;
 import consulo.language.editor.Pass;
 import consulo.language.editor.gutter.LineMarkerInfo;
 import consulo.language.editor.gutter.LineMarkerProvider;
 import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiUtilCore;
 import consulo.language.psi.util.PsiNavigateUtil;
 
@@ -26,6 +28,12 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl
 public class ServiceLineMarkerProvider implements LineMarkerProvider {
+  @Override
+  @RequiredReadAction
+  public boolean isAvailable(@Nonnull PsiFile file) {
+    return PluginModuleUtil.isConsuloOrPluginProject(file);
+  }
+
   @RequiredReadAction
   @Nullable
   @Override
