@@ -48,6 +48,11 @@ public class AWTErrorInspection extends InternalInspection {
   }
 
   @Override
+  public boolean isEnabledByDefault() {
+    return false;
+  }
+
+  @Override
   public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
     return new JavaElementVisitor() {
       @Override
