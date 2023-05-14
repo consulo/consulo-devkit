@@ -9,6 +9,7 @@ import consulo.application.util.CachedValueProvider;
 import consulo.devkit.DevKitComponentScope;
 import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiModificationTracker;
@@ -195,6 +196,12 @@ public class WrongInjectBindingInspection extends InternalInspection {
     }
 
     return null;
+  }
+
+  @Nonnull
+  @Override
+  public HighlightDisplayLevel getDefaultLevel() {
+    return HighlightDisplayLevel.ERROR;
   }
 
   @Nonnull

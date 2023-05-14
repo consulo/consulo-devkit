@@ -9,6 +9,7 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
 import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
@@ -39,6 +40,12 @@ public class NoSingletonAnnotationInspection extends InternalInspection {
                                  new AddAnnotationFix(SINGLETON_ANNOTATIONS.get(0), aClass));
       }
     }
+  }
+
+  @Nonnull
+  @Override
+  public HighlightDisplayLevel getDefaultLevel() {
+    return HighlightDisplayLevel.ERROR;
   }
 
   @Nonnull

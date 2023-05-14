@@ -11,6 +11,7 @@ import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
 import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
@@ -71,6 +72,12 @@ public class NoInjectAnnotationInspection extends InternalInspection {
   @Override
   public String getDisplayName() {
     return "Missed @Inject annotation for services & extensions";
+  }
+
+  @Nonnull
+  @Override
+  public HighlightDisplayLevel getDefaultLevel() {
+    return HighlightDisplayLevel.ERROR;
   }
 
   @Override
