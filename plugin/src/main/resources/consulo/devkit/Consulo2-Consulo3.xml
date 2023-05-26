@@ -6262,8 +6262,8 @@
   <entry oldName="com.intellij.openapi.util.io.FileAttributes" newName="consulo.util.io.FileAttributes" type="class" />
   <entry oldName="com.intellij.openapi.util.io.FileSystemUtil" newName="consulo.virtualFileSystem.impl.internal.mediator.FileSystemUtil" type="class" />
   <entry oldName="com.intellij.openapi.util.io.FileTooBigException" newName="consulo.util.io.FileTooBigException" type="class" />
-  <entry oldName="com.intellij.openapi.util.io.FileUtil" newName="consulo.ide.impl.idea.openapi.util.io.FileUtil" type="class" />
-  <entry oldName="com.intellij.openapi.util.io.FileUtilRt" newName="consulo.ide.impl.idea.openapi.util.io.FileUtilRt" type="class" />
+  <entry oldName="com.intellij.openapi.util.io.FileUtil" newName="consulo.util.io.FileUtil" type="class" />
+  <entry oldName="com.intellij.openapi.util.io.FileUtilRt" newName="consulo.util.io.FileUtil" type="class" />
   <entry oldName="com.intellij.openapi.util.io.JarUtil" newName="consulo.ide.impl.idea.openapi.util.io.JarUtil" type="class" />
   <entry oldName="com.intellij.openapi.util.io.NullAppendable" newName="consulo.util.io.NullAppendable" type="class" />
   <entry oldName="com.intellij.openapi.util.io.StreamUtil" newName="consulo.util.io.StreamUtil" type="class" />
@@ -6285,7 +6285,7 @@
   <entry oldName="com.intellij.openapi.util.text.NaturalComparator" newName="consulo.util.lang.internal.NaturalComparator" type="class" />
   <entry oldName="com.intellij.openapi.util.text.StringHash" newName="consulo.util.lang.StringHash" type="class" />
   <entry oldName="com.intellij.openapi.util.text.StringUtil" newName="consulo.util.lang.StringUtil" type="class" />
-  <entry oldName="com.intellij.openapi.util.text.StringUtilRt" newName="consulo.ide.impl.idea.openapi.util.text.StringUtilRt" type="class" />
+  <entry oldName="com.intellij.openapi.util.text.StringUtilRt" newName="consulo.util.lang.StringUtil" type="class" />
   <entry oldName="com.intellij.openapi.util.text.TextWithMnemonic" newName="consulo.ui.ex.util.TextWithMnemonic" type="class" />
   <entry oldName="com.intellij.openapi.util.text.TrigramBuilder" newName="consulo.ide.impl.idea.openapi.util.text.TrigramBuilder" type="class" />
   <entry oldName="com.intellij.openapi.vcs.AbstractDataProviderPanel" newName="consulo.ide.impl.idea.openapi.vcs.AbstractDataProviderPanel" type="class" />
@@ -9751,7 +9751,7 @@
   <entry oldName="com.intellij.util.FilePathByPathComparator" newName="consulo.ide.impl.idea.util.FilePathByPathComparator" type="class" />
   <entry oldName="com.intellij.util.FilteredQuery" newName="consulo.application.util.query.FilteredQuery" type="class" />
   <entry oldName="com.intellij.util.FilteringProcessor" newName="consulo.application.util.function.FilteringProcessor" type="class" />
-  <entry oldName="com.intellij.util.Function" newName="consulo.ide.impl.idea.util.Function" type="class" />
+  <entry oldName="com.intellij.util.Function" newName="java.util.function.Function" type="class" />
   <entry oldName="com.intellij.util.FunctionUtil" newName="consulo.ide.impl.idea.util.FunctionUtil" type="class" />
   <entry oldName="com.intellij.util.Functions" newName="consulo.util.lang.function.Functions" type="class" />
   <entry oldName="com.intellij.util.HiDPIScaledGraphics" newName="consulo.ui.ex.awt.internal.HiDPIScaledGraphics" type="class" />
@@ -9760,7 +9760,7 @@
   <entry oldName="com.intellij.util.IconUtil2" newName="consulo.ide.impl.idea.util.IconUtil2" type="class" />
   <entry oldName="com.intellij.util.IdempotenceChecker" newName="consulo.language.impl.internal.psi.IdempotenceChecker" type="class" />
   <entry oldName="com.intellij.util.ImageLoader" newName="consulo.ui.ex.awt.internal.ImageLoader" type="class" />
-  <entry oldName="com.intellij.util.IncorrectOperationException" newName="consulo.util.lang.IncorrectOperationException" type="class" />
+  <entry oldName="com.intellij.util.IncorrectOperationException" newName="consulo.language.util.IncorrectOperationException" type="class" />
   <entry oldName="com.intellij.util.InstanceofQuery" newName="consulo.application.util.query.InstanceofQuery" type="class" />
   <entry oldName="com.intellij.util.IntSLRUCache" newName="consulo.ide.impl.idea.util.IntSLRUCache" type="class" />
   <entry oldName="com.intellij.util.JBHiDPIScaledImage" newName="consulo.ui.ex.awt.internal.JBHiDPIScaledImage" type="class" />
@@ -9779,8 +9779,8 @@
   <entry oldName="com.intellij.util.NotNullFunction" newName="consulo.ide.impl.idea.util.NotNullFunction" type="class" />
   <entry oldName="com.intellij.util.NotNullProducer" newName="consulo.ide.impl.idea.util.NotNullProducer" type="class" />
   <entry oldName="com.intellij.util.NullableConstantFunction" newName="consulo.ide.impl.idea.util.NullableConstantFunction" type="class" />
-  <entry oldName="com.intellij.util.NullableConsumer" newName="consulo.ide.impl.idea.util.NullableConsumer" type="class" />
-  <entry oldName="com.intellij.util.NullableFunction" newName="consulo.ide.impl.idea.util.NullableFunction" type="class" />
+  <entry oldName="com.intellij.util.NullableConsumer" newName="java.util.function.Consumer" type="class" />
+  <entry oldName="com.intellij.util.NullableFunction" newName="java.util.function.Function" type="class" />
   <entry oldName="com.intellij.util.ObjectUtil" newName="consulo.util.lang.ObjectUtil" type="class" />
   <entry oldName="com.intellij.util.ObjectUtils" newName="consulo.ide.impl.idea.util.ObjectUtils" type="class" />
   <entry oldName="com.intellij.util.OpenSourceUtil" newName="consulo.ui.ex.OpenSourceUtil" type="class" />
