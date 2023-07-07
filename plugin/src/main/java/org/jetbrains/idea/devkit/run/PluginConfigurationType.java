@@ -16,15 +16,15 @@
 package org.jetbrains.idea.devkit.run;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.run.ConsuloRunConfiguration;
-import consulo.execution.configuration.ConfigurationFactoryEx;
+import consulo.execution.configuration.ConfigurationFactory;
 import consulo.execution.configuration.ConfigurationTypeBase;
 import consulo.execution.configuration.RunConfiguration;
 import consulo.module.extension.ModuleExtensionHelper;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
-import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 
@@ -39,13 +39,13 @@ public class PluginConfigurationType extends ConfigurationTypeBase {
 
   public PluginConfigurationType() {
     super("#org.jetbrains.idea.devkit.run.PluginConfigurationType",
-          DevKitBundle.message("run.configuration.title"),
-          DevKitBundle.message("run.configuration.type.description"),
+          DevKitLocalize.runConfigurationTitle(),
+          DevKitLocalize.runConfigurationTypeDescription(),
           PlatformIconGroup.icon16_sandbox());
-    addFactory(new ConfigurationFactoryEx(this) {
+    addFactory(new ConfigurationFactory(this) {
       @Override
       public RunConfiguration createTemplateConfiguration(Project project) {
-        final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName());
+        final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName().get());
 
         if (runConfiguration.VM_PARAMETERS == null) {
           runConfiguration.VM_PARAMETERS = getVmParameters();

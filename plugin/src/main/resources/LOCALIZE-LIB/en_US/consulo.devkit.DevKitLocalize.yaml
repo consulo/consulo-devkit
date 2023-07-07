@@ -1,0 +1,288 @@
+plugin.descriptor:
+  text: Consulo Plugin Descriptor
+deployment.title:
+  text: Plugin Deployment
+deployment.cleanup:
+  text: Clean up {0} directory
+deployment.directory.location:
+  text: Select {0} Directory Location
+deployment.view.select:
+  text: Select {0}
+manifest.settings:
+  text: Manifest Settings
+manifest.selection:
+  text: Selected {0} will be included in resulting distribution
+manifest.use.user.defined:
+  text: 'Use user manifest:'
+deployment.view.delete:
+  text: Delete {0}?
+deployment.view.meta.inf.label:
+  text: Path to {0}
+suggest.to.delete:
+  text: Do you want to delete ''{0}''?
+vm.parameters:
+  text: '&VM Options'
+program.parameters:
+  text: '&Program Arguments'
+select.plugin.modules.title:
+  text: Select modules
+select.plugin.modules.description:
+  text: Select modules to be prepared for deployment
+prepare.for.deployment.common:
+  text: Preparing For Deployment
+prepare.for.deployment:
+  text: Prepare Plugin Module ''{0}'' For Deployment
+prepare.for.deployment.all:
+  text: Prepare All Plugin Modules For Deployment
+saved.message.common:
+  text: '{0} will be saved in selected directory'
+saved.message:
+  text: '{0, choice, 1#Zip|2#Jar} for module ''''{1}'''' was saved to {2}'
+success.deployment.message:
+  text: Plugin Module ''{0}'' Successfully Prepared For Deployment
+success.deployment.message.all:
+  text: All Plugins Successfully Prepared For Deployment
+sdk.title:
+  text: Consulo Plugin SDK
+sandbox.specification:
+  text: Please configure the sandbox
+sandbox.home:
+  text: Sandbox Home
+sandbox.home.label:
+  text: 'Sandbox Home:'
+sandbox.no.configured:
+  text: No sandbox specified for idea jdk
+sandbox.purpose:
+  text: Browse folder to put config, system and plugins for target IDEA
+error.occurred:
+  text: Error Occurred
+jdk.no.specified:
+  text: No jdk specified for plugin module ''{0}''
+jdk.type.incorrect:
+  text: Wrong jdk type for plugin module ''{0}''.
+jdk.type.incorrect.common:
+  text: Wrong jdk type for plugin module
+incorrect.dependency.non.plugin.module:
+  text: The non-plugin module ''{0}'' cannot depend on plugin module ''{1}''.
+incorrect.dependency.not.declared:
+  text: The plugin module ''{0}'' doesn''t declare the dependency on ''{1}'' in its plugin.xml.
+error.file.not.found:
+  text: File not found
+error.file.not.found.message:
+  text: File ''{0}'' not found
+error.no.plugin.xml:
+  text: No plugin.xml file found
+error.plugin.xml.readonly:
+  text: The plugin.xml file is read-only
+run.configuration.classpath.from.module.choose:
+  text: 'Use Classpath and JDK from Module:'
+run.configuration.no.java.sdk:
+  text: No Java Sdk
+run.configuration.no.consulo.sdk:
+  text: No Consulo Sdk
+run.configuration.no.plugin.artifact:
+  text: No Plugin Artifact
+run.configuration.title:
+  text: Consulo In Sandbox
+test.run.configuration.title:
+  text: Consulo In Sandbox (Test)
+run.configuration.type.description:
+  text: Plugin Sandbox Environment
+idea.log.tab.title:
+  text: Consulo LOG
+info.message:
+  text: Info
+create.smth:
+  text: Create {0}
+show.idea.log:
+  text: '&Show consulo.log'
+presentable.plugin.module.name:
+  text: Plugin Module ''{0}''
+action.MakeJarAction.text:
+  text: Prepare To Deploy
+action.MakeAllJarsAction.text:
+  text: Prepare All Plugins To Deploy
+dont.add.idea.libs.to.classpath:
+  text: IDEA-related libraries ({0}) must not be added to the module classpath. Please add them to the IDEA-JDK instead.
+new.action.id:
+  text: '&Action ID:'
+new.action.description:
+  text: '&Description:'
+new.action.class.name:
+  text: '&Class Name:'
+new.action.text:
+  text: '&Name:'
+new.action.add.to.group:
+  text: Add to Group
+new.action.group.actions:
+  text: 'Act&ions:'
+new.action.group.anchor:
+  text: 'Anchor:'
+new.action.group.anchor.first:
+  text: '&First'
+new.action.group.anchor.last:
+  text: '&Last'
+new.action.group.anchor.before:
+  text: '&Before'
+new.action.group.anchor.after:
+  text: Af&ter
+new.action.group.groups:
+  text: '&Groups:'
+new.action.keyboard.shortcuts:
+  text: Keyboard Shortcuts
+new.action.keyboard.first:
+  text: 'First:'
+new.action.keyboard.second:
+  text: 'Second:'
+new.action.keyboard.clear:
+  text: X
+new.action.keyboard.clear.tooltip:
+  text: Clear shortcut
+command.implement.externalizable:
+  text: Implement Externalizable
+new.menu.action.text:
+  text: Action
+new.menu.action.description:
+  text: Create New Action
+new.action.error:
+  text: Cannot create action
+new.action.command:
+  text: Create Action
+new.action.action.name:
+  text: 'Creating new action: {0}.{1}'
+new.action.dialog.title:
+  text: New Action
+new.menu.application.component.text:
+  text: Application Component
+new.menu.application.component.description:
+  text: Create New Application Component
+new.application.component.error:
+  text: Cannot create application component
+new.application.component.command:
+  text: Create Application Component
+new.application.component.prompt.title:
+  text: New Application Component
+new.application.component.prompt:
+  text: 'Enter new application component name:'
+new.application.component.action.name:
+  text: 'Creating new application component: {0}.{1}'
+new.menu.project.component.text:
+  text: Project Component
+new.menu.project.component.description:
+  text: Create New Project Component
+new.project.component.error:
+  text: Cannot create project component
+new.project.component.command:
+  text: Create Project Component
+new.project.component.prompt.title:
+  text: New Project Component
+new.project.component.prompt:
+  text: 'Enter new project component name:'
+new.project.component.action.name:
+  text: 'Creating new project component: {0}.{1}'
+select.plugin.modules.to.patch:
+  text: Select Plugin Modules to Patch
+keyword.extend:
+  text: extend
+keyword.implement:
+  text: implement
+class.action:
+  text: action
+class.interface:
+  text: interface
+class.implementation:
+  text: implementation
+inspections.group.name:
+  text: Consulo Plugin DevKit
+inspections.registration.problems.name:
+  text: Component type mismatch
+inspections.registration.problems.option.check.plugin.xml:
+  text: Check Plugin Descriptor (plugin.xml)
+inspections.registration.problems.option.check.java.actions:
+  text: Check Java Actions
+inspections.registration.problems.option.check.java.code:
+  text: Check Java Code
+inspections.registration.problems.quickfix.read.only:
+  text: Class ''{0}'' is read-only
+inspections.registration.problems.quickfix.make.public:
+  text: Make {0} public
+inspections.registration.problems.quickfix.create.constructor:
+  text: Create no-argument constructor
+inspections.registration.problems.incompatible.message:
+  text: According to its registration in plugin.xml, the class should {0} ''{1}''
+inspections.registration.problems.abstract:
+  text: Plugin component class must not be abstract
+inspections.registration.problems.missing.noarg.ctor:
+  text: Action class must have a no-argument constructor
+inspections.registration.problems.missing.implementation.class:
+  text: Missing implementation-class
+inspections.registration.problems.cannot.resolve.class:
+  text: Cannot resolve {0} class
+inspections.registration.problems.component.should.implement:
+  text: Component class must implement ''{0}''
+inspections.registration.problems.component.incompatible.interface:
+  text: Component class is not assignable to its interface-class ''{0}''
+inspections.registration.problems.component.duplicate.interface:
+  text: Multiple components with the same interface-class are not allowed
+inspections.registration.problems.action.incompatible.class:
+  text: Action class must extend ''{0}''
+inspections.component.not.registered.name:
+  text: Component/Action not registered
+inspections.component.not.registered.message:
+  text: '{0} is not registered in plugin.xml'
+inspections.component.not.registered.option.check.actions:
+  text: Check Actions
+inspections.component.not.registered.option.ignore.non.public:
+  text: Ignore non-public classes
+inspections.component.not.registered.quickfix.family:
+  text: Register Component
+inspections.component.not.registered.quickfix.name:
+  text: Register {0}
+inspections.component.not.registered.quickfix.error:
+  text: Cannot Register {0}
+inspections.annotation.0.is.required.at.owner.or.app.run:
+  text: Annotation @Required{0}Action is required at owner or run code inside ApplicationManager.getApplication().run{0}Action(...)
+inspections.annotation.0.is.required.at.owner.or.app.run.dispath:
+  text: Annotation @RequiredRequiredDispatchThread is required at owner or run code inside UIUtil.invokeLaterIfNeeded(...)
+inspections.annotation.0.is.required.at.owner.or.app.run.ui:
+  text: Annotation @RequiredUIAcess is required at owner or run code inside UIAccess.give(...)
+InspectionUseGrayColor:
+  text: Use Gray
+ant.build.jar.comment:
+  text: Build archive for plugin ''{0}''
+ant.build.jar.description:
+  text: Build plugin archive for module ''{0}''
+project.title:
+  text: Plugin Project
+no.java.sdk.for.idea.sdk.found:
+  text: No Java SDK of appropriate version found. In addition to the IDEA Plugin SDK, you need to define a JDK with the same Java version ({0}).
+no.idea.sdk.version.found:
+  text: Failed to detect JDK version required for IDEA Plugin SDK.
+group.PluginDeployActions.text:
+  text: Plugin Deployment Actions
+error.cannot.resolve.plugin:
+  text: Cannot resolve plugin {0}
+create.description.file:
+  text: Create Description File
+select.target.location.of.description:
+  text: Select target location of {0}
+copy.artifacts.before.run.description.empty:
+  text: Copy Artifacts
+copy.artifacts.before.run.description.single:
+  text: Copy ''{0}'' artifact
+copy.artifacts.before.run.description.multiple:
+  text: Copy {0} artifacts
+action.DownloadDependencies.text:
+  text: Download/Update Dependencies...
+label.program.parameters:
+  text: 'Program Parameters:'
+label.vm.parameters:
+  text: 'VM Parameters:'
+label.plugin.artifact:
+  text: 'Plugin Artifact:'
+label.consulo.sdk:
+  text: 'Consulo SDK:'
+label.java.sdk:
+  text: 'Java SDK:'
+alternative.consulo.sdk:
+  text: 'Alt Consulo SDK:'

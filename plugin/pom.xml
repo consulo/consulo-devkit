@@ -63,6 +63,14 @@
         </configuration>
         <executions>
           <execution>
+            <id>generate</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate-localize</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>package</id>
             <phase>package</phase>
             <goals>
               <goal>workspace</goal>
