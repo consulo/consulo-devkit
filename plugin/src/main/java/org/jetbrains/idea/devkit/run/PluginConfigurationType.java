@@ -43,6 +43,12 @@ public class PluginConfigurationType extends ConfigurationTypeBase {
           DevKitLocalize.runConfigurationTypeDescription(),
           PlatformIconGroup.icon16_sandbox());
     addFactory(new ConfigurationFactory(this) {
+      @Nonnull
+      @Override
+      public String getId() {
+        return "Consulo In Sandbox";
+      }
+
       @Override
       public RunConfiguration createTemplateConfiguration(Project project) {
         final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName().get());
