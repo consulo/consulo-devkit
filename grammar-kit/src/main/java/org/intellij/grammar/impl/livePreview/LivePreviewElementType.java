@@ -37,12 +37,6 @@ public class LivePreviewElementType extends IElementType {
     super(debugName, language, false);
   }
 
-  @Nonnull
-  @Override
-  public LivePreviewLanguage getLanguage() {
-    return (LivePreviewLanguage)super.getLanguage();
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -84,7 +78,7 @@ public class LivePreviewElementType extends IElementType {
 
     @Nullable
     public BnfRule getRule(Project project) {
-      BnfFile file = getLanguage().getGrammar(project);
+      BnfFile file = ((LivePreviewLanguage)getLanguage()).getGrammar(project);
       return file != null ? file.getRule(ruleName) : null;
     }
 
