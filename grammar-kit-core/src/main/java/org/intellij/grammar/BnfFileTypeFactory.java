@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.intellij.grammar.impl;
+package org.intellij.grammar;
 
 import consulo.annotation.component.ExtensionImpl;
 import consulo.virtualFileSystem.fileType.FileTypeConsumer;
 import consulo.virtualFileSystem.fileType.FileTypeFactory;
-import org.intellij.grammar.BnfFileType;
-import org.intellij.grammar.impl.livePreview.LivePreviewFileType;
 
 import javax.annotation.Nonnull;
 
@@ -34,6 +32,5 @@ public class BnfFileTypeFactory extends FileTypeFactory {
   @Override
   public void createFileTypes(@Nonnull FileTypeConsumer fileTypeConsumer) {
     fileTypeConsumer.consume(BnfFileType.INSTANCE);
-    fileTypeConsumer.consume(LivePreviewFileType.INSTANCE);
   }
 }

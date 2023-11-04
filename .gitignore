@@ -1,4 +1,5 @@
 /.consulo
 !/.consulo/codeStyleSettings.xml
 /out
+/plugin/sandbox
 target/
