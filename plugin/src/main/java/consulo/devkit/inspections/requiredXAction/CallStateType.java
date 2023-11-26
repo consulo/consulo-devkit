@@ -17,6 +17,7 @@
 package consulo.devkit.inspections.requiredXAction;
 
 import com.intellij.java.language.codeInsight.AnnotationUtil;
+import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiMethod;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.access.RequiredWriteAction;
@@ -24,6 +25,9 @@ import consulo.application.Application;
 import consulo.application.ReadAction;
 import consulo.application.WriteAction;
 import consulo.language.editor.WriteCommandAction;
+import consulo.language.psi.PsiElement;
+import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.module.Module;
 import consulo.ui.UIAccess;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.UIUtil;
@@ -44,8 +48,23 @@ public enum CallStateType {
     new AcceptableMethodCallCheck(ReadAction.class, "compute")
   }) {
     @Override
-    public boolean isAcceptableActionType(@Nonnull CallStateType type) {
-      return type == READ || type == DISPATCH_THREAD || type == UI_ACCESS || type == WRITE;
+    @RequiredReadAction
+    public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
+      if (type == READ) return true;
+      // in new data lock model ui thread not provide read lock
+      if (type == UI_ACCESS) return !isNewDataLockModel(context);
+      if (type == WRITE) return true;
+      return false;
+    }
+
+    @RequiredReadAction
+    private boolean isNewDataLockModel(PsiElement context) {
+      Module module = context.getModule();
+      if (module == null) {
+        return false;
+      }
+      return JavaPsiFacade.getInstance(context.getProject())
+                          .findClass("consulo.application.concurrent.DataLock", GlobalSearchScope.moduleWithDependenciesScope(module)) != null;
     }
   },
   WRITE(RequiredWriteAction.class.getName(), new AcceptableMethodCallCheck[]{
@@ -54,15 +73,11 @@ public enum CallStateType {
     new AcceptableMethodCallCheck(WriteAction.class, "compute"),
     new AcceptableMethodCallCheck(WriteCommandAction.class, "runWriteCommandAction")
   }),
-  // replacement for DISPATCH_THREAD
-  UI_ACCESS(RequiredUIAccess.class.getName(), new AcceptableMethodCallCheck(UIAccess.class.getName(), "give")) {
-    @Override
-    public boolean isAcceptableActionType(@Nonnull CallStateType type) {
-      // write actions required call from ui thread, and it inherit ui state
-      return type == DISPATCH_THREAD || type == WRITE || type == UI_ACCESS;
-    }
-  },
-  DISPATCH_THREAD(RequiredUIAccess.class.getName(), new AcceptableMethodCallCheck[]{
+  UI_ACCESS(RequiredUIAccess.class.getName(), new AcceptableMethodCallCheck[]{
+    new AcceptableMethodCallCheck(UIAccess.class.getName(), "give"),
+    new AcceptableMethodCallCheck(UIAccess.class.getName(), "giveIfNeed"),
+    new AcceptableMethodCallCheck(UIAccess.class.getName(), "giveAndWait"),
+    new AcceptableMethodCallCheck(UIAccess.class.getName(), "giveAndWaitIfNeed"),
     new AcceptableMethodCallCheck(Application.class, "invokeLater"),
     new AcceptableMethodCallCheck(Application.class, "invokeAndWait"),
     new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),
@@ -71,9 +86,9 @@ public enum CallStateType {
     new AcceptableMethodCallCheck(SwingUtilities.class, "invokeLater")
   }) {
     @Override
-    public boolean isAcceptableActionType(@Nonnull CallStateType type) {
+    public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
       // write actions required call from dispatch thread, and it inherit dispatch state
-      return type == DISPATCH_THREAD || type == WRITE || type == UI_ACCESS;
+      return type == UI_ACCESS || type == WRITE;
     }
   };
 
@@ -95,7 +110,7 @@ public enum CallStateType {
         continue;
       }
 
-      if (AnnotationUtil.isAnnotated(method, actionClass, false)) {
+      if (AnnotationUtil.isAnnotated(method, actionClass, 0)) {
         return actionType;
       }
     }
@@ -128,7 +143,7 @@ public enum CallStateType {
     return NONE;
   }
 
-  public boolean isAcceptableActionType(@Nonnull CallStateType type) {
+  public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
     return type == this;
   }
 }

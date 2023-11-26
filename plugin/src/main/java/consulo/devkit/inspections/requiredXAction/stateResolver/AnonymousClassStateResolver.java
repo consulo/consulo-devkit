@@ -43,7 +43,7 @@ public class AnonymousClassStateResolver extends StateResolver {
 
     // method annotated by annotation
     CallStateType callMethodActionType = CallStateType.findActionType(callMethod);
-    if (actionType.isAcceptableActionType(callMethodActionType)) {
+    if (actionType.isAcceptableActionType(callMethodActionType, expression)) {
       return true;
     }
 

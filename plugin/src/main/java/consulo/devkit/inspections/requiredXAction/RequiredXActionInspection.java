@@ -98,11 +98,6 @@ public class RequiredXActionInspection extends InternalInspection {
           text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run",
                                       StringUtil.capitalize(type.name().toLowerCase()));
           break;
-        case DISPATCH_THREAD:
-          text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.dispath",
-                                      StringUtil.capitalize(type.name().toLowerCase()));
-          quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(RequiredUIAccess.class.getName())};
-          break;
         case UI_ACCESS:
           text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.ui",
                                       StringUtil.capitalize(type.name().toLowerCase()));

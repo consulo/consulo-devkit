@@ -76,6 +76,10 @@
       </action>
     </group>
 
+    <action id="grammar.Generate" class="org.intellij.grammar.impl.actions.GenerateAction" text="Generate Parser Code">
+      <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
+    </action>
+    
     <action id="grammar.Generate.ParserUtil" class="org.intellij.grammar.impl.actions.BnfGenerateParserUtilAction"
             text="Generate Parser Util">
       <add-to-group group-id="grammar.file.group" anchor="after" relative-to-action="grammar.Generate"/>

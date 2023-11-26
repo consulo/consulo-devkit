@@ -99,7 +99,7 @@ public abstract class StateResolver {
 
   protected static boolean acceptActionTypeFromCall(@Nonnull PsiExpressionList expressionList, @Nonnull CallStateType actionType) {
     for (CallStateType type : CallStateType.values()) {
-      if (actionType.isAcceptableActionType(type)) {
+      if (actionType.isAcceptableActionType(type, expressionList)) {
         PsiElement parent = expressionList.getParent();
 
         for (AcceptableMethodCallCheck acceptableMethodCallCheck : type.getAcceptableMethodCallChecks()) {
@@ -163,13 +163,13 @@ public abstract class StateResolver {
           HierarchicalMethodSignature signature = signatureList.get(0);
 
           for (CallStateType callStateType : CallStateType.values()) {
-            if (actionType.isAcceptableActionType(callStateType)) {
+            if (actionType.isAcceptableActionType(callStateType, variable)) {
               // if parameter of method is annotated - or annotated lambda abstract method
               if (AnnotationUtil.isAnnotated(variable,
                                              callStateType.getActionClass(),
-                                             false) || AnnotationUtil.isAnnotated(signature.getMethod(),
-                                                                                  callStateType.getActionClass(),
-                                                                                  false)) {
+                                             0) || AnnotationUtil.isAnnotated(signature.getMethod(),
+                                                                              callStateType.getActionClass(),
+                                                                              0)) {
                 return true;
               }
             }
