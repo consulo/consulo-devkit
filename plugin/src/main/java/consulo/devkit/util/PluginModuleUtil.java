@@ -139,7 +139,7 @@ public class PluginModuleUtil {
   @RequiredReadAction
   public static boolean isConsuloOrPluginProject(@Nonnull PsiElement element) {
     return LanguageCachedValueUtil.getCachedValue(element, () -> {
-      Module module = ModuleUtilCore.findModuleForPsiElement(element);
+      Module module = element.getModule();
       return CachedValueProvider.Result.create(isConsuloOrPluginProject(element.getProject(), module), PsiModificationTracker.MODIFICATION_COUNT);
     });
   }
