@@ -31,25 +31,20 @@ import consulo.ui.ex.awt.TextFieldWithBrowseButton;
 import consulo.util.io.FileUtil;
 import consulo.util.lang.StringUtil;
 import org.jetbrains.idea.devkit.DevKitBundle;
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConfigurationBase> extends SettingsEditor<T> {
   private SdkComboBox myJavaSdkComboBox;
-  private SdkComboBox myConsuloSdkComboBox;
   private RawCommandLineEditor myProgramParameters;
   private RawCommandLineEditor myVMParameters;
 
   private JPanel myRoot;
-  private JCheckBox myAlternativeConsuloSdkCheckBox;
   private JCheckBox myEnableJava9Modules;
   private TextFieldWithBrowseButton myPluginsHomePath;
-  private TextFieldWithBrowseButton myAltConsuloSdkTextField;
+  private TextFieldWithBrowseButton myConsuloSdkTextField;
 
   private final Project myProject;
 
@@ -71,24 +66,11 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
     myJavaSdkComboBox = new SdkComboBox(projectSdksModel, sdkTypeId -> sdkTypeId instanceof JavaSdk, false);
     builder.addLabeledComponent("Java SDK", myJavaSdkComboBox);
 
-    myConsuloSdkComboBox = new SdkComboBox(projectSdksModel, sdkTypeId -> sdkTypeId instanceof ConsuloSdkType, true);
-    builder.addLabeledComponent("Consulo SDK", myConsuloSdkComboBox);
-
-    myAlternativeConsuloSdkCheckBox = new JBCheckBox("Alt Consulo SDK:");
-    myAlternativeConsuloSdkCheckBox.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
-        myAltConsuloSdkTextField.setEditable(myAlternativeConsuloSdkCheckBox.isSelected());
-        myConsuloSdkComboBox.setEnabled(!myAlternativeConsuloSdkCheckBox.isSelected());
-      }
-    });
-    builder.addComponent(myAlternativeConsuloSdkCheckBox);
-
-    myAltConsuloSdkTextField = new TextFieldWithBrowseButton();
-    myAltConsuloSdkTextField.addBrowseFolderListener("Select SDK", "Select alternative consulo sdk for run", myProject,
+    myConsuloSdkTextField = new TextFieldWithBrowseButton();
+    myConsuloSdkTextField.addBrowseFolderListener("Select SDK", "Select alternative consulo sdk for run", myProject,
                                                      FileChooserDescriptorFactory.createSingleFolderDescriptor());
-    myAltConsuloSdkTextField.setEditable(myAlternativeConsuloSdkCheckBox.isSelected());
-    builder.addComponent(myAltConsuloSdkTextField);
+    myConsuloSdkTextField.setEditable(true);
+    builder.addLabeledComponent("Consulo SDK", myConsuloSdkTextField);
 
 
     myPluginsHomePath = new TextFieldWithBrowseButton();
@@ -112,10 +94,9 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
   @Override
   public void resetEditorFrom(T prc) {
     myVMParameters.setText(prc.VM_PARAMETERS);
-    myAlternativeConsuloSdkCheckBox.setSelected(prc.USE_ALT_CONSULO_SDK);
     myEnableJava9Modules.setSelected(prc.ENABLED_JAVA9_MODULES);
     if (prc.ALT_CONSULO_SDK_PATH != null) {
-      myAltConsuloSdkTextField.setText(FileUtil.toSystemDependentName(prc.ALT_CONSULO_SDK_PATH));
+      myConsuloSdkTextField.setText(FileUtil.toSystemDependentName(prc.ALT_CONSULO_SDK_PATH));
     }
 
     if (prc.PLUGINS_HOME_PATH != null) {
@@ -127,20 +108,17 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
     myProgramParameters.setDialogCaption(DevKitBundle.message("label.program.parameters"));
 
     myJavaSdkComboBox.setSelectedSdk(prc.getJavaSdkName());
-    myConsuloSdkComboBox.setSelectedSdk(prc.getConsuloSdkName());
   }
 
   @Override
   public void applyEditorTo(T prc) throws ConfigurationException {
     prc.setJavaSdkName(myJavaSdkComboBox.getSelectedSdkName());
-    prc.setConsuloSdkName(myConsuloSdkComboBox.getSelectedSdkName());
     prc.ENABLED_JAVA9_MODULES = myEnableJava9Modules.isSelected();
 
     prc.VM_PARAMETERS = myVMParameters.getText();
     prc.PROGRAM_PARAMETERS = myProgramParameters.getText();
     prc.PLUGINS_HOME_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myPluginsHomePath.getText()));
-    prc.ALT_CONSULO_SDK_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myAltConsuloSdkTextField.getText()));
-    prc.USE_ALT_CONSULO_SDK = myAlternativeConsuloSdkCheckBox.isSelected();
+    prc.ALT_CONSULO_SDK_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myConsuloSdkTextField.getText()));
   }
 
   @Override

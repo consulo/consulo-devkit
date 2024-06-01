@@ -16,10 +16,8 @@
 
 package consulo.devkit.module.extension;
 
-import consulo.content.bundle.SdkType;
 import consulo.module.content.layer.ModuleRootLayer;
-import consulo.module.content.layer.extension.ModuleExtensionWithSdkBase;
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+import consulo.module.content.layer.extension.ModuleExtensionBase;
 
 import javax.annotation.Nonnull;
 
@@ -27,14 +25,10 @@ import javax.annotation.Nonnull;
  * @author VISTALL
  * @since 1:58/23.05.13
  */
-public class PluginModuleExtension extends ModuleExtensionWithSdkBase<PluginModuleExtension> {
-  public PluginModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module) {
-    super(id, module);
-  }
-
-  @Nonnull
-  @Override
-  public Class<? extends SdkType> getSdkTypeClass() {
-    return ConsuloSdkType.class;
-  }
+public class PluginModuleExtension extends ModuleExtensionBase<PluginModuleExtension>
+{
+	public PluginModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module)
+	{
+		super(id, module);
+	}
 }

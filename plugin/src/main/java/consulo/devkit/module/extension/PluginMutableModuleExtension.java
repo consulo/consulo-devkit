@@ -16,15 +16,11 @@
 
 package consulo.devkit.module.extension;
 
-import consulo.content.bundle.Sdk;
 import consulo.disposer.Disposable;
 import consulo.module.content.layer.ModuleRootLayer;
-import consulo.module.extension.MutableModuleExtensionWithSdk;
-import consulo.module.extension.MutableModuleInheritableNamedPointer;
-import consulo.module.ui.extension.ModuleExtensionBundleBoxBuilder;
+import consulo.module.extension.MutableModuleExtension;
 import consulo.ui.Component;
 import consulo.ui.annotation.RequiredUIAccess;
-import consulo.ui.layout.VerticalLayout;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,33 +29,30 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 1:58/23.05.13
  */
-public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtensionWithSdk<PluginModuleExtension> {
-  public PluginMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module) {
-    super(id, module);
-  }
+public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtension<PluginModuleExtension>
+{
+	public PluginMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module)
+	{
+		super(id, module);
+	}
 
-  @RequiredUIAccess
-  @Nullable
-  @Override
-  public Component createConfigurationComponent(@Nonnull Disposable disposable, @Nonnull Runnable runnable) {
-    VerticalLayout layout = VerticalLayout.create();
-    layout.add(ModuleExtensionBundleBoxBuilder.createAndDefine(this, disposable, runnable).build());
-    return layout;
-  }
+	@RequiredUIAccess
+	@Nullable
+	@Override
+	public Component createConfigurationComponent(@Nonnull Disposable disposable, @Nonnull Runnable runnable)
+	{
+		return null;
+	}
 
-  @Override
-  public void setEnabled(boolean val) {
-    myIsEnabled = val;
-  }
+	@Override
+	public void setEnabled(boolean val)
+	{
+		myIsEnabled = val;
+	}
 
-  @Override
-  public boolean isModified(@Nonnull PluginModuleExtension pluginModuleExtension) {
-    return isModifiedImpl(pluginModuleExtension);
-  }
-
-  @Nonnull
-  @Override
-  public MutableModuleInheritableNamedPointer<Sdk> getInheritableSdk() {
-    return (MutableModuleInheritableNamedPointer<Sdk>)super.getInheritableSdk();
-  }
+	@Override
+	public boolean isModified(@Nonnull PluginModuleExtension pluginModuleExtension)
+	{
+		return isEnabled() != pluginModuleExtension.isEnabled();
+	}
 }
