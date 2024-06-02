@@ -16,7 +16,7 @@
 
 package consulo.devkit.run;
 
-import com.intellij.java.language.projectRoots.JavaSdk;
+import com.intellij.java.language.projectRoots.JavaSdkType;
 import consulo.configurable.ConfigurationException;
 import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.execution.ui.awt.RawCommandLineEditor;
@@ -63,7 +63,7 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
 
   protected void setupPanel(@Nonnull FormBuilder builder) {
     SettingsSdksModel projectSdksModel = ShowSettingsUtil.getInstance().getSdksModel();
-    myJavaSdkComboBox = new SdkComboBox(projectSdksModel, sdkTypeId -> sdkTypeId instanceof JavaSdk, false);
+    myJavaSdkComboBox = new SdkComboBox(projectSdksModel, it -> it instanceof JavaSdkType, false);
     builder.addLabeledComponent("Java SDK", myJavaSdkComboBox);
 
     myConsuloSdkTextField = new TextFieldWithBrowseButton();
