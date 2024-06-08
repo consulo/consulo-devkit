@@ -2,6 +2,7 @@ package consulo.devkit.localize.inspection;
 
 import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.java.language.psi.*;
+import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.java.language.psi.search.PsiShortNamesCache;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
@@ -178,15 +179,14 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       @Nonnull PsiElement endElement
 
     ) {
-      PsiClass psiClass = PsiTreeUtil.getParentOfType(expression, PsiClass.class);
-      if (psiClass == null) {
-        return;
-      }
-
       PsiExpression newExpression = JavaPsiFacade.getElementFactory(project)
         .createExpressionFromText(replacement, expression);
 
-      WriteAction.run(() -> expression.replace(newExpression));
+      WriteAction.run(() -> {
+        PsiElement newElement = expression.replace(newExpression);
+
+        JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+      });
     }
 
     @Nls
