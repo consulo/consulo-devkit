@@ -21,6 +21,7 @@ open module consulo.devkit {
   // TODO remove in future
   requires java.desktop;
   requires forms.rt;
+  requires java.compiler;
 
   exports consulo.devkit;
   exports consulo.devkit.action;
