@@ -14,7 +14,6 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.scope.GlobalSearchScope;
-import consulo.language.psi.util.PsiTreeUtil;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.StringUtil;
@@ -56,6 +55,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
   private static class BundleCallVisitor extends JavaElementVisitor {
     private static final String MESSAGE = "message";
+    @SuppressWarnings("deprecation")
     private static final String ABSTRACT_BUNDLE_CLASS_NAME = AbstractBundle.class.getName();
     private static final Pattern BUNDLE_SUFFIX_REGEX = Pattern.compile("^(.*?)Bundle$");
 
