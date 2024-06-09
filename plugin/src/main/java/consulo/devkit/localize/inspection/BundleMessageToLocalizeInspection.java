@@ -80,7 +80,11 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
         inspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(localizeClassName, localizeMethodName);
 
-        holder.registerProblem(expression, inspectionName.get(), new Fix(expression));
+        holder.registerProblem(
+          expression,
+          inspectionName.get(),
+          new TransformToLocalizeFix(expression, inspectionName, replacementCodeBlock)
+        );
       }
 
       @SuppressWarnings("RequiredXAction")
@@ -99,42 +103,51 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
         replacementCodeBlock = codeBlock.toString();
       }
+    }
+  }
 
-      private class Fix extends LocalQuickFixOnPsiElement {
-        protected Fix(@Nonnull PsiElement element) {
-          super(element);
-        }
+  private static class TransformToLocalizeFix extends LocalQuickFixOnPsiElement {
+    protected final LocalizeValue inspectionName;
+    protected final String replacementCodeBlock;
 
-        @Nonnull
-        @Override
-        public String getText() {
-          return inspectionName.get();
-        }
+    protected TransformToLocalizeFix(
+      @Nonnull PsiElement element,
+      LocalizeValue inspectionName,
+      String replacementCodeBlock
+    ) {
+      super(element);
+      this.inspectionName = inspectionName;
+      this.replacementCodeBlock = replacementCodeBlock;
+    }
 
-        @Override
-        public void invoke(
-          @Nonnull Project project,
-          @Nonnull PsiFile psiFile,
-          @Nonnull PsiElement expression,
-          @Nonnull PsiElement endElement
-        ) {
-          PsiExpression newExpression = JavaPsiFacade.getElementFactory(project)
-            .createExpressionFromText(replacementCodeBlock, expression);
+    @Nonnull
+    @Override
+    public String getText() {
+      return inspectionName.get();
+    }
 
-          WriteAction.run(() -> {
-            PsiElement newElement = expression.replace(newExpression);
+    @Override
+    public void invoke(
+      @Nonnull Project project,
+      @Nonnull PsiFile psiFile,
+      @Nonnull PsiElement expression,
+      @Nonnull PsiElement endElement
+    ) {
+      PsiExpression newExpression = JavaPsiFacade.getElementFactory(project)
+        .createExpressionFromText(replacementCodeBlock, expression);
 
-            JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-          });
-        }
+      WriteAction.run(() -> {
+        PsiElement newElement = expression.replace(newExpression);
 
-        @Nls
-        @Nonnull
-        @Override
-        public String getFamilyName() {
-          return "DevKit";
-        }
-      }
+        JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+      });
+    }
+
+    @Nls
+    @Nonnull
+    @Override
+    public String getFamilyName() {
+      return "DevKit";
     }
   }
 
