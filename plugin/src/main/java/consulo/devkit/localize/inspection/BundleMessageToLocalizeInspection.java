@@ -28,6 +28,10 @@ import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
  */
 @ExtensionImpl
 public class BundleMessageToLocalizeInspection extends InternalInspection {
+  protected static final String
+    BUNDLE_SUFFIX = "Bundle",
+    LOCALIZE_SUFFIX = "Localize",
+    MESSAGE_METHOD_NAME = "message";
 
   @Nonnull
   @Override
@@ -177,12 +181,12 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     @Override
     @SuppressWarnings("RequiredXAction")
     boolean isApplicable() {
-      if (!"message".equals(methodExpression.getReferenceName())) {
+      if (!MESSAGE_METHOD_NAME.equals(methodExpression.getReferenceName())) {
         return false;
       }
 
       PsiElement qualifier = methodExpression.getQualifier();
-      if (qualifier == null || !qualifier.getText().endsWith("Bundle")) {
+      if (qualifier == null || !qualifier.getText().endsWith(BUNDLE_SUFFIX)) {
         return false;
       }
 
@@ -234,7 +238,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       this.className = this.psiClass.getName();
 
       this.localizeClassName =
-        className.substring(0, className.length() - "Bundle".length()) + "Localize";
+        className.substring(0, className.length() - BUNDLE_SUFFIX.length()) + LOCALIZE_SUFFIX;
 
       PsiClass[] classes = PsiShortNamesCache.getInstance(project)
         .getClassesByName(localizeClassName, expression.getResolveScope());
