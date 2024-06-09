@@ -4,26 +4,23 @@ import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.java.language.psi.search.PsiShortNamesCache;
+import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.WriteAction;
 import consulo.component.util.localize.AbstractBundle;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
-import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
-
-import javax.lang.model.SourceVersion;
-import java.util.Arrays;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:nikolay@yurchenko.su">Nikolay Yurchenko</a>
@@ -54,11 +51,6 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
   }
 
   private static class BundleCallVisitor extends JavaElementVisitor {
-    private static final String MESSAGE = "message";
-    @SuppressWarnings("deprecation")
-    private static final String ABSTRACT_BUNDLE_CLASS_NAME = AbstractBundle.class.getName();
-    private static final Pattern BUNDLE_SUFFIX_REGEX = Pattern.compile("^(.*?)Bundle$");
-
     private final ProblemsHolder holder;
 
     private BundleCallVisitor(ProblemsHolder holder) {
@@ -68,77 +60,34 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     @Override
     @RequiredReadAction
     public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
-      BundleCallVisit bundleCallVisit = new BundleCallVisit(expression);
-
-      if (!bundleCallVisit.isApplicable()) {
-        return;
-      }
-
-      bundleCallVisit.registerProblem();
+      new TransformToLocalizeInspector(expression).registerProblem();
     }
 
-    @SuppressWarnings("RequiredXAction")
-    private class BundleCallVisit {
-      @Nonnull
-      private final PsiMethodCallExpression expression;
-      @Nonnull
-      private final PsiReferenceExpression methodExpression;
-      private final PsiElement method;
-      private final PsiClass psiClass;
-      @Nonnull
-      private final String className;
+    private class TransformToLocalizeInspector extends LocalizeClassExistsChecker {
+      protected String replacementCodeBlock;
+      protected LocalizeValue inspectionName;
 
-      public BundleCallVisit(@Nonnull PsiMethodCallExpression expression) {
-        this.expression = expression;
-        this.methodExpression = expression.getMethodExpression();
-        this.method = methodExpression.resolve();
-        PsiElement parent = (this.method == null) ? null : method.getParent();
-        this.psiClass = (parent instanceof PsiClass psiClass) ? psiClass : null;
-        this.className = StringUtil.notNullize(this.psiClass == null ? null : this.psiClass.getName());
-      }
-
-      public boolean isApplicable() {
-        return methodNameIsMessage() && classNameEndsWithBundle() && classExtendsAbstractBundle();
-      }
-
-      public boolean methodNameIsMessage() {
-        return MESSAGE.equals(methodExpression.getReferenceName());
-      }
-
-      public boolean classNameEndsWithBundle() {
-        return BUNDLE_SUFFIX_REGEX.matcher(className).matches();
-      }
-
-      public boolean classExtendsAbstractBundle() {
-        PsiReferenceList extendsList = psiClass == null ? null : psiClass.getExtendsList();
-        return extendsList != null
-          && Arrays.asList(extendsList.getReferenceElements()).stream()
-          .anyMatch(p -> ABSTRACT_BUNDLE_CLASS_NAME.equals(p.getQualifiedName()));
+      protected TransformToLocalizeInspector(@Nonnull PsiMethodCallExpression expression) {
+        super(expression);
       }
 
       public void registerProblem() {
-        String localizeClassName = BUNDLE_SUFFIX_REGEX.matcher(className).replaceAll("$1Localize");
-
-        Project project = expression.getProject();
-        PsiClass[] classes = PsiShortNamesCache.getInstance(project)
-          .getClassesByName(localizeClassName, GlobalSearchScope.projectScope(project));
-        if (classes.length != 1) {
+        if (!isApplicable()) {
           return;
         }
 
-        String localizeClassQualifiedName = classes[0].getQualifiedName();
+        initReplacementCodeBlock();
 
-        PsiExpression[] argExpressions = expression.getArgumentList().getExpressions();
-        if (argExpressions.length < 1) {
-          return;
-        }
+        inspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(localizeClassName, localizeMethodName);
 
-        String key = getString(argExpressions[0]);
-        String localizeMethodName = BundleKeyTransformer.toLocalizeMethodName(key);
+        holder.registerProblem(expression, inspectionName.get(), new Fix(expression));
+      }
 
+      @SuppressWarnings("RequiredXAction")
+      private void initReplacementCodeBlock() {
         StringBuilder codeBlock = new StringBuilder()
           .append(localizeClassQualifiedName)
-          .append(".").append(localizeMethodName).append('(');
+          .append('.').append(localizeMethodName).append('(');
 
         for (int i = 1, n = argExpressions.length; i < n; i++) {
           PsiExpression argExpression = argExpressions[i];
@@ -148,61 +97,148 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
         codeBlock.append(").get()");
 
-        holder.registerProblem(
-          expression,
-          LocalizeValue.localizeTODO("Replace with " + localizeClassQualifiedName + "." + localizeMethodName).get(),
-          new Fix(expression, codeBlock.toString())
-        );
+        replacementCodeBlock = codeBlock.toString();
+      }
+
+      private class Fix extends LocalQuickFixOnPsiElement {
+        protected Fix(@Nonnull PsiElement element) {
+          super(element);
+        }
+
+        @Nonnull
+        @Override
+        public String getText() {
+          return inspectionName.get();
+        }
+
+        @Override
+        public void invoke(
+          @Nonnull Project project,
+          @Nonnull PsiFile psiFile,
+          @Nonnull PsiElement expression,
+          @Nonnull PsiElement endElement
+        ) {
+          PsiExpression newExpression = JavaPsiFacade.getElementFactory(project)
+            .createExpressionFromText(replacementCodeBlock, expression);
+
+          WriteAction.run(() -> {
+            PsiElement newElement = expression.replace(newExpression);
+
+            JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+          });
+        }
+
+        @Nls
+        @Nonnull
+        @Override
+        public String getFamilyName() {
+          return "DevKit";
+        }
       }
     }
   }
 
-  private static class Fix extends LocalQuickFixOnPsiElement {
-    private final String replacement;
-
-    protected Fix(@Nonnull PsiElement element, String replacement) {
-      super(element);
-      this.replacement = replacement;
-    }
-
+  private abstract static class MethodCallExpressionChecker {
     @Nonnull
-    @Override
-    public String getText() {
-      return LocalizeValue.localizeTODO("Replace with XxxLocalize").get();
-    }
-
-    @Override
-    public void invoke(
-      @Nonnull Project project,
-      @Nonnull PsiFile psiFile,
-      @Nonnull PsiElement expression,
-      @Nonnull PsiElement endElement
-
-    ) {
-      PsiExpression newExpression = JavaPsiFacade.getElementFactory(project)
-        .createExpressionFromText(replacement, expression);
-
-      WriteAction.run(() -> {
-        PsiElement newElement = expression.replace(newExpression);
-
-        JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-      });
-    }
-
-    @Nls
+    protected final PsiMethodCallExpression expression;
     @Nonnull
+    protected final PsiReferenceExpression methodExpression;
+    @Nonnull
+    protected Project project;
+
+    protected MethodCallExpressionChecker(@Nonnull PsiMethodCallExpression expression) {
+      this.expression = expression;
+      this.methodExpression = expression.getMethodExpression();
+      this.project = expression.getProject();
+    }
+
+    abstract boolean isApplicable();
+  }
+
+  private static class CallsBundleMessageChecker extends MethodCallExpressionChecker {
+    protected PsiExpression[] argExpressions;
+
+    protected CallsBundleMessageChecker(@Nonnull PsiMethodCallExpression expression) {
+      super(expression);
+    }
+
     @Override
-    public String getFamilyName() {
-      return "DevKit";
+    @SuppressWarnings("RequiredXAction")
+    boolean isApplicable() {
+      if (!"message".equals(methodExpression.getReferenceName())) {
+        return false;
+      }
+
+      PsiElement qualifier = methodExpression.getQualifier();
+      if (qualifier == null || !qualifier.getText().endsWith("Bundle")) {
+        return false;
+      }
+
+      argExpressions = expression.getArgumentList().getExpressions();
+      return argExpressions.length >= 1;
     }
   }
 
-  private static interface BundleKeyTransformer {
-    public static String toLocalizeMethodName(String key) {
-      return normalizeName(capitalizeByDot(key));
+  private static class ClassExtendsAbstractBundleChecker extends CallsBundleMessageChecker {
+    @SuppressWarnings("deprecation")
+    private static final String ABSTRACT_BUNDLE_CLASS_NAME = AbstractBundle.class.getName();
+
+    protected PsiElement method;
+    protected PsiClass psiClass;
+
+    protected ClassExtendsAbstractBundleChecker(@Nonnull PsiMethodCallExpression expression) {
+      super(expression);
     }
 
-    private static String normalizeName(String text) {
+    @Override
+    @SuppressWarnings("RequiredXAction")
+    boolean isApplicable() {
+      if (!super.isApplicable()) {
+        return false;
+      }
+
+      this.method = methodExpression.resolve();
+      PsiElement parent = (this.method == null) ? null : method.getParent();
+      this.psiClass = (parent instanceof PsiClass psiClass) ? psiClass : null;
+
+      return psiClass != null && InheritanceUtil.isInheritor(psiClass, ABSTRACT_BUNDLE_CLASS_NAME);
+    }
+  }
+
+  private static class LocalizeClassExistsChecker extends ClassExtendsAbstractBundleChecker {
+    protected String className, localizeClassName, localizeClassQualifiedName, localizeMethodName;
+
+    protected LocalizeClassExistsChecker(@Nonnull PsiMethodCallExpression expression) {
+      super(expression);
+    }
+
+    @Override
+    @SuppressWarnings({"RequiredXAction", "ConstantConditions"})
+    boolean isApplicable() {
+      if (!super.isApplicable()) {
+        return false;
+      }
+
+      this.className = this.psiClass.getName();
+
+      this.localizeClassName =
+        className.substring(0, className.length() - "Bundle".length()) + "Localize";
+
+      PsiClass[] classes = PsiShortNamesCache.getInstance(project)
+        .getClassesByName(localizeClassName, expression.getResolveScope());
+      if (classes.length != 1) {
+        return false;
+      }
+
+      this.localizeClassQualifiedName = classes[0].getQualifiedName();
+
+      String key = getString(argExpressions[0]);
+      localizeMethodName = normalizeName(capitalizeByDot(key));
+
+      return true;
+    }
+
+    private String normalizeName(String text) {
       char c = text.charAt(0);
       if (c == '0') {
         return "zero" + text.substring(1, text.length());
@@ -216,11 +252,11 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       return escapeString(text);
     }
 
-    private static String escapeString(String name) {
-      return SourceVersion.isName(name) ? name : "_" + name;
+    private String escapeString(String name) {
+      return PsiNameHelper.getInstance(project).isIdentifier(name) ? name : "_" + name;
     }
 
-    private static String capitalizeByDot(String key) {
+    private String capitalizeByDot(String key) {
       String[] split = key.replace(" ", ".").split("\\.");
 
       StringBuilder builder = new StringBuilder();
