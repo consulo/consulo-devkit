@@ -36,7 +36,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
   @Nonnull
   @Override
   public String getDisplayName() {
-    return "XxxBundle.message() to XxxLocalize inspection";
+    return DevKitLocalize.inspectionsReplaceWithXxxlocalizeTitle().get();
   }
 
   @Nonnull
@@ -222,6 +222,11 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
   }
 
   private static class LocalizeClassExistsChecker extends ClassExtendsAbstractBundleChecker {
+    protected static final String
+      ZERO_PREFIX = "zero",
+      ONE_PREFIX = "one",
+      TWO_PREFIX = "two";
+
     protected String className, localizeClassName, localizeClassQualifiedName, localizeMethodName;
 
     protected LocalizeClassExistsChecker(@Nonnull PsiMethodCallExpression expression) {
@@ -257,13 +262,13 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     private String normalizeName(String text) {
       char c = text.charAt(0);
       if (c == '0') {
-        return "zero" + text.substring(1, text.length());
+        return ZERO_PREFIX + text.substring(1, text.length());
       }
       else if (c == '1') {
-        return "one" + text.substring(1, text.length());
+        return ONE_PREFIX + text.substring(1, text.length());
       }
       else if (c == '2') {
-        return "two" + text.substring(1, text.length());
+        return TWO_PREFIX + text.substring(1, text.length());
       }
       return escapeString(text);
     }
