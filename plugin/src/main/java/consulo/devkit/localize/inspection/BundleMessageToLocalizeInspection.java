@@ -67,13 +67,14 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     }
 
     private class TransformToLocalizeInspector extends LocalizeClassExistsChecker {
-      protected String replacementCodeBlock;
-      protected LocalizeValue inspectionName;
+      protected String myReplacementCodeBlock;
+      protected LocalizeValue myInspectionName;
 
       protected TransformToLocalizeInspector(@Nonnull PsiMethodCallExpression expression) {
         super(expression);
       }
 
+      @RequiredReadAction
       public void registerProblem() {
         if (!isApplicable()) {
           return;
@@ -81,37 +82,37 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
         initReplacementCodeBlock();
 
-        inspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(localizeClassName, localizeMethodName);
+        myInspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(myLocalizeClassName, myLocalizeMethodName);
 
         holder.registerProblem(
-          expression,
-          inspectionName.get(),
-          new TransformToLocalizeFix(expression, inspectionName, replacementCodeBlock)
+          myExpression,
+          myInspectionName.get(),
+          new TransformToLocalizeFix(myExpression, myInspectionName, myReplacementCodeBlock)
         );
       }
 
-      @SuppressWarnings("RequiredXAction")
+      @RequiredReadAction
       private void initReplacementCodeBlock() {
         StringBuilder codeBlock = new StringBuilder()
-          .append(localizeClassQualifiedName)
-          .append('.').append(localizeMethodName).append('(');
+          .append(myLocalizeClassQualifiedName)
+          .append('.').append(myLocalizeMethodName).append('(');
 
-        for (int i = 1, n = argExpressions.length; i < n; i++) {
-          PsiExpression argExpression = argExpressions[i];
+        for (int i = 1, n = myArgExpressions.length; i < n; i++) {
+          PsiExpression argExpression = myArgExpressions[i];
           if (i > 1) codeBlock.append(", ");
           codeBlock.append(argExpression.getText());
         }
 
         codeBlock.append(").get()");
 
-        replacementCodeBlock = codeBlock.toString();
+        myReplacementCodeBlock = codeBlock.toString();
       }
     }
   }
 
   private static class TransformToLocalizeFix extends LocalQuickFixOnPsiElement {
-    protected final LocalizeValue inspectionName;
-    protected final String replacementCodeBlock;
+    protected final LocalizeValue myInspectionName;
+    protected final String myReplacementCodeBlock;
 
     protected TransformToLocalizeFix(
       @Nonnull PsiElement element,
@@ -119,14 +120,14 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       String replacementCodeBlock
     ) {
       super(element);
-      this.inspectionName = inspectionName;
-      this.replacementCodeBlock = replacementCodeBlock;
+      myInspectionName = inspectionName;
+      myReplacementCodeBlock = replacementCodeBlock;
     }
 
     @Nonnull
     @Override
     public String getText() {
-      return inspectionName.get();
+      return myInspectionName.get();
     }
 
     @Override
@@ -137,7 +138,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       @Nonnull PsiElement endElement
     ) {
       PsiExpression newExpression = JavaPsiFacade.getElementFactory(project)
-        .createExpressionFromText(replacementCodeBlock, expression);
+        .createExpressionFromText(myReplacementCodeBlock, expression);
 
       WriteAction.run(() -> {
         PsiElement newElement = expression.replace(newExpression);
@@ -156,42 +157,39 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
   private abstract static class MethodCallExpressionChecker {
     @Nonnull
-    protected final PsiMethodCallExpression expression;
+    protected final PsiMethodCallExpression myExpression;
     @Nonnull
-    protected final PsiReferenceExpression methodExpression;
+    protected final PsiReferenceExpression myMethodExpression;
     @Nonnull
-    protected Project project;
+    protected Project myProject;
 
     protected MethodCallExpressionChecker(@Nonnull PsiMethodCallExpression expression) {
-      this.expression = expression;
-      this.methodExpression = expression.getMethodExpression();
-      this.project = expression.getProject();
+      myExpression = expression;
+      myMethodExpression = expression.getMethodExpression();
+      myProject = expression.getProject();
     }
 
     abstract boolean isApplicable();
   }
 
   private static class CallsBundleMessageChecker extends MethodCallExpressionChecker {
-    protected PsiExpression[] argExpressions;
-
     protected CallsBundleMessageChecker(@Nonnull PsiMethodCallExpression expression) {
       super(expression);
     }
 
     @Override
-    @SuppressWarnings("RequiredXAction")
+    @RequiredReadAction
     boolean isApplicable() {
-      if (!MESSAGE_METHOD_NAME.equals(methodExpression.getReferenceName())) {
+      if (!MESSAGE_METHOD_NAME.equals(myMethodExpression.getReferenceName())) {
         return false;
       }
 
-      PsiElement qualifier = methodExpression.getQualifier();
+      PsiElement qualifier = myMethodExpression.getQualifier();
       if (qualifier == null || !qualifier.getText().endsWith(BUNDLE_SUFFIX)) {
         return false;
       }
 
-      argExpressions = expression.getArgumentList().getExpressions();
-      return argExpressions.length >= 1;
+      return !myExpression.getArgumentList().isEmpty();
     }
   }
 
@@ -199,25 +197,25 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     @SuppressWarnings("deprecation")
     private static final String ABSTRACT_BUNDLE_CLASS_NAME = AbstractBundle.class.getName();
 
-    protected PsiElement method;
-    protected PsiClass psiClass;
+    protected PsiElement myMethod;
+    protected PsiClass myClass;
 
     protected ClassExtendsAbstractBundleChecker(@Nonnull PsiMethodCallExpression expression) {
       super(expression);
     }
 
     @Override
-    @SuppressWarnings("RequiredXAction")
+    @RequiredReadAction
     boolean isApplicable() {
       if (!super.isApplicable()) {
         return false;
       }
 
-      this.method = methodExpression.resolve();
-      PsiElement parent = (this.method == null) ? null : method.getParent();
-      this.psiClass = (parent instanceof PsiClass psiClass) ? psiClass : null;
+      myMethod = myMethodExpression.resolve();
+      PsiElement parent = (myMethod == null) ? null : myMethod.getParent();
+      myClass = (parent instanceof PsiClass psiClass) ? psiClass : null;
 
-      return psiClass != null && InheritanceUtil.isInheritor(psiClass, ABSTRACT_BUNDLE_CLASS_NAME);
+      return myClass != null && InheritanceUtil.isInheritor(myClass, ABSTRACT_BUNDLE_CLASS_NAME);
     }
   }
 
@@ -227,34 +225,43 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       ONE_PREFIX = "one",
       TWO_PREFIX = "two";
 
-    protected String className, localizeClassName, localizeClassQualifiedName, localizeMethodName;
+    protected String
+      myClassName,
+      myLocalizeClassName,
+      myLocalizeClassQualifiedName,
+      myLocalizeMethodName;
+
+    protected PsiExpression[] myArgExpressions;
 
     protected LocalizeClassExistsChecker(@Nonnull PsiMethodCallExpression expression) {
       super(expression);
     }
 
     @Override
-    @SuppressWarnings({"RequiredXAction", "ConstantConditions"})
+    @SuppressWarnings("ConstantConditions")
+    @RequiredReadAction
     boolean isApplicable() {
       if (!super.isApplicable()) {
         return false;
       }
 
-      this.className = this.psiClass.getName();
+      myClassName = this.myClass.getName();
 
-      this.localizeClassName =
-        className.substring(0, className.length() - BUNDLE_SUFFIX.length()) + LOCALIZE_SUFFIX;
+      myLocalizeClassName =
+        myClassName.substring(0, myClassName.length() - BUNDLE_SUFFIX.length()) + LOCALIZE_SUFFIX;
 
-      PsiClass[] classes = PsiShortNamesCache.getInstance(project)
-        .getClassesByName(localizeClassName, expression.getResolveScope());
+      PsiClass[] classes = PsiShortNamesCache.getInstance(myProject)
+        .getClassesByName(myLocalizeClassName, myExpression.getResolveScope());
       if (classes.length != 1) {
         return false;
       }
 
-      this.localizeClassQualifiedName = classes[0].getQualifiedName();
+      myLocalizeClassQualifiedName = classes[0].getQualifiedName();
 
-      String key = getString(argExpressions[0]);
-      localizeMethodName = normalizeName(capitalizeByDot(key));
+      myArgExpressions = myExpression.getArgumentList().getExpressions();
+
+      String key = getString(myArgExpressions[0]);
+      myLocalizeMethodName = normalizeName(capitalizeByDot(key));
 
       return true;
     }
@@ -274,7 +281,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     }
 
     private String escapeString(String name) {
-      return PsiNameHelper.getInstance(project).isIdentifier(name) ? name : "_" + name;
+      return PsiNameHelper.getInstance(myProject).isIdentifier(name) ? name : "_" + name;
     }
 
     private String capitalizeByDot(String key) {
