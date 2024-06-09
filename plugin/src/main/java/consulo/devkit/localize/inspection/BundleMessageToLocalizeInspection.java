@@ -28,7 +28,6 @@ import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
  */
 @ExtensionImpl
 public class BundleMessageToLocalizeInspection extends InternalInspection {
-  @SuppressWarnings("deprecation")
 
   @Nonnull
   @Override
