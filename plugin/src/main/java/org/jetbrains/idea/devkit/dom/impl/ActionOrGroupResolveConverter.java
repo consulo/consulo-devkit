@@ -17,7 +17,6 @@ package org.jetbrains.idea.devkit.dom.impl;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.application.util.CachedValueProvider;
-import consulo.application.util.function.Processor;
 import consulo.language.editor.completion.lookup.LookupElement;
 import consulo.language.editor.completion.lookup.LookupElementBuilder;
 import consulo.language.psi.PsiElement;
@@ -47,15 +46,12 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
   @Nonnull
   @Override
   public Collection<? extends ActionOrGroup> getVariants(ConvertContext context) {
-    final List<ActionOrGroup> variants = new ArrayList<ActionOrGroup>();
-    PairProcessor<String, ActionOrGroup> collectProcessor = new PairProcessor<String, ActionOrGroup>() {
-      @Override
-      public boolean process(String s, ActionOrGroup actionOrGroup) {
-        if (isRelevant(actionOrGroup)) {
-          variants.add(actionOrGroup);
-        }
-        return true;
+    final List<ActionOrGroup> variants = new ArrayList<>();
+    PairProcessor<String, ActionOrGroup> collectProcessor = (s, actionOrGroup) -> {
+      if (isRelevant(actionOrGroup)) {
+        variants.add(actionOrGroup);
       }
+      return true;
     };
     processActionOrGroup(context, collectProcessor);
     return variants;
@@ -69,15 +65,12 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
     }
 
     final ActionOrGroup[] result = {null};
-    PairProcessor<String, ActionOrGroup> findProcessor = new PairProcessor<String, ActionOrGroup>() {
-      @Override
-      public boolean process(String s, ActionOrGroup actionOrGroup) {
-        if (isRelevant(actionOrGroup) && Comparing.strEqual(value, s)) {
-          result[0] = actionOrGroup;
-          return false;
-        }
-        return true;
+    PairProcessor<String, ActionOrGroup> findProcessor = (s, actionOrGroup) -> {
+      if (isRelevant(actionOrGroup) && Comparing.strEqual(value, s)) {
+        result[0] = actionOrGroup;
+        return false;
       }
+      return true;
     };
     processActionOrGroup(context, findProcessor);
     return result[0];
@@ -159,13 +152,10 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
       return processPlugins(plugins, processor);
     }
 
-    return ModuleUtilCore.visitMeAndDependentModules(module, new Processor<Module>() {
-      @Override
-      public boolean process(Module module) {
-        final Collection<IdeaPlugin> dependenciesAndLibs =
-          IdeaPluginConverter.getPlugins(project, GlobalSearchScope.moduleRuntimeScope(module, false));
-        return processPlugins(dependenciesAndLibs, processor);
-      }
+    return ModuleUtilCore.visitMeAndDependentModules(module, module1 -> {
+      final Collection<IdeaPlugin> dependenciesAndLibs =
+        IdeaPluginConverter.getPlugins(project, GlobalSearchScope.moduleRuntimeScope(module1, false));
+      return processPlugins(dependenciesAndLibs, processor);
     });
   }
 
@@ -187,7 +177,7 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
       @Nullable
       @Override
       public Result<Map<String, ActionOrGroup>> compute() {
-        Map<String, ActionOrGroup> result = new HashMap<String, ActionOrGroup>();
+        Map<String, ActionOrGroup> result = new HashMap<>();
         for (Actions actions : plugin.getActions()) {
           collectRecursive(result, actions);
         }

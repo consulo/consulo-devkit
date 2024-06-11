@@ -74,10 +74,7 @@ public class DescriptorUtil {
   }
 
   public static boolean isPluginXml(PsiFile file) {
-    if (!(file instanceof XmlFile)) {
-      return false;
-    }
-    return getConsuloPlugin((XmlFile)file) != null;
+    return file instanceof XmlFile && getConsuloPlugin((XmlFile) file) != null;
   }
 
   @Nullable

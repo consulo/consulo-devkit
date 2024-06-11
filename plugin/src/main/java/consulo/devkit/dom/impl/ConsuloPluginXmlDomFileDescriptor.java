@@ -4,9 +4,7 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.application.AllIcons;
 import consulo.component.util.Iconable;
 import consulo.ui.image.Image;
-import consulo.xml.util.xml.DomElement;
 import consulo.xml.util.xml.DomFileDescription;
-import consulo.xml.util.xml.highlighting.DomElementAnnotationHolder;
 import consulo.xml.util.xml.highlighting.DomElementsAnnotator;
 import jakarta.inject.Inject;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
@@ -19,11 +17,8 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl
 public class ConsuloPluginXmlDomFileDescriptor extends DomFileDescription<IdeaPlugin> {
-  private static final DomElementsAnnotator ANNOTATOR = new DomElementsAnnotator() {
-    @Override
-    public void annotate(DomElement element, DomElementAnnotationHolder holder) {
+  private static final DomElementsAnnotator ANNOTATOR = (element, holder) -> {
 
-    }
   };
 
   @Inject

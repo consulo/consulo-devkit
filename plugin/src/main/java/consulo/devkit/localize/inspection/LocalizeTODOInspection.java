@@ -19,12 +19,12 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class LocalizeTODOInspection extends InternalInspection {
-  private static final String localizeTODO = "localizeTODO";
+  private static final String LOCALIZE_TODO = "localizeTODO";
 
   @Nonnull
   @Override
   public String getDisplayName() {
-    return "Localize TODO inspection";
+    return LocalizeValue.localizeTODO("Localize TODO inspection").get();
   }
 
   @Nonnull
@@ -33,30 +33,39 @@ public class LocalizeTODOInspection extends InternalInspection {
     return new JavaElementVisitor() {
       @Override
       @RequiredReadAction
-      public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+      public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
         PsiReferenceExpression methodExpression = expression.getMethodExpression();
 
-        String referenceName = methodExpression.getReferenceName();
-        if (localizeTODO.equals(referenceName)) {
-          PsiElement localizeTODOMethod = methodExpression.resolve();
-          if (localizeTODOMethod == null) {
-            return;
-          }
-
-          PsiElement parent = localizeTODOMethod.getParent();
-          if (parent instanceof PsiClass psiClass && LocalizeValue.class.getName().equals(psiClass.getQualifiedName())) {
-            PsiExpression[] expressions = expression.getArgumentList().getExpressions();
-            if (expressions.length != 1) {
-              return;
-            }
-
-            PsiExpression stringLiteral = expressions[0];
-
-            // unquote string. if expression is reference - it's invalid, and must be fixed anyway
-            String text = StringUtil.unquoteString(stringLiteral.getText());
-            holder.registerProblem(stringLiteral, new TextRange(0, stringLiteral.getTextLength()), "'" + text + "' not localized");
-          }
+        String methodName = methodExpression.getReferenceName();
+        if (!LOCALIZE_TODO.equals(methodName)) {
+          return;
         }
+
+        PsiElement localizeTODOMethod = methodExpression.resolve();
+        if (localizeTODOMethod == null) {
+          return;
+        }
+
+        PsiElement parent = localizeTODOMethod.getParent();
+        if (!(parent instanceof PsiClass psiClass)
+          || !LocalizeValue.class.getName().equals(psiClass.getQualifiedName())) {
+          return;
+        }
+
+        PsiExpression[] expressions = expression.getArgumentList().getExpressions();
+        if (expressions.length != 1) {
+          return;
+        }
+
+        PsiExpression stringLiteral = expressions[0];
+
+        // unquote string. if expression is reference - it's invalid, and must be fixed anyway
+        String text = StringUtil.unquoteString(stringLiteral.getText());
+        holder.registerProblem(
+          stringLiteral,
+          new TextRange(0, stringLiteral.getTextLength()),
+          LocalizeValue.localizeTODO("'" + text + "' not localized").get()
+        );
       }
     };
   }

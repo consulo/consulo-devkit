@@ -15,26 +15,20 @@
  */
 package org.jetbrains.idea.devkit.dom.generator;
 
-import java.io.CharArrayReader;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import consulo.util.collection.ArrayUtil;
-import org.apache.xerces.xni.XMLResourceIdentifier;
-import org.apache.xerces.xni.XNIException;
+import consulo.util.collection.ContainerUtil;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import consulo.util.collection.ContainerUtil;
+
+import java.io.CharArrayReader;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Gregory.Shrago
@@ -42,7 +36,7 @@ import consulo.util.collection.ContainerUtil;
  */
 public class ModelGen {
   private final ModelDesc model = new ModelDesc();
-  private final Map<String, String> schemaLocationMap = new HashMap<String, String>();
+  private final Map<String, String> schemaLocationMap = new HashMap<>();
   private final ModelLoader loader;
   private final Emitter emitter;
   private final FileManager fileManager;
@@ -64,11 +58,7 @@ public class ModelGen {
 
   public static Element loadXml(File configXml) throws Exception {
     SAXBuilder saxBuilder = new SAXBuilder();
-    saxBuilder.setEntityResolver(new EntityResolver() {
-      public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-        return new InputSource(new CharArrayReader(new char[0]));
-      }
-    });
+    saxBuilder.setEntityResolver((publicId, systemId) -> new InputSource(new CharArrayReader(new char[0])));
     final Document document = saxBuilder.build(configXml);
     return document.getRootElement();
   }
@@ -112,14 +102,14 @@ public class ModelGen {
       final String packageS = nsElement.getAttributeValue("package");
       final String packageEnumS = nsElement.getAttributeValue("enums");
       final String interfaces = nsElement.getAttributeValue("interfaces");
-      final ArrayList<String> list = new ArrayList<String>();
-      for (Element pkgElement : (List<Element>)nsElement.getChildren("package")) {
+      final ArrayList<String> list = new ArrayList<>();
+      for (Element pkgElement : nsElement.getChildren("package")) {
         final String pkgName = pkgElement.getAttributeValue("name");
         final String fileName = pkgElement.getAttributeValue("file");
         list.add(fileName);
         list.add(pkgName);
       }
-      for (Element pkgElement : (List<Element>)nsElement.getChildren("property")) {
+      for (Element pkgElement : nsElement.getChildren("property")) {
         final String propertyName = pkgElement.getAttributeValue("name");
         final String propertyValue = pkgElement.getAttributeValue("value");
         nsDesc.props.put(propertyName, propertyValue);
@@ -146,39 +136,37 @@ public class ModelGen {
   }
 
   public void loadModel(final File... modelRoots) throws Exception {
-    XMLEntityResolver resolver = new XMLEntityResolver() {
-      public XMLInputSource resolveEntity(XMLResourceIdentifier xmlResourceIdentifier) throws XNIException, IOException {
-        String esid = xmlResourceIdentifier.getExpandedSystemId();
-        if (esid == null) {
-          final String location = schemaLocationMap.get(xmlResourceIdentifier.getNamespace());
-          if (location != null) {
-            esid = location;
-          }
-          else {
-            return null;
-          }
+    XMLEntityResolver resolver = xmlResourceIdentifier -> {
+      String esid = xmlResourceIdentifier.getExpandedSystemId();
+      if (esid == null) {
+        final String location = schemaLocationMap.get(xmlResourceIdentifier.getNamespace());
+        if (location != null) {
+          esid = location;
         }
-        // Util.log("resolving "+esid);
-        File f = null;
-        for (File root : modelRoots) {
-          if (root == null) continue;
-          if (root.isDirectory()) {
-            final String fileName = esid.substring(esid.lastIndexOf('/') + 1);
-            f = new File(root, fileName);
-          }
-          else {
-            f = root;
-          }
-        }
-        if (f == null || !f.exists()) {
-          Util.logerr("unable to resolve: " + esid);
+        else {
           return null;
         }
-        esid = f.getPath();
-        return new XMLInputSource(null, esid, null);
       }
+      // Util.log("resolving "+esid);
+      File f = null;
+      for (File root : modelRoots) {
+        if (root == null) continue;
+        if (root.isDirectory()) {
+          final String fileName = esid.substring(esid.lastIndexOf('/') + 1);
+          f = new File(root, fileName);
+        }
+        else {
+          f = root;
+        }
+      }
+      if (f == null || !f.exists()) {
+        Util.logerr("unable to resolve: " + esid);
+        return null;
+      }
+      esid = f.getPath();
+      return new XMLInputSource(null, esid, null);
     };
-    ArrayList<File> files = new ArrayList<File>();
+    ArrayList<File> files = new ArrayList<>();
     for (File root : modelRoots) {
       ContainerUtil.addAll(files, root.listFiles());
     }

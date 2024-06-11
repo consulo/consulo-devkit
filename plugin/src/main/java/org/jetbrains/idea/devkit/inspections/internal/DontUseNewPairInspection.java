@@ -20,6 +20,7 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.util.lang.Pair;
 import org.jetbrains.idea.devkit.inspections.quickfix.ChangeToPairCreateQuickFix;
 
@@ -43,19 +44,22 @@ public class DontUseNewPairInspection extends InternalInspection {
   public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
     return new JavaElementVisitor() {
       @Override
-      public void visitNewExpression(PsiNewExpression expression) {
+      public void visitNewExpression(@Nonnull PsiNewExpression expression) {
         final PsiType type = expression.getType();
         final PsiExpressionList params = expression.getArgumentList();
-        if (type instanceof PsiClassType && ((PsiClassType)type).rawType()
-                                                                .equalsToText(PAIR_FQN) && params != null && expression.getArgumentList() != null
-          //&& !PsiUtil.getLanguageLevel(expression).isAtLeast(LanguageLevel.JDK_1_7) //diamonds
+        if (type instanceof PsiClassType
+          && ((PsiClassType)type).rawType().equalsToText(PAIR_FQN)
+          && params != null
+          && expression.getArgumentList() != null
         ) {
           final PsiType[] types = ((PsiClassType)type).getParameters();
           if (Arrays.equals(types, params.getExpressionTypes())) {
-            holder.registerProblem(expression,
-                                   "Replace to Pair.create()",
-                                   ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                   new ChangeToPairCreateQuickFix());
+            holder.registerProblem(
+              expression,
+              LocalizeValue.localizeTODO("Replace with Pair.create()").get(),
+              ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+              new ChangeToPairCreateQuickFix()
+            );
           }
         }
         super.visitNewExpression(expression);

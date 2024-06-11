@@ -88,16 +88,11 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
         myModule);
     final VirtualFile[] roots = prepare(VirtualFileUtil.toVirtualFileArray(virtualFiles));
     if (roots.length == 1) {
-      ApplicationManager.getApplication().runWriteAction(new Runnable() {
-        @Override
-        public void run() {
-          createDescription(roots[0]);
-        }
-      });
+      ApplicationManager.getApplication().runWriteAction(() -> createDescription(roots[0]));
 
     }
     else {
-      List<String> options = new ArrayList<String>();
+      List<String> options = new ArrayList<>();
       for (VirtualFile file : roots) {
         String path = file.getPresentableUrl() + File.separator + getDescriptionFolderName() + File.separator + myFilename;
         if (isIntention) {
@@ -113,12 +108,7 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
                                           .setItemChosenCallback(desc -> {
                                             final int index = files.getSelectedIndex();
                                             if (0 <= index && index < roots.length) {
-                                              ApplicationManager.getApplication().runWriteAction(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                  createDescription(roots[index]);
-                                                }
-                                              });
+                                              ApplicationManager.getApplication().runWriteAction(() -> createDescription(roots[index]));
                                             }
                                           })
                                           .createPopup();
@@ -177,7 +167,7 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
   }
 
   private VirtualFile[] prepare(VirtualFile[] roots) {
-    List<VirtualFile> found = new ArrayList<VirtualFile>();
+    List<VirtualFile> found = new ArrayList<>();
     for (VirtualFile root : roots) {
       if (containsDescriptionDir(root)) {
         found.add(root);

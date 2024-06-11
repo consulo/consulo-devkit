@@ -34,8 +34,6 @@ import consulo.xml.psi.xml.XmlFile;
 import consulo.xml.psi.xml.XmlTag;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -64,36 +62,33 @@ public class DomGenPanel {
       .addBrowseFolderListener(title, "Make sure there are only necessary schemes in directory where your XSD or DTD schema is located",
                                myProject, new FileTypeDescriptor(title, "xsd", "dtd"));
     mySchemaLocation.getTextField().setEditable(false);
-    mySchemaLocation.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final File file = new File(mySchemaLocation.getText());
-        if (file.exists() && file.getName().toLowerCase().endsWith(".xsd")) {
-          final VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(file);
-          if (vf != null) {
-            final PsiFile psiFile = PsiManager.getInstance(myProject).findFile(vf);
-            if (psiFile instanceof XmlFile) {
-              final XmlDocument xml = ((XmlFile)psiFile).getDocument();
-              if (xml != null) {
-                final XmlTag rootTag = xml.getRootTag();
-                if (rootTag != null) {
-                  String target = null;
-                  ArrayList<String> ns = new ArrayList<String>();
-                  for (XmlAttribute attr : rootTag.getAttributes()) {
-                    if ("targetNamespace".equals(attr.getName())) {
-                      target = attr.getValue();
-                    }
-                    else if (attr.getName().startsWith("xmlns")) {
-                      ns.add(attr.getValue());
-                    }
+    mySchemaLocation.addActionListener(e -> {
+      final File file = new File(mySchemaLocation.getText());
+      if (file.exists() && file.getName().toLowerCase().endsWith(".xsd")) {
+        final VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(file);
+        if (vf != null) {
+          final PsiFile psiFile = PsiManager.getInstance(myProject).findFile(vf);
+          if (psiFile instanceof XmlFile) {
+            final XmlDocument xml = ((XmlFile)psiFile).getDocument();
+            if (xml != null) {
+              final XmlTag rootTag = xml.getRootTag();
+              if (rootTag != null) {
+                String target = null;
+                ArrayList<String> ns = new ArrayList<String>();
+                for (XmlAttribute attr : rootTag.getAttributes()) {
+                  if ("targetNamespace".equals(attr.getName())) {
+                    target = attr.getValue();
                   }
-
-                  ns.remove(target);
-                  if (target != null) {
-                    myNamespace.setText(target);
+                  else if (attr.getName().startsWith("xmlns")) {
+                    ns.add(attr.getValue());
                   }
-                  mySkipSchemas.setText(StringUtil.join(ArrayUtil.toStringArray(ns), "\n"));
                 }
+
+                ns.remove(target);
+                if (target != null) {
+                  myNamespace.setText(target);
+                }
+                mySkipSchemas.setText(StringUtil.join(ArrayUtil.toStringArray(ns), "\n"));
               }
             }
           }
