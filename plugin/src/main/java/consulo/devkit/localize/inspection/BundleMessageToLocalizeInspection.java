@@ -261,6 +261,10 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       myArgExpressions = myExpression.getArgumentList().getExpressions();
 
       String key = getString(myArgExpressions[0]);
+      if (key == null) {
+        return false;
+      }
+
       myLocalizeMethodName = normalizeName(capitalizeByDot(key));
 
       return true;
