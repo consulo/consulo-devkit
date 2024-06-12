@@ -7,6 +7,7 @@ import com.intellij.java.language.psi.search.PsiShortNamesCache;
 import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.application.CommonBundle;
 import consulo.application.WriteAction;
 import consulo.component.util.localize.AbstractBundle;
 import consulo.devkit.localize.DevKitLocalize;
@@ -196,6 +197,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
   private static class ClassExtendsAbstractBundleChecker extends CallsBundleMessageChecker {
     @SuppressWarnings("deprecation")
     private static final String ABSTRACT_BUNDLE_CLASS_NAME = AbstractBundle.class.getName();
+    private static final String COMMON_BUNDLE_CLASS_NAME = CommonBundle.class.getName();
 
     protected PsiElement myMethod;
     protected PsiClass myClass;
@@ -215,7 +217,8 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       PsiElement parent = (myMethod == null) ? null : myMethod.getParent();
       myClass = (parent instanceof PsiClass psiClass) ? psiClass : null;
 
-      return myClass != null && InheritanceUtil.isInheritor(myClass, ABSTRACT_BUNDLE_CLASS_NAME);
+      return myClass != null && (InheritanceUtil.isInheritor(myClass, ABSTRACT_BUNDLE_CLASS_NAME)
+        || COMMON_BUNDLE_CLASS_NAME.equals(myClass.getQualifiedName()));
     }
   }
 
