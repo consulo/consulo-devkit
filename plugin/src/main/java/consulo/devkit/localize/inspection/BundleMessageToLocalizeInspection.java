@@ -1,6 +1,8 @@
 package consulo.devkit.localize.inspection;
 
+import com.intellij.java.language.codeInsight.AnnotationUtil;
 import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
+import com.intellij.java.language.impl.psi.impl.source.PsiClassReferenceType;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
 import com.intellij.java.language.psi.search.PsiShortNamesCache;
@@ -223,6 +225,8 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
   }
 
   private static class LocalizeClassExistsChecker extends ClassExtendsAbstractBundleChecker {
+    private static final String MIGRATE_ANNOTATION_FQ = "consulo.annotation.internal.MigratedExtensionsTo";
+
     protected static final String
       ZERO_PREFIX = "zero",
       ONE_PREFIX = "one",
@@ -248,7 +252,28 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
         return false;
       }
 
-      myClassName = this.myClass.getName();
+      myClassName = myClass.getName();
+
+      if (!initLocalizeClass()) {
+        return false;
+      }
+
+      myArgExpressions = myExpression.getArgumentList().getExpressions();
+
+      String key = getString(myArgExpressions[0]);
+      if (key == null) {
+        return false;
+      }
+
+      myLocalizeMethodName = normalizeName(capitalizeByDot(key));
+
+      return true;
+    }
+
+    private boolean initLocalizeClass() {
+      if (initLocalizeClassByAnnotation()) {
+        return true;
+      }
 
       myLocalizeClassName =
         myClassName.substring(0, myClassName.length() - BUNDLE_SUFFIX.length()) + LOCALIZE_SUFFIX;
@@ -261,16 +286,31 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
       myLocalizeClassQualifiedName = classes[0].getQualifiedName();
 
-      myArgExpressions = myExpression.getArgumentList().getExpressions();
+      return true;
+    }
 
-      String key = getString(myArgExpressions[0]);
-      if (key == null) {
+    private boolean initLocalizeClassByAnnotation() {
+      PsiAnnotation migrateAnnotation = AnnotationUtil.findAnnotation(myClass, MIGRATE_ANNOTATION_FQ);
+      if (migrateAnnotation == null) {
         return false;
       }
 
-      myLocalizeMethodName = normalizeName(capitalizeByDot(key));
+      PsiNameValuePair[] attributes = migrateAnnotation.getParameterList().getAttributes();
+      if (attributes.length != 1) {
+        return false;
+      }
 
-      return true;
+      PsiAnnotationMemberValue value = attributes[0].getValue();
+
+      if (value instanceof PsiClassObjectAccessExpression classObjectAccessExpression) {
+        PsiType type = classObjectAccessExpression.getOperand().getType();
+        if (type instanceof PsiClassReferenceType classReference) {
+          myLocalizeClassName = classReference.getClassName();
+          myLocalizeClassQualifiedName = classReference.getCanonicalText();
+          return true;
+        }
+      }
+      return false;
     }
 
     private String normalizeName(String text) {
