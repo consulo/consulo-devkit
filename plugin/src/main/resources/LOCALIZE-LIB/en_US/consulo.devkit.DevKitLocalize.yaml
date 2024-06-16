@@ -246,6 +246,10 @@ inspections.annotation.0.is.required.at.owner.or.app.run.dispath:
   text: Annotation @RequiredRequiredDispatchThread is required at owner or run code inside UIUtil.invokeLaterIfNeeded(...)
 inspections.annotation.0.is.required.at.owner.or.app.run.ui:
   text: Annotation @RequiredUIAcess is required at owner or run code inside UIAccess.give(...)
+inspections.replace.with.xxxlocalize.title:
+  text: xBundle.message() to xLocalize inspection
+inspections.replace.with.xxxlocalize:
+  text: Replace with {0}.{1}(...)
 InspectionUseGrayColor:
   text: Use Gray
 ant.build.jar.comment:
