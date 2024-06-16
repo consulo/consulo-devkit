@@ -73,11 +73,7 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
       }
 
       CharSequence nameSequence = file.getNameSequence();
-      if (!StringUtil.endsWith(nameSequence, "Localize.yaml")) {
-        return false;
-      }
-
-      return isLocalizeFile(file);
+      return StringUtil.endsWith(nameSequence, "Localize.yaml") && isLocalizeFile(file);
     };
   }
 

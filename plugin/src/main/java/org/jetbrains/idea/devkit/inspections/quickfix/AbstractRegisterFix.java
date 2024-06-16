@@ -16,6 +16,7 @@
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
 import com.intellij.java.language.psi.PsiClass;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.editor.FileModificationService;
@@ -31,7 +32,6 @@ import consulo.ui.ex.awt.Messages;
 import consulo.undoRedo.CommandProcessor;
 import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 
@@ -48,12 +48,12 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
 
   @Nonnull
   public String getFamilyName() {
-    return DevKitBundle.message("inspections.component.not.registered.quickfix.family");
+    return DevKitLocalize.inspectionsComponentNotRegisteredQuickfixFamily().get();
   }
 
   @Nonnull
   public String getName() {
-    return DevKitBundle.message("inspections.component.not.registered.quickfix.name", getType());
+    return DevKitLocalize.inspectionsComponentNotRegisteredQuickfixName(getType()).get();
   }
 
   protected abstract String getType();
@@ -74,40 +74,41 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
     LOG.assertTrue(psiFile != null);
     final Module module = ModuleUtilCore.findModuleForFile(psiFile.getVirtualFile(), project);
 
-    Runnable command = new Runnable() {
-      public void run() {
-        try {
-          if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
-            final XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
-            if (pluginXml != null) {
-              DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXml);
-            }
+    Runnable command = () -> {
+      try {
+        if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
+          final XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
+          if (pluginXml != null) {
+            DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXml);
           }
-          else {
-            List<Module> modules = PluginModuleUtil.getCandidateModules(module);
-            if (modules.size() > 1) {
-              final ChooseModulesDialog dialog = new ChooseModulesDialog(project, modules, getName());
-              dialog.show();
+        }
+        else {
+          List<Module> modules = PluginModuleUtil.getCandidateModules(module);
+          if (modules.size() > 1) {
+            final ChooseModulesDialog dialog = new ChooseModulesDialog(project, modules, getName());
+            dialog.show();
 
-              if (!dialog.isOK()) {
-                return;
-              }
-              modules = dialog.getSelectedModules();
+            if (!dialog.isOK()) {
+              return;
             }
-            final XmlFile[] pluginXmls = new XmlFile[modules.size()];
-            for (int i = 0; i < pluginXmls.length; i++) {
-              pluginXmls[i] = PluginModuleUtil.getPluginXml(modules.get(i));
-            }
-
-            DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXmls);
+            modules = dialog.getSelectedModules();
           }
-          CommandProcessor.getInstance().markCurrentCommandAsGlobal(project);
+          final XmlFile[] pluginXmls = new XmlFile[modules.size()];
+          for (int i = 0; i < pluginXmls.length; i++) {
+            pluginXmls[i] = PluginModuleUtil.getPluginXml(modules.get(i));
+          }
+
+          DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXmls);
         }
-        catch (IncorrectOperationException e) {
-          Messages.showMessageDialog(project, filterMessage(e.getMessage()),
-                                     DevKitBundle.message("inspections.component.not.registered.quickfix.error", getType()),
-                                     Messages.getErrorIcon());
-        }
+        CommandProcessor.getInstance().markCurrentCommandAsGlobal(project);
+      }
+      catch (IncorrectOperationException e) {
+        Messages.showMessageDialog(
+          project,
+          filterMessage(e.getMessage()),
+          DevKitLocalize.inspectionsComponentNotRegisteredQuickfixError(getType()).get(),
+          Messages.getErrorIcon()
+        );
       }
     };
     CommandProcessor.getInstance().executeCommand(project, command, getName(), null);

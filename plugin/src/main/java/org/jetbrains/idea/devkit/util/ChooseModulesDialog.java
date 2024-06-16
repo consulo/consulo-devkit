@@ -31,8 +31,6 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
@@ -96,11 +94,7 @@ public class ChooseModulesDialog extends DialogWrapper {
     myView.setTableHeader(null);
     myView.setIntercellSpacing(new Dimension(0, 0));
     myView.getColumnModel().getColumn(0).setMaxWidth(new JCheckBox().getPreferredSize().width);
-    myView.getModel().addTableModelListener(new TableModelListener() {
-      public void tableChanged(TableModelEvent e) {
-        getOKAction().setEnabled(getSelectedModules().size() > 0);
-      }
-    });
+    myView.getModel().addTableModelListener(e -> getOKAction().setEnabled(getSelectedModules().size() > 0));
     myView.addKeyListener(new KeyAdapter() {
       public void keyTyped(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyChar() == '\n') {
@@ -152,7 +146,7 @@ public class ChooseModulesDialog extends DialogWrapper {
   }
 
   public List<Module> getSelectedModules() {
-    final ArrayList<Module> list = new ArrayList<Module>(myCandidateModules);
+    final ArrayList<Module> list = new ArrayList<>(myCandidateModules);
     final Iterator<Module> modules = list.iterator();
     for (boolean b : myStates) {
       modules.next();

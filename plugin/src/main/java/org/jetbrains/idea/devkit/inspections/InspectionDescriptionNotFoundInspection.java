@@ -151,11 +151,7 @@ public class InspectionDescriptionNotFoundInspection extends InternalInspection
 			if(method.getName().equals(methodName))
 			{
 				final PsiClass containingClass = method.getContainingClass();
-				if(containingClass == null)
-				{
-					return false;
-				}
-				return classFQN.contains(containingClass.getQualifiedName());
+				return containingClass != null && classFQN.contains(containingClass.getQualifiedName());
 			}
 		}
 		return isLastMethodDefinitionIn(methodName, classFQN, cls.getSuperClass());

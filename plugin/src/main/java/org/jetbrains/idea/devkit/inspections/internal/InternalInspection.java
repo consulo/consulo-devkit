@@ -17,6 +17,7 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import com.intellij.java.analysis.impl.codeInspection.BaseJavaLocalInspectionTool;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -29,7 +30,7 @@ public abstract class InternalInspection extends BaseJavaLocalInspectionTool<Obj
   @Nonnull
   @Override
   public String getGroupDisplayName() {
-    return DevKitBundle.message("inspections.group.name");
+    return DevKitLocalize.inspectionsGroupName().get();
   }
 
   @Override
@@ -39,10 +40,12 @@ public abstract class InternalInspection extends BaseJavaLocalInspectionTool<Obj
 
   @Nonnull
   @Override
-  public PsiElementVisitor buildVisitorImpl(@Nonnull ProblemsHolder holder,
-                                            boolean isOnTheFly,
-                                            LocalInspectionToolSession session,
-                                            Object o) {
+  public PsiElementVisitor buildVisitorImpl(
+    @Nonnull ProblemsHolder holder,
+    boolean isOnTheFly,
+    LocalInspectionToolSession session,
+    Object o
+  ) {
     if (!isAllowed(holder)) {
       return PsiElementVisitor.EMPTY_VISITOR;
     }

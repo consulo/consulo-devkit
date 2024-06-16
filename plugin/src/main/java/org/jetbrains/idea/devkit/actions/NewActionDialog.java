@@ -42,11 +42,7 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,35 +104,27 @@ public class NewActionDialog extends DialogWrapper implements ActionData {
     }
     myGroupList.setListData(actionGroups.toArray());
     myGroupList.setCellRenderer(new MyActionRenderer());
-    myGroupList.addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-        ActionGroup group = (ActionGroup)myGroupList.getSelectedValue();
-        if (group == null) {
-          myActionList.setListData(ArrayUtil.EMPTY_OBJECT_ARRAY);
-        }
-        else {
-          final AnAction[] actions = group.getChildren(null);
-          // filter out actions that don't have IDs - they can't be used for anchoring in plugin.xml
-          List<AnAction> realActions = new ArrayList<AnAction>();
-          for (AnAction action : actions) {
-            if (actionManager.getId(action) != null) {
-              realActions.add(action);
-            }
+    myGroupList.addListSelectionListener(e -> {
+      ActionGroup group = (ActionGroup)myGroupList.getSelectedValue();
+      if (group == null) {
+        myActionList.setListData(ArrayUtil.EMPTY_OBJECT_ARRAY);
+      }
+      else {
+        final AnAction[] actions = group.getChildren(null);
+        // filter out actions that don't have IDs - they can't be used for anchoring in plugin.xml
+        List<AnAction> realActions = new ArrayList<>();
+        for (AnAction action : actions) {
+          if (actionManager.getId(action) != null) {
+            realActions.add(action);
           }
-          myActionList.setListData(realActions.toArray());
         }
+        myActionList.setListData(realActions.toArray());
       }
     });
     new ListSpeedSearch(myGroupList, o -> ActionManager.getInstance().getId((AnAction)o));
 
     myActionList.setCellRenderer(new MyActionRenderer());
-    myActionList.addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-        updateControls();
-      }
-    });
+    myActionList.addListSelectionListener(e -> updateControls());
 
     final MyDocumentListener listener = new MyDocumentListener();
     myActionIdEdit.getDocument().addDocumentListener(listener);
@@ -148,12 +136,7 @@ public class NewActionDialog extends DialogWrapper implements ActionData {
     myFirstKeystrokeEdit = new ShortcutTextField();
     myFirstKeystrokeEditPlaceholder.setLayout(new BorderLayout());
     myFirstKeystrokeEditPlaceholder.add(myFirstKeystrokeEdit, BorderLayout.CENTER);
-    myClearFirstKeystroke.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        myFirstKeystrokeEdit.setKeyStroke(null);
-      }
-    });
+    myClearFirstKeystroke.addActionListener(e -> myFirstKeystrokeEdit.setKeyStroke(null));
     myFirstKeystrokeEdit.getDocument().addDocumentListener(listener);
     myClearFirstKeystroke.setText(null);
 
@@ -166,12 +149,7 @@ public class NewActionDialog extends DialogWrapper implements ActionData {
     mySecondKeystrokeEdit = new ShortcutTextField();
     mySecondKeystrokeEditPlaceholder.setLayout(new BorderLayout());
     mySecondKeystrokeEditPlaceholder.add(mySecondKeystrokeEdit, BorderLayout.CENTER);
-    myClearSecondKeystroke.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        mySecondKeystrokeEdit.setKeyStroke(null);
-      }
-    });
+    myClearSecondKeystroke.addActionListener(e -> mySecondKeystrokeEdit.setKeyStroke(null));
     mySecondKeystrokeEdit.getDocument().addDocumentListener(listener);
     myClearSecondKeystroke.setText(null);
     myClearSecondKeystroke.setIcon(TargetAWT.to(icon));

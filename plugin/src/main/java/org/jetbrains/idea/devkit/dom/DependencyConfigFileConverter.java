@@ -71,10 +71,7 @@ public class DependencyConfigFileConverter extends PathReferenceConverter {
               return true;
             }
             final PathReference pathReference = configFileAttribute.getValue();
-            if (pathReference == null) {
-              return true;
-            }
-            return !xmlFile.equals(pathReference.resolve());
+            return pathReference == null || !xmlFile.equals(pathReference.resolve());
           });
         }
 
