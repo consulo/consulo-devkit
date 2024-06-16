@@ -3,7 +3,6 @@ package consulo.devkit.localize.inspection;
 import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.java.language.psi.search.PsiShortNamesCache;
 import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
@@ -248,18 +247,11 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
         return false;
       }
 
-      myClassName = this.myClass.getName();
+      myClassName = myClass.getName();
 
-      myLocalizeClassName =
-        myClassName.substring(0, myClassName.length() - BUNDLE_SUFFIX.length()) + LOCALIZE_SUFFIX;
-
-      PsiClass[] classes = PsiShortNamesCache.getInstance(myProject)
-        .getClassesByName(myLocalizeClassName, myExpression.getResolveScope());
-      if (classes.length != 1) {
+      if (!initLocalizeClass()) {
         return false;
       }
-
-      myLocalizeClassQualifiedName = classes[0].getQualifiedName();
 
       myArgExpressions = myExpression.getArgumentList().getExpressions();
 
@@ -270,6 +262,19 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
       myLocalizeMethodName = normalizeName(capitalizeByDot(key));
 
+      return true;
+    }
+
+    @RequiredReadAction
+    private boolean initLocalizeClass() {
+      PsiClass localizeClass = LocalizeClassResolver.resolveByBundle(myClass);
+
+      if (localizeClass == null) {
+        return false;
+      }
+
+      myLocalizeClassName = localizeClass.getName();
+      myLocalizeClassQualifiedName = localizeClass.getQualifiedName();
       return true;
     }
 
