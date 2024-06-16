@@ -1,11 +1,8 @@
 package consulo.devkit.localize.inspection;
 
-import com.intellij.java.language.codeInsight.AnnotationUtil;
 import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
-import com.intellij.java.language.impl.psi.impl.source.PsiClassReferenceType;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.java.language.psi.search.PsiShortNamesCache;
 import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
@@ -225,8 +222,6 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
   }
 
   private static class LocalizeClassExistsChecker extends ClassExtendsAbstractBundleChecker {
-    private static final String MIGRATE_ANNOTATION_FQ = "consulo.annotation.internal.MigratedExtensionsTo";
-
     protected static final String
       ZERO_PREFIX = "zero",
       ONE_PREFIX = "one",
@@ -270,47 +265,17 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       return true;
     }
 
+    @RequiredReadAction
     private boolean initLocalizeClass() {
-      if (initLocalizeClassByAnnotation()) {
-        return true;
-      }
+      PsiClass localizeClass = LocalizeClassResolver.resolveByBundle(myClass);
 
-      myLocalizeClassName =
-        myClassName.substring(0, myClassName.length() - BUNDLE_SUFFIX.length()) + LOCALIZE_SUFFIX;
-
-      PsiClass[] classes = PsiShortNamesCache.getInstance(myProject)
-        .getClassesByName(myLocalizeClassName, myExpression.getResolveScope());
-      if (classes.length != 1) {
+      if (localizeClass == null) {
         return false;
       }
 
-      myLocalizeClassQualifiedName = classes[0].getQualifiedName();
-
+      myLocalizeClassName = localizeClass.getName();
+      myLocalizeClassQualifiedName = localizeClass.getQualifiedName();
       return true;
-    }
-
-    private boolean initLocalizeClassByAnnotation() {
-      PsiAnnotation migrateAnnotation = AnnotationUtil.findAnnotation(myClass, MIGRATE_ANNOTATION_FQ);
-      if (migrateAnnotation == null) {
-        return false;
-      }
-
-      PsiNameValuePair[] attributes = migrateAnnotation.getParameterList().getAttributes();
-      if (attributes.length != 1) {
-        return false;
-      }
-
-      PsiAnnotationMemberValue value = attributes[0].getValue();
-
-      if (value instanceof PsiClassObjectAccessExpression classObjectAccessExpression) {
-        PsiType type = classObjectAccessExpression.getOperand().getType();
-        if (type instanceof PsiClassReferenceType classReference) {
-          myLocalizeClassName = classReference.getClassName();
-          myLocalizeClassQualifiedName = classReference.getCanonicalText();
-          return true;
-        }
-      }
-      return false;
     }
 
     private String normalizeName(String text) {
