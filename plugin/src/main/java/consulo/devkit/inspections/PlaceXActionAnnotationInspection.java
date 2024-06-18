@@ -81,9 +81,11 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
           for (PsiMethod itMethod : query) {
             if (CallStateType.findSelfActionType(itMethod) == CallStateType.NONE) {
               String actionClass = selfActionType.getActionClass();
-              holder.registerProblem(nameIdentifier,
-                                     "Overriden methods are not annotated by @" + StringUtil.getShortName(actionClass),
-                                     new MyAnnotateMethodFix(actionClass));
+              holder.registerProblem(
+                nameIdentifier,
+                "Overriden methods are not annotated by @" + StringUtil.getShortName(actionClass),
+                new MyAnnotateMethodFix(actionClass)
+              );
               break;
             }
           }
@@ -94,10 +96,11 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
             CallStateType superActionType = CallStateType.findSelfActionType(superMethod);
             if (superActionType != CallStateType.NONE) {
               String actionClass = superActionType.getActionClass();
-              holder.registerProblem(nameIdentifier,
-                                     "Missed annotation @" + StringUtil.getShortName(actionClass) + ", provided by super method",
-                                     new AddAnnotationFix(actionClass,
-                                                          method));
+              holder.registerProblem(
+                nameIdentifier,
+                "Missed annotation @" + StringUtil.getShortName(actionClass) + ", provided by super method",
+                new AddAnnotationFix(actionClass, method)
+              );
             }
           }
         }

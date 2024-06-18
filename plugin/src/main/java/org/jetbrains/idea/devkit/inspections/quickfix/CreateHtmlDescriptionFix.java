@@ -21,6 +21,7 @@ import consulo.application.ApplicationManager;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorPopupHelper;
 import consulo.component.util.Iconable;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.fileEditor.FileEditorManager;
 import consulo.fileTemplate.FileTemplate;
 import consulo.fileTemplate.FileTemplateManager;
@@ -42,7 +43,6 @@ import consulo.util.collection.ArrayUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection;
 import org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection;
 
@@ -72,7 +72,7 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
   @Override
   @Nonnull
   public String getName() {
-    return DevKitBundle.message("create.description.file");
+    return DevKitLocalize.createDescriptionFile().get();
   }
 
   @Override
@@ -103,15 +103,15 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
       final JBList files = new JBList(ArrayUtil.toStringArray(options));
       files.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       final JBPopup popup = JBPopupFactory.getInstance()
-                                          .createPopupChooserBuilder(options)
-                                          .setTitle(DevKitBundle.message("select.target.location" + ".of.description", myFilename))
-                                          .setItemChosenCallback(desc -> {
-                                            final int index = files.getSelectedIndex();
-                                            if (0 <= index && index < roots.length) {
-                                              ApplicationManager.getApplication().runWriteAction(() -> createDescription(roots[index]));
-                                            }
-                                          })
-                                          .createPopup();
+        .createPopupChooserBuilder(options)
+        .setTitle(DevKitLocalize.selectTargetLocationOfDescription(myFilename).get())
+        .setItemChosenCallback(desc -> {
+          final int index = files.getSelectedIndex();
+          if (0 <= index && index < roots.length) {
+            ApplicationManager.getApplication().runWriteAction(() -> createDescription(roots[index]));
+          }
+        })
+        .createPopup();
       final Editor editor = FileEditorManager.getInstance(myModule.getProject()).getSelectedTextEditor();
       if (editor == null) {
         return;

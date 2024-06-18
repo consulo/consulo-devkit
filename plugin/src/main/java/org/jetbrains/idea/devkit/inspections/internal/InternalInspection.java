@@ -22,7 +22,6 @@ import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
-import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 

@@ -16,6 +16,7 @@
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
 import com.intellij.java.language.psi.PsiClass;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFix;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
@@ -24,9 +25,9 @@ import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.UIUtil;
 import consulo.virtualFileSystem.ReadonlyStatusHandler;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 
@@ -57,9 +58,12 @@ abstract class BaseFix implements LocalQuickFix {
       if (status.hasReadonlyFiles()) {
         final String className = clazz != null ? clazz.getQualifiedName() : myElement.getContainingFile().getName();
 
-        Messages
-          .showMessageDialog(project, DevKitBundle.message("inspections.registration.problems.quickfix.read-only", className), getName(),
-                             Messages.getErrorIcon());
+        Messages.showMessageDialog(
+          project,
+          DevKitLocalize.inspectionsRegistrationProblemsQuickfixReadOnly(className).get(),
+          getName(),
+          UIUtil.getErrorIcon()
+        );
         return;
       }
     }

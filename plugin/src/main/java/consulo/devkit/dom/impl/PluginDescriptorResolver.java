@@ -4,6 +4,7 @@ import consulo.container.plugin.PluginDescriptor;
 import consulo.container.plugin.PluginId;
 import consulo.devkit.Consulo2PluginIds;
 import consulo.devkit.Consulo3PluginIds;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.editor.completion.lookup.LookupElement;
 import consulo.language.editor.completion.lookup.LookupElementBuilder;
@@ -13,7 +14,6 @@ import consulo.util.lang.StringUtil;
 import consulo.xml.util.xml.ConvertContext;
 import consulo.xml.util.xml.GenericDomValue;
 import consulo.xml.util.xml.ResolvingConverter;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import org.jetbrains.idea.devkit.dom.impl.IdeaPluginConverter;
 
@@ -36,7 +36,7 @@ public class PluginDescriptorResolver extends ResolvingConverter<PluginDescripto
 
   @Override
   public String getErrorMessage(@Nullable final String s, final ConvertContext context) {
-    return DevKitBundle.message("error.cannot.resolve.plugin", s);
+    return DevKitLocalize.errorCannotResolvePlugin(s).get();
   }
 
   @Nullable

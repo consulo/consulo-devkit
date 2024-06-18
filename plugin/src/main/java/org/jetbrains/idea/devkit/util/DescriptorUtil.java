@@ -16,6 +16,7 @@
 package org.jetbrains.idea.devkit.util;
 
 import com.intellij.java.language.psi.PsiClass;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.psi.PsiFile;
@@ -28,7 +29,6 @@ import consulo.xml.psi.xml.XmlFile;
 import consulo.xml.psi.xml.XmlTag;
 import consulo.xml.util.xml.DomFileElement;
 import consulo.xml.util.xml.DomManager;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
 import javax.annotation.Nullable;
@@ -60,7 +60,7 @@ public class DescriptorUtil {
     final ReadonlyStatusHandler readonlyStatusHandler = ReadonlyStatusHandler.getInstance(klass.getProject());
     final ReadonlyStatusHandler.OperationStatus status = readonlyStatusHandler.ensureFilesWritable(files);
     if (status.hasReadonlyFiles()) {
-      throw new IncorrectOperationException(DevKitBundle.message("error.plugin.xml.readonly"));
+      throw new IncorrectOperationException(DevKitLocalize.errorPluginXmlReadonly().get());
     }
 
     for (XmlFile pluginXml : pluginXmls) {
@@ -74,7 +74,7 @@ public class DescriptorUtil {
   }
 
   public static boolean isPluginXml(PsiFile file) {
-    return file instanceof XmlFile && getConsuloPlugin((XmlFile) file) != null;
+    return file instanceof XmlFile xmlFile && getConsuloPlugin(xmlFile) != null;
   }
 
   @Nullable

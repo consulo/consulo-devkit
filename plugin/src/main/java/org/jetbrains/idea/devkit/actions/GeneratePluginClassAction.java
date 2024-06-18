@@ -18,6 +18,7 @@ package org.jetbrains.idea.devkit.actions;
 import com.intellij.java.language.psi.JavaDirectoryService;
 import com.intellij.java.language.psi.PsiClass;
 import consulo.dataContext.DataContext;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.ide.IdeView;
@@ -28,6 +29,7 @@ import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiElement;
 import consulo.language.util.IncorrectOperationException;
 import consulo.language.util.ModuleUtilCore;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
 import consulo.module.content.ProjectFileIndex;
@@ -41,7 +43,6 @@ import consulo.ui.image.Image;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 
@@ -60,13 +61,11 @@ public abstract class GeneratePluginClassAction extends CreateElementActionBase 
   // module selection is canceled. That's some weird interface actually...
   private static final PsiElement[] CANCELED = new PsiElement[1];
 
-  public GeneratePluginClassAction(String text, String description, @Nullable Image icon) {
+  public GeneratePluginClassAction(@Nonnull LocalizeValue text, @Nonnull LocalizeValue description, @Nullable Image icon) {
     super(text, description, icon);
   }
 
-  protected final void invokeDialog(Project project,
-                                    PsiDirectory directory,
-                                    @Nonnull Consumer<PsiElement[]> consumer) {
+  protected final void invokeDialog(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer) {
     try {
       invokeDialogImpl(project, directory, consumer);
     }
@@ -177,7 +176,7 @@ public abstract class GeneratePluginClassAction extends CreateElementActionBase 
     }
 
     if (myFilesToPatch.size() == 0) {
-      throw new IncorrectOperationException(DevKitBundle.message("error.no.plugin.xml"));
+      throw new IncorrectOperationException(DevKitLocalize.errorNoPluginXml().get());
     }
     if (myFilesToPatch.size() == 0) {
       // user canceled module selection

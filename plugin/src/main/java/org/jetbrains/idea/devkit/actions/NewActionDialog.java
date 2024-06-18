@@ -18,6 +18,7 @@ package org.jetbrains.idea.devkit.actions;
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiClass;
 import consulo.application.AllIcons;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.project.Project;
 import consulo.ui.ex.SimpleTextAttributes;
 import consulo.ui.ex.action.ActionGroup;
@@ -33,7 +34,6 @@ import consulo.ui.ex.awtUnsafe.TargetAWT;
 import consulo.ui.image.Image;
 import consulo.util.collection.ArrayUtil;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionData;
 import org.jetbrains.idea.devkit.util.ActionType;
 
@@ -89,11 +89,11 @@ public class NewActionDialog extends DialogWrapper implements ActionData {
     super(project, false);
     myProject = project;
     init();
-    setTitle(DevKitBundle.message("new.action.dialog.title"));
+    setTitle(DevKitLocalize.newActionDialogTitle());
     final ActionManager actionManager = ActionManager.getInstance();
     final String[] actionIds = actionManager.getActionIds("");
     Arrays.sort(actionIds);
-    final List<ActionGroup> actionGroups = new ArrayList<ActionGroup>();
+    final List<ActionGroup> actionGroups = new ArrayList<>();
     for (String actionId : actionIds) {
       if (actionManager.isGroup(actionId)) {
         final AnAction anAction = actionManager.getAction(actionId);
@@ -239,12 +239,12 @@ public class NewActionDialog extends DialogWrapper implements ActionData {
   }
 
   private void updateControls() {
-    setOKActionEnabled(myActionIdEdit.getText().length() > 0 &&
-                         myActionNameEdit.getText().length() > 0 &&
-                         myActionTextEdit.getText().length() > 0 &&
-                         (!myActionNameEdit.isEditable() || JavaPsiFacade.getInstance(myProject)
-																																				 .getNameHelper()
-																																				 .isIdentifier(myActionNameEdit.getText())));
+    setOKActionEnabled(
+      !myActionIdEdit.getText().isEmpty()
+        && !myActionNameEdit.getText().isEmpty()
+        && !myActionTextEdit.getText().isEmpty()
+        && (!myActionNameEdit.isEditable() || JavaPsiFacade.getInstance(myProject).getNameHelper().isIdentifier(myActionNameEdit.getText()))
+    );
 
     myAnchorBeforeRadio.setEnabled(myActionList.getSelectedValue() != null);
     myAnchorAfterRadio.setEnabled(myActionList.getSelectedValue() != null);

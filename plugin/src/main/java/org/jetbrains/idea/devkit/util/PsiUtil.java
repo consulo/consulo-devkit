@@ -44,12 +44,12 @@ public class PsiUtil {
   public static String getReturnedLiteral(PsiMethod method, PsiClass cls) {
     if (isOneStatementMethod(method)) {
       final PsiExpression value = ((PsiReturnStatement)method.getBody().getStatements()[0]).getReturnValue();
-      if (value instanceof PsiLiteralExpression) {
-        final Object str = ((PsiLiteralExpression)value).getValue();
+      if (value instanceof PsiLiteralExpression literalExpression) {
+        final Object str = literalExpression.getValue();
         return str == null ? null : str.toString();
       }
-      else if (value instanceof PsiMethodCallExpression) {
-        if (isSimpleClassNameExpression((PsiMethodCallExpression)value)) {
+      else if (value instanceof PsiMethodCallExpression methodCallExpression) {
+        if (isSimpleClassNameExpression(methodCallExpression)) {
           return cls.getName();
         }
       }

@@ -1,10 +1,10 @@
 package consulo.devkit.inspections.valhalla;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.requires.dom.PluginRequires;
 import consulo.xml.util.xml.highlighting.BasicDomElementsInspection;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 
@@ -21,7 +21,7 @@ public class PluginRequiresXmlDomElementsInspection extends BasicDomElementsInsp
   @Nls
   @Nonnull
   public String getGroupDisplayName() {
-    return DevKitBundle.message("inspections.group.name");
+    return DevKitLocalize.inspectionsGroupName().get();
   }
 
   @Nls
