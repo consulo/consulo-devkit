@@ -21,6 +21,7 @@ import consulo.application.ApplicationManager;
 import consulo.codeEditor.Editor;
 import consulo.component.persist.StoragePathMacros;
 import consulo.dataContext.DataContext;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.codeStyle.CodeStyleManager;
 import consulo.language.editor.LangDataKeys;
 import consulo.language.editor.PlatformDataKeys;
@@ -35,7 +36,6 @@ import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.Presentation;
 import consulo.undoRedo.CommandProcessor;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -97,7 +97,7 @@ public class GenerateComponentExternalizationAction extends AnAction {
     });
 
     CommandProcessor.getInstance()
-                    .executeCommand(target.getProject(), runnable, DevKitBundle.message("command.implement.externalizable"), null);
+      .executeCommand(target.getProject(), runnable, DevKitLocalize.commandImplementExternalizable().get(), null);
   }
 
   @Nullable

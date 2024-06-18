@@ -18,6 +18,7 @@ package consulo.devkit.run;
 
 import com.intellij.java.language.projectRoots.JavaSdkType;
 import consulo.configurable.ConfigurationException;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.execution.configuration.ui.SettingsEditor;
 import consulo.execution.ui.awt.RawCommandLineEditor;
 import consulo.fileChooser.FileChooserDescriptorFactory;
@@ -30,7 +31,6 @@ import consulo.ui.ex.awt.JBCheckBox;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
 import consulo.util.io.FileUtil;
 import consulo.util.lang.StringUtil;
-import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
@@ -103,9 +103,9 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
       myPluginsHomePath.setText(FileUtil.toSystemDependentName(prc.PLUGINS_HOME_PATH));
     }
 
-    myVMParameters.setDialogCaption(DevKitBundle.message("label.vm.parameters"));
+    myVMParameters.setDialogCaption(DevKitLocalize.labelVmParameters().get());
     myProgramParameters.setText(prc.PROGRAM_PARAMETERS);
-    myProgramParameters.setDialogCaption(DevKitBundle.message("label.program.parameters"));
+    myProgramParameters.setDialogCaption(DevKitLocalize.labelProgramParameters().get());
 
     myJavaSdkComboBox.setSelectedSdk(prc.getJavaSdkName());
   }

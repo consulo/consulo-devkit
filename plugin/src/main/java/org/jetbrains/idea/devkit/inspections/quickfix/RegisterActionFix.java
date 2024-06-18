@@ -16,11 +16,11 @@
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
 import com.intellij.java.language.psi.PsiClass;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.util.IncorrectOperationException;
 import consulo.project.Project;
 import consulo.xml.psi.xml.XmlFile;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.actions.NewActionDialog;
 import org.jetbrains.idea.devkit.util.ActionType;
 
@@ -34,7 +34,7 @@ public class RegisterActionFix extends AbstractRegisterFix {
   }
 
   protected String getType() {
-    return DevKitBundle.message("new.menu.action.text");
+    return DevKitLocalize.newMenuActionText().get();
   }
 
   public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {

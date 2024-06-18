@@ -39,8 +39,8 @@ public class AcceptableMethodCallCheck {
   }
 
   public boolean accept(PsiElement parent) {
-    if (parent instanceof PsiMethodCallExpression) {
-      PsiMethod psiMethod = ((PsiMethodCallExpression)parent).resolveMethod();
+    if (parent instanceof PsiMethodCallExpression methodCallExpression) {
+      PsiMethod psiMethod = methodCallExpression.resolveMethod();
       if (psiMethod == null) {
         return false;
       }

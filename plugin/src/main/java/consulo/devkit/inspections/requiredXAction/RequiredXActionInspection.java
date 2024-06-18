@@ -18,19 +18,21 @@ package consulo.devkit.inspections.requiredXAction;
 
 import com.intellij.java.analysis.impl.codeInspection.AnnotateMethodFix;
 import com.intellij.java.language.psi.*;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.inspections.requiredXAction.stateResolver.AnonymousClassStateResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.LambdaStateResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.MethodReferenceResolver;
 import consulo.devkit.inspections.requiredXAction.stateResolver.StateResolver;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFix;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.lang.StringUtil;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import javax.annotation.Nonnull;
@@ -49,6 +51,7 @@ public class RequiredXActionInspection extends InternalInspection {
     }
 
     @Override
+    @RequiredReadAction
     public void visitMethodReferenceExpression(PsiMethodReferenceExpression expression) {
       PsiElement psiElement = expression.resolve();
       if (!(psiElement instanceof PsiMethod)) {
@@ -59,6 +62,7 @@ public class RequiredXActionInspection extends InternalInspection {
     }
 
     @Override
+    @RequiredReadAction
     public void visitCallExpression(PsiCallExpression expression) {
       PsiMethod psiMethod = expression.resolveMethod();
       if (psiMethod == null) {
@@ -68,6 +72,7 @@ public class RequiredXActionInspection extends InternalInspection {
       reportError(expression, psiMethod, LambdaStateResolver.INSTANCE, AnonymousClassStateResolver.INSTANCE);
     }
 
+    @RequiredReadAction
     private void reportError(PsiExpression expression, PsiMethod psiMethod, StateResolver... stateResolvers) {
       CallStateType actionType = CallStateType.findActionType(psiMethod);
       if (actionType == CallStateType.NONE) {
@@ -91,22 +96,20 @@ public class RequiredXActionInspection extends InternalInspection {
 
     private void reportError(@Nonnull PsiExpression expression, @Nonnull CallStateType type) {
       LocalQuickFix[] quickFixes = LocalQuickFix.EMPTY_ARRAY;
-      String text;
+      LocalizeValue text;
       switch (type) {
         case READ:
         case WRITE:
-          text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run",
-                                      StringUtil.capitalize(type.name().toLowerCase()));
+          text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRun(StringUtil.capitalize(type.name().toLowerCase()));
           break;
         case UI_ACCESS:
-          text = DevKitBundle.message("inspections.annotation.0.is.required.at.owner.or.app.run.ui",
-                                      StringUtil.capitalize(type.name().toLowerCase()));
+          text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRunUi();
           quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(RequiredUIAccess.class.getName())};
           break;
         default:
           throw new IllegalArgumentException();
       }
-      myHolder.registerProblem(expression, text, ProblemHighlightType.GENERIC_ERROR_OR_WARNING, quickFixes);
+      myHolder.registerProblem(expression, text.get(), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, quickFixes);
     }
   }
 

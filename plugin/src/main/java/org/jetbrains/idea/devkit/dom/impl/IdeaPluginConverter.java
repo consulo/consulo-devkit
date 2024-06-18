@@ -24,13 +24,8 @@ import consulo.project.DumbService;
 import consulo.project.Project;
 import consulo.project.content.scope.ProjectScopes;
 import consulo.util.collection.ContainerUtil;
-import consulo.util.lang.Comparing;
-import consulo.util.lang.function.Condition;
-import consulo.xml.util.xml.ConvertContext;
 import consulo.xml.util.xml.DomFileElement;
 import consulo.xml.util.xml.DomService;
-import consulo.xml.util.xml.ResolvingConverter;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
 import javax.annotation.Nonnull;

@@ -18,6 +18,7 @@ package org.jetbrains.idea.devkit;
 import com.intellij.java.language.impl.JavaFileType;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.AllIcons;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.fileTemplate.FileTemplateDescriptor;
 import consulo.fileTemplate.FileTemplateGroupDescriptor;
 import consulo.fileTemplate.FileTemplateGroupDescriptorFactory;
@@ -28,7 +29,7 @@ public class DevKitFileTemplatesFactory implements FileTemplateGroupDescriptorFa
   @Override
   public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
     FileTemplateGroupDescriptor descriptor =
-      new FileTemplateGroupDescriptor(DevKitBundle.message("plugin.descriptor"), AllIcons.Nodes.Plugin);
+      new FileTemplateGroupDescriptor(DevKitLocalize.pluginDescriptor().get(), AllIcons.Nodes.Plugin);
 
     descriptor.addTemplate(new FileTemplateDescriptor("Action.java", JavaFileType.INSTANCE.getIcon()));
     descriptor.addTemplate(new FileTemplateDescriptor("InspectionDescription.html", HtmlFileType.INSTANCE.getIcon()));

@@ -16,12 +16,13 @@
 package org.jetbrains.idea.devkit.actions;
 
 import com.intellij.java.language.psi.PsiClass;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiElement;
 import consulo.language.util.IncorrectOperationException;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.xml.psi.xml.XmlFile;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.util.ActionType;
 
 import javax.annotation.Nonnull;
@@ -34,10 +35,11 @@ public class NewActionAction extends GeneratePluginClassAction {
   private NewActionDialog myDialog;
 
   public NewActionAction() {
-    super(DevKitBundle.message("new.menu.action.text"), DevKitBundle.message("new.menu.action.description"), null);
+    super(DevKitLocalize.newMenuActionText(), DevKitLocalize.newMenuActionDescription(), null);
   }
 
   @Override
+  @RequiredUIAccess
   protected void invokeDialogImpl(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer) {
     final MyInputValidator validator = new MyInputValidator(project, directory);
 
@@ -54,14 +56,14 @@ public class NewActionAction extends GeneratePluginClassAction {
   }
 
   protected String getErrorTitle() {
-    return DevKitBundle.message("new.action.error");
+    return DevKitLocalize.newActionError().get();
   }
 
   protected String getCommandName() {
-    return DevKitBundle.message("new.action.command");
+    return DevKitLocalize.newActionCommand().get();
   }
 
   protected String getActionName(PsiDirectory directory, String newName) {
-    return DevKitBundle.message("new.action.action.name", directory, newName);
+    return DevKitLocalize.newActionActionName(directory, newName).get();
   }
 }

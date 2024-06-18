@@ -16,10 +16,10 @@
 package org.jetbrains.idea.devkit.inspections;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.xml.util.xml.highlighting.BasicDomElementsInspection;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
 import javax.annotation.Nonnull;
@@ -36,7 +36,7 @@ public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugi
   @Nls
   @Nonnull
   public String getGroupDisplayName() {
-    return DevKitBundle.message("inspections.group.name");
+    return DevKitLocalize.inspectionsGroupName().get();
   }
 
   @Nls

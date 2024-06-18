@@ -16,6 +16,7 @@
 package org.jetbrains.idea.devkit.util;
 
 import consulo.application.AllIcons;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.module.Module;
 import consulo.project.Project;
@@ -28,7 +29,6 @@ import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -53,7 +53,7 @@ public class ChooseModulesDialog extends DialogWrapper {
   private final boolean[] myStates;
 
   public ChooseModulesDialog(final Project project, List<Module> candidateModules, @NonNls String title) {
-    this(project, candidateModules, title, DevKitBundle.message("select.plugin.modules.to.patch"));
+    this(project, candidateModules, title, DevKitLocalize.selectPluginModulesToPatch().get());
   }
 
   public ChooseModulesDialog(final Project project, List<Module> candidateModules, @NonNls String title, final String message) {

@@ -21,6 +21,7 @@ import consulo.component.util.pointer.NamedPointer;
 import consulo.content.bundle.Sdk;
 import consulo.content.bundle.SdkPointerManager;
 import consulo.content.bundle.SdkUtil;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.execution.configuration.ConfigurationFactory;
 import consulo.execution.configuration.LocatableConfigurationBase;
 import consulo.execution.configuration.log.LogFileOptions;
@@ -39,7 +40,6 @@ import consulo.util.xml.serializer.DefaultJDOMExternalizer;
 import consulo.util.xml.serializer.InvalidDataException;
 import consulo.util.xml.serializer.WriteExternalException;
 import org.jdom.Element;
-import org.jetbrains.idea.devkit.DevKitBundle;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -106,32 +106,37 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 		final Sdk javaSdk = myJavaSdkPointer == null ? null : myJavaSdkPointer.get();
 		if(javaSdk == null)
 		{
-			throw new ExecutionException(DevKitBundle.message("run.configuration.no.java.sdk"));
+			throw new ExecutionException(DevKitLocalize.runConfigurationNoJavaSdk().get());
 		}
 
 		final String consuloSdkHome = getConsuloSdkHome();
 		if(consuloSdkHome == null)
 		{
-			throw new ExecutionException(DevKitBundle.message("run.configuration.no.consulo.sdk"));
+			throw new ExecutionException(DevKitLocalize.runConfigurationNoConsuloSdk().get());
 		}
 
 		return createState(executor, env, javaSdk, consuloSdkHome, PLUGINS_HOME_PATH);
 	}
 
 	@Nonnull
-	public abstract ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
-													   @Nonnull Sdk javaSdk,
-													   @Nonnull String consuloHome,
-													   @Nullable String pluginsHomePath) throws ExecutionException;
+	public abstract ConsuloSandboxRunState createState(
+		Executor executor,
+		@Nonnull ExecutionEnvironment env,
+		@Nonnull Sdk javaSdk,
+		@Nonnull String consuloHome,
+		@Nullable String pluginsHomePath
+	) throws ExecutionException;
 
 	@Override
 	public void readExternal(Element element) throws InvalidDataException
 	{
 		DefaultJDOMExternalizer.readExternal(this, element);
 
-		myJavaSdkPointer = PluginRunXmlConfigurationUtil.readPointer(JAVA_SDK,
-				element,
-				() -> ServiceManager.getService(SdkPointerManager.class));
+		myJavaSdkPointer = PluginRunXmlConfigurationUtil.readPointer(
+			JAVA_SDK,
+			element,
+			() -> ServiceManager.getService(SdkPointerManager.class)
+		);
 
 		super.readExternal(element);
 	}

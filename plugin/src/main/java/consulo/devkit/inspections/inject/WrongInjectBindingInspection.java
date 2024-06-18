@@ -133,9 +133,13 @@ public class WrongInjectBindingInspection extends InternalInspection {
 
   @Nullable
   private static DevKitComponentScope resolveComponentScope(PsiMethod method) {
-    return LanguageCachedValueUtil.getCachedValue(method,
-                                                  () -> CachedValueProvider.Result.create(resolveComponentScopeImpl(method),
-                                                                                          PsiModificationTracker.MODIFICATION_COUNT));
+    return LanguageCachedValueUtil.getCachedValue(
+      method,
+      () -> CachedValueProvider.Result.create(
+        resolveComponentScopeImpl(method),
+        PsiModificationTracker.MODIFICATION_COUNT
+      )
+    );
   }
 
   @RequiredReadAction
@@ -181,10 +185,10 @@ public class WrongInjectBindingInspection extends InternalInspection {
     }
 
     PsiElement resolveTarget = ((PsiReferenceExpression)value).resolve();
-    if (resolveTarget instanceof PsiEnumConstant) {
-      String name = ((PsiEnumConstant)resolveTarget).getName();
+    if (resolveTarget instanceof PsiEnumConstant enumConstant) {
+      String name = enumConstant.getName();
 
-      PsiClass containingClass = ((PsiEnumConstant)resolveTarget).getContainingClass();
+      PsiClass containingClass = enumConstant.getContainingClass();
 
       if (containingClass != null && "consulo.annotation.component.ComponentScope".equals(containingClass.getQualifiedName())) {
         try {
