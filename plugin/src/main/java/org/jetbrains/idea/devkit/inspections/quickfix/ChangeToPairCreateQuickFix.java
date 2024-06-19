@@ -19,10 +19,12 @@ import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
 import consulo.project.Project;
+import consulo.util.lang.Pair;
 
 import javax.annotation.Nonnull;
 
@@ -35,13 +37,14 @@ public class ChangeToPairCreateQuickFix extends LocalQuickFixBase {
   }
 
   @Override
+  @RequiredReadAction
   public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     PsiElement element = descriptor.getPsiElement();
     if (element == null) {
       return;
     }
     String text = element.getText();
-    String newText = "com.intellij.openapi.util.Pair.create(" + text.substring(text.indexOf('(') + 1);
+    String newText = Pair.class.getName() + ".create(" + text.substring(text.indexOf('(') + 1);
     PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
     PsiExpression expression = factory.createExpressionFromText(newText, element.getContext());
     PsiElement newElement = element.replace(expression);
