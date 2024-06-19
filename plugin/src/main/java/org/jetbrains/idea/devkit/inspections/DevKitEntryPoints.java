@@ -17,6 +17,7 @@ package org.jetbrains.idea.devkit.inspections;
 
 import com.intellij.java.language.codeInsight.AnnotationUtil;
 import com.intellij.java.language.psi.*;
+import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.UsedInPlugin;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.ImplicitUsageProvider;
@@ -32,14 +33,12 @@ public class DevKitEntryPoints implements ImplicitUsageProvider {
 
   @Override
   public boolean isImplicitUsage(PsiElement element) {
-    if (element instanceof PsiClass) {
-      final PsiClass domClass =
-        JavaPsiFacade.getInstance(element.getProject()).findClass(domClassName, element.getResolveScope());
-
-      if (domClass != null && ((PsiClass)element).isInheritor(domClass, true)) {
+    if (element instanceof PsiClass psiClass) {
+      if (InheritanceUtil.isInheritor(psiClass, domClassName)) {
         return true;
       }
     }
+    
     if (element instanceof PsiField || element instanceof PsiMethod || element instanceof PsiClass) {
       return AnnotationUtil.isAnnotated((PsiModifierListOwner)element, UsedInPlugin.class.getName(), 0);
     }
