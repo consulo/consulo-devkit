@@ -51,6 +51,7 @@ import java.util.List;
 /**
  * @author yole
  */
+// TODO review and resurrect, also remove Swing UI
 public class NewActionDialog extends DialogWrapper implements ActionData {
   private JPanel myRootPanel;
   private JList myGroupList;

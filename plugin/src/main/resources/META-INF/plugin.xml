@@ -22,24 +22,7 @@
   </permissions>
 
   <actions>
-    <action class="org.jetbrains.idea.devkit.actions.NewActionAction" text="Action" id="NewAction">
-      <add-to-group anchor="last" group-id="NewGroup"/>
-    </action>
-
-    <action class="org.jetbrains.idea.devkit.actions.GenerateComponentExternalizationAction" text="Generate Externalization"
-            id="GenerateExternalization">
-      <add-to-group anchor="last" group-id="GenerateGroup"/>
-    </action>
-
     <group id="Internal.DevKit" class="consulo.devkit.action.InternalGroup" text="DevKit" popup="true">
-      <!--<action class="org.jetbrains.idea.devkit.actions.ToggleHighlightingMarkupAction"-->
-      <!--text="Toggle Expected Highlighting Markup"-->
-      <!--id="ToggleHighlightingMarkup"/>-->
-
-      <!--<action class="org.jetbrains.idea.devkit.actions.ShuffleNamesAction" text="Shuffle Names"-->
-      <!--id="ShuffleNamesAction"/>-->
-
-
       <action class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
               id="GenerateDomModel"/>
 

@@ -19,7 +19,9 @@ import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
 import consulo.application.ApplicationManager;
 import consulo.codeEditor.Editor;
-import consulo.component.persist.StoragePathMacros;
+import consulo.component.persist.PersistentStateComponent;
+import consulo.component.persist.State;
+import consulo.component.persist.Storage;
 import consulo.dataContext.DataContext;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.codeStyle.CodeStyleManager;
@@ -35,7 +37,6 @@ import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.Presentation;
 import consulo.undoRedo.CommandProcessor;
-import org.jetbrains.annotations.NonNls;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,17 +44,12 @@ import javax.annotation.Nullable;
 /**
  * @author max
  */
+// TODO review and resurrect
 public class GenerateComponentExternalizationAction extends AnAction {
   private static final Logger LOG = Logger.getInstance(GenerateComponentExternalizationAction.class);
-
-  @NonNls
-  private final static String BASE_COMPONENT = "com.intellij.openapi.components.BaseComponent";
-  @NonNls
-  private final static String PERSISTENCE_STATE_COMPONENT = "com.intellij.openapi.components.PersistentStateComponent";
-  @NonNls
-  private final static String STATE = "com.intellij.openapi.components.State";
-  @NonNls
-  private final static String STORAGE = "com.intellij.openapi.components.Storage";
+  private final static String PERSISTENCE_STATE_COMPONENT = PersistentStateComponent.class.getName();
+  private final static String STATE = State.class.getName();
+  private final static String STORAGE = Storage.class.getName();
 
   @Override
   public void actionPerformed(@Nonnull AnActionEvent e) {
@@ -72,7 +68,7 @@ public class GenerateComponentExternalizationAction extends AnAction {
           factory.createReferenceFromText(PERSISTENCE_STATE_COMPONENT + "<" + qualifiedName + ">", target);
         implList.add(styler.shortenClassReferences(referenceElement.copy()));
         PsiMethod read =
-          factory.createMethodFromText("public void loadState(" + qualifiedName + " state) {\n" + "    com.intellij.util.xmlb.XmlSerializerUtil.copyBean(state, " +
+          factory.createMethodFromText("public void loadState(" + qualifiedName + " state) {\n" + "    consulo.util.xml.serializer.XmlSerializerUtil.copyBean(state, " +
                                          "this);\n" + "}", target);
 
         read = (PsiMethod)formatter.reformat(target.add(read));
@@ -87,7 +83,7 @@ public class GenerateComponentExternalizationAction extends AnAction {
 
         annotation =
           (PsiAnnotation)formatter.reformat(annotation.replace(factory.createAnnotationFromText("@" + STATE + "(name = \"" + qualifiedName + "\", " + "storages = {@"
-                                                                                                  + STORAGE + "(file = \"" + StoragePathMacros.WORKSPACE_FILE + "\"\n )})",
+                                                                                                  + STORAGE + "(StoragePathMacros.DEFAULT_FILE\n )})",
                                                                                                 target)));
         styler.shortenClassReferences(annotation);
       }
@@ -117,11 +113,6 @@ public class GenerateComponentExternalizationAction extends AnAction {
 
     PsiClass contextClass = PsiTreeUtil.findElementOfClassAtOffset(file, editor.getCaretModel().getOffset(), PsiClass.class, false);
     if (contextClass == null || contextClass.isEnum() || contextClass.isInterface() || contextClass instanceof PsiAnonymousClass) {
-      return null;
-    }
-
-    PsiClass componentClass = JavaPsiFacade.getInstance(file.getProject()).findClass(BASE_COMPONENT, file.getResolveScope());
-    if (componentClass == null || !contextClass.isInheritor(componentClass, true)) {
       return null;
     }
 
