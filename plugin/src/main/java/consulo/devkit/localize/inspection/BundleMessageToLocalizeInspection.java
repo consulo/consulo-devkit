@@ -267,7 +267,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
     @RequiredReadAction
     private boolean initLocalizeClass() {
-      PsiClass localizeClass = LocalizeClassResolver.resolveByBundle(myClass);
+      PsiClass localizeClass = LocalizeClassResolver.resolveByBundle(myClass, myExpression);
 
       if (localizeClass == null) {
         return false;
