@@ -20,10 +20,12 @@ import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.PsiTypeElement;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
 import consulo.project.Project;
+import consulo.util.lang.Couple;
 
 import javax.annotation.Nonnull;
 
@@ -31,25 +33,25 @@ import javax.annotation.Nonnull;
  * @author Konstantin Bulenkov
  */
 public class UseCoupleQuickFix extends LocalQuickFixBase {
-  private static final String COUPLE_FQN = "com.intellij.openapi.util.Couple";
 
   public UseCoupleQuickFix(String text) {
     super(text);
   }
 
   @Override
+  @RequiredReadAction
   public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     final PsiElement element = descriptor.getPsiElement();
     final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
     final PsiElement newElement;
-    if (element instanceof PsiTypeElement) {
-      final String canonicalText = ((PsiTypeElement)element).getType().getCanonicalText();
+    if (element instanceof PsiTypeElement psiTypeElement) {
+      final String canonicalText = psiTypeElement.getType().getCanonicalText();
       final String type = canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.indexOf(','));
-      final PsiTypeElement newType = factory.createTypeElementFromText(COUPLE_FQN + "<" + type + ">", element.getContext());
+      final PsiTypeElement newType = factory.createTypeElementFromText(Couple.class.getName() + "<" + type + ">", element.getContext());
       newElement = element.replace(newType);
     }
     else {
-      final String text = COUPLE_FQN + ".of" + element.getText().substring("Pair.create".length());
+      final String text = Couple.class.getName() + ".of" + element.getText().substring("Pair.create".length());
       final PsiExpression expression = factory.createExpressionFromText(text, element.getContext());
       newElement = element.replace(expression);
     }
