@@ -95,7 +95,6 @@ public class RequiredXActionInspection extends InternalInspection {
     }
 
     private void reportError(@Nonnull PsiExpression expression, @Nonnull CallStateType type) {
-      LocalQuickFix[] quickFixes = LocalQuickFix.EMPTY_ARRAY;
       LocalizeValue text;
       switch (type) {
         case READ:
@@ -104,11 +103,11 @@ public class RequiredXActionInspection extends InternalInspection {
           break;
         case UI_ACCESS:
           text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRunUi();
-          quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(RequiredUIAccess.class.getName())};
           break;
         default:
           throw new IllegalArgumentException();
       }
+      LocalQuickFix[] quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(type.getActionClass())};
       myHolder.registerProblem(expression, text.get(), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, quickFixes);
     }
   }

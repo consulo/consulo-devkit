@@ -241,7 +241,7 @@ inspections.component.not.registered.quickfix.name:
 inspections.component.not.registered.quickfix.error:
   text: Cannot Register {0}
 inspections.annotation.0.is.required.at.owner.or.app.run:
-  text: Annotation @Required{0}Action is required at owner or run code inside ApplicationManager.getApplication().run{0}Action(...)
+  text: Annotation @Required{0}Action is required at owner or run code inside Application#run{0}Action(...)
 inspections.annotation.0.is.required.at.owner.or.app.run.dispath:
   text: Annotation @RequiredRequiredDispatchThread is required at owner or run code inside UIUtil.invokeLaterIfNeeded(...)
 inspections.annotation.0.is.required.at.owner.or.app.run.ui:
