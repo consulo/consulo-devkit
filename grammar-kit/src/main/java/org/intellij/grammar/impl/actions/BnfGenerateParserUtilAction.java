@@ -20,7 +20,7 @@ import com.intellij.java.impl.codeInsight.daemon.impl.quickfix.CreateClassKind;
 import com.intellij.java.impl.codeInsight.intention.impl.CreateClassDialog;
 import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
-import consulo.application.Application;import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.application.Result;
 import consulo.devkit.grammarKit.generator.PlatformClass;
 import consulo.document.Document;

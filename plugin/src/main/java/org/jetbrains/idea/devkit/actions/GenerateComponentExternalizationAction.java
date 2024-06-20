@@ -62,7 +62,7 @@ public class GenerateComponentExternalizationAction extends AnAction {
     final CodeStyleManager formatter = CodeStyleManager.getInstance(target.getManager().getProject());
     final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(target.getProject());
     final String qualifiedName = target.getQualifiedName();
-    Runnable runnable = () -> Application.get().runWriteAction(() -> {
+    Runnable runnable = () -> target.getProject().getApplication().runWriteAction(() -> {
       try {
         final PsiReferenceList implList = target.getImplementsList();
         assert implList != null;

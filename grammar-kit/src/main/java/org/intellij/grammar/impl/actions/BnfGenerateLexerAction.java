@@ -126,7 +126,7 @@ public class BnfGenerateLexerAction extends AnAction {
           associateFileTypeAndNavigate(project, virtualFile);
         }
         catch (final IncorrectOperationException e) {
-          Application.get().invokeLater(() -> Messages.showErrorDialog(
+          project.getUIAccess().give(() -> Messages.showErrorDialog(
             project,
             "Unable to create file " + flexFileName + "\n" + e.getLocalizedMessage(),
             "Create JFlex Lexer"

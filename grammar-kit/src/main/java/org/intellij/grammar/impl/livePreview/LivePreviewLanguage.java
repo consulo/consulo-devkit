@@ -62,7 +62,7 @@ public class LivePreviewLanguage extends Language {
   protected LivePreviewLanguage(@Nonnull BnfFile grammarFile) {
     super(BASE_INSTANCE, ObjectUtil.assertNotNull(grammarFile.getVirtualFile()).getPath());
     VirtualFile virtualFile = ObjectUtil.assertNotNull(grammarFile.getVirtualFile());
-    Application app = Application.get();
+    Application app = grammarFile.getProject().getApplication();
     if (app.isUnitTestMode()) {
       myBnfFile = new SoftReference<>(grammarFile);
       myFilePointer = null;
