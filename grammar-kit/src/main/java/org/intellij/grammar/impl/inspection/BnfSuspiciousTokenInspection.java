@@ -92,9 +92,9 @@ public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
     file.accept(new PsiRecursiveElementWalkingVisitor() {
       @Override
       public void visitElement(PsiElement element) {
-        if (element instanceof BnfRule) {
+        if (element instanceof BnfRule rule) {
           // do not check external rules
-          if (ParserGeneratorUtil.Rule.isExternal((BnfRule)element)) return;
+          if (ParserGeneratorUtil.Rule.isExternal(rule)) return;
         }
         else if (element instanceof BnfExternalExpression) {
           // do not check external expressions
@@ -105,7 +105,11 @@ public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
           Object resolve = reference == null ? null : reference.resolve();
           final String text = element.getText();
           if (resolve == null && !tokens.contains(text) && isTokenTextSuspicious(text)) {
-            problemsHolder.registerProblem(element, "'"+text+"' token looks like a reference to a missing rule", new CreateRuleFromTokenFix(text));
+            problemsHolder.registerProblem(
+              element,
+              "'" + text + "' token looks like a reference to a missing rule",
+              new CreateRuleFromTokenFix(text)
+            );
           }
         }
         super.visitElement(element);

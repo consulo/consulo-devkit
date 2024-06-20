@@ -16,8 +16,9 @@
 
 package org.intellij.grammar.impl.livePreview;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.application.progress.ProgressIndicator;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorColors;
@@ -35,14 +36,14 @@ import consulo.language.editor.rawHighlight.HighlightInfoType;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.project.Project;
-import consulo.util.collection.ContainerUtil;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.dataholder.Key;
-import consulo.util.lang.function.PairProcessor;
 import consulo.virtualFileSystem.VirtualFile;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfFile;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,7 +62,7 @@ public class GrammarAtCaretPassFactory implements TextEditorHighlightingPassFact
 
   @Override
   public TextEditorHighlightingPass createHighlightingPass(@Nonnull final PsiFile file, @Nonnull final Editor editor) {
-    if (ApplicationManager.getApplication().isHeadlessEnvironment()) {
+    if (Application.get().isHeadlessEnvironment()) {
       return null;
     }
 
@@ -78,9 +79,10 @@ public class GrammarAtCaretPassFactory implements TextEditorHighlightingPassFact
     }
 
     return new TextEditorHighlightingPass(file.getProject(), editor.getDocument(), false) {
-      List<HighlightInfo> infos = ContainerUtil.newArrayList();
+      List<HighlightInfo> infos = new ArrayList<>();
 
       @Override
+      @RequiredReadAction
       public void doCollectInformation(@Nonnull ProgressIndicator progress) {
         infos.clear();
         LivePreviewLanguage previewLanguage = LivePreviewLanguage.findInstance(file);
@@ -96,63 +98,61 @@ public class GrammarAtCaretPassFactory implements TextEditorHighlightingPassFact
       }
 
       @Override
+      @RequiredUIAccess
       public void doApplyInformationToEditor() {
         Document document = editor.getDocument();
-        UpdateHighlightersUtil.setHighlightersToEditor(myProject,
-                                                       document,
-                                                       0,
-                                                       file.getTextLength(),
-                                                       infos,
-                                                       getColorsScheme(),
-                                                       getId());
+        UpdateHighlightersUtil.setHighlightersToEditor(
+          myProject,
+          document,
+          0,
+          file.getTextLength(),
+          infos,
+          getColorsScheme(),
+          getId()
+        );
       }
     };
   }
 
-  private static void collectHighlighters(@Nonnull final Project project,
-                                          @Nonnull Editor editor,
-                                          @Nonnull LivePreviewLanguage livePreviewLanguage,
-                                          @Nonnull List<HighlightInfo> result) {
-    final Set<TextRange> trueRanges = new HashSet<>();
-    final Set<TextRange> falseRanges = new HashSet<>();
+  @RequiredReadAction
+  private static void collectHighlighters(
+    @Nonnull final Project project,
+    @Nonnull Editor editor,
+    @Nonnull LivePreviewLanguage livePreviewLanguage,
+    @Nonnull List<HighlightInfo> result
+  ) {
+    final Set<TextRange> trueRanges = new HashSet<>(), falseRanges = new HashSet<>();
     final Set<BnfExpression> visited = new HashSet<>();
-    LivePreviewHelper.collectExpressionsAtOffset(project, editor, livePreviewLanguage, new PairProcessor<BnfExpression, Boolean>() {
-      @Override
-      public boolean process(BnfExpression bnfExpression, Boolean result) {
-        for (PsiElement parent = bnfExpression.getParent();
-             parent instanceof BnfExpression && visited.add((BnfExpression)parent); ) {
-          parent = parent.getParent();
-        }
-        if (visited.add(bnfExpression)) {
-          (result ? trueRanges : falseRanges).add(bnfExpression.getTextRange());
-        }
-        return true;
+    LivePreviewHelper.collectExpressionsAtOffset(project, editor, livePreviewLanguage, (bnfExpression, result1) -> {
+      for (PsiElement parent = bnfExpression.getParent(); parent instanceof BnfExpression expression && visited.add(expression); ) {
+        parent = parent.getParent();
       }
+      if (visited.add(bnfExpression)) {
+        (result1 ? trueRanges : falseRanges).add(bnfExpression.getTextRange());
+      }
+      return true;
     });
     createHighlights(trueRanges, falseRanges, result);
   }
 
-  private static void createHighlights(Set<TextRange> trueRanges,
-                                       Set<TextRange> falseRanges,
-                                       List<HighlightInfo> result) {
+  private static void createHighlights(Set<TextRange> trueRanges, Set<TextRange> falseRanges, List<HighlightInfo> result) {
     EditorColorsManager manager = EditorColorsManager.getInstance();
     TextAttributes trueAttrs = manager.getGlobalScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES);
     TextAttributes falseAttrs = manager.getGlobalScheme().getAttributes(EditorColors.WRITE_SEARCH_RESULT_ATTRIBUTES);
 
     for (TextRange range : trueRanges) {
       HighlightInfo info = HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION)
-                                        .range(range)
-                                        .textAttributes(trueAttrs)
-                                        .createUnconditionally();
+        .range(range)
+        .textAttributes(trueAttrs)
+        .createUnconditionally();
       result.add(info);
     }
     for (TextRange range : falseRanges) {
       HighlightInfo info = HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION)
-                                        .range(range)
-                                        .textAttributes(falseAttrs)
-                                        .createUnconditionally();
+        .range(range)
+        .textAttributes(falseAttrs)
+        .createUnconditionally();
       result.add(info);
     }
   }
-
 }

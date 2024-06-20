@@ -4,7 +4,7 @@
 
 package org.intellij.grammar.generator;
 
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 
 import javax.annotation.Nonnull;
 
@@ -24,16 +24,18 @@ class Names {
   public final String metaParamPrefix;
   public final String psiLocal = "p";
 
-  private Names(String builder,
-                String version,
-                String level,
-                String marker,
-                String pinned,
-                String result,
-                String pos,
-                String root,
-                String priority,
-                String metaParamPrefix) {
+  private Names(
+    String builder,
+    String version,
+    String level,
+    String marker,
+    String pinned,
+    String result,
+    String pos,
+    String root,
+    String priority,
+    String metaParamPrefix
+  ) {
     this.builder = builder;
     this.version = version;
     this.level = level;
@@ -47,11 +49,33 @@ class Names {
   }
 
   public static Names classicNames() {
-    return new Names("builder_", "version_", "level_", "marker_", "pinned_", "result_", "pos_", "root_", "priority_", "");
+    return new Names(
+      "builder_",
+      "version_",
+      "level_",
+      "marker_",
+      "pinned_",
+      "result_",
+      "pos_",
+      "root_",
+      "priority_",
+      ""
+    );
   }
 
   public static Names longNames() {
-    return new Names("builder", "version", "level", "marker", "pinned", "result", "pos", "type", "priority", "a");
+    return new Names(
+      "builder",
+      "version",
+      "level",
+      "marker",
+      "pinned",
+      "result",
+      "pos",
+      "type",
+      "priority",
+      "a"
+    );
   }
 
   public static Names shortNames() {
@@ -69,6 +93,6 @@ class Names {
     if ("classic".equals(name)) {
       return classicNames();
     }
-    return ApplicationManager.getApplication().isUnitTestMode() ? classicNames() : shortNames();
+    return Application.get().isUnitTestMode() ? classicNames() : shortNames();
   }
 }

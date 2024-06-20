@@ -16,22 +16,23 @@
 
 package org.intellij.grammar.impl.refactor;
 
-import consulo.language.psi.search.ReferencesSearch;
-import consulo.logging.Logger;
-import consulo.project.Project;
-import consulo.util.lang.Pair;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.language.editor.refactoring.BaseRefactoringProcessor;
+import consulo.language.editor.refactoring.util.CommonRefactoringUtil;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiRecursiveElementWalkingVisitor;
 import consulo.language.psi.PsiReference;
+import consulo.language.psi.search.ReferencesSearch;
 import consulo.language.psi.util.PsiTreeUtil;
-import consulo.language.editor.refactoring.BaseRefactoringProcessor;
-import consulo.language.editor.refactoring.util.CommonRefactoringUtil;
+import consulo.language.util.IncorrectOperationException;
+import consulo.logging.Logger;
+import consulo.project.Project;
 import consulo.usage.UsageInfo;
 import consulo.usage.UsageViewDescriptor;
-import consulo.language.util.IncorrectOperationException;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.primitive.objects.ObjectIntMap;
 import consulo.util.collection.primitive.objects.ObjectMaps;
+import consulo.util.lang.Couple;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
@@ -63,15 +64,17 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
   }
 
   @Nonnull
-  protected UsageViewDescriptor createUsageViewDescriptor(UsageInfo[] usages) {
+  protected UsageViewDescriptor createUsageViewDescriptor(@Nonnull UsageInfo[] usages) {
     return new BnfInlineViewDescriptor(myRule);
   }
 
+  @Nonnull
   protected String getCommandName() {
-    return "Inline rule '"+myRule.getName()+"'";
+    return "Inline rule '" + myRule.getName() + "'";
   }
 
   @Nonnull
+  @RequiredReadAction
   protected UsageInfo[] findUsages() {
     if (myInlineThisOnly) return new UsageInfo[]{new UsageInfo(myReference.getElement())};
 
@@ -89,7 +92,8 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
     myRule = (BnfRule)elements[0];
   }
 
-  protected void performRefactoring(UsageInfo[] usages) {
+  @RequiredReadAction
+  protected void performRefactoring(@Nonnull UsageInfo[] usages) {
     BnfExpression expression = myRule.getExpression();
     boolean meta = ParserGeneratorUtil.Rule.isMeta(myRule);
 
@@ -120,12 +124,13 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
     }
   }
 
+  @RequiredReadAction
   private static void inlineExpressionUsage(BnfExpression place, BnfExpression ruleExpr) throws IncorrectOperationException {
     BnfExpression replacement = BnfElementFactory.createExpressionFromText(ruleExpr.getProject(), '(' + ruleExpr.getText() + ')');
     BnfExpressionOptimizer.optimize(place.replace(replacement));
   }
 
-
+  @RequiredReadAction
   private static void inlineMetaRuleUsage(BnfExpression place, BnfExpression expression) {
     BnfRule rule = PsiTreeUtil.getParentOfType(place, BnfRule.class);
     PsiElement parent = place.getParent();
@@ -144,7 +149,7 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
       return;
     }
     final ObjectIntMap<String> visited = ObjectMaps.newObjectIntHashMap();
-    final LinkedList<Pair<PsiElement, PsiElement>> work = new LinkedList<Pair<PsiElement, PsiElement>>();
+    final LinkedList<Couple<PsiElement>> work = new LinkedList<>();
     (expression = (BnfExpression)expression.copy()).acceptChildren(new PsiRecursiveElementWalkingVisitor() {
       @Override
       public void visitElement(PsiElement element) {
@@ -155,7 +160,7 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
             int idx = visited.getInt(text);
             if (idx == 0) visited.putInt(text, idx = visited.size() + 1);
             if (idx < expressionList.size()) {
-              work.addFirst(Pair.create(element, (PsiElement)expressionList.get(idx)));
+              work.addFirst(Couple.of(element, expressionList.get(idx)));
             }
           }
         }
@@ -164,7 +169,7 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
         }
       }
     });
-    for (Pair<PsiElement, PsiElement> pair : work) {
+    for (Couple<PsiElement> pair : work) {
       BnfExpressionOptimizer.optimize(pair.first.replace(pair.second));
     }
     inlineExpressionUsage((BnfExpression)parent, expression);

@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class BnfExpressionOptimizer {
   public static void optimize(PsiElement element) {
-    final LinkedList<PsiElement> list = new LinkedList<PsiElement>();
+    final LinkedList<PsiElement> list = new LinkedList<>();
     list.add(element.getParent());
     list.add(element);
     while (!list.isEmpty()) {
@@ -42,7 +42,8 @@ public class BnfExpressionOptimizer {
       if (isTrivial(cur)) {
         mergeChildrenTo(parent, cur, list);
       }
-      else if (cur instanceof BnfParenOptExpression && isTrivialOrSingular(((BnfParenOptExpression)cur).getExpression())) {
+      else if (cur instanceof BnfParenOptExpression
+        && isTrivialOrSingular(((BnfParenOptExpression)cur).getExpression())) {
         // currently <expr> + ? expressions are not supported, thus:
         BnfExpression child = ((BnfParenOptExpression)cur).getExpression();
         IElementType type = ParserGeneratorUtil.getEffectiveType(child);
@@ -132,28 +133,36 @@ public class BnfExpressionOptimizer {
 
   private static boolean isTrivial(PsiElement element) {
     PsiElement parent = element.getParent();
-    if (element instanceof BnfParenthesized && parent instanceof BnfRule && !(isOptMany(element) || element instanceof BnfChoice)) {
+    if (element instanceof BnfParenthesized
+      && parent instanceof BnfRule
+      && !(isOptMany(element) || element instanceof BnfChoice)) {
       return true;
     }
-    else if (element instanceof BnfParenExpression &&
-             (canBeMergedInto(((BnfParenExpression)element).getExpression(), parent) ||
-              parent instanceof BnfParenthesized ||
-              isTrivialOrSingular(((BnfParenExpression)element).getExpression()))) {
+    else if (
+      element instanceof BnfParenExpression bnfParenExpression && (
+        canBeMergedInto(bnfParenExpression.getExpression(), parent)
+          || parent instanceof BnfParenthesized
+          || isTrivialOrSingular(bnfParenExpression.getExpression())
+      )
+    ) {
       return true;
     }
-    else if (element instanceof BnfSequence && (((BnfSequence)element).getExpressionList().size() == 1 || parent instanceof BnfSequence)) {
+    else if (element instanceof BnfSequence bnfSequence
+      && (bnfSequence.getExpressionList().size() == 1 || parent instanceof BnfSequence)) {
       return true;
     }
-    else if (element instanceof BnfChoice && (((BnfChoice)element).getExpressionList().size() == 1 || parent instanceof BnfChoice)) {
+    else if (element instanceof BnfChoice bnfChoice
+      && (bnfChoice.getExpressionList().size() == 1 || parent instanceof BnfChoice)) {
       return true;
     }
     return false;
   }
 
   private static boolean isTrivialOrSingular(PsiElement element) {
-    return element instanceof BnfReferenceOrToken || element instanceof BnfLiteralExpression ||
-           element instanceof BnfParenthesized || element instanceof BnfQuantified ||
-           isTrivial(element)
-      ;
+    return element instanceof BnfReferenceOrToken
+      || element instanceof BnfLiteralExpression
+      || element instanceof BnfParenthesized
+      || element instanceof BnfQuantified
+      || isTrivial(element);
   }
 }

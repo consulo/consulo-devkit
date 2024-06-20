@@ -16,8 +16,9 @@
 
 package org.jetbrains.idea.devkit.inspections.quickfix;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.application.AllIcons;
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorPopupHelper;
 import consulo.component.util.Iconable;
@@ -34,6 +35,7 @@ import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
 import consulo.module.Module;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.JBList;
 import consulo.ui.ex.popup.JBPopup;
 import consulo.ui.ex.popup.JBPopupFactory;
@@ -82,14 +84,14 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
   }
 
   @Override
+  @RequiredUIAccess
   public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
     final List<VirtualFile> virtualFiles =
       isIntention ? IntentionDescriptionNotFoundInspection.getPotentialRoots(myModule) : InspectionDescriptionNotFoundInspection.getPotentialRoots(
         myModule);
     final VirtualFile[] roots = prepare(VirtualFileUtil.toVirtualFileArray(virtualFiles));
     if (roots.length == 1) {
-      ApplicationManager.getApplication().runWriteAction(() -> createDescription(roots[0]));
-
+      Application.get().runWriteAction(() -> createDescription(roots[0]));
     }
     else {
       List<String> options = new ArrayList<>();
@@ -108,7 +110,8 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
         .setItemChosenCallback(desc -> {
           final int index = files.getSelectedIndex();
           if (0 <= index && index < roots.length) {
-            ApplicationManager.getApplication().runWriteAction(() -> createDescription(roots[index]));
+            //noinspection RequiredXAction
+            Application.get().runWriteAction(() -> createDescription(roots[index]));
           }
         })
         .createPopup();
@@ -120,6 +123,7 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
     }
   }
 
+  @RequiredReadAction
   private void createDescription(VirtualFile root) {
     if (!root.isDirectory()) {
       return;

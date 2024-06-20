@@ -25,7 +25,6 @@ import consulo.language.ast.ASTNode;
 import consulo.language.editor.folding.FoldingBuilderEx;
 import consulo.language.editor.folding.FoldingDescriptor;
 import consulo.language.psi.PsiElement;
-import consulo.language.psi.resolve.PsiElementProcessor;
 import consulo.language.psi.util.PsiTreeUtil;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.BnfParserDefinition;
@@ -46,7 +45,7 @@ public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
     if (!(root instanceof BnfFile)) return FoldingDescriptor.EMPTY;
     BnfFile file = (BnfFile)root;
 
-    final ArrayList<FoldingDescriptor> result = new ArrayList<FoldingDescriptor>();
+    final ArrayList<FoldingDescriptor> result = new ArrayList<>();
     for (BnfAttrs attrs : file.getAttributes()) {
       TextRange textRange = attrs.getTextRange();
       if (textRange.getLength() <= 2) continue;
@@ -66,14 +65,11 @@ public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
       }
     }
     if (!quick) {
-      PsiTreeUtil.processElements(file, new PsiElementProcessor() {
-        @Override
-        public boolean execute(@Nonnull PsiElement element) {
-          if (element.getNode().getElementType() == BnfParserDefinition.BNF_BLOCK_COMMENT) {
-            result.add(new FoldingDescriptor(element, element.getTextRange()));
-          }
-          return true;
+      PsiTreeUtil.processElements(file, element -> {
+        if (element.getNode().getElementType() == BnfParserDefinition.BNF_BLOCK_COMMENT) {
+          result.add(new FoldingDescriptor(element, element.getTextRange()));
         }
+        return true;
       });
     }
 
@@ -85,7 +81,7 @@ public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
   public String getPlaceholderText(@Nonnull ASTNode node) {
     PsiElement psi = node.getPsi();
     if (psi instanceof BnfAttrs) return "{..}";
-    if (psi instanceof BnfRule) return ((BnfRule)psi).getName() + " ::= ...";
+    if (psi instanceof BnfRule rule) return rule.getName() + " ::= ...";
     if (psi instanceof BnfValueList) return "[..]";
     if (node.getElementType() == BnfParserDefinition.BNF_BLOCK_COMMENT) return "/*..*/";
     return null;
@@ -94,8 +90,8 @@ public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
   @Override
   public boolean isCollapsedByDefault(@Nonnull ASTNode node) {
     PsiElement psi = node.getPsi();
-    return psi instanceof BnfValueList ||
-           psi instanceof BnfAttrs && !(psi.getParent() instanceof BnfRule);
+    return psi instanceof BnfValueList
+      || psi instanceof BnfAttrs && !(psi.getParent() instanceof BnfRule);
   }
 
   @Nonnull

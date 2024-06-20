@@ -224,21 +224,18 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
         }
       }
       if (KnownAttribute.getAttribute(thisAttrName) == KnownAttribute.PIN) {
-        PairProcessor<String, BnfExpression> processor = new PairProcessor<String, BnfExpression>() {
-          @Override
-          public boolean process(String funcName, BnfExpression expression) {
-            if (!(expression instanceof BnfSequence)) {
-              return true;
-            }
-            PsiElement firstNotTrivial = ParserGeneratorUtil.Rule.firstNotTrivial(ParserGeneratorUtil.Rule.of(expression));
-            if (firstNotTrivial == expression) {
-              return true;
-            }
-            if (pattern.matcher(funcName).matches()) {
-              result.add(new MyFakePsiElement(funcName, expression));
-            }
+        PairProcessor<String, BnfExpression> processor = (funcName, expression) -> {
+          if (!(expression instanceof BnfSequence)) {
             return true;
           }
+          PsiElement firstNotTrivial = ParserGeneratorUtil.Rule.firstNotTrivial(ParserGeneratorUtil.Rule.of(expression));
+          if (firstNotTrivial == expression) {
+            return true;
+          }
+          if (pattern.matcher(funcName).matches()) {
+            result.add(new MyFakePsiElement(funcName, expression));
+          }
+          return true;
         };
         for (Object e : result.toArray()) {
           BnfRule rule = (BnfRule)e;
@@ -265,8 +262,8 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
     if (e1 == null) {
       return false;
     }
-    if (e2 instanceof PsiNamedElement) {
-      String name = ((PsiNamedElement)e2).getName();
+    if (e2 instanceof PsiNamedElement namedElement) {
+      String name = namedElement.getName();
       Pattern pattern = getPattern(e1);
       if (name == null || pattern == null || !pattern.matcher(name).matches()) {
         return false;
