@@ -15,6 +15,7 @@
  */
 package org.intellij.grammar.impl;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.AllIcons;
 import consulo.codeEditor.Editor;
@@ -30,7 +31,6 @@ import consulo.language.editor.structureView.StructureViewModelBase;
 import consulo.language.icon.IconDescriptorUpdaters;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
-import consulo.language.psi.PsiNamedElement;
 import consulo.ui.image.Image;
 import consulo.util.collection.ContainerUtil;
 import org.intellij.grammar.BnfLanguage;
@@ -106,6 +106,7 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
     }
 
     @Override
+    @RequiredReadAction
     public String getAlphaSortKey() {
       return getPresentableText();
     }
@@ -114,21 +115,20 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
     @Override
     public Collection<StructureViewTreeElement> getChildrenBase() {
       PsiElement element = getElement();
-      if (element instanceof BnfRule
-          || element instanceof BnfAttr) {
+      if (element instanceof BnfRule || element instanceof BnfAttr) {
         return Collections.emptyList();
       }
-      final ArrayList<StructureViewTreeElement> result = new ArrayList<StructureViewTreeElement>();
-      if (element instanceof BnfFile) {
-        for (BnfAttrs o : ((BnfFile)element).getAttributes()) {
+      final ArrayList<StructureViewTreeElement> result = new ArrayList<>();
+      if (element instanceof BnfFile bnfFile) {
+        for (BnfAttrs o : bnfFile.getAttributes()) {
           result.add(new MyElement(o));
         }
-        for (BnfRule o : ((BnfFile)element).getRules()) {
+        for (BnfRule o : bnfFile.getRules()) {
           result.add(new MyElement(o));
         }
       }
-      else if (element instanceof BnfAttrs) {
-        for (BnfAttr o : ((BnfAttrs)element).getAttrList()) {
+      else if (element instanceof BnfAttrs bnfAttrs) {
+        for (BnfAttr o : bnfAttrs.getAttrList()) {
           result.add(new MyElement(o));
         }
       }
@@ -136,35 +136,38 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
     }
 
     @Override
+    @RequiredReadAction
     public String getPresentableText() {
       PsiElement element = getElement();
-      if (element instanceof BnfRule) {
-        return ((PsiNamedElement)element).getName();
+      if (element instanceof BnfRule rule) {
+        return rule.getName();
       }
-      else if (element instanceof BnfAttr) {
-        return getAttrDisplayName((BnfAttr)element);
+      else if (element instanceof BnfAttr attr) {
+        return getAttrDisplayName(attr);
       }
-      else if (element instanceof BnfAttrs) {
-        List<BnfAttr> attrList = ((BnfAttrs)element).getAttrList();
+      else if (element instanceof BnfAttrs attrs) {
+        List<BnfAttr> attrList = attrs.getAttrList();
         final BnfAttr firstAttr = ContainerUtil.getFirstItem(attrList);
         if (firstAttr == null) return "Attributes { <empty> }";
         String suffix = attrList.size() > 1? " & " + attrList.size()+" more..." : " ";
         return "Attributes { " + getAttrDisplayName(firstAttr) + suffix+ "}";
       }
-      else if (element instanceof BnfFileImpl) {
-        return ((BnfFileImpl)element).getName();
+      else if (element instanceof BnfFileImpl file) {
+        return file.getName();
       }
       return "" + element;
     }
 
+    @RequiredReadAction
     private static String getAttrDisplayName(BnfAttr attr) {
       final BnfAttrPattern attrPattern = attr.getAttrPattern();
       final BnfExpression attrValue = attr.getExpression();
-      String attrValueText = attrValue == null? "" : attrValue instanceof BnfValueList? "[ ... ]" : attrValue.getText();
+      String attrValueText = attrValue == null? "" : attrValue instanceof BnfValueList ? "[ ... ]" : attrValue.getText();
       return attr.getName() + (attrPattern == null ? "" : attrPattern.getText()) + " = " + attrValueText;
     }
 
     @Override
+    @RequiredReadAction
     public Image getIcon(boolean open) {
       PsiElement element = getElement();
       if (element == null) return null;

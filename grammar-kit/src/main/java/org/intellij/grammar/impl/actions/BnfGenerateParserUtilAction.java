@@ -19,7 +19,8 @@ package org.intellij.grammar.impl.actions;
 import com.intellij.java.impl.codeInsight.daemon.impl.quickfix.CreateClassKind;
 import com.intellij.java.impl.codeInsight.intention.impl.CreateClassDialog;
 import com.intellij.java.language.psi.*;
-import consulo.application.ApplicationManager;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.application.Application;import consulo.application.ApplicationManager;
 import consulo.application.Result;
 import consulo.devkit.grammarKit.generator.PlatformClass;
 import consulo.document.Document;
@@ -32,7 +33,6 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.IncorrectOperationException;
-import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
@@ -59,12 +59,12 @@ public class BnfGenerateParserUtilAction extends AnAction {
   @Override
   public void update(AnActionEvent e) {
     PsiFile file = e.getData(LangDataKeys.PSI_FILE);
-    if (!(file instanceof BnfFile)) {
-      e.getPresentation().setEnabledAndVisible(false);
+    if (file instanceof BnfFile bnfFile) {
+      boolean enabled = bnfFile.findAttribute(bnfFile.getVersion(), null, KnownAttribute.PARSER_UTIL_CLASS, null) == null;
+      e.getPresentation().setEnabledAndVisible(enabled);
     }
     else {
-      boolean enabled = ((BnfFile)file).findAttribute(((BnfFile)file).getVersion(), null, KnownAttribute.PARSER_UTIL_CLASS, null) == null;
-      e.getPresentation().setEnabledAndVisible(enabled);
+      e.getPresentation().setEnabledAndVisible(false);
     }
   }
 
@@ -140,14 +140,25 @@ public class BnfGenerateParserUtilAction extends AnAction {
     return StringUtil.capitalize(FileUtil.getNameWithoutExtension(bnfFile.getName()));
   }
 
-  public static String createClass(@Nonnull PsiFile origin,
-                                   @Nonnull final String title,
-                                   @Nullable final String baseClass,
-                                   @Nonnull String suggestedName,
-                                   @Nonnull String suggestedPackage) {
+  @RequiredReadAction
+  public static String createClass(
+    @Nonnull PsiFile origin,
+    @Nonnull final String title,
+    @Nullable final String baseClass,
+    @Nonnull String suggestedName,
+    @Nonnull String suggestedPackage
+  ) {
     Project project = origin.getProject();
-    Module module = ModuleUtilCore.findModuleForPsiElement(origin);
-    CreateClassDialog dialog = new CreateClassDialog(project, title, suggestedName, suggestedPackage, CreateClassKind.CLASS, true, module);
+    Module module = origin.getModule();
+    CreateClassDialog dialog = new CreateClassDialog(
+      project,
+      title,
+      suggestedName,
+      suggestedPackage,
+      CreateClassKind.CLASS,
+      true,
+      module
+    );
     if (!dialog.showAndGet()) {
       return null;
     }
@@ -157,10 +168,13 @@ public class BnfGenerateParserUtilAction extends AnAction {
     return createClass(className, targetDirectory, baseClass, title, null);
   }
 
-  static String createClass(final String className, final PsiDirectory targetDirectory,
-                            final String baseClass,
-                            final String title,
-                            final Consumer<PsiClass> consumer) {
+  static String createClass(
+    final String className,
+    final PsiDirectory targetDirectory,
+    final String baseClass,
+    final String title,
+    final Consumer<PsiClass> consumer
+  ) {
     final Project project = targetDirectory.getProject();
     final Ref<PsiClass> resultRef = Ref.create();
 
@@ -170,15 +184,15 @@ public class BnfGenerateParserUtilAction extends AnAction {
         IdeDocumentHistory.getInstance(project).includeCurrentPlaceAsChangePlace();
 
         PsiElementFactory elementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
-        PsiJavaCodeReferenceElement ref = baseClass == null ? null : elementFactory.createReferenceElementByFQClassName(
-          baseClass, GlobalSearchScope.allScope(project));
+        PsiJavaCodeReferenceElement ref = baseClass == null ? null
+          : elementFactory.createReferenceElementByFQClassName(baseClass, GlobalSearchScope.allScope(project));
 
         try {
           PsiClass resultClass = JavaDirectoryService.getInstance().createClass(targetDirectory, className);
           resultRef.set(resultClass);
           if (ref != null) {
             PsiElement baseClass = ref.resolve();
-            boolean isInterface = baseClass instanceof PsiClass && ((PsiClass)baseClass).isInterface();
+            boolean isInterface = baseClass instanceof PsiClass psiClass && psiClass.isInterface();
             PsiReferenceList targetReferenceList = isInterface ? resultClass.getImplementsList() : resultClass.getExtendsList();
             assert targetReferenceList != null;
             targetReferenceList.add(ref);
@@ -188,12 +202,11 @@ public class BnfGenerateParserUtilAction extends AnAction {
           }
         }
         catch (final IncorrectOperationException e) {
-          ApplicationManager.getApplication().invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              Messages.showErrorDialog(project, "Unable to create class " + className + "\n" + e.getLocalizedMessage(), title);
-            }
-          });
+          Application.get().invokeLater(() -> Messages.showErrorDialog(
+            project,
+            "Unable to create class " + className + "\n" + e.getLocalizedMessage(),
+            title
+          ));
         }
       }
     }.execute();

@@ -19,7 +19,6 @@ package org.intellij.grammar.impl.refactor;
 import consulo.application.AccessToken;
 import consulo.application.Result;
 import consulo.application.WriteAction;
-import consulo.application.util.function.Processor;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.ScrollType;
 import consulo.codeEditor.markup.RangeHighlighter;
@@ -39,8 +38,6 @@ import org.intellij.grammar.psi.BnfRule;
 import javax.annotation.Nonnull;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
 
 /**
@@ -107,60 +104,49 @@ public class BnfIntroduceRulePopup extends InplaceVariableIntroducer<BnfExpressi
 
   @Override
   protected JComponent getComponent() {
-    myCheckBox.addActionListener(new ActionListener() {
-
+    myCheckBox.addActionListener(e -> new WriteCommandAction(myProject, BnfIntroduceRuleHandler.REFACTORING_NAME, BnfIntroduceRuleHandler.REFACTORING_NAME) {
       @Override
-      public void actionPerformed(ActionEvent e) {
-        new WriteCommandAction(myProject, BnfIntroduceRuleHandler.REFACTORING_NAME, BnfIntroduceRuleHandler.REFACTORING_NAME) {
-          @Override
-          protected void run(@Nonnull Result result) throws Throwable {
-            perform(myCheckBox.isSelected());
-          }
-        }.execute();
+      protected void run(@Nonnull Result result) throws Throwable {
+        perform(myCheckBox.isSelected());
       }
-    });
+    }.execute());
     return myPanel;
   }
 
   public void perform(final boolean generatePrivate) {
-    final Runnable runnable = new Runnable() {
-      public void run() {
-        final Document document = myEditor.getDocument();
+    final Runnable runnable = () -> {
+      final Document document = myEditor.getDocument();
 
-        int exprOffset = myExprMarker.getStartOffset();
-        final int lineOffset = getLineOffset(document, exprOffset);
-        if (generatePrivate) {
-          final Collection<RangeMarker> leftGreedyMarker = ContainerUtil.newArrayList();
-          final Collection<RangeMarker> emptyMarkers = ContainerUtil.newArrayList();
-          for (RangeHighlighter rangeHighlighter : myEditor.getMarkupModel().getAllHighlighters()) {
-            collectRangeMarker(rangeHighlighter, lineOffset, leftGreedyMarker, emptyMarkers);
-          }
-          document.processRangeMarkers(new Processor<RangeMarker>() {
-            @Override
-            public boolean process(RangeMarker rangeMarker) {
-              collectRangeMarker(rangeMarker, lineOffset, leftGreedyMarker, emptyMarkers);
-              return true;
-            }
-          });
-          setLeftGreedy(leftGreedyMarker, false);
-          setRightGreedy(emptyMarkers, true);
-
-          // workaround for shifting empty ranges to the left
-          document.insertString(lineOffset, " ");
-          document.insertString(lineOffset, PRIVATE);
-          document.deleteString(lineOffset + PRIVATE.length(), lineOffset + PRIVATE.length() + 1);
-
-          setLeftGreedy(leftGreedyMarker, true);
-          setRightGreedy(emptyMarkers, false);
+      int exprOffset = myExprMarker.getStartOffset();
+      final int lineOffset = getLineOffset(document, exprOffset);
+      if (generatePrivate) {
+        final Collection<RangeMarker> leftGreedyMarker = ContainerUtil.newArrayList();
+        final Collection<RangeMarker> emptyMarkers = ContainerUtil.newArrayList();
+        for (RangeHighlighter rangeHighlighter : myEditor.getMarkupModel().getAllHighlighters()) {
+          collectRangeMarker(rangeHighlighter, lineOffset, leftGreedyMarker, emptyMarkers);
         }
-        else {
-          int idx = document.getText().indexOf(PRIVATE, lineOffset);
-          if (idx > -1 && idx < exprOffset) {
-            document.deleteString(idx, idx + PRIVATE.length());
-          }
-        }
-        PsiDocumentManager.getInstance(myProject).commitDocument(document);
+        document.processRangeMarkers(rangeMarker -> {
+          collectRangeMarker(rangeMarker, lineOffset, leftGreedyMarker, emptyMarkers);
+          return true;
+        });
+        setLeftGreedy(leftGreedyMarker, false);
+        setRightGreedy(emptyMarkers, true);
+
+        // workaround for shifting empty ranges to the left
+        document.insertString(lineOffset, " ");
+        document.insertString(lineOffset, PRIVATE);
+        document.deleteString(lineOffset + PRIVATE.length(), lineOffset + PRIVATE.length() + 1);
+
+        setLeftGreedy(leftGreedyMarker, true);
+        setRightGreedy(emptyMarkers, false);
       }
+      else {
+        int idx = document.getText().indexOf(PRIVATE, lineOffset);
+        if (idx > -1 && idx < exprOffset) {
+          document.deleteString(idx, idx + PRIVATE.length());
+        }
+      }
+      PsiDocumentManager.getInstance(myProject).commitDocument(document);
     };
     final LookupEx lookup = LookupManager.getActiveLookup(myEditor);
     if (lookup != null) {

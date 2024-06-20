@@ -3,7 +3,8 @@
  */
 package org.intellij.grammar.generator;
 
-import consulo.application.ApplicationManager;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.application.Application;
 import consulo.application.util.matcher.NameUtil;
 import consulo.devkit.grammarKit.generator.ErrorReporter;
 import consulo.devkit.grammarKit.generator.PlatformClass;
@@ -18,7 +19,6 @@ import consulo.project.Project;
 import consulo.util.collection.*;
 import consulo.util.lang.Couple;
 import consulo.util.lang.ObjectUtil;
-import consulo.util.lang.Pair;
 import consulo.util.lang.StringUtil;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
@@ -50,7 +50,8 @@ public class ParserGeneratorUtil {
     "float", "for", "goto", "if", "implements", "import", "instanceof", "int", "interface", "long",
     "native", "new", "null", "package", "private", "protected", "public", "return", "short", "static",
     "strictfp", "super", "switch", "synchronized", "this", "throw", "throws", "transient", "true",
-    "try", "void", "volatile", "while", "continue"));
+    "try", "void", "volatile", "while", "continue"
+  ));
 
   enum ConsumeType {
     FAST,
@@ -122,8 +123,14 @@ public class ParserGeneratorUtil {
     }
   }
 
-  public static <T> T getGenerateOption(@Nullable String version, @Nonnull PsiElement node, @Nonnull KnownAttribute<T> attribute,
-                                        @Nonnull Map<String, String> genOptions, String... genOptionKeys) {
+  @SuppressWarnings("unchecked")
+  public static <T> T getGenerateOption(
+    @Nullable String version,
+    @Nonnull PsiElement node,
+    @Nonnull KnownAttribute<T> attribute,
+    @Nonnull Map<String, String> genOptions,
+    String... genOptionKeys
+  ) {
     String currentValue = JBIterable.of(genOptionKeys).map(genOptions::get).filter(Objects::nonNull).first();
     if (attribute.getDefaultValue(version) instanceof Boolean) {
       if ("yes".equals(currentValue)) {
@@ -146,10 +153,12 @@ public class ParserGeneratorUtil {
     return getRootAttribute(version, node, attribute, null);
   }
 
-  public static <T> T getRootAttribute(@Nullable String version,
-                                       @Nonnull PsiElement node,
-                                       @Nonnull KnownAttribute<T> attribute,
-                                       @Nullable String match) {
+  public static <T> T getRootAttribute(
+    @Nullable String version,
+    @Nonnull PsiElement node,
+    @Nonnull KnownAttribute<T> attribute,
+    @Nullable String match
+  ) {
     return ((BnfFile)node.getContainingFile()).findAttributeValue(version, null, attribute, match);
   }
 
@@ -162,30 +171,35 @@ public class ParserGeneratorUtil {
     return ((BnfFile)rule.getContainingFile()).findAttribute(version, rule, attribute, null);
   }
 
-  public static <T> T getAttribute(@Nullable String version,
-                                   @Nonnull BnfRule rule,
-                                   @Nonnull KnownAttribute<T> attribute,
-                                   @Nullable String match) {
+  public static <T> T getAttribute(
+    @Nullable String version,
+    @Nonnull BnfRule rule,
+    @Nonnull KnownAttribute<T> attribute,
+    @Nullable String match
+  ) {
     return ((BnfFile)rule.getContainingFile()).findAttributeValue(version, rule, attribute, match);
   }
 
+  @RequiredReadAction
   public static Object getAttributeValue(BnfExpression value) {
     if (value == null) {
       return null;
     }
-    if (value instanceof BnfReferenceOrToken) {
-      return getTokenValue((BnfReferenceOrToken)value);
+    if (value instanceof BnfReferenceOrToken referenceOrToken) {
+      return getTokenValue(referenceOrToken);
     }
-    else if (value instanceof BnfLiteralExpression) {
-      return getLiteralValue((BnfLiteralExpression)value);
+    else if (value instanceof BnfLiteralExpression literalExpression) {
+      return getLiteralValue(literalExpression);
     }
     else if (value instanceof BnfValueList) {
       KnownAttribute.ListValue pairs = new KnownAttribute.ListValue();
       for (BnfListEntry o : ((BnfValueList)value).getListEntryList()) {
         PsiElement id = o.getId();
         String v2 = getLiteralValue(o.getLiteralExpression());
-        pairs.add(Pair.create(id == null ? null : new KnownAttribute.ListValueObject(id.getText()),
-                              v2 == null ? null : new KnownAttribute.ListValueObject(v2)));
+        pairs.add(Couple.of(
+          id == null ? null : new KnownAttribute.ListValueObject(id.getText()),
+          v2 == null ? null : new KnownAttribute.ListValueObject(v2)
+        ));
       }
       return pairs;
     }
@@ -193,11 +207,14 @@ public class ParserGeneratorUtil {
   }
 
   @Nullable
+  @RequiredReadAction
   public static String getLiteralValue(BnfStringLiteralExpression child) {
     return getLiteralValue((BnfLiteralExpression)child);
   }
 
   @Nullable
+  @RequiredReadAction
+  @SuppressWarnings("unchecked")
   public static <T> T getLiteralValue(BnfLiteralExpression child) {
     if (child == null) {
       return null;
@@ -217,6 +234,7 @@ public class ParserGeneratorUtil {
     return null;
   }
 
+  @RequiredReadAction
   private static Object getTokenValue(BnfReferenceOrToken child) {
     String text = child.getText();
     if (text.equals("true")) {
@@ -228,10 +246,12 @@ public class ParserGeneratorUtil {
     return GrammarUtil.getIdText(child);
   }
 
+  @RequiredReadAction
   public static boolean isTrivialNode(PsiElement element) {
     return getTrivialNodeChild(element) != null;
   }
 
+  @RequiredReadAction
   public static BnfExpression getNonTrivialNode(BnfExpression initialNode) {
     BnfExpression nonTrivialNode = initialNode;
     for (BnfExpression e = initialNode, n = getTrivialNodeChild(e); n != null; e = n, n = getTrivialNodeChild(e)) {
@@ -240,6 +260,7 @@ public class ParserGeneratorUtil {
     return nonTrivialNode;
   }
 
+  @RequiredReadAction
   public static BnfExpression getTrivialNodeChild(PsiElement element) {
     PsiElement child = null;
     if (element instanceof BnfParenthesized) {
@@ -260,10 +281,11 @@ public class ParserGeneratorUtil {
     else if (element.getFirstChild() == element.getLastChild() && element instanceof BnfExpression) {
       child = element.getFirstChild();
     }
-    return child instanceof BnfExpression && !(child instanceof BnfLiteralExpression || child instanceof BnfReferenceOrToken) ?
-      (BnfExpression)child : null;
+    return child instanceof BnfExpression && !(child instanceof BnfLiteralExpression || child instanceof BnfReferenceOrToken)
+      ? (BnfExpression)child : null;
   }
 
+  @RequiredReadAction
   public static IElementType getEffectiveType(PsiElement tree) {
     if (tree instanceof BnfParenOptExpression) {
       return BnfTypes.BNF_OP_OPT;
@@ -272,8 +294,8 @@ public class ParserGeneratorUtil {
       final BnfQuantifier quantifier = ((BnfQuantified)tree).getQuantifier();
       return PsiTreeUtil.getDeepestFirst(quantifier).getNode().getElementType();
     }
-    else if (tree instanceof BnfPredicate) {
-      return ((BnfPredicate)tree).getPredicateSign().getFirstChild().getNode().getElementType();
+    else if (tree instanceof BnfPredicate predicate) {
+      return predicate.getPredicateSign().getFirstChild().getNode().getElementType();
     }
     else if (tree instanceof BnfStringLiteralExpression) {
       return BnfTypes.BNF_STRING;
@@ -327,6 +349,7 @@ public class ParserGeneratorUtil {
     return toIdentifier(nextName, null, Case.UPPER) + "_TOKENS";
   }
 
+  @RequiredReadAction
   public static boolean isRollbackRequired(@Nullable String version, BnfExpression o, BnfFile file) {
     if (o instanceof BnfStringLiteralExpression) {
       return false;
@@ -339,16 +362,9 @@ public class ParserGeneratorUtil {
     if (subRule == null) {
       return false;
     }
-    if (getAttribute(version, subRule, KnownAttribute.RECOVER_WHILE) != null) {
-      return true;
-    }
-    if (!getAttribute(version, subRule, KnownAttribute.HOOKS).isEmpty()) {
-      return true;
-    }
-    if (Rule.isExternal(subRule)) {
-      return true;
-    }
-    return false;
+    return getAttribute(version, subRule, KnownAttribute.RECOVER_WHILE) != null
+      || !getAttribute(version, subRule, KnownAttribute.HOOKS).isEmpty()
+      || Rule.isExternal(subRule);
   }
 
   @TestOnly
@@ -415,11 +431,13 @@ public class ParserGeneratorUtil {
   }
 
   @Nonnull
-  public static List<NavigatablePsiElement> findRuleImplMethods(String version,
-                                                                @Nonnull JavaHelper helper,
-                                                                @Nullable String psiImplUtilClass,
-                                                                @Nullable String methodName,
-                                                                @Nullable BnfRule rule) {
+  public static List<NavigatablePsiElement> findRuleImplMethods(
+    String version,
+    @Nonnull JavaHelper helper,
+    @Nullable String psiImplUtilClass,
+    @Nullable String methodName,
+    @Nullable BnfRule rule
+  ) {
     if (rule == null) {
       return Collections.emptyList();
     }
@@ -622,6 +640,7 @@ public class ParserGeneratorUtil {
     return format == null ? fixed : format.apply(fixed);
   }
 
+  @RequiredReadAction
   public static Collection<BnfRule> getSortedPublicRules(Set<PsiElement> accessors) {
     Map<String, BnfRule> result = new TreeMap<>();
     for (PsiElement tree : accessors) {
@@ -635,6 +654,7 @@ public class ParserGeneratorUtil {
     return result.values();
   }
 
+  @RequiredReadAction
   public static Collection<BnfExpression> getSortedTokens(Set<PsiElement> accessors) {
     Map<String, BnfExpression> result = new TreeMap<>();
     for (PsiElement tree : accessors) {
@@ -646,6 +666,7 @@ public class ParserGeneratorUtil {
     return result.values();
   }
 
+  @RequiredReadAction
   public static Collection<LeafPsiElement> getSortedExternalRules(Set<PsiElement> accessors) {
     Map<String, LeafPsiElement> result = new TreeMap<>();
     for (PsiElement tree : accessors) {
@@ -672,7 +693,7 @@ public class ParserGeneratorUtil {
   }
 
   public static void addWarning(Project project, String text) {
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
+    if (Application.get().isUnitTestMode()) {
       //noinspection UseOfSystemOutOrSystemErr
       System.out.println(text);
     }
@@ -702,12 +723,14 @@ public class ParserGeneratorUtil {
   }
 
   @Nullable
+  @RequiredReadAction
   static Collection<String> getTokenNames(@Nonnull BnfFile file, @Nonnull List<BnfExpression> expressions) {
     return getTokenNames(file, expressions, -1);
   }
 
   // when some expression is not a token or total tokens count is less than or equals threshold
   @Nullable
+  @RequiredReadAction
   static Collection<String> getTokenNames(@Nonnull BnfFile file, @Nonnull List<BnfExpression> expressions, int threshold) {
     Set<String> tokens = new LinkedHashSet<>();
     for (BnfExpression expression : expressions) {
@@ -722,6 +745,7 @@ public class ParserGeneratorUtil {
     return tokens.size() > threshold ? tokens : null;
   }
 
+  @RequiredReadAction
   private static String getTokenName(@Nonnull BnfFile file, @Nonnull BnfExpression expression) {
     String text = expression.getText();
     if (expression instanceof BnfStringLiteralExpression) {
@@ -735,6 +759,7 @@ public class ParserGeneratorUtil {
     }
   }
 
+  @RequiredReadAction
   public static boolean isTokenSequence(@Nullable String version, @Nonnull BnfRule rule, @Nullable BnfExpression node) {
     if (node == null || ConsumeType.forRule(version, rule) != ConsumeType.DEFAULT) {
       return false;
@@ -746,10 +771,12 @@ public class ParserGeneratorUtil {
     return getTokenNames(file, getChildExpressions(node)) != null;
   }
 
+  @RequiredReadAction
   private static boolean isTokenChoice(@Nonnull BnfFile file, @Nonnull BnfExpression choice) {
     return choice instanceof BnfChoice && getTokenNames(file, ((BnfChoice)choice).getExpressionList(), 2) != null;
   }
 
+  @RequiredReadAction
   static boolean hasAtLeastOneTokenChoice(@Nonnull BnfFile file, @Nonnull Collection<String> ownRuleNames) {
     for (String ruleName : ownRuleNames) {
       final BnfRule rule = file.getRule(ruleName);
@@ -816,9 +843,9 @@ public class ParserGeneratorUtil {
     final int[] autoCount = {0};
     final Set<String> origTokenNames = getTokenNameToTextMap(file).keySet();
 
-    BnfVisitor<Void> visitor = new BnfVisitor<Void>() {
-
+    BnfVisitor<Void> visitor = new BnfVisitor<>() {
       @Override
+      @RequiredReadAction
       public Void visitStringLiteralExpression(@Nonnull BnfStringLiteralExpression o) {
         String text = o.getText();
         String tokenText = GrammarUtil.unquote(text);
@@ -838,6 +865,7 @@ public class ParserGeneratorUtil {
       }
 
       @Override
+      @RequiredReadAction
       public Void visitReferenceOrToken(@Nonnull BnfReferenceOrToken o) {
         if (GrammarUtil.isExternalReference(o)) {
           return null;
@@ -865,17 +893,19 @@ public class ParserGeneratorUtil {
     return map;
   }
 
+  @RequiredReadAction
   static boolean isUsedAsArgument(@Nonnull BnfRule rule) {
     return !ReferencesSearch.search(rule, rule.getUseScope()).forEach(ref -> !isUsedAsArgument(ref));
   }
 
+  @RequiredReadAction
   private static boolean isUsedAsArgument(@Nonnull PsiReference ref) {
     PsiElement element = ref.getElement();
     if (!(element instanceof BnfExpression)) {
       return false;
     }
     PsiElement parent = element.getParent();
-    if (!(parent instanceof BnfExternalExpression) || ((BnfExternalExpression)parent).getRefElement() != element) {
+    if (!(parent instanceof BnfExternalExpression externalExpression && externalExpression.getRefElement() == element)) {
       return false;
     }
     return isArgument((BnfExpression)parent);
@@ -883,39 +913,47 @@ public class ParserGeneratorUtil {
 
   static boolean isArgument(@Nonnull BnfExpression expr) {
     PsiElement parent = expr.getParent();
-    return parent instanceof BnfExternalExpression && ((BnfExternalExpression)parent).getArguments().contains(expr);
+    return parent instanceof BnfExternalExpression externalExpression && externalExpression.getArguments().contains(expr);
   }
 
   public static class Rule {
 
+    @RequiredReadAction
     public static boolean isPrivate(BnfRule node) {
       return hasModifier(node, "private");
     }
 
+    @RequiredReadAction
     public static boolean isExternal(BnfRule node) {
       return hasModifier(node, "external");
     }
 
+    @RequiredReadAction
     public static boolean isMeta(BnfRule node) {
       return hasModifier(node, "meta");
     }
 
+    @RequiredReadAction
     public static boolean isLeft(BnfRule node) {
       return hasModifier(node, "left");
     }
 
+    @RequiredReadAction
     public static boolean isInner(BnfRule node) {
       return hasModifier(node, "inner");
     }
 
+    @RequiredReadAction
     public static boolean isFake(BnfRule node) {
       return hasModifier(node, "fake");
     }
 
+    @RequiredReadAction
     public static boolean isUpper(BnfRule node) {
       return hasModifier(node, "upper");
     }
 
+    @RequiredReadAction
     private static boolean hasModifier(@Nullable BnfRule rule, @Nonnull String s) {
       if (rule == null) {
         return false;
@@ -928,6 +966,7 @@ public class ParserGeneratorUtil {
       return false;
     }
 
+    @RequiredReadAction
     public static PsiElement firstNotTrivial(BnfRule rule) {
       for (PsiElement tree = rule.getExpression(); tree != null; tree = PsiTreeUtil.getChildOfType(tree, BnfExpression.class)) {
         if (!isTrivialNode(tree)) {
@@ -1001,18 +1040,20 @@ public class ParserGeneratorUtil {
       this.rule = rule;
       this.funcName = funcName;
       pinValue = type == BNF_SEQUENCE ? getAttribute(version, rule, KnownAttribute.PIN, funcName) : null;
-      pinIndex = pinValue instanceof Integer ? (Integer)pinValue : -1;
-      pinPattern = pinValue instanceof String ? compilePattern((String)pinValue) : null;
+      pinIndex = pinValue instanceof Integer intValue ? intValue : -1;
+      pinPattern = pinValue instanceof String strValue ? compilePattern(strValue) : null;
     }
 
     public boolean active() {
       return pinIndex > -1 || pinPattern != null;
     }
 
+    @RequiredReadAction
     public boolean matches(int i, BnfExpression child) {
       return i == pinIndex - 1 || pinPattern != null && pinPattern.matcher(child.getText()).matches();
     }
 
+    @RequiredReadAction
     public boolean shouldGenerate(List<BnfExpression> children) {
       // do not check last expression, last item pin is trivial
       for (int i = 0, size = children.size(); i < size - 1; i++) {
@@ -1024,13 +1065,15 @@ public class ParserGeneratorUtil {
     }
   }
 
-  public static String getParametersString(ParserGenerator parserGenerator,
-                                           List<String> paramsTypes,
-                                           int offset,
-                                           int mask,
-                                           Function<String, String> substitutor,
-                                           Function<Integer, List<String>> annoProvider,
-                                           NameShortener shortener) {
+  public static String getParametersString(
+    ParserGenerator parserGenerator,
+    List<String> paramsTypes,
+    int offset,
+    int mask,
+    Function<String, String> substitutor,
+    Function<Integer, List<String>> annoProvider,
+    NameShortener shortener
+  ) {
     StringBuilder sb = new StringBuilder();
     for (int i = offset; i < paramsTypes.size(); i += 2) {
       if (i > offset) {
@@ -1167,11 +1210,13 @@ public class ParserGeneratorUtil {
 
   private static final HashingStrategy<PsiElement> TEXT_STRATEGY = new HashingStrategy<>() {
     @Override
+    @RequiredReadAction
     public int hashCode(PsiElement e) {
       return e.getText().hashCode();
     }
 
     @Override
+    @RequiredReadAction
     public boolean equals(PsiElement e1, PsiElement e2) {
       return Objects.equals(e1.getText(), e2.getText());
     }

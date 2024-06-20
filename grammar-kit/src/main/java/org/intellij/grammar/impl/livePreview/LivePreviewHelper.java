@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.livePreview;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.EditorFactory;
 import consulo.component.ProcessCanceledException;
@@ -117,12 +118,7 @@ public class LivePreviewHelper {
       @Nonnull
       @Override
       public SingleAlarm apply(final Project project) {
-        return new SingleAlarm(new Runnable() {
-          @Override
-          public void run() {
-            reparseAllLivePreviews(project);
-          }
-        }, 300, Alarm.ThreadToUse.SWING_THREAD, project);
+        return new SingleAlarm(() -> reparseAllLivePreviews(project), 300, Alarm.ThreadToUse.SWING_THREAD, project);
       }
     });
 
@@ -183,37 +179,46 @@ public class LivePreviewHelper {
     consulo.ide.impl.idea.util.FileContentUtil.reparseFiles(project, files, false);
   }
 
-  public static boolean collectExpressionsAtOffset(Project project,
-                                                   Editor previewEditor,
-                                                   LivePreviewLanguage language,
-                                                   final PairProcessor<BnfExpression, Boolean> processor) {
+  @RequiredReadAction
+  public static boolean collectExpressionsAtOffset(
+    Project project,
+    Editor previewEditor,
+    LivePreviewLanguage language,
+    final PairProcessor<BnfExpression, Boolean> processor
+  ) {
     Lexer lexer = new LivePreviewLexer(project, language);
     final ParserDefinition parserDefinition = ParserDefinition.forLanguage(language);
-    final PsiBuilder builder = PsiBuilderFactory.getInstance()
-                                                .createBuilder(parserDefinition,
-                                                               lexer,
-                                                               LanguageVersionUtil.findDefaultVersion(language),
-                                                               previewEditor.getDocument().getText());
+    final PsiBuilder builder = PsiBuilderFactory.getInstance().createBuilder(
+      parserDefinition,
+      lexer,
+      LanguageVersionUtil.findDefaultVersion(language),
+      previewEditor.getDocument().getText()
+    );
     final int caretOffset = previewEditor.getCaretModel().getOffset();
     final PsiParser parser = new LivePreviewParser(project, language) {
       @Override
-      protected boolean generateNodeCall(PsiBuilder builder,
-                                         int level,
-                                         BnfRule rule,
-                                         @Nullable BnfExpression node,
-                                         String nextName,
-                                         Map<String, GeneratedParserUtilBase.Parser> externalArguments) {
+      @RequiredReadAction
+      protected boolean generateNodeCall(
+        PsiBuilder builder,
+        int level,
+        BnfRule rule,
+        @Nullable BnfExpression node,
+        String nextName,
+        Map<String, GeneratedParserUtilBase.Parser> externalArguments
+      ) {
         int tokenStartOffset = builder.getCurrentOffset();
-        int initialOffset = builder.rawLookup(-1) == TokenType.WHITE_SPACE ? builder.rawTokenTypeStart(-1) : builder.getCurrentOffset();
+        int initialOffset =
+          builder.rawLookup(-1) == TokenType.WHITE_SPACE ? builder.rawTokenTypeStart(-1) : builder.getCurrentOffset();
         String tokenText = builder.getTokenText();
         int tokenEndOffset = tokenText == null ? tokenStartOffset : tokenStartOffset + tokenText.length();
         boolean result = super.generateNodeCall(builder, level, rule, node, nextName, externalArguments);
         builder.getCurrentOffset(); // advance to the next token first
-        int finalOffset = builder.rawLookup(-1) == TokenType.WHITE_SPACE ? builder.rawTokenTypeStart(-1) : builder.getCurrentOffset();
+        int finalOffset =
+          builder.rawLookup(-1) == TokenType.WHITE_SPACE ? builder.rawTokenTypeStart(-1) : builder.getCurrentOffset();
         if (node != null) {
-          if (result && initialOffset <= caretOffset && finalOffset > caretOffset || !result && initialOffset <= caretOffset && tokenEndOffset > caretOffset) {
-            boolean inWhitespace = isTokenExpression(node) &&
-              initialOffset <= caretOffset && tokenStartOffset > caretOffset;
+          if (result && initialOffset <= caretOffset && finalOffset > caretOffset
+            || !result && initialOffset <= caretOffset && tokenEndOffset > caretOffset) {
+            boolean inWhitespace = isTokenExpression(node) && initialOffset <= caretOffset && tokenStartOffset > caretOffset;
             if (!processor.process(node, result && !inWhitespace)) {
               throw new ProcessCanceledException();
             }
@@ -221,7 +226,6 @@ public class LivePreviewHelper {
         }
         return result;
       }
-
     };
     try {
       parser.parse(parserDefinition.getFileNodeType(), builder, LanguageVersionUtil.findDefaultVersion(language));

@@ -22,6 +22,7 @@ import com.intellij.java.debugger.SourcePosition;
 import com.intellij.java.debugger.engine.DebugProcess;
 import com.intellij.java.debugger.requests.ClassPrepareRequestor;
 import com.intellij.java.language.psi.*;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.application.AccessToken;
 import consulo.application.ReadAction;
 import consulo.document.Document;
@@ -35,13 +36,11 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiRecursiveElementWalkingVisitor;
 import consulo.language.psi.scope.GlobalSearchScope;
-import consulo.language.psi.search.PsiNonJavaFileReferenceProcessor;
 import consulo.language.psi.search.PsiSearchHelper;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.project.Project;
 import consulo.util.collection.FactoryMap;
 import consulo.util.lang.StringUtil;
-import consulo.util.lang.function.PairProcessor;
 import consulo.util.lang.ref.Ref;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
@@ -61,21 +60,18 @@ import java.util.*;
  */
 public class BnfPositionManager implements PositionManager {
   private final DebugProcess myProcess;
-  private final Map<String, Collection<PsiFile>> myGrammars = new FactoryMap<String, Collection<PsiFile>>() {
+  private final Map<String, Collection<PsiFile>> myGrammars = new FactoryMap<>() {
     @Override
     protected Collection<PsiFile> create(String key) {
       final Project project = myProcess.getProject();
       final Ref<Collection<PsiFile>> result = Ref.create(null);
-      PsiSearchHelper.SERVICE.getInstance(project).processUsagesInNonJavaFiles(key, new PsiNonJavaFileReferenceProcessor() {
-        @Override
-        public boolean process(PsiFile file, int startOffset, int endOffset) {
-          if (!(file instanceof BnfFileImpl)) return true;
-          BnfAttr attr = PsiTreeUtil.getParentOfType(file.findElementAt(startOffset), BnfAttr.class);
-          if (attr == null || !"parserClass".equals(attr.getName())) return true;
-          if (result.isNull()) result.set(new LinkedHashSet<PsiFile>(1));
-          result.get().add(file);
-          return true;
-        }
+      PsiSearchHelper.SERVICE.getInstance(project).processUsagesInNonJavaFiles(key, (file, startOffset, endOffset) -> {
+        if (!(file instanceof BnfFileImpl)) return true;
+        BnfAttr attr = PsiTreeUtil.getParentOfType(file.findElementAt(startOffset), BnfAttr.class);
+        if (attr == null || !"parserClass".equals(attr.getName())) return true;
+        if (result.isNull()) result.set(new LinkedHashSet<>(1));
+        result.get().add(file);
+        return true;
       }, GlobalSearchScope.allScope(project));
       return result.isNull()? Collections.<PsiFile>emptyList() : result.get();
     }
@@ -102,7 +98,10 @@ public class BnfPositionManager implements PositionManager {
     for (PsiFile file : myGrammars.get(qname)) {
       BnfExpression expression = findExpression(file, name);
       BnfRule rule = PsiTreeUtil.getParentOfType(expression, BnfRule.class);
-      if (expression != null && qname.equals(ParserGeneratorUtil.getAttribute(((BnfFile)file).getVersion(), rule, KnownAttribute.PARSER_CLASS))) {
+      if (
+        expression != null &&
+        qname.equals(ParserGeneratorUtil.getAttribute(((BnfFile)file).getVersion(), rule, KnownAttribute.PARSER_CLASS))
+      ) {
         for (BnfExpression expr : ParserGeneratorUtil.getChildExpressions(expression)) {
           int line = getLineNumber(expr, qname, lineNumber);
           if (line == lineNumber) {
@@ -124,25 +123,26 @@ public class BnfPositionManager implements PositionManager {
     file.acceptChildren(new PsiRecursiveElementWalkingVisitor() {
       @Override
       public void visitElement(PsiElement element) {
-        if (element instanceof BnfRule) {
-          BnfRule rule = (BnfRule) element;
+        if (element instanceof BnfRule rule) {
           String funcName = ParserGeneratorUtil.getFuncName(rule);
           if (name.startsWith(funcName)) {
             if (name.equals(funcName)) {
-              result.set(((BnfRule)element).getExpression());
+              result.set(rule.getExpression());
               stopWalking();
             }
             else if (name.substring(funcName.length()).matches("(?:_\\d+)+")) {
-              GrammarUtil.processExpressionNames(rule, funcName, ((BnfRule) element).getExpression(), new PairProcessor<String, BnfExpression>() {
-                @Override
-                public boolean process(String funcName, BnfExpression expression) {
-                  if (name.equals(funcName)) {
+              GrammarUtil.processExpressionNames(
+                rule,
+                funcName,
+                rule.getExpression(),
+                (funcName1, expression) -> {
+                  if (name.equals(funcName1)) {
                     result.set(expression);
                     return false;
                   }
                   return true;
                 }
-              });
+              );
               stopWalking();
             }
           }
@@ -181,13 +181,15 @@ public class BnfPositionManager implements PositionManager {
     throw new NoDataException();
   }
 
+  @RequiredReadAction
   private int getLineNumber(PsiElement element, String parserClass, int currentLine) {
     int line = 0;
     AccessToken token = ReadAction.start();
     try {
       BnfRule rule = PsiTreeUtil.getParentOfType(element, BnfRule.class);
       PsiClass aClass = JavaPsiFacade.getInstance(myProcess.getProject()).findClass(parserClass, myProcess.getSearchScope());
-      Document document = aClass != null? PsiDocumentManager.getInstance(myProcess.getProject()).getDocument(aClass.getContainingFile()) : null;
+      Document document =
+        aClass != null ? PsiDocumentManager.getInstance(myProcess.getProject()).getDocument(aClass.getContainingFile()) : null;
       if (rule != null && document != null) {
         return getLineNumber(aClass, document, currentLine, rule, element);
       }
@@ -198,7 +200,14 @@ public class BnfPositionManager implements PositionManager {
     return line;
   }
 
-  private static int getLineNumber(PsiClass aClass, Document document, int currentLine, BnfRule rule, PsiElement element) {
+  @RequiredReadAction
+  private static int getLineNumber(
+    PsiClass aClass,
+    Document document,
+    int currentLine,
+    BnfRule rule,
+    PsiElement element
+  ) {
     String methodName = GrammarUtil.getMethodName(rule, element);
     PsiMethod[] methods = aClass.findMethodsByName(methodName, false);
     PsiCodeBlock body = methods.length == 1? methods[0].getBody() : null;
@@ -206,8 +215,8 @@ public class BnfPositionManager implements PositionManager {
 
     BnfExpression expr = PsiTreeUtil.getParentOfType(element, BnfExpression.class, false);
     PsiElement parent = expr != null? expr.getParent() : null;
-    if (parent instanceof BnfExpression) {
-      int index = ParserGeneratorUtil.getChildExpressions((BnfExpression)parent).indexOf(expr);
+    if (parent instanceof BnfExpression expression) {
+      int index = ParserGeneratorUtil.getChildExpressions(expression).indexOf(expr);
       for (int i = 0, len = statements.length, j = 0; i < len; i++) {
         PsiStatement cur = statements[i];
         String text = cur.getText();
@@ -228,7 +237,10 @@ public class BnfPositionManager implements PositionManager {
   }
 
   @Override
-  public ClassPrepareRequest createPrepareRequest(ClassPrepareRequestor requestor, SourcePosition position) throws NoDataException {
+  public ClassPrepareRequest createPrepareRequest(
+    @Nonnull ClassPrepareRequestor requestor,
+    @Nonnull SourcePosition position
+  ) throws NoDataException {
     return myProcess.getRequestsManager().createClassPrepareRequest(requestor, getParserClass(position));
   }
 
@@ -237,7 +249,7 @@ public class BnfPositionManager implements PositionManager {
     AccessToken token = ReadAction.start();
     try {
       BnfRule rule = getRuleAt(classPosition);
-      String version = rule.getContainingFile() instanceof BnfFile ? ((BnfFile) rule.getContainingFile()).getVersion() : null;
+      String version = rule.getContainingFile() instanceof BnfFile bnfFile ? bnfFile.getVersion() : null;
       String parserClass = ParserGeneratorUtil.getAttribute(version, rule, KnownAttribute.PARSER_CLASS);
       if (StringUtil.isEmpty(parserClass)) throw new NoDataException();
       return parserClass;

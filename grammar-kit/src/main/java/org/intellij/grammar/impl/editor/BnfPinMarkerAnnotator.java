@@ -42,7 +42,7 @@ public class BnfPinMarkerAnnotator implements Annotator, DumbAware {
     if (!(psiElement instanceof BnfRule)) return;
     BnfRule rule = (BnfRule) psiElement;
     final BnfFile bnfFile = (BnfFile)rule.getContainingFile();
-    final ArrayList<Pair<BnfExpression, BnfAttr>> pinned = new ArrayList<Pair<BnfExpression, BnfAttr>>();
+    final ArrayList<Pair<BnfExpression, BnfAttr>> pinned = new ArrayList<>();
     GrammarUtil.processPinnedExpressions(rule, (bnfExpression, pinMatcher) -> {
       BnfAttr attr = bnfFile.findAttribute(null, pinMatcher.rule, KnownAttribute.PIN, pinMatcher.funcName);
       return pinned.add(Pair.create(bnfExpression, attr));
@@ -53,13 +53,14 @@ public class BnfPinMarkerAnnotator implements Annotator, DumbAware {
       BnfAttr attr = pinned.get(i).second;
       boolean fullRange = prev == null || !PsiTreeUtil.isAncestor(e, prev, true);
       TextRange textRange = e.getTextRange();
-      TextRange infoRange = fullRange ? textRange : TextRange.create(prev.getTextRange().getEndOffset() + 1, textRange.getEndOffset());
+      TextRange infoRange = fullRange ? textRange
+        : TextRange.create(prev.getTextRange().getEndOffset() + 1, textRange.getEndOffset());
       String message = attr == null ? (fullRange ? "pinned" : "pinned again") : attr.getText();
 
       annotationHolder.newAnnotation(HighlightSeverity.INFORMATION, message)
-                      .range(infoRange)
-                      .textAttributes(BnfSyntaxHighlighter.PIN_MARKER)
-                      .create();
+        .range(infoRange)
+        .textAttributes(BnfSyntaxHighlighter.PIN_MARKER)
+        .create();
     }
   }
 

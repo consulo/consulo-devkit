@@ -17,7 +17,7 @@ package org.jetbrains.idea.devkit.actions;
 
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.codeEditor.Editor;
 import consulo.component.persist.PersistentStateComponent;
 import consulo.component.persist.State;
@@ -33,6 +33,7 @@ import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.Presentation;
@@ -52,6 +53,7 @@ public class GenerateComponentExternalizationAction extends AnAction {
   private final static String STORAGE = Storage.class.getName();
 
   @Override
+  @RequiredUIAccess
   public void actionPerformed(@Nonnull AnActionEvent e) {
     final PsiClass target = getComponentInContext(e.getDataContext());
     assert target != null;
@@ -60,31 +62,39 @@ public class GenerateComponentExternalizationAction extends AnAction {
     final CodeStyleManager formatter = CodeStyleManager.getInstance(target.getManager().getProject());
     final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(target.getProject());
     final String qualifiedName = target.getQualifiedName();
-    Runnable runnable = () -> ApplicationManager.getApplication().runWriteAction(() -> {
+    Runnable runnable = () -> Application.get().runWriteAction(() -> {
       try {
         final PsiReferenceList implList = target.getImplementsList();
         assert implList != null;
         final PsiJavaCodeReferenceElement referenceElement =
           factory.createReferenceFromText(PERSISTENCE_STATE_COMPONENT + "<" + qualifiedName + ">", target);
         implList.add(styler.shortenClassReferences(referenceElement.copy()));
-        PsiMethod read =
-          factory.createMethodFromText("public void loadState(" + qualifiedName + " state) {\n" + "    consulo.util.xml.serializer.XmlSerializerUtil.copyBean(state, " +
-                                         "this);\n" + "}", target);
+        PsiMethod read = factory.createMethodFromText(
+          "public void loadState(" + qualifiedName + " state) {\n" +
+            "    consulo.util.xml.serializer.XmlSerializerUtil.copyBean(state, this);\n" +
+            "}",
+          target
+        );
 
         read = (PsiMethod)formatter.reformat(target.add(read));
         styler.shortenClassReferences(read);
 
-        PsiMethod write =
-          factory.createMethodFromText("public " + qualifiedName + " getState() {\n" + "    return this;\n" + "}\n", target);
+        PsiMethod write = factory.createMethodFromText(
+          "public " + qualifiedName + " getState() {\n" +
+            "    return this;\n" +
+            "}\n",
+          target
+        );
         write = (PsiMethod)formatter.reformat(target.add(write));
         styler.shortenClassReferences(write);
 
         PsiAnnotation annotation = target.getModifierList().addAnnotation(STATE);
 
         annotation =
-          (PsiAnnotation)formatter.reformat(annotation.replace(factory.createAnnotationFromText("@" + STATE + "(name = \"" + qualifiedName + "\", " + "storages = {@"
-                                                                                                  + STORAGE + "(StoragePathMacros.DEFAULT_FILE\n )})",
-                                                                                                target)));
+          (PsiAnnotation)formatter.reformat(annotation.replace(factory.createAnnotationFromText(
+            "@" + STATE + "(name = \"" + qualifiedName + "\", " + "storages = {@" + STORAGE + "(StoragePathMacros.DEFAULT_FILE)})",
+            target
+          )));
         styler.shortenClassReferences(annotation);
       }
       catch (IncorrectOperationException e1) {
@@ -126,7 +136,8 @@ public class GenerateComponentExternalizationAction extends AnAction {
   }
 
   @Override
-  public void update(AnActionEvent e) {
+  @RequiredUIAccess
+  public void update(@Nonnull AnActionEvent e) {
     super.update(e);
     final PsiClass target = getComponentInContext(e.getDataContext());
 

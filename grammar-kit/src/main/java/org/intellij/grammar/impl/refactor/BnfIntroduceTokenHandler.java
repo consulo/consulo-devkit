@@ -17,7 +17,8 @@
 package org.intellij.grammar.impl.refactor;
 
 import com.intellij.java.impl.codeInsight.template.impl.TextExpression;
-import consulo.application.ApplicationManager;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.application.Application;
 import consulo.application.Result;
 import consulo.codeEditor.Editor;
 import consulo.codeEditor.ScrollType;
@@ -63,10 +64,13 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
   }
 
   @Override
-  public void invoke(@Nonnull final Project project,
-                     final Editor editor,
-                     final PsiFile file,
-                     @Nullable DataContext dataContext) {
+  @RequiredReadAction
+  public void invoke(
+    @Nonnull final Project project,
+    final Editor editor,
+    final PsiFile file,
+    @Nullable DataContext dataContext
+  ) {
     if (!(file instanceof BnfFile)) return;
     final BnfFile bnfFile = (BnfFile)file;
 
@@ -75,9 +79,11 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
 
     final String tokenText;
     final String tokenName;
-    BnfExpression target = PsiTreeUtil.getParentOfType(file.findElementAt(editor.getCaretModel().getOffset()),
-                                                       BnfReferenceOrToken.class,
-                                                       BnfStringLiteralExpression.class);
+    BnfExpression target = PsiTreeUtil.getParentOfType(
+      file.findElementAt(editor.getCaretModel().getOffset()),
+      BnfReferenceOrToken.class,
+      BnfStringLiteralExpression.class
+    );
     if (target instanceof BnfReferenceOrToken) {
       if (bnfFile.getRule(target.getText()) != null) return;
       if (GrammarUtil.isExternalReference(target)) return;
@@ -118,22 +124,17 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
       o.accept(visitor);
     }
 
-    if (occurrencesMap.get(OccurrencesChooser.ReplaceChoice.ALL).size() <= 1 && !ApplicationManager.getApplication().isUnitTestMode()) {
+    if (occurrencesMap.get(OccurrencesChooser.ReplaceChoice.ALL).size() <= 1 && !Application.get().isUnitTestMode()) {
       occurrencesMap.remove(OccurrencesChooser.ReplaceChoice.ALL);
     }
 
-    final Consumer<OccurrencesChooser.ReplaceChoice> callback = new Consumer<OccurrencesChooser.ReplaceChoice>() {
+    final Consumer<OccurrencesChooser.ReplaceChoice> callback = choice -> new WriteCommandAction(project, REFACTORING_NAME, file) {
       @Override
-      public void accept(final OccurrencesChooser.ReplaceChoice choice) {
-        new WriteCommandAction(project, REFACTORING_NAME, file) {
-          @Override
-          protected void run(@Nonnull Result result) throws Throwable {
-            buildTemplateAndRun(project, editor, bnfFile, occurrencesMap.get(choice), tokenName, tokenText, tokenNameMap.keySet());
-          }
-        }.execute();
+      protected void run(@Nonnull Result result) throws Throwable {
+        buildTemplateAndRun(project, editor, bnfFile, occurrencesMap.get(choice), tokenName, tokenText, tokenNameMap.keySet());
       }
-    };
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
+    }.execute();
+    if (Application.get().isUnitTestMode()) {
       callback.accept(OccurrencesChooser.ReplaceChoice.ALL);
     }
     else {
@@ -146,12 +147,15 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
     }
   }
 
-  private void buildTemplateAndRun(final Project project,
-                                   final Editor editor,
-                                   BnfFile bnfFile, List<BnfExpression> occurrences,
-                                   String tokenName,
-                                   String tokenText,
-                                   Set<String> tokenNames) {
+  @RequiredReadAction
+  private void buildTemplateAndRun(
+    final Project project,
+    final Editor editor,
+    BnfFile bnfFile, List<BnfExpression> occurrences,
+    String tokenName,
+    String tokenText,
+    Set<String> tokenNames
+  ) {
     BnfListEntry entry = addTokenDefinition(project, bnfFile, tokenName, tokenText, tokenNames);
     PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(editor.getDocument());
 
@@ -214,19 +218,21 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
     });
   }
 
-  private void handleTemplateFinished(Project project,
-                                      Editor editor,
-                                      RangeMarker caretMarker) {
+  private void handleTemplateFinished(Project project, Editor editor, RangeMarker caretMarker) {
     editor.getCaretModel().moveToOffset(caretMarker.getEndOffset());
     editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
   }
 
-  private static BnfListEntry addTokenDefinition(Project project,
-                                                 BnfFile bnfFile,
-                                                 String tokenName,
-                                                 String tokenText,
-                                                 Set<String> tokenNames) {
-    String fixedTokenName = new UniqueNameGenerator(tokenNames, null).generateUniqueName(StringUtil.notNullize(tokenName, "token"));
+  @RequiredReadAction
+  private static BnfListEntry addTokenDefinition(
+    Project project,
+    BnfFile bnfFile,
+    String tokenName,
+    String tokenText,
+    Set<String> tokenNames
+  ) {
+    String fixedTokenName =
+      new UniqueNameGenerator(tokenNames, null).generateUniqueName(StringUtil.notNullize(tokenName, "token"));
     String newAttrText = "tokens = [\n    " + fixedTokenName + "=" + StringUtil.notNullize(tokenText, "\"\"") + "\n  ]";
     BnfAttr newAttr = BnfElementFactory.createAttributeFromText(project, newAttrText);
     BnfAttrs attrs = ContainerUtil.getFirstItem(bnfFile.getAttributes());
@@ -251,7 +257,7 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
       }
       else {
         BnfExpression expression = tokensAttr.getExpression();
-        List<BnfListEntry> entryList = expression instanceof BnfValueList ? ((BnfValueList)expression).getListEntryList() : null;
+        List<BnfListEntry> entryList = expression instanceof BnfValueList bnfValueList ? bnfValueList.getListEntryList() : null;
         if (entryList == null || entryList.isEmpty()) {
           expression.replace(newAttr.getParent());
           return ((BnfValueList)tokensAttr.getExpression()).getListEntryList().get(0);
@@ -272,6 +278,5 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
       }
     }
   }
-
 }
 

@@ -4,6 +4,7 @@
 
 package org.intellij.grammar.generator;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.ast.IElementType;
 import consulo.language.psi.PsiElement;
 import consulo.util.lang.Pair;
@@ -46,6 +47,7 @@ public class RuleMethodsHelper {
     myMethods = new LinkedHashMap<>();
   }
 
+  @RequiredReadAction
   public void buildMaps(Collection<BnfRule> sortedPsiRules) {
     Map<String, String> tokensReversed = RuleGraphHelper.computeTokens(myGraphHelper.getFile()).asMap(myVersion);
     for (BnfRule rule : sortedPsiRules) {
@@ -94,6 +96,7 @@ public class RuleMethodsHelper {
     return myMethods.get(rule).first.keySet();
   }
 
+  @RequiredReadAction
   protected void calcMethods(BnfRule rule, Map<String, String> tokensReversed) {
     List<MethodInfo> result = new ArrayList<>();
 
@@ -105,8 +108,7 @@ public class RuleMethodsHelper {
       if (pathName == null) {
         continue;
       }
-      if (element instanceof BnfRule) {
-        BnfRule resultType = (BnfRule)element;
+      if (element instanceof BnfRule resultType) {
         if (!ParserGeneratorUtil.Rule.isPrivate(rule)) {
           result.add(new MethodInfo(MethodType.RULE, pathName, pathName, resultType, c));
         }
@@ -163,6 +165,7 @@ public class RuleMethodsHelper {
   }
 
   @Nullable
+  @RequiredReadAction
   private String getRuleOrTokenNameForPsi(@Nonnull PsiElement tree, @Nonnull RuleGraphHelper.Cardinality type) {
     String result;
 

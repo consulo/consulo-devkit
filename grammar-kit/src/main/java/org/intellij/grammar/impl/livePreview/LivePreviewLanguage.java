@@ -16,8 +16,8 @@
 
 package org.intellij.grammar.impl.livePreview;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.application.Application;
-import consulo.application.ApplicationManager;
 import consulo.codeEditor.Editor;
 import consulo.fileEditor.FileEditor;
 import consulo.fileEditor.FileEditorManager;
@@ -27,7 +27,6 @@ import consulo.language.Language;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
 import consulo.project.Project;
-import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.ObjectUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.pointer.VirtualFilePointer;
@@ -37,12 +36,12 @@ import org.intellij.grammar.psi.BnfFile;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.SoftReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static consulo.internal.org.objectweb.asm.Opcodes.*;
-
 
 /**
  * @author gregsh
@@ -63,9 +62,9 @@ public class LivePreviewLanguage extends Language {
   protected LivePreviewLanguage(@Nonnull BnfFile grammarFile) {
     super(BASE_INSTANCE, ObjectUtil.assertNotNull(grammarFile.getVirtualFile()).getPath());
     VirtualFile virtualFile = ObjectUtil.assertNotNull(grammarFile.getVirtualFile());
-    Application app = ApplicationManager.getApplication();
+    Application app = Application.get();
     if (app.isUnitTestMode()) {
-      myBnfFile = new SoftReference<BnfFile>(grammarFile);
+      myBnfFile = new SoftReference<>(grammarFile);
       myFilePointer = null;
     }
     else {
@@ -92,6 +91,7 @@ public class LivePreviewLanguage extends Language {
   }
 
   @Nullable
+  @RequiredReadAction
   public BnfFile getGrammar(@Nullable Project project) {
     if (myBnfFile != null) return myBnfFile.get();
     VirtualFile file = project == null? null : getGrammarFile();
@@ -128,7 +128,7 @@ public class LivePreviewLanguage extends Language {
     if (file == null) return Collections.emptyList();
     FileEditor[] editors = FileEditorManager.getInstance(project).getAllEditors(file);
     if (editors.length == 0) return Collections.emptyList();
-    List<Editor> result = ContainerUtil.newArrayList();
+    List<Editor> result = new ArrayList<>();
     for (FileEditor editor : editors) {
       if (editor instanceof TextEditor) result.add(((TextEditor)editor).getEditor());
     }
@@ -136,11 +136,12 @@ public class LivePreviewLanguage extends Language {
   }
 
   @Nonnull
+  @RequiredReadAction
   public List<Editor> getPreviewEditors(@Nonnull Project project) {
     FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
     VirtualFile[] files = fileEditorManager.getOpenFiles();
     if (files.length == 0) return Collections.emptyList();
-    List<Editor> result = ContainerUtil.newArrayList();
+    List<Editor> result = new ArrayList<>();
     PsiManager psiManager = PsiManager.getInstance(project);
     for (VirtualFile file : files) {
       PsiFile psiFile = psiManager.findFile(file);

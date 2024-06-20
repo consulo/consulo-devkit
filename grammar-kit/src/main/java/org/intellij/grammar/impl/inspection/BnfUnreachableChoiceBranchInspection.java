@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.ast.ASTNode;
 import consulo.document.util.TextRange;
@@ -83,21 +84,24 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
     return problemsHolder.getResultsArray();
   }
 
+  @RequiredReadAction
   private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
     file.accept(new PsiRecursiveElementWalkingVisitor() {
       @Override
       public void visitElement(PsiElement element) {
-        if (element instanceof BnfChoice) {
-          checkChoice((BnfChoice)element, problemsHolder);
+        if (element instanceof BnfChoice choice) {
+          //noinspection RequiredXAction
+          checkChoice(choice, problemsHolder);
         }
         super.visitElement(element);
       }
     });
   }
 
+  @RequiredReadAction
   private static void checkChoice(BnfChoice choice, ProblemsHolder problemsHolder) {
-    Set<BnfExpression> visited = new HashSet<BnfExpression>();
-    Set<BnfExpression> first = new HashSet<BnfExpression>();
+    Set<BnfExpression> visited = new HashSet<>();
+    Set<BnfExpression> first = new HashSet<>();
     BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer().setPredicateLookAhead(true);
     List<BnfExpression> list = choice.getExpressionList();
     for (int i = 0, listSize = list.size() - 1; i < listSize; i++) {
@@ -115,6 +119,7 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
     }
   }
 
+  @RequiredReadAction
   static void registerProblem(BnfExpression choice, BnfExpression branch, String message, ProblemsHolder problemsHolder, LocalQuickFix... fixes) {
     TextRange textRange = branch.getTextRange();
     if (textRange.isEmpty()) {
@@ -123,7 +128,10 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
 
       int shift = choice.getTextRange().getStartOffset();
       int startOffset = prevOr != null ? prevOr.getStartOffset() - shift : 0;
-      TextRange range = new TextRange(startOffset, nextOr != null? nextOr.getStartOffset() + 1 - shift : Math.min(startOffset + 2, choice.getTextLength()));
+      TextRange range = new TextRange(
+        startOffset,
+        nextOr != null? nextOr.getStartOffset() + 1 - shift : Math.min(startOffset + 2, choice.getTextLength())
+      );
       problemsHolder.registerProblem(choice, range, message, fixes);
     }
     else {

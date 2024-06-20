@@ -72,19 +72,23 @@ public class BnfLeftRecursionInspection extends LocalInspectionTool {
   }
 
   public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-    if (file instanceof BnfFile) {
-      BnfFile bnfFile = (BnfFile)file;
+    if (file instanceof BnfFile bnfFile) {
       ExpressionHelper expressionHelper = ExpressionHelper.getCached(bnfFile);
       BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer();
-      ArrayList<ProblemDescriptor> list = new ArrayList<ProblemDescriptor>();
+      ArrayList<ProblemDescriptor> list = new ArrayList<>();
       for (BnfRule rule : bnfFile.getRules()) {
         if (ParserGeneratorUtil.Rule.isFake(rule)) continue;
         String ruleName = rule.getName();
         boolean exprParsing = ExpressionGeneratorHelper.getInfoForExpressionParsing(expressionHelper, rule) != null;
 
         if (!exprParsing && analyzer.asStrings(analyzer.calcFirst(rule)).contains(ruleName)) {
-          list.add(manager.createProblemDescriptor(rule.getId(), "'" + ruleName + "' employs left-recursion unsupported by generator",
-                                                   isOnTheFly, LocalQuickFix.EMPTY_ARRAY, ProblemHighlightType.GENERIC_ERROR_OR_WARNING));
+          list.add(manager.createProblemDescriptor(
+            rule.getId(),
+            "'" + ruleName + "' employs left-recursion unsupported by generator",
+            isOnTheFly,
+            LocalQuickFix.EMPTY_ARRAY,
+            ProblemHighlightType.GENERIC_ERROR_OR_WARNING
+          ));
         }
       }
       if (!list.isEmpty()) return list.toArray(new ProblemDescriptor[list.size()]);

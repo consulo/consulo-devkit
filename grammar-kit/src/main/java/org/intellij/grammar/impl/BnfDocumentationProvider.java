@@ -25,7 +25,6 @@ import consulo.language.psi.PsiNamedElement;
 import consulo.ui.ex.JBColor;
 import consulo.ui.ex.awt.util.ColorUtil;
 import consulo.util.lang.StringUtil;
-import consulo.util.lang.function.PairConsumer;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
@@ -59,8 +58,7 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
 
   @Nullable
   public String generateDoc(final PsiElement element, final PsiElement originalElement) {
-    if (element instanceof BnfRule) {
-      final BnfRule rule = (BnfRule)element;
+    if (element instanceof BnfRule rule) {
       BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer();
       Set<String> first = analyzer.asStrings(analyzer.calcFirst(rule));
       Set<String> next = analyzer.asStrings(analyzer.calcNext(rule).keySet());
@@ -97,8 +95,8 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
       dumpContents(docBuilder, rule, file);
       return docBuilder.toString();
     }
-    else if (element instanceof BnfAttr) {
-      KnownAttribute attribute = KnownAttribute.getAttribute(((BnfAttr)element).getName());
+    else if (element instanceof BnfAttr bnfAttr) {
+      KnownAttribute attribute = KnownAttribute.getAttribute(bnfAttr.getName());
       if (attribute != null) return attribute.getDescription();
     }
     return null;
@@ -141,17 +139,14 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
       appendColored(docBuilder, " " + ruleOperator.type + "-" + expressionInfo.getPriority(rule));
     }
     docBuilder.append("</h1>");
-    expressionInfo.dumpPriorityTable(docBuilder.append("<code><pre>"), new PairConsumer<StringBuilder, ExpressionHelper.OperatorInfo>() {
-      @Override
-      public void consume(StringBuilder sb, ExpressionHelper.OperatorInfo operatorInfo) {
-        if (operatorInfo == ruleOperator) {
-          appendColored(sb, operatorInfo);
-        }
-        else {
-          sb.append(operatorInfo);
-        }
-
+    expressionInfo.dumpPriorityTable(docBuilder.append("<code><pre>"), (sb, operatorInfo) -> {
+      if (operatorInfo == ruleOperator) {
+        appendColored(sb, operatorInfo);
       }
+      else {
+        sb.append(operatorInfo);
+      }
+
     }).append("</pre></code>");
   }
 
@@ -161,11 +156,13 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
     sb.append("</font>");
   }
 
-  public static void printElements(Map<PsiElement, RuleGraphHelper.Cardinality> map,
-                                   Collection<? extends PsiElement> collection,
-                                   StringBuilder sb) {
+  public static void printElements(
+    Map<PsiElement, RuleGraphHelper.Cardinality> map,
+    Collection<? extends PsiElement> collection,
+    StringBuilder sb
+  ) {
     for (PsiElement r : collection) {
-      sb.append(" ").append(r instanceof PsiNamedElement? ((PsiNamedElement)r).getName() : r.getText()).
+      sb.append(" ").append(r instanceof PsiNamedElement namedElement ? namedElement.getName() : r.getText()).
         append(RuleGraphHelper.getCardinalityText(map.get(r)));
     }
   }

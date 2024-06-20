@@ -15,7 +15,7 @@
  */
 package org.jetbrains.idea.devkit.build;
 
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.application.util.function.Computable;
 import consulo.content.library.Library;
 import consulo.module.Module;
@@ -46,8 +46,8 @@ public class PluginBuildUtil {
   }
 
   public static Module[] getWrongSetDependencies(final Module module) {
-    return ApplicationManager.getApplication().runReadAction((Computable<Module[]>)() -> {
-      ArrayList<Module> result = new ArrayList<Module>();
+    return Application.get().runReadAction((Computable<Module[]>)() -> {
+      ArrayList<Module> result = new ArrayList<>();
       final Module[] projectModules = ModuleManager.getInstance(module.getProject()).getModules();
       for (Module projectModule : projectModules) {
         if (ArrayUtil.find(ModuleRootManager.getInstance(projectModule).getDependencies(), module) > -1) {
