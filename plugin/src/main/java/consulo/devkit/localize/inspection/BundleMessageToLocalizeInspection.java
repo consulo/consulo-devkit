@@ -81,12 +81,12 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
         initReplacementCodeBlock();
 
-        LocalizeValue myInspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(myLocalizeClassName, myLocalizeMethodName);
+        LocalizeValue inspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(myLocalizeClassName, myLocalizeMethodName);
 
         myHolder.registerProblem(
           myExpression,
-          myInspectionName.get(),
-          new TransformToLocalizeFix(myExpression, myInspectionName, myReplacementCodeBlock)
+          inspectionName.get(),
+          new TransformToLocalizeFix(myExpression, inspectionName, myReplacementCodeBlock)
         );
       }
 
