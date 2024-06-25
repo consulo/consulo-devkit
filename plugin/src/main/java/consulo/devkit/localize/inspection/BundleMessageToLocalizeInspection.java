@@ -54,10 +54,10 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
   }
 
   private static class BundleCallVisitor extends JavaElementVisitor {
-    private final ProblemsHolder holder;
+    private final ProblemsHolder myHolder;
 
     private BundleCallVisitor(ProblemsHolder holder) {
-      this.holder = holder;
+      myHolder = holder;
     }
 
     @Override
@@ -68,7 +68,6 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
     private class TransformToLocalizeInspector extends LocalizeClassExistsChecker {
       protected String myReplacementCodeBlock;
-      protected LocalizeValue myInspectionName;
 
       protected TransformToLocalizeInspector(@Nonnull PsiMethodCallExpression expression) {
         super(expression);
@@ -82,9 +81,9 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
         initReplacementCodeBlock();
 
-        myInspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(myLocalizeClassName, myLocalizeMethodName);
+        LocalizeValue myInspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(myLocalizeClassName, myLocalizeMethodName);
 
-        holder.registerProblem(
+        myHolder.registerProblem(
           myExpression,
           myInspectionName.get(),
           new TransformToLocalizeFix(myExpression, myInspectionName, myReplacementCodeBlock)
@@ -267,7 +266,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
     @RequiredReadAction
     private boolean initLocalizeClass() {
-      PsiClass localizeClass = LocalizeClassResolver.resolveByBundle(myClass, myExpression);
+      PsiClass localizeClass = LocalizeClassResolver.resolveByBundle(myClass);
 
       if (localizeClass == null) {
         return false;
