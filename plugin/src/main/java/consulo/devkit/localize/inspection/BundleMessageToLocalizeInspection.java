@@ -19,6 +19,8 @@ import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
+import java.util.Locale;
+
 /**
  * @author <a href="mailto:nikolay@yurchenko.su">Nikolay Yurchenko</a>
  * @since 2024-06-07
@@ -288,7 +290,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     }
 
     private String capitalizeByDot(String key) {
-      String[] split = key.toLowerCase().replace(" ", ".").split("\\.");
+      String[] split = key.toLowerCase(Locale.ROOT).replace(" ", ".").split("\\.");
 
       StringBuilder builder = new StringBuilder();
       for (int i = 0; i < split.length; i++) {
