@@ -3,12 +3,9 @@ package consulo.devkit.localize.inspection;
 import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.CommonBundle;
 import consulo.application.WriteAction;
-import consulo.component.util.localize.AbstractBundle;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -192,15 +189,11 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     }
   }
 
-  private static class ClassExtendsAbstractBundleChecker extends CallsBundleMessageChecker {
-    @SuppressWarnings("deprecation")
-    private static final String ABSTRACT_BUNDLE_CLASS_NAME = AbstractBundle.class.getName();
-    private static final String COMMON_BUNDLE_CLASS_NAME = CommonBundle.class.getName();
-
+  private static class BundleClassChecker extends CallsBundleMessageChecker {
     protected PsiElement myMethod;
     protected PsiClass myClass;
 
-    protected ClassExtendsAbstractBundleChecker(@Nonnull PsiMethodCallExpression expression) {
+    protected BundleClassChecker(@Nonnull PsiMethodCallExpression expression) {
       super(expression);
     }
 
@@ -215,12 +208,11 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       PsiElement parent = (myMethod == null) ? null : myMethod.getParent();
       myClass = (parent instanceof PsiClass psiClass) ? psiClass : null;
 
-      return myClass != null && (InheritanceUtil.isInheritor(myClass, ABSTRACT_BUNDLE_CLASS_NAME)
-        || COMMON_BUNDLE_CLASS_NAME.equals(myClass.getQualifiedName()));
+      return myClass != null;
     }
   }
 
-  private static class LocalizeClassExistsChecker extends ClassExtendsAbstractBundleChecker {
+  private static class LocalizeClassExistsChecker extends BundleClassChecker {
     protected static final String
       ZERO_PREFIX = "zero",
       ONE_PREFIX = "one",
