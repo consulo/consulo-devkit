@@ -288,7 +288,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     }
 
     private String capitalizeByDot(String key) {
-      String[] split = key.replace(" ", ".").split("\\.");
+      String[] split = key.toLowerCase().replace(" ", ".").split("\\.");
 
       StringBuilder builder = new StringBuilder();
       for (int i = 0; i < split.length; i++) {
