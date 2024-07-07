@@ -108,7 +108,7 @@ public class BnfColorSettingsPage implements ColorSettingsPage {
   }
 
   public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
-    final Map<String, TextAttributesKey> map = new HashMap<String, TextAttributesKey>();
+    final Map<String, TextAttributesKey> map = new HashMap<>();
     map.put("r", RULE);
     map.put("mr", META_RULE);
     map.put("a", ATTRIBUTE);
@@ -122,5 +122,4 @@ public class BnfColorSettingsPage implements ColorSettingsPage {
     map.put("mp", META_PARAM);
     return map;
   }
-
 }

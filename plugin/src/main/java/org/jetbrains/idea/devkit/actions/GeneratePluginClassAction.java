@@ -23,7 +23,6 @@ import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.ide.IdeView;
 import consulo.ide.action.CreateElementActionBase;
-import consulo.language.editor.LangDataKeys;
 import consulo.language.editor.PlatformDataKeys;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiElement;
@@ -55,7 +54,7 @@ import java.util.function.Consumer;
  * @author yole
  */
 public abstract class GeneratePluginClassAction extends CreateElementActionBase implements DescriptorUtil.Patcher {
-  protected final Set<XmlFile> myFilesToPatch = new HashSet<XmlFile>();
+  protected final Set<XmlFile> myFilesToPatch = new HashSet<>();
 
   // length == 1 is important to make MyInputValidator close the dialog when
   // module selection is canceled. That's some weird interface actually...
@@ -90,7 +89,7 @@ public abstract class GeneratePluginClassAction extends CreateElementActionBase 
     final Presentation presentation = e.getPresentation();
     if (presentation.isEnabled()) {
       final DataContext context = e.getDataContext();
-      Module module = e.getData(LangDataKeys.MODULE);
+      Module module = e.getData(Module.KEY);
       if (!PluginModuleUtil.isPluginModuleOrDependency(module)) {
         presentation.setEnabled(false);
         presentation.setVisible(false);
@@ -125,7 +124,7 @@ public abstract class GeneratePluginClassAction extends CreateElementActionBase 
       if (orderEntries.isEmpty()) {
         return null;
       }
-      Set<Module> modules = new HashSet<Module>();
+      Set<Module> modules = new HashSet<>();
       for (OrderEntry orderEntry : orderEntries) {
         modules.add(orderEntry.getOwnerModule());
       }

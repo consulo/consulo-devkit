@@ -83,15 +83,20 @@ public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
   }
 
   private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
-    final Set<BnfExpression> set = new HashSet<BnfExpression>();
+    final Set<BnfExpression> set = new HashSet<>();
     file.accept(new PsiRecursiveElementWalkingVisitor() {
       @Override
       public void visitElement(PsiElement element) {
-        if (element instanceof BnfChoice) {
-          BnfChoice choice = (BnfChoice)element;
+        if (element instanceof BnfChoice choice) {
           checkChoice(choice, set);
           for (BnfExpression e : set) {
-            BnfUnreachableChoiceBranchInspection.registerProblem(choice, e, "Duplicate choice branch", problemsHolder, new BnfRemoveExpressionFix());
+            BnfUnreachableChoiceBranchInspection.registerProblem(
+              choice,
+              e,
+              "Duplicate choice branch",
+              problemsHolder,
+              new BnfRemoveExpressionFix()
+            );
           }
           set.clear();
         }

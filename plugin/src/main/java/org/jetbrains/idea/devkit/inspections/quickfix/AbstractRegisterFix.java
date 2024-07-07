@@ -29,6 +29,7 @@ import consulo.logging.Logger;
 import consulo.module.Module;
 import consulo.project.Project;
 import consulo.ui.ex.awt.Messages;
+import consulo.ui.ex.awt.UIUtil;
 import consulo.undoRedo.CommandProcessor;
 import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.annotations.NonNls;
@@ -107,7 +108,7 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
           project,
           filterMessage(e.getMessage()),
           DevKitLocalize.inspectionsComponentNotRegisteredQuickfixError(getType()).get(),
-          Messages.getErrorIcon()
+          UIUtil.getErrorIcon()
         );
       }
     };

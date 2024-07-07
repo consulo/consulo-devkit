@@ -53,17 +53,19 @@ import java.util.*;
 public class BnfRuleLineMarkerProvider extends RelatedItemLineMarkerProvider {
 
   @Override
-  public void collectNavigationMarkers(List<PsiElement> elements,
-                                       Collection<? super RelatedItemLineMarkerInfo> result,
-                                       boolean forNavigation) {
-    Set<PsiElement> visited = forNavigation ? new HashSet<PsiElement>() : null;
+  public void collectNavigationMarkers(
+    List<PsiElement> elements,
+    Collection<? super RelatedItemLineMarkerInfo> result,
+    boolean forNavigation
+  ) {
+    Set<PsiElement> visited = forNavigation ? new HashSet<>() : null;
     for (PsiElement element : elements) {
       PsiElement parent = element.getParent();
-      boolean isRuleId = parent instanceof BnfRule && (forNavigation || element == ((BnfRule)parent).getId());
+      boolean isRuleId = parent instanceof BnfRule rule && (forNavigation || element == rule.getId());
       if (!(isRuleId || forNavigation && element instanceof BnfExpression)) {
         continue;
       }
-      List<PsiElement> items = new ArrayList<PsiElement>();
+      List<PsiElement> items = new ArrayList<>();
       NavigatablePsiElement method = getMethod(element);
       if (method != null && (!forNavigation || visited.add(method))) {
         items.add(method);
@@ -99,12 +101,9 @@ public class BnfRuleLineMarkerProvider extends RelatedItemLineMarkerProvider {
         }
         String title = "parser " + (hasPSI ? "and PSI " : "") + "code";
         NavigationGutterIconBuilder<PsiElement> builder = NavigationGutterIconBuilder.create(BnfIcons.RELATED_METHOD)
-                                                                                     .
-                                                                                       setTargets(items)
-                                                                                     .
-                                                                                       setTooltipText("Click to navigate to " + title + tooltipAd)
-                                                                                     .
-                                                                                       setPopupTitle(StringUtil.capitalize(title) + popupTitleAd);
+          .setTargets(items)
+          .setTooltipText("Click to navigate to " + title + tooltipAd)
+          .setPopupTitle(StringUtil.capitalize(title) + popupTitleAd);
         result.add(builder.createLineMarkerInfo(element));
       }
     }
@@ -122,9 +121,14 @@ public class BnfRuleLineMarkerProvider extends RelatedItemLineMarkerProvider {
     }
     JavaHelper helper = JavaHelper.getJavaHelper(element);
     PsiFile containingFile = rule.getContainingFile();
-    String version = containingFile instanceof BnfFile ? ((BnfFile)containingFile).getVersion() : null;
-    List<NavigatablePsiElement> methods =
-      helper.findClassMethods(version, parserClass, JavaHelper.MethodType.STATIC, GrammarUtil.getMethodName(rule, element), -1);
+    String version = containingFile instanceof BnfFile bnfFile ? bnfFile.getVersion() : null;
+    List<NavigatablePsiElement> methods = helper.findClassMethods(
+      version,
+      parserClass,
+      JavaHelper.MethodType.STATIC,
+      GrammarUtil.getMethodName(rule, element),
+      -1
+    );
     return ContainerUtil.getFirstItem(methods);
   }
 

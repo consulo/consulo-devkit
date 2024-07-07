@@ -17,11 +17,14 @@
 package org.intellij.grammar.impl;
 
 import com.intellij.java.language.psi.util.PsiUtil;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.document.util.TextRange;
 import consulo.language.Language;
 import consulo.language.ast.ASTNode;
-import consulo.language.editor.completion.*;
+import consulo.language.editor.completion.CompletionContributor;
+import consulo.language.editor.completion.CompletionInitializationContext;
+import consulo.language.editor.completion.CompletionType;
 import consulo.language.editor.completion.lookup.LookupElementBuilder;
 import consulo.language.editor.completion.lookup.TailType;
 import consulo.language.editor.completion.lookup.TailTypeDecorator;
@@ -31,7 +34,6 @@ import consulo.language.pattern.PlatformPatterns;
 import consulo.language.pattern.PsiElementPattern;
 import consulo.language.psi.*;
 import consulo.language.psi.util.PsiTreeUtil;
-import consulo.language.util.ProcessingContext;
 import consulo.util.lang.ObjectUtil;
 import consulo.util.lang.StringUtil;
 import org.intellij.grammar.BnfIcons;
@@ -58,62 +60,53 @@ public class BnfCompletionContributor extends CompletionContributor {
   public BnfCompletionContributor() {
     PsiElementPattern.Capture<PsiElement> placePattern =
       psiElement().inFile(PlatformPatterns.instanceOf(BnfFile.class)).andNot(psiElement().inside(PsiComment.class));
-    extend(CompletionType.BASIC, placePattern, new CompletionProvider() {
-      @Override
-      public void addCompletions(@Nonnull CompletionParameters parameters, ProcessingContext context, @Nonnull CompletionResultSet result) {
-        PsiElement position = parameters.getPosition();
-        BnfComposite parent = PsiTreeUtil.getParentOfType(position, BnfAttrs.class, BnfAttr.class, BnfParenExpression.class);
-        boolean attrCompletion;
-        if (parent instanceof BnfAttrs || isPossibleEmptyAttrs(parent)) {
-          attrCompletion = true;
-        }
-        else if (parent instanceof BnfAttr) {
-          BnfAttr attr = (BnfAttr)parent;
-          attrCompletion = position == attr.getId() || isOneAfterAnother(attr.getExpression(), position);
-        }
-        else {
-          attrCompletion = false;
-        }
+    extend(CompletionType.BASIC, placePattern, (parameters, context, result) -> {
+      PsiElement position = parameters.getPosition();
+      BnfComposite parent = PsiTreeUtil.getParentOfType(position, BnfAttrs.class, BnfAttr.class, BnfParenExpression.class);
+      boolean attrCompletion;
+      if (parent instanceof BnfAttrs || isPossibleEmptyAttrs(parent)) {
+        attrCompletion = true;
+      }
+      else if (parent instanceof BnfAttr attr) {
+        attrCompletion = position == attr.getId() || isOneAfterAnother(attr.getExpression(), position);
+      }
+      else {
+        attrCompletion = false;
+      }
+      if (attrCompletion) {
+        boolean inRule = PsiTreeUtil.getParentOfType(parent, BnfRule.class) != null;
+        ASTNode closingBrace = TreeUtil.findSiblingBackward(parent.getNode().getLastChildNode(), BnfTypes.BNF_RIGHT_BRACE);
+        attrCompletion = closingBrace == null || position.getTextOffset() <= closingBrace.getStartOffset();
         if (attrCompletion) {
-          boolean inRule = PsiTreeUtil.getParentOfType(parent, BnfRule.class) != null;
-          ASTNode closingBrace = TreeUtil.findSiblingBackward(parent.getNode().getLastChildNode(), BnfTypes.BNF_RIGHT_BRACE);
-          attrCompletion = closingBrace == null || position.getTextOffset() <= closingBrace.getStartOffset();
-          if (attrCompletion) {
-            for (KnownAttribute attribute : KnownAttribute.getAttributes()) {
-              if (inRule && attribute.isGlobal()) {
-                continue;
-              }
-              result.addElement(LookupElementBuilder.create(attribute.getName()).withIcon(BnfIcons.ATTRIBUTE));
+          for (KnownAttribute attribute : KnownAttribute.getAttributes()) {
+            if (inRule && attribute.isGlobal()) {
+              continue;
             }
-          }
-        }
-        if (!attrCompletion && parameters.getInvocationCount() < 2) {
-          for (String keywords : suggestKeywords(parameters.getPosition())) {
-            result.addElement(TailTypeDecorator.withTail(LookupElementBuilder.create(keywords), TailType.SPACE));
+            result.addElement(LookupElementBuilder.create(attribute.getName()).withIcon(BnfIcons.ATTRIBUTE));
           }
         }
       }
-    });
-    extend(CompletionType.BASIC, placePattern.andNot(psiElement().inside(false, psiElement(BnfAttr.class))), new CompletionProvider() {
-      @Override
-      public void addCompletions(@Nonnull CompletionParameters parameters,
-                                 ProcessingContext context,
-                                 @Nonnull final CompletionResultSet result) {
-        BnfFile file = (BnfFile)parameters.getOriginalFile();
-        PsiElement
-          positionRefOrToken = PsiTreeUtil.getParentOfType(parameters.getOriginalPosition(), BnfReferenceOrToken.class);
-        Set<String> explicitTokens = RuleGraphHelper.getTokenNameToTextMap(file).keySet();
-        for (String s : explicitTokens) {
-          result.addElement(LookupElementBuilder.create(s));
+      if (!attrCompletion && parameters.getInvocationCount() < 2) {
+        for (String keywords : suggestKeywords(parameters.getPosition())) {
+          result.addElement(TailTypeDecorator.withTail(LookupElementBuilder.create(keywords), TailType.SPACE));
         }
-        for (BnfRule rule : file.getRules()) {
-          for (BnfReferenceOrToken element : SyntaxTraverser.psiTraverser(rule.getExpression()).filter(BnfReferenceOrToken.class)) {
-            if (element == positionRefOrToken) {
-              continue;
-            }
-            if (element.resolveRule() == null) {
-              result.addElement(LookupElementBuilder.create(element.getText()));
-            }
+      }
+    });
+    extend(CompletionType.BASIC, placePattern.andNot(psiElement().inside(false, psiElement(BnfAttr.class))), (parameters, context, result) -> {
+      BnfFile file = (BnfFile)parameters.getOriginalFile();
+      PsiElement
+        positionRefOrToken = PsiTreeUtil.getParentOfType(parameters.getOriginalPosition(), BnfReferenceOrToken.class);
+      Set<String> explicitTokens = RuleGraphHelper.getTokenNameToTextMap(file).keySet();
+      for (String s : explicitTokens) {
+        result.addElement(LookupElementBuilder.create(s));
+      }
+      for (BnfRule rule : file.getRules()) {
+        for (BnfReferenceOrToken element : SyntaxTraverser.psiTraverser(rule.getExpression()).filter(BnfReferenceOrToken.class)) {
+          if (element == positionRefOrToken) {
+            continue;
+          }
+          if (element.resolveRule() == null) {
+            result.addElement(LookupElementBuilder.create(element.getText()));
           }
         }
       }
@@ -147,13 +140,13 @@ public class BnfCompletionContributor extends CompletionContributor {
     return isLastInRuleOrFree(attrs);
   }
 
+  @RequiredReadAction
   private static boolean isOneAfterAnother(@Nullable PsiElement e1, @Nullable PsiElement e2) {
-    if (e1 == null || e2 == null) {
-      return false;
-    }
-    return e1.getTextRange().getEndOffset() < e2.getTextRange().getStartOffset();
+    return !(e1 == null || e2 == null)
+      && e1.getTextRange().getEndOffset() < e2.getTextRange().getStartOffset();
   }
 
+  @RequiredReadAction
   private static boolean isLastInRuleOrFree(PsiElement element) {
     PsiElement parent = PsiTreeUtil.getParentOfType(element, BnfRule.class, GeneratedParserUtilBase.DummyBlock.class);
     if (parent instanceof GeneratedParserUtilBase.DummyBlock) {
@@ -179,6 +172,7 @@ public class BnfCompletionContributor extends CompletionContributor {
     return false;
   }
 
+  @RequiredReadAction
   private static Collection<String> suggestKeywords(PsiElement position) {
     TextRange posRange = position.getTextRange();
     BnfFile posFile = (BnfFile)position.getContainingFile();
@@ -211,7 +205,7 @@ public class BnfCompletionContributor extends CompletionContributor {
       @Override
       public String convertItem(Object o) {
         // we do not have other keywords
-        return o instanceof String ? (String)o : null;
+        return o instanceof String str ? str : null;
       }
     };
     PsiFileFactory psiFileFactory = PsiFileFactory.getInstance(posFile.getProject());

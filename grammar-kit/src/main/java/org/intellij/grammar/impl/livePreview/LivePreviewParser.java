@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.livePreview;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.BracePair;
 import consulo.language.ast.ASTNode;
 import consulo.language.ast.IElementType;
@@ -31,7 +32,6 @@ import consulo.util.collection.MultiMap;
 import consulo.util.collection.primitive.objects.ObjectIntMap;
 import consulo.util.collection.primitive.objects.ObjectMaps;
 import consulo.util.lang.StringUtil;
-import consulo.util.lang.function.PairProcessor;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.generator.*;
@@ -69,6 +69,7 @@ public class LivePreviewParser implements PsiParser {
   private BitSet[] myBitSets;
   private final String myVersion;
 
+  @RequiredReadAction
   public LivePreviewParser(@Nullable Project project, LivePreviewLanguage language) {
     myLanguage = language;
     myFile = language.getGrammar(project);
@@ -77,19 +78,12 @@ public class LivePreviewParser implements PsiParser {
 
   @Nonnull
   @Override
-  public ASTNode parse(IElementType root, PsiBuilder originalBuilder, LanguageVersion languageVersion) {
-    //com.intellij.openapi.progress.ProgressIndicator indicator = com.intellij.openapi.progress.ProgressManager.getInstance().getProgressIndicator();
-    //if (indicator != null ) indicator.startNonCancelableSection();
-    //originalBuilder.setDebugMode(true);
+  @RequiredReadAction
+  public ASTNode parse(@Nonnull IElementType root, @Nonnull PsiBuilder originalBuilder, @Nonnull LanguageVersion languageVersion) {
     init(originalBuilder);
     PsiBuilder builder = adapt_builder_(root, originalBuilder, this);
-    ErrorState.get(builder).altExtendsChecker = new PairProcessor<IElementType, IElementType>() {
-      @Override
-      public boolean process(IElementType elementType, IElementType elementType2) {
-        return type_extends_(elementType, elementType2);
-      }
-    };
-    ArrayList<BracePair> braces = new ArrayList<BracePair>();
+    ErrorState.get(builder).altExtendsChecker = this::type_extends_;
+    ArrayList<BracePair> braces = new ArrayList<>();
     ContainerUtil.addIfNotNull(braces, tryMakeBracePair("{", "}", true));
     ContainerUtil.addIfNotNull(braces, tryMakeBracePair("(", ")", false));
     ContainerUtil.addIfNotNull(braces, tryMakeBracePair("[", "]", false));
@@ -148,6 +142,7 @@ public class LivePreviewParser implements PsiParser {
     }
   }
 
+  @RequiredReadAction
   private boolean rule(PsiBuilder builder, int level, BnfRule rule, Map<String, Parser> externalArguments) {
     BitSet bitSet = myBitSets[builder.getCurrentOffset()];
     int ruleNumber = myRuleNumbers.getInt(rule);
@@ -161,12 +156,15 @@ public class LivePreviewParser implements PsiParser {
     return result;
   }
 
-  protected boolean expression(PsiBuilder builder,
-                               int level,
-                               final BnfRule rule,
-                               BnfExpression initialNode,
-                               String funcName,
-                               Map<String, Parser> externalArguments) {
+  @RequiredReadAction
+  protected boolean expression(
+    PsiBuilder builder,
+    int level,
+    final BnfRule rule,
+    BnfExpression initialNode,
+    String funcName,
+    Map<String, Parser> externalArguments
+  ) {
     boolean isRule = initialNode.getParent() == rule;
     BnfExpression node = getNonTrivialNode(initialNode);
 
@@ -206,10 +204,6 @@ public class LivePreviewParser implements PsiParser {
       }
     }
 
-    //if (recoverRoot == null && (isRule || firstNonTrivial)) {
-    //  frameName = generateFirstCheck(rule, frameName, true);
-    //}
-
     PinMatcher pinMatcher = new PinMatcher(myVersion, rule, type, firstNonTrivial ? rule.getName() : funcName);
     boolean pinApplied = false;
     boolean alwaysTrue = type == BNF_OP_OPT || type == BNF_OP_ZEROMORE;
@@ -241,8 +235,8 @@ public class LivePreviewParser implements PsiParser {
     PsiBuilder.Marker marker_ = null;
     boolean sectionRequired = !alwaysTrue || !isPrivate || isLeft || recoverWhile != null;
     boolean sectionRequiredSimple = sectionRequired && modifiers == _NONE_ && recoverWhile == null && !(pinned || frameName != null);
-    boolean sectionMaybeDropped = sectionRequiredSimple && type == BNF_CHOICE && elementType == null &&
-      children.stream().noneMatch(o -> ParserGeneratorUtil.isRollbackRequired(myVersion, o, myFile));
+    boolean sectionMaybeDropped = sectionRequiredSimple && type == BNF_CHOICE && elementType == null
+      && children.stream().noneMatch(o -> ParserGeneratorUtil.isRollbackRequired(myVersion, o, myFile));
 
     if (sectionRequiredSimple) {
       if (!sectionMaybeDropped) {
@@ -268,77 +262,100 @@ public class LivePreviewParser implements PsiParser {
       else if (type == BNF_SEQUENCE) {
         if (skip[0] == 0) {
           if (i == 0) {
-            result_ =
-              generateTokenSequenceCall(builder, level, rule, children, funcName, i, pinMatcher, pinApplied, skip, externalArguments);
+            result_ = generateTokenSequenceCall(
+              builder,
+              level,
+              rule,
+              children,
+              funcName,
+              i,
+              pinMatcher,
+              pinApplied,
+              skip,
+              externalArguments
+            );
           }
           else {
             if (pinApplied && G.generateExtendedPin) {
               if (i == childrenSize - 1) {
                 // do not report error for last child
                 if (i == p + 1) {
-                  result_ = result_ && generateTokenSequenceCall(builder,
-                                                                 level,
-                                                                 rule,
-                                                                 children,
-                                                                 funcName,
-                                                                 i,
-                                                                 pinMatcher,
-                                                                 pinApplied,
-                                                                 skip,
-                                                                 externalArguments);
+                  result_ = result_ && generateTokenSequenceCall(
+                    builder,
+                    level,
+                    rule,
+                    children,
+                    funcName,
+                    i,
+                    pinMatcher,
+                    pinApplied,
+                    skip,
+                    externalArguments
+                  );
                 }
                 else {
-                  result_ = pinned_ && generateTokenSequenceCall(builder,
-                                                                 level,
-                                                                 rule,
-                                                                 children,
-                                                                 funcName,
-                                                                 i,
-                                                                 pinMatcher,
-                                                                 pinApplied,
-                                                                 skip,
-                                                                 externalArguments) && result_;
+                  result_ = pinned_ && generateTokenSequenceCall(
+                    builder,
+                    level,
+                    rule,
+                    children,
+                    funcName,
+                    i,
+                    pinMatcher,
+                    pinApplied,
+                    skip,
+                    externalArguments
+                  ) && result_;
                 }
               }
               else if (i == p + 1) {
-                result_ = result_ && report_error_(builder,
-                                                   generateTokenSequenceCall(builder,
-                                                                             level,
-                                                                             rule,
-                                                                             children,
-                                                                             funcName,
-                                                                             i,
-                                                                             pinMatcher,
-                                                                             pinApplied,
-                                                                             skip,
-                                                                             externalArguments));
+                result_ = result_ && report_error_(
+                  builder,
+                  generateTokenSequenceCall(
+                    builder,
+                    level,
+                    rule,
+                    children,
+                    funcName,
+                    i,
+                    pinMatcher,
+                    pinApplied,
+                    skip,
+                    externalArguments
+                  )
+                );
               }
               else {
-                result_ = pinned_ && report_error_(builder,
-                                                   generateTokenSequenceCall(builder,
-                                                                             level,
-                                                                             rule,
-                                                                             children,
-                                                                             funcName,
-                                                                             i,
-                                                                             pinMatcher,
-                                                                             pinApplied,
-                                                                             skip,
-                                                                             externalArguments))
-                  && result_;
+                result_ = pinned_ && report_error_(
+                  builder,
+                  generateTokenSequenceCall(
+                    builder,
+                    level,
+                    rule,
+                    children,
+                    funcName,
+                    i,
+                    pinMatcher,
+                    pinApplied,
+                    skip,
+                    externalArguments
+                  )
+                ) && result_;
               }
             }
             else {
-              result_ = result_ && generateTokenSequenceCall(builder,
-                                                             level,
-                                                             rule,
-                                                             children,
-                                                             funcName,
-                                                             i,
-                                                             pinMatcher,
-                                                             pinApplied,
-                                                             skip,
-                                                             externalArguments);
+              result_ = result_ && generateTokenSequenceCall(
+                builder,
+                level,
+                rule,
+                children,
+                funcName,
+                i,
+                pinMatcher,
+                pinApplied,
+                skip,
+                externalArguments
+              );
             }
           }
         }
@@ -411,7 +428,8 @@ public class LivePreviewParser implements PsiParser {
         recoverPredicate = externalArguments.get(recoverWhile.substring(2, recoverWhile.length() - 2));
       }
       else {
-        recoverPredicate = recoverRule == null ? null : (builder1, level1) -> rule(builder1, level1, recoverRule, Collections.emptyMap());
+        recoverPredicate = recoverRule == null ? null
+          : (builder1, level1) -> rule(builder1, level1, recoverRule, Collections.emptyMap());
       }
       exit_section_(builder, level, marker_, alwaysTrue || result_, pinned_, recoverPredicate);
     }
@@ -440,13 +458,15 @@ public class LivePreviewParser implements PsiParser {
     return false;
   }
 
-
-  protected boolean generateNodeCall(PsiBuilder builder,
-                                     int level,
-                                     BnfRule rule,
-                                     @Nullable BnfExpression node,
-                                     String nextName,
-                                     Map<String, Parser> externalArguments) {
+  @RequiredReadAction
+  protected boolean generateNodeCall(
+    PsiBuilder builder,
+    int level,
+    BnfRule rule,
+    @Nullable BnfExpression node,
+    String nextName,
+    Map<String, Parser> externalArguments
+  ) {
     IElementType type = node == null ? BNF_REFERENCE_OR_TOKEN : getEffectiveType(node);
     String text = node == null ? nextName : node.getText();
     if (type == BNF_STRING) {
@@ -471,14 +491,17 @@ public class LivePreviewParser implements PsiParser {
           //return method + "(builder_, level_ + 1" + clause.toString() + ")";
         }
         else {
-          ExpressionHelper.ExpressionInfo info = ExpressionGeneratorHelper.getInfoForExpressionParsing(myExpressionHelper, subRule);
+          ExpressionHelper.ExpressionInfo info =
+            ExpressionGeneratorHelper.getInfoForExpressionParsing(myExpressionHelper, subRule);
           if (info == null) {
             return rule(builder, level + 1, subRule, externalArguments);
           }
           else {
             int priority = info.getPriority(rule);
             int arg1Priority = subRule == info.rootRule ? -1 : info.getPriority(subRule);
-            int argPriority = arg1Priority == -1 ? (priority == info.nextPriority - 1 ? -1 : priority) : arg1Priority - 1;
+            int argPriority = arg1Priority == -1
+              ? (priority == info.nextPriority - 1 ? -1 : priority)
+              : arg1Priority - 1;
             return generateExpressionRoot(builder, level, info, argPriority);
           }
         }
@@ -500,21 +523,24 @@ public class LivePreviewParser implements PsiParser {
     }
   }
 
-  private boolean generateTokenSequenceCall(PsiBuilder builder,
-                                            int level,
-                                            BnfRule rule,
-                                            List<BnfExpression> children,
-                                            String funcName,
-                                            int startIndex,
-                                            PinMatcher pinMatcher,
-                                            boolean pinApplied,
-                                            int[] skip,
-                                            Map<String, Parser> externalArguments) {
+  @RequiredReadAction
+  private boolean generateTokenSequenceCall(
+    PsiBuilder builder,
+    int level,
+    BnfRule rule,
+    List<BnfExpression> children,
+    String funcName,
+    int startIndex,
+    PinMatcher pinMatcher,
+    boolean pinApplied,
+    int[] skip,
+    Map<String, Parser> externalArguments
+  ) {
     BnfExpression nextChild = children.get(startIndex);
     if (startIndex == children.size() - 1 || !isTokenExpression(nextChild)) {
       return generateNodeCall(builder, level, rule, nextChild, funcName, externalArguments);
     }
-    ArrayList<IElementType> list = new ArrayList<IElementType>();
+    ArrayList<IElementType> list = new ArrayList<>();
     int pin = pinApplied ? -1 : 0;
     for (int i = startIndex, len = children.size(); i < len; i++) {
       BnfExpression child = children.get(i);
@@ -542,12 +568,15 @@ public class LivePreviewParser implements PsiParser {
     return consumeTokens(builder, pin, list.toArray(new IElementType[list.size()]));
   }
 
-  private boolean generateExternalCall(PsiBuilder builder,
-                                       int level,
-                                       final BnfRule rule,
-                                       List<BnfExpression> expressions,
-                                       final String nextName,
-                                       final Map<String, Parser> externalArguments) {
+  @RequiredReadAction
+  private boolean generateExternalCall(
+    PsiBuilder builder,
+    int level,
+    final BnfRule rule,
+    List<BnfExpression> expressions,
+    final String nextName,
+    final Map<String, Parser> externalArguments
+  ) {
     List<BnfExpression> callParameters = expressions;
     List<BnfExpression> metaParameters = Collections.emptyList();
     List<String> metaParameterNames;
@@ -574,12 +603,22 @@ public class LivePreviewParser implements PsiParser {
       }
       else if ("anything".equals(method) && expressions.size() == 2) {
         final BnfExpression finalNested = expressions.get(1);
-        parseAsTree(ErrorState.get(builder), builder, level + 1, DUMMY_BLOCK, true, TOKEN_ADVANCER, new Parser() {
-          @Override
-          public boolean parse(PsiBuilder builder, int level) {
-            return generateNodeCall(builder, level, rule, finalNested, getNextName(nextName, 0), Collections.<String, Parser>emptyMap());
-          }
-        });
+        parseAsTree(
+          ErrorState.get(builder),
+          builder,
+          level + 1,
+          DUMMY_BLOCK,
+          true,
+          TOKEN_ADVANCER,
+          (builder13, level13) -> generateNodeCall(
+            builder13,
+            level13,
+            rule,
+            finalNested,
+            getNextName(nextName, 0),
+            Collections.<String, Parser>emptyMap()
+          )
+        );
         return true;
       }
       // not supported
@@ -588,7 +627,7 @@ public class LivePreviewParser implements PsiParser {
     if (callParameters.size() <= 1) {
       return rule(builder, level, targetRule, externalArguments);
     }
-    Map<String, Parser> argumentMap = new HashMap<String, Parser>();
+    Map<String, Parser> argumentMap = new HashMap<>();
     for (int i = 1, len = Math.min(callParameters.size(), metaParameterNames.size() + 1); i < len; i++) {
       BnfExpression nested = callParameters.get(i);
       String argument = nested.getText();
@@ -608,15 +647,19 @@ public class LivePreviewParser implements PsiParser {
       final BnfExpression finalNested = nested;
       if (nested instanceof BnfReferenceOrToken || nested instanceof BnfLiteralExpression) {
         final BnfRule argRule = nested instanceof BnfReferenceOrToken ? myFile.getRule(argument) : null;
-        argumentMap.put(argName, new Parser() {
-          @Override
-          public boolean parse(PsiBuilder builder, int level) {
-            if (argRule != null) {
-              return rule(builder, level, argRule, Collections.<String, Parser>emptyMap());
-            }
-            else {
-              return generateNodeCall(builder, level, rule, finalNested, nextName, Collections.<String, Parser>emptyMap());
-            }
+        argumentMap.put(argName, (builder14, level14) -> {
+          if (argRule != null) {
+            return rule(builder14, level14, argRule, Collections.<String, Parser>emptyMap());
+          }
+          else {
+            return generateNodeCall(
+              builder14,
+              level14,
+              rule,
+              finalNested,
+              nextName,
+              Collections.<String, Parser>emptyMap()
+            );
           }
         });
       }
@@ -628,21 +671,19 @@ public class LivePreviewParser implements PsiParser {
           argumentMap.put(argName, externalArguments.get(expressionList.get(0).getText()));
         }
         else {
-          argumentMap.put(argName, new Parser() {
-            @Override
-            public boolean parse(PsiBuilder builder, int level) {
-              return generateNodeCall(builder, level, targetRule, finalNested, argNextName, externalArguments);
-            }
-          });
+          argumentMap.put(
+            argName,
+            (builder1, level1) ->
+              generateNodeCall(builder1, level1, targetRule, finalNested, argNextName, externalArguments)
+          );
         }
       }
       else {
-        argumentMap.put(argName, new Parser() {
-          @Override
-          public boolean parse(PsiBuilder builder, int level) {
-            return generateNodeCall(builder, level, targetRule, finalNested, argNextName, externalArguments);
-          }
-        });
+        argumentMap.put(
+          argName,
+          (builder12, level12) ->
+            generateNodeCall(builder12, level12, targetRule, finalNested, argNextName, externalArguments)
+        );
       }
     }
     return rule(builder, level, targetRule, argumentMap);
@@ -675,19 +716,26 @@ public class LivePreviewParser implements PsiParser {
     return consumeToken(builder, tokenText);
   }
 
+  @RequiredReadAction
   protected boolean isTokenExpression(BnfExpression node) {
-    return node instanceof BnfLiteralExpression || node instanceof BnfReferenceOrToken && myFile.getRule(node.getText()) == null;
+    return node instanceof BnfLiteralExpression
+      || node instanceof BnfReferenceOrToken && myFile.getRule(node.getText()) == null;
   }
 
   // Expression Generator Helper part
-  private boolean generateExpressionRoot(PsiBuilder builder, int level, ExpressionHelper.ExpressionInfo info, int priority_) {
-    Map<String, List<ExpressionHelper.OperatorInfo>> opCalls = new LinkedHashMap<String, List<ExpressionHelper.OperatorInfo>>();
+  private boolean generateExpressionRoot(
+    PsiBuilder builder,
+    int level,
+    ExpressionHelper.ExpressionInfo info,
+    int priority_
+  ) {
+    Map<String, List<ExpressionHelper.OperatorInfo>> opCalls = new LinkedHashMap<>();
     for (BnfRule rule : info.priorityMap.keySet()) {
       ExpressionHelper.OperatorInfo operator = info.operatorMap.get(rule);
       String opCall = getNextName(operator.rule.getName(), 0);
       List<ExpressionHelper.OperatorInfo> list = opCalls.get(opCall);
       if (list == null) {
-        opCalls.put(opCall, list = new ArrayList<ExpressionHelper.OperatorInfo>(2));
+        opCalls.put(opCall, list = new ArrayList<>(2));
       }
       list.add(operator);
     }
@@ -698,17 +746,26 @@ public class LivePreviewParser implements PsiParser {
     if (!recursion_guard_(builder, level, methodName)) {
       return false;
     }
-    //g.generateFirstCheck(info.rootRule, frameName, true);
     boolean result_ = false;
     boolean pinned_;
     PsiBuilder.Marker marker_ = enter_section_(builder, level, _NONE_, frameName);
 
     boolean first = true;
-    for (ExpressionHelper.OperatorInfo operator : filter(opCalls,
-                                                         ExpressionHelper.OperatorType.ATOM,
-                                                         ExpressionHelper.OperatorType.PREFIX)) {
+    Iterable<ExpressionHelper.OperatorInfo> filter = filter(
+      opCalls,
+      ExpressionHelper.OperatorType.ATOM,
+      ExpressionHelper.OperatorType.PREFIX
+    );
+    for (ExpressionHelper.OperatorInfo operator : filter) {
       if (first || !result_) {
-        result_ = generateNodeCall(builder, level, operator.rule, null, operator.rule.getName(), Collections.<String, Parser>emptyMap());
+        result_ = generateNodeCall(
+          builder,
+          level,
+          operator.rule,
+          null,
+          operator.rule.getName(),
+          Collections.<String, Parser>emptyMap()
+        );
       }
       first = false;
     }
@@ -719,12 +776,14 @@ public class LivePreviewParser implements PsiParser {
     return result_ || pinned_;
   }
 
-  private boolean generateKernelMethod(PsiBuilder builder,
-                                       int level,
-                                       String methodName,
-                                       ExpressionHelper.ExpressionInfo info,
-                                       Map<String, List<ExpressionHelper.OperatorInfo>> opCalls,
-                                       int priority_) {
+  private boolean generateKernelMethod(
+    PsiBuilder builder,
+    int level,
+    String methodName,
+    ExpressionHelper.ExpressionInfo info,
+    Map<String, List<ExpressionHelper.OperatorInfo>> opCalls,
+    int priority_
+  ) {
     if (!recursion_guard_(builder, level, methodName)) {
       return false;
     }
@@ -739,10 +798,13 @@ public class LivePreviewParser implements PsiParser {
         return false;
       }
 
-      for (ExpressionHelper.OperatorInfo operator : filter(opCalls,
-                                                           ExpressionHelper.OperatorType.BINARY,
-                                                           ExpressionHelper.OperatorType.N_ARY,
-                                                           ExpressionHelper.OperatorType.POSTFIX)) {
+      Iterable<ExpressionHelper.OperatorInfo> filter = filter(
+        opCalls,
+        ExpressionHelper.OperatorType.BINARY,
+        ExpressionHelper.OperatorType.N_ARY,
+        ExpressionHelper.OperatorType.POSTFIX
+      );
+      for (ExpressionHelper.OperatorInfo operator : filter) {
         int priority = info.getPriority(operator.rule);
         int arg2Priority = operator.arg2 == null ? -1 : info.getPriority(operator.arg2);
         int argPriority = arg2Priority == -1 ? priority : arg2Priority - 1;
@@ -753,27 +815,35 @@ public class LivePreviewParser implements PsiParser {
 
         if (priority_ < priority &&
           (operator.arg1 == null || ((LighterASTNode)left_marker_).getTokenType() == getRuleElementType(operator.arg1)) &&
-          generateNodeCall(builder,
-                           level,
-                           info.rootRule,
-                           operator.operator,
-                           getNextName(operator.rule.getName(), 0),
-                           Collections.<String, Parser>emptyMap())) {
+          generateNodeCall(
+            builder,
+            level,
+            info.rootRule,
+            operator.operator,
+            getNextName(operator.rule.getName(), 0),
+            Collections.<String, Parser>emptyMap()
+          )) {
 
           IElementType elementType = getRuleElementType(operator.rule);
-          boolean rightAssociative = ParserGeneratorUtil.getAttribute(myVersion, operator.rule, KnownAttribute.RIGHT_ASSOCIATIVE);
+          boolean rightAssociative =
+            ParserGeneratorUtil.getAttribute(myVersion, operator.rule, KnownAttribute.RIGHT_ASSOCIATIVE);
           if (operator.type == ExpressionHelper.OperatorType.BINARY) {
-            result_ =
-              report_error_(builder, generateExpressionRoot(builder, level, info, (rightAssociative ? argPriority - 1 : argPriority)));
+            result_ = report_error_(
+              builder,
+              generateExpressionRoot(builder, level, info, (rightAssociative ? argPriority - 1 : argPriority))
+            );
             if (operator.tail != null) {
-              result_ = report_error_(builder,
-                                      generateNodeCall(builder,
-                                                       level,
-                                                       operator.rule,
-                                                       operator.tail,
-                                                       getNextName(operator.rule.getName(), 1),
-                                                       Collections.<String,
-                                                         Parser>emptyMap())) && result_;
+              result_ = report_error_(
+                builder,
+                generateNodeCall(
+                  builder,
+                  level,
+                  operator.rule,
+                  operator.tail,
+                  getNextName(operator.rule.getName(), 1),
+                  Collections.<String, Parser>emptyMap()
+                )
+              ) && result_;
             }
           }
           else if (operator.type == ExpressionHelper.OperatorType.N_ARY) {
@@ -781,21 +851,26 @@ public class LivePreviewParser implements PsiParser {
             while (true) {
               result_ = report_error_(builder, generateExpressionRoot(builder, level, info, argPriority));
               if (operator.tail != null) {
-                result_ = report_error_(builder,
-                                        generateNodeCall(builder,
-                                                         level,
-                                                         operator.rule,
-                                                         operator.tail,
-                                                         getNextName(operator.rule.getName(), 1),
-                                                         Collections.<String,
-                                                           Parser>emptyMap())) && result_;
+                result_ = report_error_(
+                  builder,
+                  generateNodeCall(
+                    builder,
+                    level,
+                    operator.rule,
+                    operator.tail,
+                    getNextName(operator.rule.getName(), 1),
+                    Collections.<String, Parser>emptyMap()
+                  )
+                ) && result_;
               }
-              if (!result_ || !generateNodeCall(builder,
-                                                level,
-                                                info.rootRule,
-                                                operator.operator,
-                                                getNextName(operator.rule.getName(), 0),
-                                                Collections.<String, Parser>emptyMap())) {
+              if (!result_ || !generateNodeCall(
+                builder,
+                level,
+                info.rootRule,
+                operator.operator,
+                getNextName(operator.rule.getName(), 0),
+                Collections.<String, Parser>emptyMap()
+              )) {
                 break;
               }
               if (!empty_element_parsed_guard_(builder, operator.operator.getText(), nary_pos)) {
@@ -823,17 +898,22 @@ public class LivePreviewParser implements PsiParser {
     return result_;
   }
 
-  private static Iterable<ExpressionHelper.OperatorInfo> filter(final Map<String, List<ExpressionHelper.OperatorInfo>> opCalls,
-                                                                final ExpressionHelper.OperatorType... operatorTypes) {
-    return ContainerUtil.mapNotNull(opCalls.keySet(),
-                                    new Function<String, ExpressionHelper.OperatorInfo>() {
-                                      @Nullable
-                                      @Override
-                                      public ExpressionHelper.OperatorInfo apply(String opCall) {
-                                        return ContainerUtil.getFirstItem(ExpressionGeneratorHelper.findOperators(opCalls.get(opCall),
-                                                                                                                  operatorTypes));
-                                      }
-                                    });
+  private static Iterable<ExpressionHelper.OperatorInfo> filter(
+    final Map<String, List<ExpressionHelper.OperatorInfo>> opCalls,
+    final ExpressionHelper.OperatorType... operatorTypes
+  ) {
+    return ContainerUtil.mapNotNull(
+      opCalls.keySet(),
+      new Function<String, ExpressionHelper.OperatorInfo>() {
+        @Nullable
+        @Override
+        public ExpressionHelper.OperatorInfo apply(String opCall) {
+          return ContainerUtil.getFirstItem(
+            ExpressionGeneratorHelper.findOperators(opCalls.get(opCall), operatorTypes)
+          );
+        }
+      }
+    );
   }
 
   /**
@@ -843,7 +923,7 @@ public class LivePreviewParser implements PsiParser {
     BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer();
     Set<BnfExpression> nextExprSet = analyzer.calcNext(rule).keySet();
     Set<String> nextSet = analyzer.asStrings(nextExprSet);
-    List<IElementType> tokenTypes = new ArrayList<IElementType>(nextSet.size());
+    List<IElementType> tokenTypes = new ArrayList<>(nextSet.size());
 
     for (String s : nextSet) {
       if (myFile.getRule(s) != null) {

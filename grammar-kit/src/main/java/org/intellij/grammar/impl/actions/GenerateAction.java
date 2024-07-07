@@ -15,6 +15,8 @@
  */
 package org.intellij.grammar.impl.actions;
 
+import consulo.annotation.access.RequiredReadAction;
+import consulo.application.Application;
 import consulo.application.ApplicationManager;
 import consulo.application.progress.PerformInBackgroundOption;
 import consulo.application.progress.ProgressIndicator;
@@ -76,12 +78,14 @@ public class GenerateAction extends AnAction {
   }
 
   @Override
+  @RequiredReadAction
   public void update(@Nonnull AnActionEvent e) {
     Project project = e.getData(Project.KEY);
     List<BnfFile> files = getFiles(e);
     e.getPresentation().setEnabledAndVisible(project != null && !files.isEmpty());
   }
 
+  @RequiredReadAction
   private static List<BnfFile> getFiles(AnActionEvent e) {
     Project project = e.getData(Project.KEY);
     VirtualFile[] files = e.getData(LangDataKeys.VIRTUAL_FILE_ARRAY);
@@ -90,12 +94,14 @@ public class GenerateAction extends AnAction {
     }
     final PsiManager manager = PsiManager.getInstance(project);
     return ContainerUtil.mapNotNull(files, file -> {
+      @SuppressWarnings("RequiredXAction")
       PsiFile psiFile = manager.findFile(file);
-      return psiFile instanceof BnfFile ? (BnfFile)psiFile : null;
+      return psiFile instanceof BnfFile bnfFile ? bnfFile : null;
     });
   }
 
   @Override
+  @RequiredReadAction
   public void actionPerformed(@Nonnull AnActionEvent e) {
     Project project = e.getData(Project.KEY);
     List<BnfFile> files = getFiles(e);
@@ -110,107 +116,113 @@ public class GenerateAction extends AnAction {
 
   public static void doGenerate(@Nonnull final Project project, final List<BnfFile> bnfFiles) {
     final Map<BnfFile, VirtualFile> rootMap = new LinkedHashMap<>();
-    ApplicationManager.getApplication().runWriteAction(new Runnable() {
-      @Override
-      public void run() {
-        for (BnfFile file : bnfFiles) {
-          String parserClass = getRootAttribute(file.getVersion(), file, KnownAttribute.PARSER_CLASS);
-          VirtualFile target =
-            getTargetDirectoryFor(project, file.getVirtualFile(), StringUtil.getShortName(parserClass) + ".java", StringUtil
-              .getPackageName(parserClass), true);
-          rootMap.put(file, target);
-        }
+    Application.get().runWriteAction(() -> {
+      for (BnfFile file : bnfFiles) {
+        String parserClass = getRootAttribute(file.getVersion(), file, KnownAttribute.PARSER_CLASS);
+        VirtualFile target = getTargetDirectoryFor(
+          project,
+          file.getVirtualFile(),
+          StringUtil.getShortName(parserClass) + ".java",
+          StringUtil.getPackageName(parserClass),
+          true
+        );
+        rootMap.put(file, target);
       }
     });
 
-    ProgressManager.getInstance()
-                   .run(new Task.Backgroundable(project,
-                                                "Parser Generation",
-                                                true,
-                                                PerformInBackgroundOption.ALWAYS_BACKGROUND) {
+    ProgressManager.getInstance().run(
+      new Task.Backgroundable(project, "Parser Generation", true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
+        List<File> files = new ArrayList<>();
+        Set<VirtualFile> targets = new LinkedHashSet<>();
+        long totalWritten = 0;
 
-                     List<File> files = ContainerUtil.newArrayList();
-                     Set<VirtualFile> targets = new LinkedHashSet<>();
-                     long totalWritten = 0;
+        @Override
+        @RequiredReadAction
+        public void run(@Nonnull ProgressIndicator indicator) {
+          long startTime = System.currentTimeMillis();
+          indicator.setIndeterminate(true);
+          try {
+            runInner();
+          }
+          finally {
+            String report = String.format(
+              "%d grammars: %d files generated (%s) in %s",
+              bnfFiles.size(),
+              files.size(),
+              StringUtil.formatFileSize(totalWritten),
+              StringUtil.formatDuration(System.currentTimeMillis() - startTime)
+            );
+            if (bnfFiles.size() > 3) {
+              Notifications.Bus.notify(
+                new Notification(BnfNotificationGroup.GRAMMAR_KIT, "", report, NotificationType.INFORMATION),
+                project
+              );
+            }
+            VirtualFileUtil.markDirtyAndRefresh(true, true, true, targets.toArray(new VirtualFile[targets.size()]));
+          }
+        }
 
-                     @Override
-                     public void run(@Nonnull ProgressIndicator indicator) {
-                       long startTime = System.currentTimeMillis();
-                       indicator.setIndeterminate(true);
-                       try {
-                         runInner();
-                       }
-                       finally {
-                         String report = String.format("%d grammars: %d files generated (%s) in %s",
-                                                       bnfFiles.size(),
-                                                       files.size(),
-                                                       StringUtil.formatFileSize(totalWritten),
-                                                       StringUtil.formatDuration(System.currentTimeMillis() - startTime));
-                         if (bnfFiles.size() > 3) {
-                           Notifications.Bus.notify(new Notification(BnfNotificationGroup.GRAMMAR_KIT,
-                                                                     "",
-                                                                     report,
-                                                                     NotificationType.INFORMATION), project);
-                         }
-                         VirtualFileUtil.markDirtyAndRefresh(true,
-                                                             true,
-                                                             true,
-                                                             targets.toArray(new VirtualFile[targets.size()]));
-                       }
-                     }
-
-                     private void runInner() {
-                       for (final BnfFile file : bnfFiles) {
-                         final String sourcePath =
-                           FileUtil.toSystemDependentName(PathUtil.getCanonicalPath(file.getVirtualFile().getParent().getPath()));
-                         VirtualFile target = rootMap.get(file);
-                         if (target == null) {
-                           return;
-                         }
-                         targets.add(target);
-                         final File genDir = new File(VirtualFileUtil.virtualToIoFile(target).getAbsolutePath());
-                         try {
-                           long time = System.currentTimeMillis();
-                           int filesCount = files.size();
-                           ApplicationManager.getApplication().runReadAction(new ThrowableComputable<Boolean, Exception>() {
-                             @Override
-                             public Boolean compute() throws Exception {
-                               new ParserGenerator(file, sourcePath, genDir.getPath(), "") {
-                                 @Override
-                                 protected PrintWriter openOutputInner(File file) throws IOException {
-                                   files.add(file);
-                                   return super.openOutputInner(file);
-                                 }
-                               }.generate();
-                               return true;
-                             }
-                           });
-                           long millis = System.currentTimeMillis() - time;
-                           String duration = millis < 1000 ? null : StringUtil.formatDuration(millis);
-                           long written = 0;
-                           for (File f : files.subList(filesCount, files.size())) {
-                             written += f.length();
-                           }
-                           totalWritten += written;
-                           Notifications.Bus.notify(new Notification(BnfNotificationGroup.GRAMMAR_KIT,
-                                                                     String.format("%s generated (%s)",
-                                                                                   file.getName(),
-                                                                                   StringUtil.formatFileSize(written)),
-                                                                     "to " + genDir + (duration == null ? "" : " in " + duration),
-                                                                     NotificationType.INFORMATION), project);
-                         }
-                         catch (ProcessCanceledException ignored) {
-                         }
-                         catch (Exception ex) {
-                           Notifications.Bus.notify(new Notification(BnfNotificationGroup.GRAMMAR_KIT,
-                                                                     file.getName() + " generation failed",
-                                                                     ExceptionUtil.getMessage(ex),
-                                                                     NotificationType.ERROR), project);
-                           LOG.warn(ex);
-                         }
-                       }
-
-                     }
-                   });
+        @RequiredReadAction
+        private void runInner() {
+          for (final BnfFile file : bnfFiles) {
+            final String sourcePath =
+              FileUtil.toSystemDependentName(PathUtil.getCanonicalPath(file.getVirtualFile().getParent().getPath()));
+            VirtualFile target = rootMap.get(file);
+            if (target == null) {
+              return;
+            }
+            targets.add(target);
+            final File genDir = new File(VirtualFileUtil.virtualToIoFile(target).getAbsolutePath());
+            try {
+              long time = System.currentTimeMillis();
+              int filesCount = files.size();
+              Application.get().runReadAction(new ThrowableComputable<Boolean, Exception>() {
+                @Override
+                public Boolean compute() throws Exception {
+                  new ParserGenerator(file, sourcePath, genDir.getPath(), "") {
+                    @Override
+                    protected PrintWriter openOutputInner(File file) throws IOException {
+                      files.add(file);
+                      return super.openOutputInner(file);
+                    }
+                  }.generate();
+                  return true;
+                }
+              });
+              long millis = System.currentTimeMillis() - time;
+              String duration = millis < 1000 ? null : StringUtil.formatDuration(millis);
+              long written = 0;
+              for (File f : files.subList(filesCount, files.size())) {
+                written += f.length();
+              }
+              totalWritten += written;
+              Notifications.Bus.notify(
+                new Notification(
+                  BnfNotificationGroup.GRAMMAR_KIT,
+                  String.format("%s generated (%s)", file.getName(), StringUtil.formatFileSize(written)),
+                  "to " + genDir + (duration == null ? "" : " in " + duration),
+                  NotificationType.INFORMATION
+                ),
+                project
+              );
+            }
+            catch (ProcessCanceledException ignored) {
+            }
+            catch (Exception ex) {
+              Notifications.Bus.notify(
+                new Notification(
+                  BnfNotificationGroup.GRAMMAR_KIT,
+                  file.getName() + " generation failed",
+                  ExceptionUtil.getMessage(ex),
+                  NotificationType.ERROR
+                ),
+                project
+              );
+              LOG.warn(ex);
+            }
+          }
+        }
+      }
+    );
   }
 }

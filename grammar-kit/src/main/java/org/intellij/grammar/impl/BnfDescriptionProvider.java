@@ -42,26 +42,26 @@ public class BnfDescriptionProvider implements ElementDescriptionProvider {
   public String getElementDescription(@Nonnull PsiElement psiElement, @Nonnull ElementDescriptionLocation location) {
     if (location == UsageViewNodeTextLocation.INSTANCE && psiElement instanceof BnfComposite) {
       return getElementDescription(psiElement, UsageViewTypeLocation.INSTANCE) + " " +
-             "'" + getElementDescription(psiElement, UsageViewShortNameLocation.INSTANCE) + "'";
+        "'" + getElementDescription(psiElement, UsageViewShortNameLocation.INSTANCE) + "'";
     }
-    if (psiElement instanceof BnfRule) {
+    if (psiElement instanceof BnfRule rule) {
       if (location == UsageViewTypeLocation.INSTANCE) {
         return "Grammar Rule";
       }
-      return ((BnfRule)psiElement).getName();
+      return rule.getName();
     }
-    else if (psiElement instanceof BnfAttr) {
+    else if (psiElement instanceof BnfAttr attr) {
       if (location == UsageViewTypeLocation.INSTANCE) {
         BnfRule rule = PsiTreeUtil.getParentOfType(psiElement, BnfRule.class);
         return (rule == null ? "Grammar " : "Rule ") + "Attribute";
       }
-      return ((BnfAttr)psiElement).getName();
+      return attr.getName();
     }
     else if (psiElement instanceof BnfComposite) {
       if (location == UsageViewTypeLocation.INSTANCE) {
         return StringUtil.join(NameUtil.nameToWords(psiElement.getNode().getElementType().toString()), " ");
       }
-      return psiElement instanceof PsiNamedElement ? ((PsiNamedElement) psiElement).getName() : psiElement.getClass().getSimpleName();
+      return psiElement instanceof PsiNamedElement namedElement ? namedElement.getName() : psiElement.getClass().getSimpleName();
     }
     return null;
   }

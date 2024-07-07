@@ -3,12 +3,9 @@ package consulo.devkit.localize.inspection;
 import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.CommonBundle;
 import consulo.application.WriteAction;
-import consulo.component.util.localize.AbstractBundle;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -21,6 +18,8 @@ import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
+
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:nikolay@yurchenko.su">Nikolay Yurchenko</a>
@@ -54,10 +53,10 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
   }
 
   private static class BundleCallVisitor extends JavaElementVisitor {
-    private final ProblemsHolder holder;
+    private final ProblemsHolder myHolder;
 
     private BundleCallVisitor(ProblemsHolder holder) {
-      this.holder = holder;
+      myHolder = holder;
     }
 
     @Override
@@ -68,7 +67,6 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
     private class TransformToLocalizeInspector extends LocalizeClassExistsChecker {
       protected String myReplacementCodeBlock;
-      protected LocalizeValue myInspectionName;
 
       protected TransformToLocalizeInspector(@Nonnull PsiMethodCallExpression expression) {
         super(expression);
@@ -82,12 +80,12 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
         initReplacementCodeBlock();
 
-        myInspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(myLocalizeClassName, myLocalizeMethodName);
+        LocalizeValue inspectionName = DevKitLocalize.inspectionsReplaceWithXxxlocalize(myLocalizeClassName, myLocalizeMethodName);
 
-        holder.registerProblem(
+        myHolder.registerProblem(
           myExpression,
-          myInspectionName.get(),
-          new TransformToLocalizeFix(myExpression, myInspectionName, myReplacementCodeBlock)
+          inspectionName.get(),
+          new TransformToLocalizeFix(myExpression, inspectionName, myReplacementCodeBlock)
         );
       }
 
@@ -193,15 +191,11 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     }
   }
 
-  private static class ClassExtendsAbstractBundleChecker extends CallsBundleMessageChecker {
-    @SuppressWarnings("deprecation")
-    private static final String ABSTRACT_BUNDLE_CLASS_NAME = AbstractBundle.class.getName();
-    private static final String COMMON_BUNDLE_CLASS_NAME = CommonBundle.class.getName();
-
+  private static class BundleClassChecker extends CallsBundleMessageChecker {
     protected PsiElement myMethod;
     protected PsiClass myClass;
 
-    protected ClassExtendsAbstractBundleChecker(@Nonnull PsiMethodCallExpression expression) {
+    protected BundleClassChecker(@Nonnull PsiMethodCallExpression expression) {
       super(expression);
     }
 
@@ -216,12 +210,11 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
       PsiElement parent = (myMethod == null) ? null : myMethod.getParent();
       myClass = (parent instanceof PsiClass psiClass) ? psiClass : null;
 
-      return myClass != null && (InheritanceUtil.isInheritor(myClass, ABSTRACT_BUNDLE_CLASS_NAME)
-        || COMMON_BUNDLE_CLASS_NAME.equals(myClass.getQualifiedName()));
+      return myClass != null;
     }
   }
 
-  private static class LocalizeClassExistsChecker extends ClassExtendsAbstractBundleChecker {
+  private static class LocalizeClassExistsChecker extends BundleClassChecker {
     protected static final String
       ZERO_PREFIX = "zero",
       ONE_PREFIX = "one",
@@ -267,7 +260,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
     @RequiredReadAction
     private boolean initLocalizeClass() {
-      PsiClass localizeClass = LocalizeClassResolver.resolveByBundle(myClass, myExpression);
+      PsiClass localizeClass = LocalizeClassResolver.resolveByBundle(myClass);
 
       if (localizeClass == null) {
         return false;
@@ -297,7 +290,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     }
 
     private String capitalizeByDot(String key) {
-      String[] split = key.replace(" ", ".").split("\\.");
+      String[] split = key.toLowerCase(Locale.ROOT).replace(" ", ".").split("\\.");
 
       StringBuilder builder = new StringBuilder();
       for (int i = 0; i < split.length; i++) {

@@ -6,8 +6,8 @@ import com.intellij.java.language.psi.search.PsiShortNamesCache;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.internal.MigratedExtensionsTo;
 import consulo.application.util.CachedValueProvider;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiModificationTracker;
+import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.psi.util.LanguageCachedValueUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -21,16 +21,13 @@ import jakarta.annotation.Nullable;
 public class LocalizeClassResolver implements CachedValueProvider<PsiClass> {
   @Nonnull
   private final PsiClass myBundlePsiClass;
-  @Nonnull
-  private PsiElement myContext;
 
-  private LocalizeClassResolver(@Nonnull PsiClass bundlePsiClass, @Nonnull PsiElement context) {
+  private LocalizeClassResolver(@Nonnull PsiClass bundlePsiClass) {
     myBundlePsiClass = bundlePsiClass;
-    myContext = context;
   }
 
-  public static PsiClass resolveByBundle(PsiClass bundlePsiClass, PsiElement context) {
-    return LanguageCachedValueUtil.getCachedValue(bundlePsiClass, new LocalizeClassResolver(bundlePsiClass, context));
+  public static PsiClass resolveByBundle(PsiClass bundlePsiClass) {
+    return LanguageCachedValueUtil.getCachedValue(bundlePsiClass, new LocalizeClassResolver(bundlePsiClass));
   }
 
   @Nullable
@@ -56,8 +53,8 @@ public class LocalizeClassResolver implements CachedValueProvider<PsiClass> {
       bundleClassName.substring(0, bundleClassName.length() - BundleMessageToLocalizeInspection.BUNDLE_SUFFIX.length())
         + BundleMessageToLocalizeInspection.LOCALIZE_SUFFIX;
 
-    PsiClass[] classes =
-      PsiShortNamesCache.getInstance(myBundlePsiClass.getProject()).getClassesByName(localizeClassName, myContext.getResolveScope());
+    PsiClass[] classes = PsiShortNamesCache.getInstance(myBundlePsiClass.getProject())
+      .getClassesByName(localizeClassName, GlobalSearchScope.projectScope(myBundlePsiClass.getProject()));
     return (classes.length == 1) ? classes[0] : null;
   }
 

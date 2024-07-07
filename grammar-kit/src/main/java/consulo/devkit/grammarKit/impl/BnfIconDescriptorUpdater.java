@@ -25,9 +25,9 @@ public class BnfIconDescriptorUpdater implements IconDescriptorUpdater {
   @RequiredReadAction
   @Override
   public void updateIcon(@Nonnull IconDescriptor iconDescriptor, @Nonnull PsiElement element, int flags) {
-    if (element instanceof BnfRule) {
-      final Image base = hasModifier((BnfRule)element, "external") ? BnfIcons.EXTERNAL_RULE : BnfIcons.RULE;
-      final Image visibility = hasModifier((BnfRule)element, "private") ? AllIcons.Nodes.C_private : AllIcons.Nodes.C_public;
+    if (element instanceof BnfRule rule) {
+      final Image base = hasModifier(rule, "external") ? BnfIcons.EXTERNAL_RULE : BnfIcons.RULE;
+      final Image visibility = hasModifier(rule, "private") ? AllIcons.Nodes.C_private : AllIcons.Nodes.C_public;
 
       iconDescriptor.setMainIcon(base);
       iconDescriptor.setRightIcon(visibility);

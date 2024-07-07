@@ -46,7 +46,7 @@ public abstract class StateResolver {
   @RequiredReadAction
   public abstract Boolean resolveState(CallStateType actionType, PsiExpression expression);
 
-  protected static Map<String, Class[]> ourInterfaces = new HashMap<String, Class[]>() {
+  protected static Map<String, Class[]> ourInterfaces = new HashMap<>() {
     {
       put("compute", new Class[]{
         Computable.class,
@@ -61,7 +61,7 @@ public abstract class StateResolver {
 
   protected static boolean resolveByMaybeParameterListOrVariable(PsiElement maybeParameterListOrVariable, CallStateType actionType) {
     // Runnable run = new Runnable() {};
-    // ApplicationManager.getApplication().runReadAction(run);
+    // Application.get().runReadAction(run);
     if (maybeParameterListOrVariable instanceof PsiVariable) {
       CommonProcessors.CollectProcessor<PsiReference> processor = new CommonProcessors.CollectProcessor<>();
       ReferencesSearch.search(maybeParameterListOrVariable).forEach(processor);
@@ -73,10 +73,10 @@ public abstract class StateResolver {
 
       boolean weFoundRunAction = false;
       for (PsiReference result : results) {
-        if (result instanceof PsiReferenceExpression) {
-          PsiElement maybeExpressionList = ((PsiReferenceExpression)result).getParent();
-          if (maybeExpressionList instanceof PsiExpressionList) {
-            if (acceptActionTypeFromCall((PsiExpressionList)maybeExpressionList, actionType)) {
+        if (result instanceof PsiReferenceExpression psiReferenceExpression) {
+          PsiElement maybeExpressionList = psiReferenceExpression.getParent();
+          if (maybeExpressionList instanceof PsiExpressionList psiExpressionList) {
+            if (acceptActionTypeFromCall(psiExpressionList, actionType)) {
               weFoundRunAction = true;
               break;
             }
@@ -88,7 +88,7 @@ public abstract class StateResolver {
         return true;
       }
     }
-    // ApplicationManager.getApplication().runReadAction(new Runnable() {});
+    // Application.get().runReadAction(new Runnable() {});
     else if (maybeParameterListOrVariable instanceof PsiExpressionList) {
       if (acceptActionTypeFromCall((PsiExpressionList)maybeParameterListOrVariable, actionType)) {
         return true;

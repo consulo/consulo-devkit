@@ -18,7 +18,7 @@ package org.intellij.grammar.impl.actions;
 
 import com.intellij.java.language.psi.JavaDirectoryService;
 import com.intellij.java.language.psi.PsiJavaPackage;
-import consulo.application.ApplicationManager;
+import consulo.application.Application;
 import consulo.devkit.grammarKit.impl.BnfNotificationGroup;
 import consulo.fileChooser.FileChooserFactory;
 import consulo.fileChooser.FileSaverDescriptor;
@@ -35,6 +35,7 @@ import consulo.project.content.scope.ProjectScopes;
 import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.NotificationType;
 import consulo.project.ui.notification.Notifications;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.awt.Messages;
@@ -72,12 +73,14 @@ import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribut
  */
 public class BnfGenerateLexerAction extends AnAction {
   @Override
+  @RequiredUIAccess
   public void update(AnActionEvent e) {
     PsiFile file = e.getData(LangDataKeys.PSI_FILE);
     e.getPresentation().setEnabledAndVisible(file instanceof BnfFile);
   }
 
   @Override
+  @RequiredUIAccess
   public void actionPerformed(AnActionEvent e) {
     final PsiFile file = e.getData(LangDataKeys.PSI_FILE);
     if (!(file instanceof BnfFile)) return;
@@ -111,23 +114,26 @@ public class BnfGenerateLexerAction extends AnAction {
 
           VirtualFileUtil.saveText(virtualFile, text);
 
-          Notifications.Bus.notify(new Notification(BnfNotificationGroup.GRAMMAR_KIT,
-                                                    virtualFile.getName() + " generated", "to " + virtualFile.getParent().getPath(),
-                                                    NotificationType.INFORMATION), project);
+          Notifications.Bus.notify(
+            new Notification(
+              BnfNotificationGroup.GRAMMAR_KIT,
+              virtualFile.getName() + " generated", "to " + virtualFile.getParent().getPath(),
+              NotificationType.INFORMATION
+            ),
+            project
+          );
 
           associateFileTypeAndNavigate(project, virtualFile);
         }
         catch (final IncorrectOperationException e) {
-          ApplicationManager.getApplication().invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              Messages.showErrorDialog(project, "Unable to create file " + flexFileName + "\n" + e.getLocalizedMessage(), "Create JFlex Lexer");
-            }
-          });
+          project.getUIAccess().give(() -> Messages.showErrorDialog(
+            project,
+            "Unable to create file " + flexFileName + "\n" + e.getLocalizedMessage(),
+            "Create JFlex Lexer"
+          ));
         }
       }
     }.execute();
-
   }
 
   private static void associateFileTypeAndNavigate(Project project, VirtualFile virtualFile) {
@@ -144,8 +150,8 @@ public class BnfGenerateLexerAction extends AnAction {
     Map<String,String> tokenMap = RuleGraphHelper.getTokenNameToTextMap(bnfFile);
 
     final int[] maxLen = {"{WHITE_SPACE}".length()};
-    final Map<String, String> simpleTokens = new LinkedHashMap<String, String>();
-    final Map<String, String> regexpTokens = new LinkedHashMap<String, String>();
+    final Map<String, String> simpleTokens = new LinkedHashMap<>();
+    final Map<String, String> regexpTokens = new LinkedHashMap<>();
     for (String name : tokenMap.keySet()) {
       String token = tokenMap.get(name);
       if (name == null || token == null) continue;
@@ -251,5 +257,4 @@ public class BnfGenerateLexerAction extends AnAction {
   private static String getLexerName(BnfFile bnfFile) {
     return "_" + BnfGenerateParserUtilAction.getGrammarName(bnfFile) + "Lexer";
   }
-
 }
