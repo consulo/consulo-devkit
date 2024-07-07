@@ -23,7 +23,7 @@ import consulo.application.ApplicationManager;
 import consulo.application.Result;
 import consulo.devkit.grammarKit.generator.PlatformClass;
 import consulo.document.Document;
-import consulo.ide.impl.idea.openapi.fileEditor.ex.IdeDocumentHistory;
+import consulo.fileEditor.history.IdeDocumentHistory;
 import consulo.language.editor.LangDataKeys;
 import consulo.language.editor.WriteCommandAction;
 import consulo.language.psi.PsiDirectory;
