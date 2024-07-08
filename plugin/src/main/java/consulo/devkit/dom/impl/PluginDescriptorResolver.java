@@ -9,6 +9,7 @@ import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.editor.completion.lookup.LookupElement;
 import consulo.language.editor.completion.lookup.LookupElementBuilder;
 import consulo.language.psi.PsiElement;
+import consulo.localize.LocalizeValue;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.util.lang.StringUtil;
 import consulo.xml.util.xml.ConvertContext;
@@ -35,8 +36,8 @@ public class PluginDescriptorResolver extends ResolvingConverter<PluginDescripto
   }
 
   @Override
-  public String getErrorMessage(@Nullable final String s, final ConvertContext context) {
-    return DevKitLocalize.errorCannotResolvePlugin(s).get();
+  public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
+    return DevKitLocalize.errorCannotResolvePlugin(s);
   }
 
   @Nullable

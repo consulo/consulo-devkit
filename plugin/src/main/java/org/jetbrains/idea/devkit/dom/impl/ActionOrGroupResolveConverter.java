@@ -23,12 +23,12 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.psi.util.LanguageCachedValueUtil;
 import consulo.language.util.ModuleUtilCore;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.project.Project;
 import consulo.util.lang.Comparing;
 import consulo.util.lang.ObjectUtil;
 import consulo.util.lang.StringUtil;
-import consulo.util.lang.function.PairProcessor;
 import consulo.xml.psi.xml.XmlFile;
 import consulo.xml.util.xml.ConvertContext;
 import consulo.xml.util.xml.DomUtil;
@@ -41,13 +41,14 @@ import org.jetbrains.idea.devkit.dom.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.BiPredicate;
 
 public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGroup> {
   @Nonnull
   @Override
   public Collection<? extends ActionOrGroup> getVariants(ConvertContext context) {
     final List<ActionOrGroup> variants = new ArrayList<>();
-    PairProcessor<String, ActionOrGroup> collectProcessor = (s, actionOrGroup) -> {
+    BiPredicate<String, ActionOrGroup> collectProcessor = (s, actionOrGroup) -> {
       if (isRelevant(actionOrGroup)) {
         variants.add(actionOrGroup);
       }
@@ -59,13 +60,13 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
 
   @Nullable
   @Override
-  public ActionOrGroup fromString(@Nullable @NonNls final String value, ConvertContext context) {
+  public ActionOrGroup fromString(@Nullable final String value, ConvertContext context) {
     if (StringUtil.isEmptyOrSpaces(value)) {
       return null;
     }
 
     final ActionOrGroup[] result = {null};
-    PairProcessor<String, ActionOrGroup> findProcessor = (s, actionOrGroup) -> {
+    BiPredicate<String, ActionOrGroup> findProcessor = (s, actionOrGroup) -> {
       if (isRelevant(actionOrGroup) && Comparing.strEqual(value, s)) {
         result[0] = actionOrGroup;
         return false;
@@ -82,9 +83,10 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
     return actionGroup == null ? null : getName(actionGroup);
   }
 
+  @Nonnull
   @Override
-  public String getErrorMessage(@Nullable String s, ConvertContext context) {
-    return "Cannot resolve action or group '" + s + "'";
+  public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
+    return LocalizeValue.localizeTODO("Cannot resolve action or group '" + s + "'");
   }
 
   @Nullable
@@ -124,9 +126,10 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
       return actionOrGroup instanceof Action;
     }
 
+    @Nonnull
     @Override
-    public String getErrorMessage(@Nullable String s, ConvertContext context) {
-      return "Cannot resolve action '" + s + "'";
+    public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
+      return LocalizeValue.localizeTODO("Cannot resolve action '" + s + "'");
     }
   }
 
@@ -136,14 +139,15 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
       return actionOrGroup instanceof Group;
     }
 
+    @Nonnull
     @Override
-    public String getErrorMessage(@Nullable String s, ConvertContext context) {
-      return "Cannot resolve group '" + s + "'";
+    public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
+      return LocalizeValue.localizeTODO("Cannot resolve group '" + s + "'");
     }
   }
 
   @RequiredReadAction
-  private static boolean processActionOrGroup(ConvertContext context, final PairProcessor<String, ActionOrGroup> processor) {
+  private static boolean processActionOrGroup(ConvertContext context, final BiPredicate<String, ActionOrGroup> processor) {
     final Project project = context.getProject();
 
     Module module = context.getModule();
@@ -159,11 +163,11 @@ public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGr
     });
   }
 
-  private static boolean processPlugins(Collection<IdeaPlugin> plugins, PairProcessor<String, ActionOrGroup> processor) {
+  private static boolean processPlugins(Collection<IdeaPlugin> plugins, BiPredicate<String, ActionOrGroup> processor) {
     for (IdeaPlugin plugin : plugins) {
       final Map<String, ActionOrGroup> forFile = collectForFile(plugin);
       for (Map.Entry<String, ActionOrGroup> entry : forFile.entrySet()) {
-        if (!processor.process(entry.getKey(), entry.getValue())) {
+        if (!processor.test(entry.getKey(), entry.getValue())) {
           return false;
         }
       }
