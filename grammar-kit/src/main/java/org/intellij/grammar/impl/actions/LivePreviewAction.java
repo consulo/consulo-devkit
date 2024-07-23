@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.actions;
 
+import consulo.ui.annotation.RequiredUIAccess;
 import org.intellij.grammar.impl.livePreview.LivePreviewHelper;
 import org.intellij.grammar.psi.BnfFile;
 import consulo.ui.ex.action.AnActionEvent;
@@ -27,17 +28,21 @@ import consulo.language.psi.PsiFile;
  * @author gregsh
  */
 public class LivePreviewAction extends DumbAwareAction {
-  @Override
-  public void update(AnActionEvent e) {
-    PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-    e.getPresentation().setEnabledAndVisible(psiFile instanceof BnfFile);
-  }
+    @Override
+    @RequiredUIAccess
+    public void update(AnActionEvent e) {
+        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+        e.getPresentation().setEnabledAndVisible(psiFile instanceof BnfFile);
+    }
 
-  @Override
-  public void actionPerformed(AnActionEvent e) {
-    PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-    if (!(psiFile instanceof BnfFile)) return;
+    @Override
+    @RequiredUIAccess
+    public void actionPerformed(AnActionEvent e) {
+        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+        if (!(psiFile instanceof BnfFile)) {
+            return;
+        }
 
-    LivePreviewHelper.showFor((BnfFile)psiFile);
-  }
+        LivePreviewHelper.showFor((BnfFile)psiFile);
+    }
 }

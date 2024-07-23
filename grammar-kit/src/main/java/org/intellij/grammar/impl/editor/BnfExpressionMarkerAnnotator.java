@@ -19,21 +19,24 @@ import consulo.language.editor.annotation.AnnotationHolder;
 import consulo.language.editor.annotation.Annotator;
 import consulo.language.psi.PsiElement;
 import org.intellij.grammar.psi.BnfRule;
+
 import javax.annotation.Nonnull;
 
 /**
  * @author gregsh
  */
 public class BnfExpressionMarkerAnnotator implements Annotator {
-  @Override
-  public void annotate(@Nonnull PsiElement psiElement, @Nonnull AnnotationHolder annotationHolder) {
-    if (!(psiElement instanceof BnfRule)) return;
-    BnfRule rule = (BnfRule) psiElement;
-    // todo
-    //boolean expression = ExpressionGeneratorHelper.getInfoForExpressionParsing(ExpressionHelper.getCached((BnfFile)rule.getContainingFile()), rule) != null;
-    //if (expression) {
-    //  annotationHolder.createInfoAnnotation(rule.getNameIdentifier(), null).setTextAttributes(key);
-    //}
-  }
+    @Override
+    public void annotate(@Nonnull PsiElement psiElement, @Nonnull AnnotationHolder annotationHolder) {
+        if (!(psiElement instanceof BnfRule)) {
+            return;
+        }
+        BnfRule rule = (BnfRule)psiElement;
+        // todo
+        //boolean expression = ExpressionGeneratorHelper.getInfoForExpressionParsing(ExpressionHelper.getCached((BnfFile)rule.getContainingFile()), rule) != null;
+        //if (expression) {
+        //  annotationHolder.createInfoAnnotation(rule.getNameIdentifier(), null).setTextAttributes(key);
+        //}
+    }
 
 }

@@ -31,13 +31,13 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfQuoteHandler extends SimpleTokenSetQuoteHandler implements FileQuoteHandler {
-  public BnfQuoteHandler() {
-    super(BnfTypes.BNF_STRING, TokenType.BAD_CHARACTER);
-  }
+    public BnfQuoteHandler() {
+        super(BnfTypes.BNF_STRING, TokenType.BAD_CHARACTER);
+    }
 
-  @Nonnull
-  @Override
-  public FileType getFileType() {
-    return BnfFileType.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public FileType getFileType() {
+        return BnfFileType.INSTANCE;
+    }
 }

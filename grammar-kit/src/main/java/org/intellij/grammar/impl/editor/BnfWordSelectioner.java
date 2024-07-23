@@ -33,21 +33,20 @@ import java.util.List;
  */
 @ExtensionImpl
 public class BnfWordSelectioner extends BraceMatcherBasedSelectioner {
-  @Override
-  public boolean canSelect(PsiElement e) {
-    return e instanceof BnfComposite
-      || e instanceof LeafPsiElement leafPsiElement && leafPsiElement.getElementType() == BnfTypes.BNF_STRING;
-  }
-
-  @Override
-  @RequiredReadAction
-  public List<TextRange> select(PsiElement e, CharSequence editorText, int cursorOffset, Editor editor) {
-    List<TextRange> list = super.select(e, editorText, cursorOffset, editor);
-    if (e instanceof LeafPsiElement leafPsiElement && leafPsiElement.getElementType() == BnfTypes.BNF_STRING) {
-      TextRange range = e.getTextRange();
-      list.add(TextRange.from(range.getStartOffset() + 1, range.getLength() - 2));
+    @Override
+    public boolean canSelect(PsiElement e) {
+        return e instanceof BnfComposite
+            || e instanceof LeafPsiElement leafPsiElement && leafPsiElement.getElementType() == BnfTypes.BNF_STRING;
     }
-    return list;
-  }
 
+    @Override
+    @RequiredReadAction
+    public List<TextRange> select(PsiElement e, CharSequence editorText, int cursorOffset, Editor editor) {
+        List<TextRange> list = super.select(e, editorText, cursorOffset, editor);
+        if (e instanceof LeafPsiElement leafPsiElement && leafPsiElement.getElementType() == BnfTypes.BNF_STRING) {
+            TextRange range = e.getTextRange();
+            list.add(TextRange.from(range.getStartOffset() + 1, range.getLength() - 2));
+        }
+        return list;
+    }
 }
