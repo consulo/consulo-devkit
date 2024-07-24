@@ -11,8 +11,8 @@ import jakarta.annotation.Nonnull;
  */
 @ExtensionImpl
 public class LivePreviewFileTypeFactory extends FileTypeFactory {
-  @Override
-  public void createFileTypes(@Nonnull FileTypeConsumer fileTypeConsumer) {
-    fileTypeConsumer.consume(LivePreviewFileType.INSTANCE);
-  }
+    @Override
+    public void createFileTypes(@Nonnull FileTypeConsumer fileTypeConsumer) {
+        fileTypeConsumer.consume(LivePreviewFileType.INSTANCE);
+    }
 }

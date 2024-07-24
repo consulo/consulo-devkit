@@ -32,137 +32,144 @@ import java.util.List;
  * @author gregsh
  */
 public class BnfExpressionOptimizer {
-  public static void optimize(PsiElement element) {
-    final LinkedList<PsiElement> list = new LinkedList<>();
-    list.add(element.getParent());
-    list.add(element);
-    while (!list.isEmpty()) {
-      PsiElement cur = list.removeLast();
-      PsiElement parent = cur.getParent();
-      if (isTrivial(cur)) {
-        mergeChildrenTo(parent, cur, list);
-      }
-      else if (cur instanceof BnfParenOptExpression
-        && isTrivialOrSingular(((BnfParenOptExpression)cur).getExpression())) {
-        // currently <expr> + ? expressions are not supported, thus:
-        BnfExpression child = ((BnfParenOptExpression)cur).getExpression();
-        IElementType type = ParserGeneratorUtil.getEffectiveType(child);
-        if (type == BnfTypes.BNF_OP_OPT || type == BnfTypes.BNF_OP_ZEROMORE) {
-          list.add(cur.replace(child));
+    public static void optimize(PsiElement element) {
+        final LinkedList<PsiElement> list = new LinkedList<>();
+        list.add(element.getParent());
+        list.add(element);
+        while (!list.isEmpty()) {
+            PsiElement cur = list.removeLast();
+            PsiElement parent = cur.getParent();
+            if (isTrivial(cur)) {
+                mergeChildrenTo(parent, cur, list);
+            }
+            else if (cur instanceof BnfParenOptExpression parenOptExpression
+                && isTrivialOrSingular(parenOptExpression.getExpression())) {
+                // currently <expr> + ? expressions are not supported, thus:
+                BnfExpression child = parenOptExpression.getExpression();
+                IElementType type = ParserGeneratorUtil.getEffectiveType(child);
+                if (type == BnfTypes.BNF_OP_OPT || type == BnfTypes.BNF_OP_ZEROMORE) {
+                    list.add(cur.replace(child));
+                }
+                else if (type == BnfTypes.BNF_OP_ONEMORE) {
+                    String replacement = ((BnfQuantified)child).getExpression().getText() + "*";
+                    list.add(cur.replace(BnfElementFactory.createExpressionFromText(element.getProject(), replacement)));
+                }
+                else {
+                    String replacement = child.getText() + "?";
+                    list.add(cur.replace(BnfElementFactory.createExpressionFromText(element.getProject(), replacement)));
+                }
+            }
+            else if (cur instanceof BnfChoice &&
+                !(parent instanceof BnfParenthesized) &&
+                (parent instanceof BnfSequence || parent instanceof BnfQuantified)) {
+                String replacement = "(" + cur.getText() + ")";
+                cur.replace(BnfElementFactory.createExpressionFromText(element.getProject(), replacement));
+            }
+            else if (isOptMany(cur) && isOptMany(PsiTreeUtil.getChildOfType(cur, BnfExpression.class))) {
+                BnfExpression child = PsiTreeUtil.getChildOfType(cur, BnfExpression.class);
+                IElementType type1 = ParserGeneratorUtil.getEffectiveType(cur);
+                IElementType type2 = ParserGeneratorUtil.getEffectiveType(child);
+                if (type1 == type2) {
+                    list.add(cur.replace(child));
+                }
+                else if (type1 == BnfTypes.BNF_OP_OPT && type2 == BnfTypes.BNF_OP_ONEMORE ||
+                    type2 == BnfTypes.BNF_OP_OPT && type1 == BnfTypes.BNF_OP_ONEMORE ||
+                    type1 == BnfTypes.BNF_OP_ZEROMORE || type2 == BnfTypes.BNF_OP_ZEROMORE
+                ) {
+                    BnfExpression childOfChild = PsiTreeUtil.getChildOfType(child, BnfExpression.class);
+                    String childText = childOfChild == null ? "" : childOfChild.getText();
+                    String replacement = (child instanceof BnfParenthesized ? "(" + childText + ")" : childText) + "*";
+                    cur.replace(BnfElementFactory.createExpressionFromText(element.getProject(), replacement));
+                }
+            }
         }
-        else if (type == BnfTypes.BNF_OP_ONEMORE) {
-          String replacement = ((BnfQuantified)child).getExpression().getText() + "*";
-          list.add(cur.replace(BnfElementFactory.createExpressionFromText(element.getProject(), replacement)));
+    }
+
+    private static boolean isOptMany(PsiElement cur) {
+        return cur instanceof BnfQuantified || cur instanceof BnfParenOptExpression;
+    }
+
+    private static boolean canBeMergedInto(PsiElement cur, PsiElement parent) {
+        if (cur instanceof BnfSequence) {
+            if (parent instanceof BnfChoice) {
+                return true;
+            }
+            if (parent instanceof BnfSequence) {
+                List<BnfExpression> list = ((BnfSequence)parent).getExpressionList();
+                return list.isEmpty() || !GrammarUtil.isExternalReference(list.get(0));
+            }
         }
-        else {
-          String replacement = child.getText() + "?";
-          list.add(cur.replace(BnfElementFactory.createExpressionFromText(element.getProject(), replacement)));
+        return cur instanceof BnfChoice && parent instanceof BnfChoice;
+    }
+
+    private static void mergeChildrenTo(PsiElement parent, PsiElement cur, LinkedList<PsiElement> list) {
+        boolean skipParens = cur instanceof BnfParenthesized;
+        PsiElement last = cur.getLastChild();
+        PsiElement first = cur.getFirstChild();
+        if (skipParens) {
+            last = last.getPrevSibling();
+            first = first.getNextSibling();
         }
-      }
-      else if (cur instanceof BnfChoice &&
-               !(parent instanceof BnfParenthesized) &&
-               (parent instanceof BnfSequence || parent instanceof BnfQuantified)) {
-        String replacement = "(" + cur.getText() + ")";
-        cur.replace(BnfElementFactory.createExpressionFromText(element.getProject(), replacement));
-      }
-      else if (isOptMany(cur) && isOptMany(PsiTreeUtil.getChildOfType(cur, BnfExpression.class))) {
-        BnfExpression child = PsiTreeUtil.getChildOfType(cur, BnfExpression.class);
-        IElementType type1 = ParserGeneratorUtil.getEffectiveType(cur);
-        IElementType type2 = ParserGeneratorUtil.getEffectiveType(child);
-        if (type1 == type2) {
-          list.add(cur.replace(child));
+        cur = unwrap(parent, first, last, cur);
+        while (cur != null) {
+            if (cur instanceof BnfExpression) {
+                list.add(cur);
+            }
+            if (cur == last) {
+                break;
+            }
+            cur = cur.getNextSibling();
         }
-        else if (type1 == BnfTypes.BNF_OP_OPT && type2 == BnfTypes.BNF_OP_ONEMORE ||
-                 type2 == BnfTypes.BNF_OP_OPT && type1 == BnfTypes.BNF_OP_ONEMORE ||
-                 type1 == BnfTypes.BNF_OP_ZEROMORE || type2 == BnfTypes.BNF_OP_ZEROMORE
-          ) {
-          BnfExpression childOfChild = PsiTreeUtil.getChildOfType(child, BnfExpression.class);
-          String childText = childOfChild == null? "" : childOfChild.getText();
-          String replacement = (child instanceof BnfParenthesized? "(" + childText + ")" : childText) + "*";
-          cur.replace(BnfElementFactory.createExpressionFromText(element.getProject(), replacement));
+    }
+
+    private static PsiElement unwrap(PsiElement parent, PsiElement first, PsiElement last, PsiElement from) {
+        while (first != last && first instanceof PsiWhiteSpace) {
+            first = first.getNextSibling();
         }
-      }
-    }
-  }
+        while (last != first && last instanceof PsiWhiteSpace) {
+            last = last.getPrevSibling();
+        }
+        if (first == null || last == null || first == last && last instanceof PsiWhiteSpace) {
+            return null;
+        }
 
-  private static boolean isOptMany(PsiElement cur) {
-    return cur instanceof BnfQuantified || cur instanceof BnfParenOptExpression;
-  }
+        PsiElement result = parent.addRangeBefore(first, last, from);
+        from.delete();
+        return result;
+    }
 
-  private static boolean canBeMergedInto(PsiElement cur, PsiElement parent) {
-    if (cur instanceof BnfSequence) {
-      if (parent instanceof BnfChoice) return true;
-      if (parent instanceof BnfSequence) {
-        List<BnfExpression> list = ((BnfSequence)parent).getExpressionList();
-        return list.isEmpty() || !GrammarUtil.isExternalReference(list.get(0));
-      }
+    private static boolean isTrivial(PsiElement element) {
+        PsiElement parent = element.getParent();
+        if (element instanceof BnfParenthesized
+            && parent instanceof BnfRule
+            && !(isOptMany(element) || element instanceof BnfChoice)) {
+            return true;
+        }
+        else if (
+            element instanceof BnfParenExpression bnfParenExpression && (
+                canBeMergedInto(bnfParenExpression.getExpression(), parent)
+                    || parent instanceof BnfParenthesized
+                    || isTrivialOrSingular(bnfParenExpression.getExpression())
+            )
+        ) {
+            return true;
+        }
+        else if (element instanceof BnfSequence bnfSequence
+            && (bnfSequence.getExpressionList().size() == 1 || parent instanceof BnfSequence)) {
+            return true;
+        }
+        else if (element instanceof BnfChoice bnfChoice
+            && (bnfChoice.getExpressionList().size() == 1 || parent instanceof BnfChoice)) {
+            return true;
+        }
+        return false;
     }
-    if (cur instanceof BnfChoice && parent instanceof BnfChoice) return true;
-    return false;
-  }
 
-  private static void mergeChildrenTo(PsiElement parent, PsiElement cur, LinkedList<PsiElement> list) {
-    boolean skipParens = cur instanceof BnfParenthesized;
-    PsiElement last = cur.getLastChild();
-    PsiElement first = cur.getFirstChild();
-    if (skipParens) {
-      last = last.getPrevSibling();
-      first = first.getNextSibling();
+    private static boolean isTrivialOrSingular(PsiElement element) {
+        return element instanceof BnfReferenceOrToken
+            || element instanceof BnfLiteralExpression
+            || element instanceof BnfParenthesized
+            || element instanceof BnfQuantified
+            || isTrivial(element);
     }
-    cur = unwrap(parent, first, last, cur);
-    while (cur != null) {
-      if (cur instanceof BnfExpression) list.add(cur);
-      if (cur == last) break;
-      cur = cur.getNextSibling();
-    }
-  }
-
-  private static PsiElement unwrap(PsiElement parent, PsiElement first, PsiElement last, PsiElement from) {
-    while (first != last && first instanceof PsiWhiteSpace) {
-      first = first.getNextSibling();
-    }
-    while (last != first && last instanceof PsiWhiteSpace) {
-      last = last.getPrevSibling();
-    }
-    if (first == null || last == null || first == last && last instanceof PsiWhiteSpace) return null;
-
-    PsiElement result = parent.addRangeBefore(first, last, from);
-    from.delete();
-    return result;
-  }
-
-  private static boolean isTrivial(PsiElement element) {
-    PsiElement parent = element.getParent();
-    if (element instanceof BnfParenthesized
-      && parent instanceof BnfRule
-      && !(isOptMany(element) || element instanceof BnfChoice)) {
-      return true;
-    }
-    else if (
-      element instanceof BnfParenExpression bnfParenExpression && (
-        canBeMergedInto(bnfParenExpression.getExpression(), parent)
-          || parent instanceof BnfParenthesized
-          || isTrivialOrSingular(bnfParenExpression.getExpression())
-      )
-    ) {
-      return true;
-    }
-    else if (element instanceof BnfSequence bnfSequence
-      && (bnfSequence.getExpressionList().size() == 1 || parent instanceof BnfSequence)) {
-      return true;
-    }
-    else if (element instanceof BnfChoice bnfChoice
-      && (bnfChoice.getExpressionList().size() == 1 || parent instanceof BnfChoice)) {
-      return true;
-    }
-    return false;
-  }
-
-  private static boolean isTrivialOrSingular(PsiElement element) {
-    return element instanceof BnfReferenceOrToken
-      || element instanceof BnfLiteralExpression
-      || element instanceof BnfParenthesized
-      || element instanceof BnfQuantified
-      || isTrivial(element);
-  }
 }

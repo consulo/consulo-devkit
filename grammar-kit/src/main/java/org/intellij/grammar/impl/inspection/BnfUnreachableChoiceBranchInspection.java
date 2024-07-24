@@ -46,96 +46,101 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
+    @Nls
+    @Nonnull
+    @Override
+    public String getGroupDisplayName() {
+        return "Grammar/BNF";
+    }
 
-  @Nls
-  @Nonnull
-  @Override
-  public String getGroupDisplayName() {
-    return "Grammar/BNF";
-  }
+    @Nls
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Unreachable choice branch";
+    }
 
-  @Nls
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Unreachable choice branch";
-  }
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "BnfUnreachableChoiceBranchInspection";
+    }
 
-  @Nonnull
-  @Override
-  public String getShortName() {
-    return "BnfUnreachableChoiceBranchInspection";
-  }
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.WARNING;
+    }
 
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.WARNING;
-  }
+    public boolean isEnabledByDefault() {
+        return true;
+    }
 
-  public boolean isEnabledByDefault() {
-    return true;
-  }
+    @Override
+    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+        ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
+        checkFile(file, problemsHolder);
+        return problemsHolder.getResultsArray();
+    }
 
-  @Override
-  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-    ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-    checkFile(file, problemsHolder);
-    return problemsHolder.getResultsArray();
-  }
+    @RequiredReadAction
+    private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
+        file.accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(PsiElement element) {
+                if (element instanceof BnfChoice choice) {
+                    //noinspection RequiredXAction
+                    checkChoice(choice, problemsHolder);
+                }
+                super.visitElement(element);
+            }
+        });
+    }
 
-  @RequiredReadAction
-  private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
-    file.accept(new PsiRecursiveElementWalkingVisitor() {
-      @Override
-      public void visitElement(PsiElement element) {
-        if (element instanceof BnfChoice choice) {
-          //noinspection RequiredXAction
-          checkChoice(choice, problemsHolder);
+    @RequiredReadAction
+    private static void checkChoice(BnfChoice choice, ProblemsHolder problemsHolder) {
+        Set<BnfExpression> visited = new HashSet<>();
+        Set<BnfExpression> first = new HashSet<>();
+        BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer().setPredicateLookAhead(true);
+        List<BnfExpression> list = choice.getExpressionList();
+        for (int i = 0, listSize = list.size() - 1; i < listSize; i++) {
+            BnfExpression child = list.get(i);
+            Set<BnfExpression> firstSet = analyzer.calcFirstInner(child, first, visited);
+            if (firstSet.contains(BnfFirstNextAnalyzer.BNF_MATCHES_NOTHING)) {
+                registerProblem(choice, child, "Branch is unable to match anything due to & or ! conditions", problemsHolder);
+            }
+            else if (firstSet.contains(BnfFirstNextAnalyzer.BNF_MATCHES_EOF)) {
+                registerProblem(choice, child, "Branch matches empty input making the rest branches unreachable", problemsHolder);
+                break;
+            }
+            first.clear();
+            visited.clear();
         }
-        super.visitElement(element);
-      }
-    });
-  }
-
-  @RequiredReadAction
-  private static void checkChoice(BnfChoice choice, ProblemsHolder problemsHolder) {
-    Set<BnfExpression> visited = new HashSet<>();
-    Set<BnfExpression> first = new HashSet<>();
-    BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer().setPredicateLookAhead(true);
-    List<BnfExpression> list = choice.getExpressionList();
-    for (int i = 0, listSize = list.size() - 1; i < listSize; i++) {
-      BnfExpression child = list.get(i);
-      Set<BnfExpression> firstSet = analyzer.calcFirstInner(child, first, visited);
-      if (firstSet.contains(BnfFirstNextAnalyzer.BNF_MATCHES_NOTHING)) {
-        registerProblem(choice, child, "Branch is unable to match anything due to & or ! conditions", problemsHolder);
-      }
-      else if (firstSet.contains(BnfFirstNextAnalyzer.BNF_MATCHES_EOF)) {
-        registerProblem(choice, child, "Branch matches empty input making the rest branches unreachable", problemsHolder);
-        break;
-      }
-      first.clear();
-      visited.clear();
     }
-  }
 
-  @RequiredReadAction
-  static void registerProblem(BnfExpression choice, BnfExpression branch, String message, ProblemsHolder problemsHolder, LocalQuickFix... fixes) {
-    TextRange textRange = branch.getTextRange();
-    if (textRange.isEmpty()) {
-      ASTNode nextOr = TreeUtil.findSibling(branch.getNode(), BnfTypes.BNF_OP_OR);
-      ASTNode prevOr = TreeUtil.findSiblingBackward(branch.getNode(), BnfTypes.BNF_OP_OR);
+    @RequiredReadAction
+    static void registerProblem(
+        BnfExpression choice,
+        BnfExpression branch,
+        String message,
+        ProblemsHolder problemsHolder,
+        LocalQuickFix... fixes
+    ) {
+        TextRange textRange = branch.getTextRange();
+        if (textRange.isEmpty()) {
+            ASTNode nextOr = TreeUtil.findSibling(branch.getNode(), BnfTypes.BNF_OP_OR);
+            ASTNode prevOr = TreeUtil.findSiblingBackward(branch.getNode(), BnfTypes.BNF_OP_OR);
 
-      int shift = choice.getTextRange().getStartOffset();
-      int startOffset = prevOr != null ? prevOr.getStartOffset() - shift : 0;
-      TextRange range = new TextRange(
-        startOffset,
-        nextOr != null? nextOr.getStartOffset() + 1 - shift : Math.min(startOffset + 2, choice.getTextLength())
-      );
-      problemsHolder.registerProblem(choice, range, message, fixes);
+            int shift = choice.getTextRange().getStartOffset();
+            int startOffset = prevOr != null ? prevOr.getStartOffset() - shift : 0;
+            TextRange range = new TextRange(
+                startOffset,
+                nextOr != null ? nextOr.getStartOffset() + 1 - shift : Math.min(startOffset + 2, choice.getTextLength())
+            );
+            problemsHolder.registerProblem(choice, range, message, fixes);
+        }
+        else {
+            problemsHolder.registerProblem(branch, message, fixes);
+        }
     }
-    else {
-      problemsHolder.registerProblem(branch, message, fixes);
-    }
-  }
 }

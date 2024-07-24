@@ -43,54 +43,62 @@ import java.util.Collection;
  */
 @ExtensionImpl
 public class BnfInlineRuleActionHandler extends InlineActionHandler {
-  @Override
-  public boolean isEnabledForLanguage(Language language) {
-    return (language == BnfLanguage.INSTANCE);
-  }
-
-  @Override
-  public boolean canInlineElement(PsiElement psiElement) {
-    return psiElement instanceof BnfRule;
-  }
-
-  @Override
-  public void inlineElement(Project project, Editor editor, PsiElement psiElement) {
-    BnfRule rule = (BnfRule)psiElement;
-    BnfAttrs attrs = rule.getAttrs();
-    if (PsiTreeUtil.hasErrorElements(rule)) {
-      CommonRefactoringUtil.showErrorHint(project, editor, "Rule has errors", "Inline Rule", null);
-      return;
+    @Override
+    public boolean isEnabledForLanguage(Language language) {
+        return (language == BnfLanguage.INSTANCE);
     }
 
-    if (attrs != null && !attrs.getAttrList().isEmpty()) {
-      CommonRefactoringUtil.showErrorHint(project, editor, "Rule has attributes", "Inline Rule", null);
-      return;
+    @Override
+    public boolean canInlineElement(PsiElement psiElement) {
+        return psiElement instanceof BnfRule;
     }
 
-    Collection<PsiReference> allReferences = ReferencesSearch.search(psiElement).findAll();
-    if (allReferences.isEmpty()) {
-      CommonRefactoringUtil.showErrorHint(project, editor, "Rule is never used", "Inline Rule", null);
-      return;
-    }
+    @Override
+    public void inlineElement(Project project, Editor editor, PsiElement psiElement) {
+        BnfRule rule = (BnfRule)psiElement;
+        BnfAttrs attrs = rule.getAttrs();
+        if (PsiTreeUtil.hasErrorElements(rule)) {
+            CommonRefactoringUtil.showErrorHint(project, editor, "Rule has errors", "Inline Rule", null);
+            return;
+        }
 
-    boolean hasNonAttributeRefs = false;
-    for (PsiReference ref : allReferences) {
-      if (!GrammarUtil.isInAttributesReference(ref.getElement())) {
-        hasNonAttributeRefs = true;
-        break;
-      }
-    }
-    if (!hasNonAttributeRefs) {
-      CommonRefactoringUtil.showErrorHint(project, editor, "Rule is referenced only in attributes", "Inline Rule", null);
-      return;
-    }
-    if (!CommonRefactoringUtil.checkReadOnlyStatus(project, rule)) return;
-    PsiReference reference = editor != null ? TargetElementUtil.findReference(editor, editor.getCaretModel().getOffset()) : null;
-    if (reference != null && !rule.equals(reference.resolve())) {
-      reference = null;
-    }
+        if (attrs != null && !attrs.getAttrList().isEmpty()) {
+            CommonRefactoringUtil.showErrorHint(project, editor, "Rule has attributes", "Inline Rule", null);
+            return;
+        }
 
-    InlineRuleDialog dialog = new InlineRuleDialog(project, rule, reference);
-    dialog.show();
-  }
+        Collection<PsiReference> allReferences = ReferencesSearch.search(psiElement).findAll();
+        if (allReferences.isEmpty()) {
+            CommonRefactoringUtil.showErrorHint(project, editor, "Rule is never used", "Inline Rule", null);
+            return;
+        }
+
+        boolean hasNonAttributeRefs = false;
+        for (PsiReference ref : allReferences) {
+            if (!GrammarUtil.isInAttributesReference(ref.getElement())) {
+                hasNonAttributeRefs = true;
+                break;
+            }
+        }
+        if (!hasNonAttributeRefs) {
+            CommonRefactoringUtil.showErrorHint(
+                project,
+                editor,
+                "Rule is referenced only in attributes",
+                "Inline Rule",
+                null
+            );
+            return;
+        }
+        if (!CommonRefactoringUtil.checkReadOnlyStatus(project, rule)) {
+            return;
+        }
+        PsiReference reference = editor != null ? TargetElementUtil.findReference(editor, editor.getCaretModel().getOffset()) : null;
+        if (reference != null && !rule.equals(reference.resolve())) {
+            reference = null;
+        }
+
+        InlineRuleDialog dialog = new InlineRuleDialog(project, rule, reference);
+        dialog.show();
+    }
 }

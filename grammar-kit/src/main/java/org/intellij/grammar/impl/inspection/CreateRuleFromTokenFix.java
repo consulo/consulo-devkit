@@ -41,43 +41,47 @@ import org.intellij.grammar.impl.refactor.BnfIntroduceRuleHandler;
  * @author Vadim Romansky
  */
 public class CreateRuleFromTokenFix implements LocalQuickFix {
+    private final String myName;
 
-  private final String myName;
-
-  public CreateRuleFromTokenFix(String name) {
-    myName = name;
-  }
-
-  @Nonnull
-  @Override
-  public String getName() {
-    return "Create '"+myName+"' rule";
-  }
-
-  @Nonnull
-  @Override
-  public String getFamilyName() {
-    return "Create rule from usage";
-  }
-
-  @Override
-  public void applyFix(final @Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    final AccessToken token = WriteAction.start();
-    try {
-      final PsiElement element = descriptor.getPsiElement();
-      final BnfRule rule = PsiTreeUtil.getParentOfType(element, BnfRule.class);
-      if (rule == null) return;
-
-      final BnfRule addedRule = BnfIntroduceRuleHandler.addNextRule(project, rule, "private " + myName + " ::= ");
-      final FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor(rule.getContainingFile().getVirtualFile());
-      if (selectedEditor instanceof TextEditor) {
-        final Editor editor = ((TextEditor)selectedEditor).getEditor();
-        editor.getCaretModel().moveToOffset(addedRule.getTextRange().getEndOffset() - (BnfIntroduceRuleHandler.endsWithSemicolon(addedRule)? 1 : 0));
-        editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
-      }
+    public CreateRuleFromTokenFix(String name) {
+        myName = name;
     }
-    finally {
-      token.finish();
+
+    @Nonnull
+    @Override
+    public String getName() {
+        return "Create '" + myName + "' rule";
     }
-  }
+
+    @Nonnull
+    @Override
+    public String getFamilyName() {
+        return "Create rule from usage";
+    }
+
+    @Override
+    public void applyFix(final @Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        final AccessToken token = WriteAction.start();
+        try {
+            final PsiElement element = descriptor.getPsiElement();
+            final BnfRule rule = PsiTreeUtil.getParentOfType(element, BnfRule.class);
+            if (rule == null) {
+                return;
+            }
+
+            final BnfRule addedRule = BnfIntroduceRuleHandler.addNextRule(project, rule, "private " + myName + " ::= ");
+            final FileEditor selectedEditor =
+                FileEditorManager.getInstance(project).getSelectedEditor(rule.getContainingFile().getVirtualFile());
+            if (selectedEditor instanceof TextEditor textEditor) {
+                final Editor editor = textEditor.getEditor();
+                editor.getCaretModel().moveToOffset(
+                    addedRule.getTextRange().getEndOffset() - (BnfIntroduceRuleHandler.endsWithSemicolon(addedRule) ? 1 : 0)
+                );
+                editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
+            }
+        }
+        finally {
+            token.finish();
+        }
+    }
 }

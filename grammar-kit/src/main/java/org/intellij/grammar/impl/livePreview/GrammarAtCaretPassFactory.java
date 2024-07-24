@@ -53,106 +53,106 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class GrammarAtCaretPassFactory implements TextEditorHighlightingPassFactory {
-  public static final Key<Boolean> GRAMMAR_AT_CARET_KEY = Key.create("GRAMMAR_AT_CARET_KEY");
+    public static final Key<Boolean> GRAMMAR_AT_CARET_KEY = Key.create("GRAMMAR_AT_CARET_KEY");
 
-  @Override
-  public void register(@Nonnull Registrar registrar) {
-    registrar.registerTextEditorHighlightingPass(this, null, new int[]{Pass.UPDATE_ALL}, false, -1);
-  }
-
-  @Override
-  public TextEditorHighlightingPass createHighlightingPass(@Nonnull final PsiFile file, @Nonnull final Editor editor) {
-    if (Application.get().isHeadlessEnvironment()) {
-      return null;
+    @Override
+    public void register(@Nonnull Registrar registrar) {
+        registrar.registerTextEditorHighlightingPass(this, null, new int[]{Pass.UPDATE_ALL}, false, -1);
     }
 
-    if (editor.isOneLineMode()) {
-      return null;
-    }
-    if (!(file instanceof BnfFile)) {
-      return null;
-    }
-
-    final VirtualFile virtualFile = file.getVirtualFile();
-    if (virtualFile == null || !FileEditorManager.getInstance(file.getProject()).isFileOpen(virtualFile)) {
-      return null;
-    }
-
-    return new TextEditorHighlightingPass(file.getProject(), editor.getDocument(), false) {
-      List<HighlightInfo> infos = new ArrayList<>();
-
-      @Override
-      @RequiredReadAction
-      public void doCollectInformation(@Nonnull ProgressIndicator progress) {
-        infos.clear();
-        LivePreviewLanguage previewLanguage = LivePreviewLanguage.findInstance(file);
-        if (previewLanguage == null) {
-          return;
+    @Override
+    public TextEditorHighlightingPass createHighlightingPass(@Nonnull final PsiFile file, @Nonnull final Editor editor) {
+        if (Application.get().isHeadlessEnvironment()) {
+            return null;
         }
-        List<Editor> previewEditors = previewLanguage.getPreviewEditors(myProject);
-        for (Editor e : previewEditors) {
-          if (Boolean.TRUE.equals(GRAMMAR_AT_CARET_KEY.get(e))) {
-            collectHighlighters(myProject, previewEditors.get(0), previewLanguage, infos);
-          }
+
+        if (editor.isOneLineMode()) {
+            return null;
         }
-      }
+        if (!(file instanceof BnfFile)) {
+            return null;
+        }
 
-      @Override
-      @RequiredUIAccess
-      public void doApplyInformationToEditor() {
-        Document document = editor.getDocument();
-        UpdateHighlightersUtil.setHighlightersToEditor(
-          myProject,
-          document,
-          0,
-          file.getTextLength(),
-          infos,
-          getColorsScheme(),
-          getId()
-        );
-      }
-    };
-  }
+        final VirtualFile virtualFile = file.getVirtualFile();
+        if (virtualFile == null || !FileEditorManager.getInstance(file.getProject()).isFileOpen(virtualFile)) {
+            return null;
+        }
 
-  @RequiredReadAction
-  private static void collectHighlighters(
-    @Nonnull final Project project,
-    @Nonnull Editor editor,
-    @Nonnull LivePreviewLanguage livePreviewLanguage,
-    @Nonnull List<HighlightInfo> result
-  ) {
-    final Set<TextRange> trueRanges = new HashSet<>(), falseRanges = new HashSet<>();
-    final Set<BnfExpression> visited = new HashSet<>();
-    LivePreviewHelper.collectExpressionsAtOffset(project, editor, livePreviewLanguage, (bnfExpression, result1) -> {
-      for (PsiElement parent = bnfExpression.getParent(); parent instanceof BnfExpression expression && visited.add(expression); ) {
-        parent = parent.getParent();
-      }
-      if (visited.add(bnfExpression)) {
-        (result1 ? trueRanges : falseRanges).add(bnfExpression.getTextRange());
-      }
-      return true;
-    });
-    createHighlights(trueRanges, falseRanges, result);
-  }
+        return new TextEditorHighlightingPass(file.getProject(), editor.getDocument(), false) {
+            List<HighlightInfo> infos = new ArrayList<>();
 
-  private static void createHighlights(Set<TextRange> trueRanges, Set<TextRange> falseRanges, List<HighlightInfo> result) {
-    EditorColorsManager manager = EditorColorsManager.getInstance();
-    TextAttributes trueAttrs = manager.getGlobalScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES);
-    TextAttributes falseAttrs = manager.getGlobalScheme().getAttributes(EditorColors.WRITE_SEARCH_RESULT_ATTRIBUTES);
+            @Override
+            @RequiredReadAction
+            public void doCollectInformation(@Nonnull ProgressIndicator progress) {
+                infos.clear();
+                LivePreviewLanguage previewLanguage = LivePreviewLanguage.findInstance(file);
+                if (previewLanguage == null) {
+                    return;
+                }
+                List<Editor> previewEditors = previewLanguage.getPreviewEditors(myProject);
+                for (Editor e : previewEditors) {
+                    if (Boolean.TRUE.equals(GRAMMAR_AT_CARET_KEY.get(e))) {
+                        collectHighlighters(myProject, previewEditors.get(0), previewLanguage, infos);
+                    }
+                }
+            }
 
-    for (TextRange range : trueRanges) {
-      HighlightInfo info = HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION)
-        .range(range)
-        .textAttributes(trueAttrs)
-        .createUnconditionally();
-      result.add(info);
+            @Override
+            @RequiredUIAccess
+            public void doApplyInformationToEditor() {
+                Document document = editor.getDocument();
+                UpdateHighlightersUtil.setHighlightersToEditor(
+                    myProject,
+                    document,
+                    0,
+                    file.getTextLength(),
+                    infos,
+                    getColorsScheme(),
+                    getId()
+                );
+            }
+        };
     }
-    for (TextRange range : falseRanges) {
-      HighlightInfo info = HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION)
-        .range(range)
-        .textAttributes(falseAttrs)
-        .createUnconditionally();
-      result.add(info);
+
+    @RequiredReadAction
+    private static void collectHighlighters(
+        @Nonnull final Project project,
+        @Nonnull Editor editor,
+        @Nonnull LivePreviewLanguage livePreviewLanguage,
+        @Nonnull List<HighlightInfo> result
+    ) {
+        final Set<TextRange> trueRanges = new HashSet<>(), falseRanges = new HashSet<>();
+        final Set<BnfExpression> visited = new HashSet<>();
+        LivePreviewHelper.collectExpressionsAtOffset(project, editor, livePreviewLanguage, (bnfExpression, result1) -> {
+            for (PsiElement parent = bnfExpression.getParent(); parent instanceof BnfExpression expression && visited.add(expression); ) {
+                parent = parent.getParent();
+            }
+            if (visited.add(bnfExpression)) {
+                (result1 ? trueRanges : falseRanges).add(bnfExpression.getTextRange());
+            }
+            return true;
+        });
+        createHighlights(trueRanges, falseRanges, result);
     }
-  }
+
+    private static void createHighlights(Set<TextRange> trueRanges, Set<TextRange> falseRanges, List<HighlightInfo> result) {
+        EditorColorsManager manager = EditorColorsManager.getInstance();
+        TextAttributes trueAttrs = manager.getGlobalScheme().getAttributes(EditorColors.SEARCH_RESULT_ATTRIBUTES);
+        TextAttributes falseAttrs = manager.getGlobalScheme().getAttributes(EditorColors.WRITE_SEARCH_RESULT_ATTRIBUTES);
+
+        for (TextRange range : trueRanges) {
+            HighlightInfo info = HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION)
+                .range(range)
+                .textAttributes(trueAttrs)
+                .createUnconditionally();
+            result.add(info);
+        }
+        for (TextRange range : falseRanges) {
+            HighlightInfo info = HighlightInfo.newHighlightInfo(HighlightInfoType.INFORMATION)
+                .range(range)
+                .textAttributes(falseAttrs)
+                .createUnconditionally();
+            result.add(info);
+        }
+    }
 }

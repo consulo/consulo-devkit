@@ -32,55 +32,55 @@ import static org.intellij.grammar.impl.livePreview.LivePreviewParserDefinition.
  * @author gregsh
  */
 public class LivePreviewElementType extends IElementType {
-
-  public LivePreviewElementType(@Nonnull String debugName, @Nonnull LivePreviewLanguage language) {
-    super(debugName, language, false);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    LivePreviewElementType t = (LivePreviewElementType)o;
-
-    return Comparing.equal(toString(), o.toString()) && getLanguage() == t.getLanguage();
-  }
-
-  @Override
-  public int hashCode() {
-    return 31 * toString().hashCode() + getLanguage().hashCode();
-  }
-
-
-
-  public static class TokenType extends LivePreviewElementType {
-    final IElementType delegate;
-
-    TokenType(@Nullable IElementType delegate, @Nonnull String name, @Nonnull LivePreviewLanguage language) {
-      super(name, language);
-      this.delegate = ObjectUtil.chooseNotNull(delegate, this);
-    }
-  }
-
-  public static class KeywordType extends TokenType {
-    KeywordType(@Nonnull String name, @Nonnull LivePreviewLanguage language) {
-      super(KEYWORD, name, language);
-    }
-  }
-
-  public static class RuleType extends LivePreviewElementType {
-    final String ruleName;
-
-    RuleType(@Nonnull String elementType, @Nonnull BnfRule rule, @Nonnull LivePreviewLanguage language) {
-      super(elementType, language);
-      ruleName = rule.getName();
+    public LivePreviewElementType(@Nonnull String debugName, @Nonnull LivePreviewLanguage language) {
+        super(debugName, language, false);
     }
 
-    @Nullable
-    public BnfRule getRule(Project project) {
-      BnfFile file = ((LivePreviewLanguage)getLanguage()).getGrammar(project);
-      return file != null ? file.getRule(ruleName) : null;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LivePreviewElementType t = (LivePreviewElementType)o;
+
+        return Comparing.equal(toString(), o.toString()) && getLanguage() == t.getLanguage();
     }
 
-  }
+    @Override
+    public int hashCode() {
+        return 31 * toString().hashCode() + getLanguage().hashCode();
+    }
+
+    public static class TokenType extends LivePreviewElementType {
+        final IElementType delegate;
+
+        TokenType(@Nullable IElementType delegate, @Nonnull String name, @Nonnull LivePreviewLanguage language) {
+            super(name, language);
+            this.delegate = ObjectUtil.chooseNotNull(delegate, this);
+        }
+    }
+
+    public static class KeywordType extends TokenType {
+        KeywordType(@Nonnull String name, @Nonnull LivePreviewLanguage language) {
+            super(KEYWORD, name, language);
+        }
+    }
+
+    public static class RuleType extends LivePreviewElementType {
+        final String ruleName;
+
+        RuleType(@Nonnull String elementType, @Nonnull BnfRule rule, @Nonnull LivePreviewLanguage language) {
+            super(elementType, language);
+            ruleName = rule.getName();
+        }
+
+        @Nullable
+        public BnfRule getRule(Project project) {
+            BnfFile file = ((LivePreviewLanguage)getLanguage()).getGrammar(project);
+            return file != null ? file.getRule(ruleName) : null;
+        }
+    }
 }

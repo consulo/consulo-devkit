@@ -37,39 +37,44 @@ import static org.intellij.grammar.KnownAttribute.getCompatibleAttribute;
  */
 @ExtensionImpl
 public class BnfUnusedAttributeInspection extends LocalInspectionTool {
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Unused attribute";
-  }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Unused attribute";
+    }
 
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.WARNING;
-  }
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.WARNING;
+    }
 
-  @Nls
-  @Nonnull
-  @Override
-  public String getGroupDisplayName() {
-    return "Grammar/BNF";
-  }
+    @Nls
+    @Nonnull
+    @Override
+    public String getGroupDisplayName() {
+        return "Grammar/BNF";
+    }
 
-  @Nonnull
-  @Override
-  public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, Object state) {
-    return new BnfVisitor<Void>() {
-      @Override
-      public Void visitAttr(@Nonnull BnfAttr o) {
-        final String name = o.getName();
-        if (!name.toUpperCase().equals(name) && getAttribute(name) == null) {
-          KnownAttribute newAttr = getCompatibleAttribute(name);
-          String text = newAttr == null ? "Unused attribute" : "Deprecated attribute, use '" + newAttr.getName() + "' instead";
-          holder.registerProblem(o.getId(), text);
-        }
-        return null;
-      }
-    };
-  }
+    @Nonnull
+    @Override
+    public PsiElementVisitor buildVisitor(
+        @Nonnull ProblemsHolder holder,
+        boolean isOnTheFly,
+        @Nonnull LocalInspectionToolSession session,
+        Object state
+    ) {
+        return new BnfVisitor<Void>() {
+            @Override
+            public Void visitAttr(@Nonnull BnfAttr o) {
+                final String name = o.getName();
+                if (!name.toUpperCase().equals(name) && getAttribute(name) == null) {
+                    KnownAttribute newAttr = getCompatibleAttribute(name);
+                    String text = newAttr == null ? "Unused attribute" : "Deprecated attribute, use '" + newAttr.getName() + "' instead";
+                    holder.registerProblem(o.getId(), text);
+                }
+                return null;
+            }
+        };
+    }
 }

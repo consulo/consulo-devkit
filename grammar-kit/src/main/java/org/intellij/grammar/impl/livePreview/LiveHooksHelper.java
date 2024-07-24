@@ -32,59 +32,64 @@ import java.util.Map;
  * @author gregsh
  */
 public class LiveHooksHelper {
-
-  public static void registerHook(PsiBuilder builder, String name, String value) {
-    final GeneratedParserUtilBase.Hook hookObj = getHook(name);
-    if (hookObj == null) return;
-    Object hookParam = ObjectUtil.notNull(getHookParam(value), value);
-    GeneratedParserUtilBase.register_hook_(builder, (builder1, marker, param) -> {
-      try {
-        return hookObj.run(builder1, marker, param);
-      }
-      catch (Exception e) {
-        builder1.error("hook crashed: " + e.toString());
-        return marker;
-      }
-    }, hookParam);
-  }
-
-  private static final Map<String, Object> ourHooks = new HashMap<>();
-  private static final Map<String, Object> ourBinders = new HashMap<>();
-
-  static {
-    collectStaticFields(GeneratedParserUtilBase.class, GeneratedParserUtilBase.Hook.class, ourHooks);
-    collectStaticFields(WhitespacesBinders.class, WhitespacesAndCommentsBinder.class, ourBinders);
-    ourBinders.put("null", null);
-  }
-
-
-  public static GeneratedParserUtilBase.Hook getHook(String name) {
-    return (GeneratedParserUtilBase.Hook)ourHooks.get(name);
-  }
-
-  public static Object getHookParam(@Nonnull String value) {
-    String[] args = value.trim().split("\\s*,\\s*");
-    if (args.length == 1) return ourBinders.get(args[0]);
-    Object[] res = new WhitespacesAndCommentsBinder[args.length];
-    for (int i = 0; i < args.length; i++) {
-      if (!ourBinders.containsKey(args[i])) return null;
-      res[i] = ourBinders.get(args[i]);
-    }
-    return res;
-  }
-
-  private static void collectStaticFields(Class<?> where, Class<?> what, Map<String, Object> result) {
-    for (Field field : where.getFields()) {
-      int m = field.getModifiers();
-      if ((m & Modifier.STATIC) != 0 && (m & Modifier.FINAL) != 0 && (m & Modifier.PUBLIC) != 0) {
-        if (what.isAssignableFrom(field.getType())) {
-          try {
-            result.put(field.getName(), field.get(null));
-          }
-          catch (IllegalAccessException ignored) {
-          }
+    public static void registerHook(PsiBuilder builder, String name, String value) {
+        final GeneratedParserUtilBase.Hook hookObj = getHook(name);
+        if (hookObj == null) {
+            return;
         }
-      }
+        Object hookParam = ObjectUtil.notNull(getHookParam(value), value);
+        GeneratedParserUtilBase.register_hook_(builder, (builder1, marker, param) -> {
+            try {
+                return hookObj.run(builder1, marker, param);
+            }
+            catch (Exception e) {
+                builder1.error("hook crashed: " + e.toString());
+                return marker;
+            }
+        }, hookParam);
     }
-  }
+
+    private static final Map<String, Object> ourHooks = new HashMap<>();
+    private static final Map<String, Object> ourBinders = new HashMap<>();
+
+    static {
+        collectStaticFields(GeneratedParserUtilBase.class, GeneratedParserUtilBase.Hook.class, ourHooks);
+        collectStaticFields(WhitespacesBinders.class, WhitespacesAndCommentsBinder.class, ourBinders);
+        ourBinders.put("null", null);
+    }
+
+
+    public static GeneratedParserUtilBase.Hook getHook(String name) {
+        return (GeneratedParserUtilBase.Hook)ourHooks.get(name);
+    }
+
+    public static Object getHookParam(@Nonnull String value) {
+        String[] args = value.trim().split("\\s*,\\s*");
+        if (args.length == 1) {
+            return ourBinders.get(args[0]);
+        }
+        Object[] res = new WhitespacesAndCommentsBinder[args.length];
+        for (int i = 0; i < args.length; i++) {
+            if (!ourBinders.containsKey(args[i])) {
+                return null;
+            }
+            res[i] = ourBinders.get(args[i]);
+        }
+        return res;
+    }
+
+    private static void collectStaticFields(Class<?> where, Class<?> what, Map<String, Object> result) {
+        for (Field field : where.getFields()) {
+            int m = field.getModifiers();
+            if ((m & Modifier.STATIC) != 0 && (m & Modifier.FINAL) != 0 && (m & Modifier.PUBLIC) != 0) {
+                if (what.isAssignableFrom(field.getType())) {
+                    try {
+                        result.put(field.getName(), field.get(null));
+                    }
+                    catch (IllegalAccessException ignored) {
+                    }
+                }
+            }
+        }
+    }
 }

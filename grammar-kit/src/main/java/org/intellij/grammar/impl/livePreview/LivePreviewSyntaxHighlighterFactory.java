@@ -39,46 +39,57 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl
 public class LivePreviewSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
+    public LivePreviewSyntaxHighlighterFactory() {
+    }
 
-  public LivePreviewSyntaxHighlighterFactory() {
-  }
+    @Nonnull
+    @Override
+    public SyntaxHighlighter getSyntaxHighlighter(@Nullable final Project project, @Nullable VirtualFile virtualFile) {
+        final Language language = virtualFile instanceof LightVirtualFile ? ((LightVirtualFile)virtualFile).getLanguage() : null;
+        if (!(language instanceof LivePreviewLanguage)) {
+            return new DefaultSyntaxHighlighter();
+        }
+        return new SyntaxHighlighterBase() {
+            @Nonnull
+            @Override
+            public Lexer getHighlightingLexer() {
+                return new LivePreviewLexer(project, (LivePreviewLanguage)language) {
+                    @Nullable
+                    @Override
+                    public IElementType getTokenType() {
+                        IElementType tokenType = super.getTokenType();
+                        return tokenType instanceof LivePreviewElementType.TokenType livePreviewTokenType
+                            ? livePreviewTokenType.delegate : tokenType;
+                    }
+                };
+            }
 
-  @Nonnull
-  @Override
-  public SyntaxHighlighter getSyntaxHighlighter(@Nullable final Project project, @Nullable VirtualFile virtualFile) {
-    final Language language = virtualFile instanceof LightVirtualFile ? ((LightVirtualFile)virtualFile).getLanguage() : null;
-    if (!(language instanceof LivePreviewLanguage)) return new DefaultSyntaxHighlighter();
-    return new SyntaxHighlighterBase() {
-      @Nonnull
-      @Override
-      public Lexer getHighlightingLexer() {
-        return new LivePreviewLexer(project, (LivePreviewLanguage)language) {
-          @Nullable
-          @Override
-          public IElementType getTokenType() {
-            IElementType tokenType = super.getTokenType();
-            return tokenType instanceof LivePreviewElementType.TokenType
-                   ? ((LivePreviewElementType.TokenType)tokenType).delegate : tokenType;
-          }
+            @Nonnull
+            @Override
+            public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
+                if (tokenType == LivePreviewParserDefinition.COMMENT) {
+                    return pack(DefaultLanguageHighlighterColors.LINE_COMMENT);
+                }
+                if (tokenType == LivePreviewParserDefinition.STRING) {
+                    return pack(DefaultLanguageHighlighterColors.STRING);
+                }
+                if (tokenType == LivePreviewParserDefinition.NUMBER) {
+                    return pack(DefaultLanguageHighlighterColors.NUMBER);
+                }
+                if (tokenType == LivePreviewParserDefinition.KEYWORD) {
+                    return pack(DefaultLanguageHighlighterColors.KEYWORD);
+                }
+                if (tokenType == TokenType.BAD_CHARACTER) {
+                    return pack(DefaultLanguageHighlighterColors.INVALID_STRING_ESCAPE);
+                }
+                return EMPTY;
+            }
         };
-      }
+    }
 
-      @Nonnull
-      @Override
-      public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-        if (tokenType == LivePreviewParserDefinition.COMMENT) return pack(DefaultLanguageHighlighterColors.LINE_COMMENT);
-        if (tokenType == LivePreviewParserDefinition.STRING) return pack(DefaultLanguageHighlighterColors.STRING);
-        if (tokenType == LivePreviewParserDefinition.NUMBER) return pack(DefaultLanguageHighlighterColors.NUMBER);
-        if (tokenType == LivePreviewParserDefinition.KEYWORD) return pack(DefaultLanguageHighlighterColors.KEYWORD);
-        if (tokenType == TokenType.BAD_CHARACTER) return pack(DefaultLanguageHighlighterColors.INVALID_STRING_ESCAPE);
-        return EMPTY;
-      }
-    };
-  }
-
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return LivePreviewLanguage.BASE_INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return LivePreviewLanguage.BASE_INSTANCE;
+    }
 }
