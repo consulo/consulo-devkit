@@ -25,7 +25,7 @@ import java.util.Set;
  * @since 26.05.2024
  */
 @ExtensionImpl
-public class IconLibraryIconDescritorUpdater implements IconDescriptorUpdater {
+public class IconLibraryIconDescriptorUpdater implements IconDescriptorUpdater {
     private static final Set<String> ourAllowedExtensions = Set.of("svg", "png");
 
     private final DirectoryIndex myDirectoryIndex;
@@ -33,7 +33,7 @@ public class IconLibraryIconDescritorUpdater implements IconDescriptorUpdater {
     private final ProjectIconsAccessor myProjectIconsAccessor;
 
     @Inject
-    public IconLibraryIconDescritorUpdater(DirectoryIndex directoryIndex, IconDeferrer iconDeferrer, ProjectIconsAccessor projectIconsAccessor) {
+    public IconLibraryIconDescriptorUpdater(DirectoryIndex directoryIndex, IconDeferrer iconDeferrer, ProjectIconsAccessor projectIconsAccessor) {
         myDirectoryIndex = directoryIndex;
         myIconDeferrer = iconDeferrer;
         myProjectIconsAccessor = projectIconsAccessor;
