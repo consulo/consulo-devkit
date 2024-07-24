@@ -19,7 +19,6 @@ package org.intellij.grammar.impl.actions;
 import com.intellij.java.impl.codeInsight.daemon.impl.quickfix.CreateClassKind;
 import com.intellij.java.impl.codeInsight.intention.impl.CreateClassDialog;
 import com.intellij.java.language.psi.*;
-import consulo.annotation.access.RequiredReadAction;
 import consulo.application.Application;
 import consulo.application.Result;
 import consulo.devkit.grammarKit.generator.PlatformClass;
@@ -56,161 +55,163 @@ import java.util.function.Consumer;
  * @author greg
  */
 public class BnfGenerateParserUtilAction extends AnAction {
-  @Override
-  public void update(AnActionEvent e) {
-    PsiFile file = e.getData(LangDataKeys.PSI_FILE);
-    if (file instanceof BnfFile bnfFile) {
-      boolean enabled = bnfFile.findAttribute(bnfFile.getVersion(), null, KnownAttribute.PARSER_UTIL_CLASS, null) == null;
-      e.getPresentation().setEnabledAndVisible(enabled);
-    }
-    else {
-      e.getPresentation().setEnabledAndVisible(false);
-    }
-  }
-
-  @RequiredUIAccess
-  @Override
-  public void actionPerformed(AnActionEvent e) {
-    PsiFile file = e.getData(LangDataKeys.PSI_FILE);
-    if (!(file instanceof BnfFile)) {
-      return;
-    }
-
-    Project project = file.getProject();
-    BnfFile bnfFile = (BnfFile)file;
-    final String qualifiedName = createClass(
-      bnfFile, "Create Parser Util Class", PlatformClass.GENERATED_PARSER_UTIL_BASE.select(bnfFile.getVersion()),
-      getGrammarName(bnfFile) + "ParserUtil",
-      getGrammarPackage(bnfFile));
-    if (qualifiedName == null) {
-      return;
-    }
-
-    final int anchorOffset;
-    final String text;
-    String definition = "\n  " + KnownAttribute.PARSER_UTIL_CLASS.getName() + "=\"" + qualifiedName + "\"";
-    BnfAttr attrParser = bnfFile.findAttribute(bnfFile.getVersion(), null, KnownAttribute.PARSER_CLASS, null);
-    if (attrParser == null) {
-      BnfAttrs rootAttrs = ContainerUtil.getFirstItem(bnfFile.getAttributes());
-      if (rootAttrs == null) {
-        anchorOffset = 0;
-        text = "{" + definition + "\n}";
-      }
-      else {
-        anchorOffset = rootAttrs.getFirstChild().getTextOffset();
-        text = definition;
-      }
-    }
-    else {
-      anchorOffset = attrParser.getTextRange().getEndOffset();
-      text = definition;
-    }
-    final Document document = PsiDocumentManager.getInstance(project).getDocument(bnfFile);
-    if (document == null) {
-      return;
-    }
-    new WriteCommandAction.Simple(project, file) {
-      @Override
-      protected void run() throws Throwable {
-        int position = document.getLineEndOffset(document.getLineNumber(anchorOffset));
-        document.insertString(position, text);
-      }
-    }.execute();
-
-  }
-
-  static String getGrammarPackage(BnfFile bnfFile) {
-    String version = bnfFile.findAttributeValue(null, null, KnownAttribute.VERSION, null);
-
-    return StringUtil.getPackageName(bnfFile.findAttributeValue(version, null, KnownAttribute.PARSER_CLASS, null));
-  }
-
-  static String getGrammarName(BnfFile bnfFile) {
-    String version = bnfFile.findAttributeValue(null, null, KnownAttribute.VERSION, null);
-
-    String parser = bnfFile.findAttributeValue(version, null, KnownAttribute.PARSER_CLASS, null);
-    if (!KnownAttribute.PARSER_CLASS.getDefaultValue(version).equals(parser)) {
-      String shortName = StringUtil.getShortName(parser);
-      int len = "Parser".length();
-      String result = shortName.endsWith("Parser") ? shortName.substring(0, shortName.length() - len) : shortName;
-      if (StringUtil.isNotEmpty(result)) {
-        return result;
-      }
-    }
-    return StringUtil.capitalize(FileUtil.getNameWithoutExtension(bnfFile.getName()));
-  }
-
-  @RequiredReadAction
-  public static String createClass(
-    @Nonnull PsiFile origin,
-    @Nonnull final String title,
-    @Nullable final String baseClass,
-    @Nonnull String suggestedName,
-    @Nonnull String suggestedPackage
-  ) {
-    Project project = origin.getProject();
-    Module module = origin.getModule();
-    CreateClassDialog dialog = new CreateClassDialog(
-      project,
-      title,
-      suggestedName,
-      suggestedPackage,
-      CreateClassKind.CLASS,
-      true,
-      module
-    );
-    if (!dialog.showAndGet()) {
-      return null;
-    }
-
-    final String className = dialog.getClassName();
-    final PsiDirectory targetDirectory = dialog.getTargetDirectory();
-    return createClass(className, targetDirectory, baseClass, title, null);
-  }
-
-  static String createClass(
-    final String className,
-    final PsiDirectory targetDirectory,
-    final String baseClass,
-    final String title,
-    final Consumer<PsiClass> consumer
-  ) {
-    final Project project = targetDirectory.getProject();
-    final Ref<PsiClass> resultRef = Ref.create();
-
-    new WriteCommandAction(project, title) {
-      @Override
-      protected void run(Result result) throws Throwable {
-        IdeDocumentHistory.getInstance(project).includeCurrentPlaceAsChangePlace();
-
-        PsiElementFactory elementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
-        PsiJavaCodeReferenceElement ref = baseClass == null ? null
-          : elementFactory.createReferenceElementByFQClassName(baseClass, GlobalSearchScope.allScope(project));
-
-        try {
-          PsiClass resultClass = JavaDirectoryService.getInstance().createClass(targetDirectory, className);
-          resultRef.set(resultClass);
-          if (ref != null) {
-            PsiElement baseClass = ref.resolve();
-            boolean isInterface = baseClass instanceof PsiClass psiClass && psiClass.isInterface();
-            PsiReferenceList targetReferenceList = isInterface ? resultClass.getImplementsList() : resultClass.getExtendsList();
-            assert targetReferenceList != null;
-            targetReferenceList.add(ref);
-          }
-          if (consumer != null) {
-            consumer.accept(resultClass);
-          }
+    @Override
+    @RequiredUIAccess
+    public void update(AnActionEvent e) {
+        PsiFile file = e.getData(LangDataKeys.PSI_FILE);
+        if (file instanceof BnfFile bnfFile) {
+            boolean enabled = bnfFile.findAttribute(bnfFile.getVersion(), null, KnownAttribute.PARSER_UTIL_CLASS, null) == null;
+            e.getPresentation().setEnabledAndVisible(enabled);
         }
-        catch (final IncorrectOperationException e) {
-          Application.get().invokeLater(() -> Messages.showErrorDialog(
+        else {
+            e.getPresentation().setEnabledAndVisible(false);
+        }
+    }
+
+    @RequiredUIAccess
+    @Override
+    public void actionPerformed(AnActionEvent e) {
+        PsiFile file = e.getData(LangDataKeys.PSI_FILE);
+        if (!(file instanceof BnfFile)) {
+            return;
+        }
+
+        Project project = file.getProject();
+        BnfFile bnfFile = (BnfFile)file;
+        final String qualifiedName = createClass(
+            bnfFile, "Create Parser Util Class", PlatformClass.GENERATED_PARSER_UTIL_BASE.select(bnfFile.getVersion()),
+            getGrammarName(bnfFile) + "ParserUtil",
+            getGrammarPackage(bnfFile)
+        );
+        if (qualifiedName == null) {
+            return;
+        }
+
+        final int anchorOffset;
+        final String text;
+        String definition = "\n  " + KnownAttribute.PARSER_UTIL_CLASS.getName() + "=\"" + qualifiedName + "\"";
+        BnfAttr attrParser = bnfFile.findAttribute(bnfFile.getVersion(), null, KnownAttribute.PARSER_CLASS, null);
+        if (attrParser == null) {
+            BnfAttrs rootAttrs = ContainerUtil.getFirstItem(bnfFile.getAttributes());
+            if (rootAttrs == null) {
+                anchorOffset = 0;
+                text = "{" + definition + "\n}";
+            }
+            else {
+                anchorOffset = rootAttrs.getFirstChild().getTextOffset();
+                text = definition;
+            }
+        }
+        else {
+            anchorOffset = attrParser.getTextRange().getEndOffset();
+            text = definition;
+        }
+        final Document document = PsiDocumentManager.getInstance(project).getDocument(bnfFile);
+        if (document == null) {
+            return;
+        }
+        new WriteCommandAction.Simple(project, file) {
+            @Override
+            protected void run() throws Throwable {
+                int position = document.getLineEndOffset(document.getLineNumber(anchorOffset));
+                document.insertString(position, text);
+            }
+        }.execute();
+
+    }
+
+    static String getGrammarPackage(BnfFile bnfFile) {
+        String version = bnfFile.findAttributeValue(null, null, KnownAttribute.VERSION, null);
+
+        return StringUtil.getPackageName(bnfFile.findAttributeValue(version, null, KnownAttribute.PARSER_CLASS, null));
+    }
+
+    static String getGrammarName(BnfFile bnfFile) {
+        String version = bnfFile.findAttributeValue(null, null, KnownAttribute.VERSION, null);
+
+        String parser = bnfFile.findAttributeValue(version, null, KnownAttribute.PARSER_CLASS, null);
+        if (!KnownAttribute.PARSER_CLASS.getDefaultValue(version).equals(parser)) {
+            String shortName = StringUtil.getShortName(parser);
+            int len = "Parser".length();
+            String result = shortName.endsWith("Parser") ? shortName.substring(0, shortName.length() - len) : shortName;
+            if (StringUtil.isNotEmpty(result)) {
+                return result;
+            }
+        }
+        return StringUtil.capitalize(FileUtil.getNameWithoutExtension(bnfFile.getName()));
+    }
+
+    @RequiredUIAccess
+    public static String createClass(
+        @Nonnull PsiFile origin,
+        @Nonnull final String title,
+        @Nullable final String baseClass,
+        @Nonnull String suggestedName,
+        @Nonnull String suggestedPackage
+    ) {
+        Project project = origin.getProject();
+        Module module = origin.getModule();
+        CreateClassDialog dialog = new CreateClassDialog(
             project,
-            "Unable to create class " + className + "\n" + e.getLocalizedMessage(),
-            title
-          ));
+            title,
+            suggestedName,
+            suggestedPackage,
+            CreateClassKind.CLASS,
+            true,
+            module
+        );
+        if (!dialog.showAndGet()) {
+            return null;
         }
-      }
-    }.execute();
-    return resultRef.isNull() ? null : resultRef.get().getQualifiedName();
-  }
 
+        final String className = dialog.getClassName();
+        final PsiDirectory targetDirectory = dialog.getTargetDirectory();
+        return createClass(className, targetDirectory, baseClass, title, null);
+    }
+
+    static String createClass(
+        final String className,
+        final PsiDirectory targetDirectory,
+        final String baseClass,
+        final String title,
+        final Consumer<PsiClass> consumer
+    ) {
+        final Project project = targetDirectory.getProject();
+        final Ref<PsiClass> resultRef = Ref.create();
+
+        new WriteCommandAction(project, title) {
+            @Override
+            protected void run(Result result) throws Throwable {
+                IdeDocumentHistory.getInstance(project).includeCurrentPlaceAsChangePlace();
+
+                PsiElementFactory elementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
+                PsiJavaCodeReferenceElement ref = baseClass == null ? null
+                    : elementFactory.createReferenceElementByFQClassName(baseClass, GlobalSearchScope.allScope(project));
+
+                try {
+                    PsiClass resultClass = JavaDirectoryService.getInstance().createClass(targetDirectory, className);
+                    resultRef.set(resultClass);
+                    if (ref != null) {
+                        PsiElement baseClass = ref.resolve();
+                        boolean isInterface = baseClass instanceof PsiClass psiClass && psiClass.isInterface();
+                        PsiReferenceList targetReferenceList =
+                            isInterface ? resultClass.getImplementsList() : resultClass.getExtendsList();
+                        assert targetReferenceList != null;
+                        targetReferenceList.add(ref);
+                    }
+                    if (consumer != null) {
+                        consumer.accept(resultClass);
+                    }
+                }
+                catch (final IncorrectOperationException e) {
+                    Application.get().invokeLater(() -> Messages.showErrorDialog(
+                        project,
+                        "Unable to create class " + className + "\n" + e.getLocalizedMessage(),
+                        title
+                    ));
+                }
+            }
+        }.execute();
+        return resultRef.isNull() ? null : resultRef.get().getQualifiedName();
+    }
 }

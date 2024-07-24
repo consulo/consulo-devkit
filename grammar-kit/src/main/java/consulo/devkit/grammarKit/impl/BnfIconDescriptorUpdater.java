@@ -22,30 +22,30 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfIconDescriptorUpdater implements IconDescriptorUpdater {
-  @RequiredReadAction
-  @Override
-  public void updateIcon(@Nonnull IconDescriptor iconDescriptor, @Nonnull PsiElement element, int flags) {
-    if (element instanceof BnfRule rule) {
-      final Image base = hasModifier(rule, "external") ? BnfIcons.EXTERNAL_RULE : BnfIcons.RULE;
-      final Image visibility = hasModifier(rule, "private") ? AllIcons.Nodes.C_private : AllIcons.Nodes.C_public;
+    @RequiredReadAction
+    @Override
+    public void updateIcon(@Nonnull IconDescriptor iconDescriptor, @Nonnull PsiElement element, int flags) {
+        if (element instanceof BnfRule rule) {
+            final Image base = hasModifier(rule, "external") ? BnfIcons.EXTERNAL_RULE : BnfIcons.RULE;
+            final Image visibility = hasModifier(rule, "private") ? AllIcons.Nodes.C_private : AllIcons.Nodes.C_public;
 
-      iconDescriptor.setMainIcon(base);
-      iconDescriptor.setRightIcon(visibility);
+            iconDescriptor.setMainIcon(base);
+            iconDescriptor.setRightIcon(visibility);
+        }
+        else if (element instanceof BnfAttr) {
+            iconDescriptor.setMainIcon(BnfIcons.ATTRIBUTE);
+        }
+        else if (element instanceof BnfAttrs) {
+            iconDescriptor.setMainIcon(AllIcons.Nodes.Package);
+        }
     }
-    else if (element instanceof BnfAttr) {
-      iconDescriptor.setMainIcon(BnfIcons.ATTRIBUTE);
-    }
-    else if (element instanceof BnfAttrs) {
-      iconDescriptor.setMainIcon(AllIcons.Nodes.Package);
-    }
-  }
 
-  private static boolean hasModifier(BnfRule bnfRule, String modifier) {
-    for (BnfModifier bnfModifier : bnfRule.getModifierList()) {
-      if (Comparing.equal(bnfModifier.getText(), modifier)) {
-        return true;
-      }
+    private static boolean hasModifier(BnfRule bnfRule, String modifier) {
+        for (BnfModifier bnfModifier : bnfRule.getModifierList()) {
+            if (Comparing.equal(bnfModifier.getText(), modifier)) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
-  }
 }

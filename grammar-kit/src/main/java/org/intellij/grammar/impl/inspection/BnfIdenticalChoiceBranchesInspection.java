@@ -44,76 +44,76 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
-  @Nls
-  @Nonnull
-  @Override
-  public String getGroupDisplayName() {
-    return "Grammar/BNF";
-  }
-
-  @Nls
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Identical choice branches";
-  }
-
-  @Nonnull
-  @Override
-  public String getShortName() {
-    return "BnfIdenticalChoiceBranchesInspection";
-  }
-
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.WARNING;
-  }
-
-  @Override
-  public boolean isEnabledByDefault() {
-    return true;
-  }
-
-  @Override
-  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-    ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-    checkFile(file, problemsHolder);
-    return problemsHolder.getResultsArray();
-  }
-
-  private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
-    final Set<BnfExpression> set = new HashSet<>();
-    file.accept(new PsiRecursiveElementWalkingVisitor() {
-      @Override
-      public void visitElement(PsiElement element) {
-        if (element instanceof BnfChoice choice) {
-          checkChoice(choice, set);
-          for (BnfExpression e : set) {
-            BnfUnreachableChoiceBranchInspection.registerProblem(
-              choice,
-              e,
-              "Duplicate choice branch",
-              problemsHolder,
-              new BnfRemoveExpressionFix()
-            );
-          }
-          set.clear();
-        }
-        super.visitElement(element);
-      }
-    });
-  }
-
-  private static void checkChoice(BnfChoice choice, Set<BnfExpression> set) {
-    List<BnfExpression> list = choice.getExpressionList();
-    for (BnfExpression e1 : list) {
-      for (BnfExpression e2 : list) {
-        if (e1 != e2 && GrammarUtil.equalsElement(e1, e2)) {
-          set.add(e1);
-          set.add(e2);
-        }
-      }
+    @Nls
+    @Nonnull
+    @Override
+    public String getGroupDisplayName() {
+        return "Grammar/BNF";
     }
-  }
+
+    @Nls
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Identical choice branches";
+    }
+
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "BnfIdenticalChoiceBranchesInspection";
+    }
+
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.WARNING;
+    }
+
+    @Override
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
+    @Override
+    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+        ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
+        checkFile(file, problemsHolder);
+        return problemsHolder.getResultsArray();
+    }
+
+    private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
+        final Set<BnfExpression> set = new HashSet<>();
+        file.accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(PsiElement element) {
+                if (element instanceof BnfChoice choice) {
+                    checkChoice(choice, set);
+                    for (BnfExpression e : set) {
+                        BnfUnreachableChoiceBranchInspection.registerProblem(
+                            choice,
+                            e,
+                            "Duplicate choice branch",
+                            problemsHolder,
+                            new BnfRemoveExpressionFix()
+                        );
+                    }
+                    set.clear();
+                }
+                super.visitElement(element);
+            }
+        });
+    }
+
+    private static void checkChoice(BnfChoice choice, Set<BnfExpression> set) {
+        List<BnfExpression> list = choice.getExpressionList();
+        for (BnfExpression e1 : list) {
+            for (BnfExpression e2 : list) {
+                if (e1 != e2 && GrammarUtil.equalsElement(e1, e2)) {
+                    set.add(e1);
+                    set.add(e2);
+                }
+            }
+        }
+    }
 }

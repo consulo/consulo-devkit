@@ -45,79 +45,88 @@ import static consulo.util.collection.ArrayUtil.getFirstElement;
  * @author gregsh
  */
 public class FileGeneratorUtil {
-  @Nonnull
-  public static VirtualFile getTargetDirectoryFor(@Nonnull Project project,
-                                                  @Nonnull VirtualFile sourceFile,
-                                                  @Nullable String targetFile,
-                                                  @Nullable String targetPackage,
-                                                  boolean returnRoot) {
-    boolean hasPackage = StringUtil.isNotEmpty(targetPackage);
-    ProjectRootManager rootManager = ProjectRootManager.getInstance(project);
-    ProjectFileIndex fileIndex = ProjectFileIndex.getInstance(project);
-    Collection<VirtualFile> files = targetFile == null ? Collections.<VirtualFile>emptyList() :
-      FilenameIndex.getVirtualFilesByName(project, targetFile,
-                                          ProjectScopes.getAllScope(project));
+    @Nonnull
+    public static VirtualFile getTargetDirectoryFor(
+        @Nonnull Project project,
+        @Nonnull VirtualFile sourceFile,
+        @Nullable String targetFile,
+        @Nullable String targetPackage,
+        boolean returnRoot
+    ) {
+        boolean hasPackage = StringUtil.isNotEmpty(targetPackage);
+        ProjectRootManager rootManager = ProjectRootManager.getInstance(project);
+        ProjectFileIndex fileIndex = ProjectFileIndex.getInstance(project);
+        Collection<VirtualFile> files = targetFile == null ? Collections.<VirtualFile>emptyList() :
+            FilenameIndex.getVirtualFilesByName(project, targetFile,
+                ProjectScopes.getAllScope(project)
+            );
 
-    VirtualFile existingFile = null;
-    for (VirtualFile file : files) {
-      String existingFilePackage = fileIndex.getPackageNameByDirectory(file.getParent());
-      if (!hasPackage || existingFilePackage == null || targetPackage.equals(existingFilePackage)) {
-        existingFile = file;
-        break;
-      }
+        VirtualFile existingFile = null;
+        for (VirtualFile file : files) {
+            String existingFilePackage = fileIndex.getPackageNameByDirectory(file.getParent());
+            if (!hasPackage || existingFilePackage == null || targetPackage.equals(existingFilePackage)) {
+                existingFile = file;
+                break;
+            }
+        }
+
+        VirtualFile existingFileRoot =
+            existingFile == null ? null
+                : fileIndex.isInSourceContent(existingFile) ? fileIndex.getSourceRootForFile(existingFile)
+                : fileIndex.isInContent(existingFile) ? fileIndex.getContentRootForFile(existingFile) : null;
+
+        boolean preferGenRoot = sourceFile.getFileType() == BnfFileType.INSTANCE;
+        boolean preferSourceRoot = hasPackage && !preferGenRoot;
+        VirtualFile[] sourceRoots = rootManager.getContentSourceRoots();
+        VirtualFile[] contentRoots = rootManager.getContentRoots();
+        final VirtualFile virtualRoot = existingFileRoot != null ? existingFileRoot
+            : preferSourceRoot && fileIndex.isInSource(sourceFile) ? fileIndex.getSourceRootForFile(sourceFile)
+            : fileIndex.isInContent(sourceFile) ? fileIndex.getContentRootForFile(sourceFile)
+            : getFirstElement(preferSourceRoot && sourceRoots.length > 0 ? sourceRoots : contentRoots);
+        if (virtualRoot == null) {
+            fail(project, sourceFile, "Unable to guess target source root");
+            throw new ProcessCanceledException();
+        }
+        try {
+            String genDirName = Options.GEN_DIR.get();
+            boolean newGenRoot = !fileIndex.isInSourceContent(virtualRoot);
+            final String relativePath = (
+                hasPackage && newGenRoot ? genDirName + "/" + targetPackage
+                    : hasPackage ? targetPackage
+                    : newGenRoot ? genDirName : ""
+            ).replace('.', '/');
+            if (relativePath.isEmpty()) {
+                return virtualRoot;
+            }
+            else {
+                VirtualFile result = WriteAction.compute(() -> VirtualFileUtil.createDirectoryIfMissing(virtualRoot, relativePath));
+                VirtualFileUtil.markDirtyAndRefresh(false, true, true, result);
+                return returnRoot && newGenRoot ? ObjectUtil.assertNotNull(virtualRoot.findChild(genDirName))
+                    : returnRoot ? virtualRoot : result;
+            }
+        }
+        catch (ProcessCanceledException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            fail(project, sourceFile, ex.getMessage());
+            throw new ProcessCanceledException();
+        }
     }
 
-    VirtualFile existingFileRoot =
-      existingFile == null ? null :
-        fileIndex.isInSourceContent(existingFile) ? fileIndex.getSourceRootForFile(existingFile) :
-          fileIndex.isInContent(existingFile) ? fileIndex.getContentRootForFile(existingFile) : null;
+    static void fail(@Nonnull Project project, @Nonnull VirtualFile sourceFile, @Nonnull String message) {
+        fail(project, sourceFile.getName(), message);
+    }
 
-    boolean preferGenRoot = sourceFile.getFileType() == BnfFileType.INSTANCE;
-    boolean preferSourceRoot = hasPackage && !preferGenRoot;
-    VirtualFile[] sourceRoots = rootManager.getContentSourceRoots();
-    VirtualFile[] contentRoots = rootManager.getContentRoots();
-    final VirtualFile virtualRoot = existingFileRoot != null ? existingFileRoot :
-      preferSourceRoot && fileIndex.isInSource(sourceFile) ? fileIndex.getSourceRootForFile(sourceFile) :
-        fileIndex.isInContent(sourceFile) ? fileIndex.getContentRootForFile(sourceFile) :
-          getFirstElement(preferSourceRoot && sourceRoots.length > 0 ? sourceRoots : contentRoots);
-    if (virtualRoot == null) {
-      fail(project, sourceFile, "Unable to guess target source root");
-      throw new ProcessCanceledException();
+    static void fail(@Nonnull Project project, @Nonnull String title, @Nonnull String message) {
+        Notifications.Bus.notify(
+            new Notification(
+                BnfNotificationGroup.GRAMMAR_KIT,
+                title, message,
+                NotificationType.ERROR
+            ),
+            project
+        );
+        throw new ProcessCanceledException();
     }
-    try {
-      String genDirName = Options.GEN_DIR.get();
-      boolean newGenRoot = !fileIndex.isInSourceContent(virtualRoot);
-      final String relativePath = (hasPackage && newGenRoot ? genDirName + "/" + targetPackage :
-        hasPackage ? targetPackage :
-          newGenRoot ? genDirName : "").replace('.', '/');
-      if (relativePath.isEmpty()) {
-        return virtualRoot;
-      }
-      else {
-        VirtualFile result = WriteAction.compute(() -> VirtualFileUtil.createDirectoryIfMissing(virtualRoot, relativePath));
-        VirtualFileUtil.markDirtyAndRefresh(false, true, true, result);
-        return returnRoot && newGenRoot ? ObjectUtil.assertNotNull(virtualRoot.findChild(genDirName)) :
-          returnRoot ? virtualRoot : result;
-      }
-    }
-    catch (ProcessCanceledException ex) {
-      throw ex;
-    }
-    catch (Exception ex) {
-      fail(project, sourceFile, ex.getMessage());
-      throw new ProcessCanceledException();
-    }
-  }
-
-  static void fail(@Nonnull Project project, @Nonnull VirtualFile sourceFile, @Nonnull String message) {
-    fail(project, sourceFile.getName(), message);
-  }
-
-  static void fail(@Nonnull Project project, @Nonnull String title, @Nonnull String message) {
-    Notifications.Bus.notify(new Notification(
-      BnfNotificationGroup.GRAMMAR_KIT,
-      title, message,
-      NotificationType.ERROR), project);
-    throw new ProcessCanceledException();
-  }
 }

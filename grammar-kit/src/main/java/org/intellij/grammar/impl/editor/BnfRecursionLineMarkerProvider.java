@@ -42,55 +42,60 @@ import java.util.Map;
  */
 @ExtensionImpl
 public class BnfRecursionLineMarkerProvider implements LineMarkerProvider {
-  @Nullable
-  @Override
-  public LineMarkerInfo getLineMarkerInfo(@Nonnull PsiElement element) {
-    return null;
-  }
-
-  @Override
-  public void collectSlowLineMarkers(@Nonnull List<PsiElement> elements, @Nonnull Collection<LineMarkerInfo> result) {
-    for (PsiElement element : elements) {
-      if (!(element instanceof BnfRule)) continue;
-      BnfRule rule = (BnfRule)element;
-
-      ProgressManager.checkCanceled();
-
-      RuleGraphHelper helper = RuleGraphHelper.getCached((BnfFile)rule.getContainingFile());
-      Map<PsiElement, RuleGraphHelper.Cardinality> map = helper.getFor(rule);
-      if (map.containsKey(rule)) {
-        result.add(new MyMarkerInfo(rule));
-      }
-    }
-  }
-
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
-
-  private static class MyMarkerInfo extends LineMarkerInfo<BnfRule> {
-    private MyMarkerInfo(@Nonnull BnfRule rule) {
-      super(rule,
-            rule.getTextRange(),
-            AllIcons.Gutter.RecursiveMethod,
-            Pass.LINE_MARKERS,
-            (e) -> "Recursive rule",
-            null,
-            GutterIconRenderer.Alignment.RIGHT
-      );
+    @Nullable
+    @Override
+    public LineMarkerInfo getLineMarkerInfo(@Nonnull PsiElement element) {
+        return null;
     }
 
     @Override
-    public GutterIconRenderer createGutterRenderer() {
-      if (myIcon == null) return null;
-      return new LineMarkerGutterIconRenderer<>(this) {
-        @Override
-        public AnAction getClickAction() {
-          return null;
+    public void collectSlowLineMarkers(@Nonnull List<PsiElement> elements, @Nonnull Collection<LineMarkerInfo> result) {
+        for (PsiElement element : elements) {
+            if (!(element instanceof BnfRule)) {
+                continue;
+            }
+            BnfRule rule = (BnfRule)element;
+
+            ProgressManager.checkCanceled();
+
+            RuleGraphHelper helper = RuleGraphHelper.getCached((BnfFile)rule.getContainingFile());
+            Map<PsiElement, RuleGraphHelper.Cardinality> map = helper.getFor(rule);
+            if (map.containsKey(rule)) {
+                result.add(new MyMarkerInfo(rule));
+            }
         }
-      };
     }
-  }
+
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
+
+    private static class MyMarkerInfo extends LineMarkerInfo<BnfRule> {
+        private MyMarkerInfo(@Nonnull BnfRule rule) {
+            super(
+                rule,
+                rule.getTextRange(),
+                AllIcons.Gutter.RecursiveMethod,
+                Pass.LINE_MARKERS,
+                (e) -> "Recursive rule",
+                null,
+                GutterIconRenderer.Alignment.RIGHT
+            );
+        }
+
+        @Override
+        public GutterIconRenderer createGutterRenderer() {
+            if (myIcon == null) {
+                return null;
+            }
+            return new LineMarkerGutterIconRenderer<>(this) {
+                @Override
+                public AnAction getClickAction() {
+                    return null;
+                }
+            };
+        }
+    }
 }

@@ -41,57 +41,58 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class BnfDuplicateRuleInspection extends LocalInspectionTool {
-
-  @Nls
-  @Nonnull
-  @Override
-  public String getGroupDisplayName() {
-    return "Grammar/BNF";
-  }
-
-  @Nls
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Duplicate rule";
-  }
-
-  @Nonnull
-  @Override
-  public String getShortName() {
-    return "BnfDuplicateRuleInspection";
-  }
-
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.WARNING;
-  }
-
-  public boolean isEnabledByDefault() {
-    return true;
-  }
-
-  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-    ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-    checkFile(file, problemsHolder);
-    return problemsHolder.getResultsArray();
-  }
-  
-  private static void checkFile(PsiFile file, ProblemsHolder problemsHolder) {
-    if (!(file instanceof BnfFile)) return;
-    BnfFile bnfFile = (BnfFile)file;
-
-    Set<BnfRule> rules = new LinkedHashSet<>();
-    for (BnfRule r : GrammarUtil.bnfTraverser(bnfFile).filter(BnfRule.class)) {
-      BnfRule t = bnfFile.getRule(r.getName());
-      if (r != t) {
-        rules.add(t);
-        rules.add(r);
-      }
+    @Nls
+    @Nonnull
+    @Override
+    public String getGroupDisplayName() {
+        return "Grammar/BNF";
     }
-    for (BnfRule rule : rules) {
-      problemsHolder.registerProblem(rule.getId(), "'" + rule.getName() + "' rule is defined more than once");
+
+    @Nls
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Duplicate rule";
     }
-  }
+
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "BnfDuplicateRuleInspection";
+    }
+
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.WARNING;
+    }
+
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
+    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+        ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
+        checkFile(file, problemsHolder);
+        return problemsHolder.getResultsArray();
+    }
+
+    private static void checkFile(PsiFile file, ProblemsHolder problemsHolder) {
+        if (!(file instanceof BnfFile)) {
+            return;
+        }
+        BnfFile bnfFile = (BnfFile)file;
+
+        Set<BnfRule> rules = new LinkedHashSet<>();
+        for (BnfRule r : GrammarUtil.bnfTraverser(bnfFile).filter(BnfRule.class)) {
+            BnfRule t = bnfFile.getRule(r.getName());
+            if (r != t) {
+                rules.add(t);
+                rules.add(r);
+            }
+        }
+        for (BnfRule rule : rules) {
+            problemsHolder.registerProblem(rule.getId(), "'" + rule.getName() + "' rule is defined more than once");
+        }
+    }
 }

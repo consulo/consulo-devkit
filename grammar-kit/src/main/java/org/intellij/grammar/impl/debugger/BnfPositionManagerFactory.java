@@ -24,8 +24,8 @@ import com.intellij.java.debugger.engine.DebugProcess;
  * @author gregsh
  */
 public class BnfPositionManagerFactory extends PositionManagerFactory {
-  @Override
-  public PositionManager createPositionManager(DebugProcess process) {
-    return new BnfPositionManager(process);
-  }
+    @Override
+    public PositionManager createPositionManager(DebugProcess process) {
+        return new BnfPositionManager(process);
+    }
 }

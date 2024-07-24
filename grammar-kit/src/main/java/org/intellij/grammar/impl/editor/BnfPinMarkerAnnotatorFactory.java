@@ -16,15 +16,15 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl
 public class BnfPinMarkerAnnotatorFactory implements AnnotatorFactory, DumbAware {
-  @Nullable
-  @Override
-  public Annotator createAnnotator() {
-    return new BnfPinMarkerAnnotator();
-  }
+    @Nullable
+    @Override
+    public Annotator createAnnotator() {
+        return new BnfPinMarkerAnnotator();
+    }
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 }

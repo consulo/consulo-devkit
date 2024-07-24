@@ -33,15 +33,15 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
-  @Nonnull
-  @Override
-  public SyntaxHighlighter getSyntaxHighlighter(Project project, VirtualFile virtualFile) {
-    return new BnfSyntaxHighlighter();
-  }
+    @Nonnull
+    @Override
+    public SyntaxHighlighter getSyntaxHighlighter(Project project, VirtualFile virtualFile) {
+        return new BnfSyntaxHighlighter();
+    }
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 }

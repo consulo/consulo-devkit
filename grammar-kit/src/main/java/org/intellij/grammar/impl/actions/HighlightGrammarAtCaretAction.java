@@ -23,6 +23,7 @@ import consulo.language.editor.LangDataKeys;
 import consulo.language.editor.PlatformDataKeys;
 import consulo.language.psi.PsiFile;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.util.lang.ObjectUtil;
@@ -38,34 +39,40 @@ import java.util.List;
  */
 public class HighlightGrammarAtCaretAction extends AnAction {
 
-  @Nullable
-  private static Editor getPreviewEditor(@Nonnull AnActionEvent e) {
-    Editor editor = e.getData(PlatformDataKeys.EDITOR);
-    PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-    Language language = psiFile == null ? null : psiFile.getLanguage();
-    LivePreviewLanguage livePreviewLanguage = language instanceof LivePreviewLanguage ? (LivePreviewLanguage)language : null;
-    if (livePreviewLanguage == null) return null;
-    List<Editor> editors = livePreviewLanguage.getGrammarEditors(psiFile.getProject());
-    return editors.isEmpty() ? null : editor;
-  }
+    @Nullable
+    private static Editor getPreviewEditor(@Nonnull AnActionEvent e) {
+        Editor editor = e.getData(PlatformDataKeys.EDITOR);
+        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
+        Language language = psiFile == null ? null : psiFile.getLanguage();
+        LivePreviewLanguage livePreviewLanguage = language instanceof LivePreviewLanguage ? (LivePreviewLanguage)language : null;
+        if (livePreviewLanguage == null) {
+            return null;
+        }
+        List<Editor> editors = livePreviewLanguage.getGrammarEditors(psiFile.getProject());
+        return editors.isEmpty() ? null : editor;
+    }
 
-  @Override
-  public void update(AnActionEvent e) {
-    Editor editor = getPreviewEditor(e);
-    boolean enabled = editor != null;
-    String command = !enabled ? "" : GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.get(editor) != null ? "Stop " : "Start ";
-    e.getPresentation().setText(command + getTemplatePresentation().getText());
-    e.getPresentation().setEnabledAndVisible(enabled);
-  }
+    @Override
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
+        Editor editor = getPreviewEditor(e);
+        boolean enabled = editor != null;
+        String command = !enabled ? "" : GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.get(editor) != null ? "Stop " : "Start ";
+        e.getPresentation().setText(command + getTemplatePresentation().getText());
+        e.getPresentation().setEnabledAndVisible(enabled);
+    }
 
-  @Override
-  public void actionPerformed(AnActionEvent e) {
-    Editor editor = getPreviewEditor(e);
-    if (editor == null) return;
-    Boolean value = GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.get(editor);
-    GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.set(editor, value == null ? Boolean.TRUE : null);
+    @Override
+    @RequiredUIAccess
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        Editor editor = getPreviewEditor(e);
+        if (editor == null) {
+            return;
+        }
+        Boolean value = GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.get(editor);
+        GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.set(editor, value == null ? Boolean.TRUE : null);
 
-    Project project = ObjectUtil.assertNotNull(e.getData(Project.KEY));
-    DaemonCodeAnalyzer.getInstance(project).restart();
-  }
+        Project project = ObjectUtil.assertNotNull(e.getData(Project.KEY));
+        DaemonCodeAnalyzer.getInstance(project).restart();
+    }
 }

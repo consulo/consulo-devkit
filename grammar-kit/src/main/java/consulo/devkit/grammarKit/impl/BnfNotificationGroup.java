@@ -15,12 +15,12 @@ import java.util.function.Consumer;
  */
 @ExtensionImpl
 public class BnfNotificationGroup implements NotificationGroupContributor {
-  public static final NotificationGroup GRAMMAR_KIT =
-    NotificationGroup.balloonGroup("BnfGrammarKit", LocalizeValue.localizeTODO("Grammar Kit"));
+    public static final NotificationGroup GRAMMAR_KIT =
+        NotificationGroup.balloonGroup("BnfGrammarKit", LocalizeValue.localizeTODO("Grammar Kit"));
 
-  @Override
-  public void contribute(@Nonnull Consumer<NotificationGroup> consumer) {
-    consumer.accept(GRAMMAR_KIT);
-    consumer.accept(GenerateAction.LOG_GROUP);
-  }
+    @Override
+    public void contribute(@Nonnull Consumer<NotificationGroup> consumer) {
+        consumer.accept(GRAMMAR_KIT);
+        consumer.accept(GenerateAction.LOG_GROUP);
+    }
 }
