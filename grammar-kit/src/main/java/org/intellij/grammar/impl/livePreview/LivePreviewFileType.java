@@ -29,33 +29,33 @@ import javax.annotation.Nullable;
  * @author gregsh
  */
 public class LivePreviewFileType extends LanguageFileType {
-  public static final FileType INSTANCE = new LivePreviewFileType();
+    public static final FileType INSTANCE = new LivePreviewFileType();
 
-  protected LivePreviewFileType() {
-    super(LivePreviewLanguage.BASE_INSTANCE);
-  }
+    protected LivePreviewFileType() {
+        super(LivePreviewLanguage.BASE_INSTANCE);
+    }
 
-  @Nonnull
-  @Override
-  public String getId() {
-    return "Grammar Live Preview";
-  }
+    @Nonnull
+    @Override
+    public String getId() {
+        return "Grammar Live Preview";
+    }
 
-  @Nonnull
-  @Override
-  public LocalizeValue getDescription() {
-    return LocalizeValue.localizeTODO("Grammar Live Preview");
-  }
+    @Nonnull
+    @Override
+    public LocalizeValue getDescription() {
+        return LocalizeValue.localizeTODO("Grammar Live Preview");
+    }
 
-  @Nonnull
-  @Override
-  public String getDefaultExtension() {
-    return "preview";
-  }
+    @Nonnull
+    @Override
+    public String getDefaultExtension() {
+        return "preview";
+    }
 
-  @Nullable
-  @Override
-  public Image getIcon() {
-    return GrammarKitIconGroup.grammarfile();
-  }
+    @Nullable
+    @Override
+    public Image getIcon() {
+        return GrammarKitIconGroup.grammarfile();
+    }
 }

@@ -40,44 +40,52 @@ import javax.annotation.Nullable;
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "bnf.flip.choice", fileExtensions = "bnf", categories = "Grammar/BNF")
 public class BnfFlipChoiceIntention implements IntentionAction {
-  @Nonnull
-  @Override
-  public String getText() {
-    return "Flip arguments";
-  }
-
-  @Override
-  public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
-    return getArguments(file, editor.getCaretModel().getOffset()) != null;
-  }
-
-  @Override
-  public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-    final Pair<PsiElement, PsiElement> arguments = getArguments(file, editor.getCaretModel().getOffset());
-    if (arguments == null) return;
-    PsiElement newFirst = BnfElementFactory.createRuleFromText(project, "a ::=" + arguments.second.getText()).getExpression();
-    PsiElement newSecond = BnfElementFactory.createRuleFromText(project, "a ::=" + arguments.first.getText()).getExpression();
-    arguments.second.replace(newSecond);
-    arguments.first.replace(newFirst);
-  }
-  
-  @Nullable
-  private static Pair<PsiElement, PsiElement> getArguments(PsiFile file, int offset) {
-    PsiElement element = file.getViewProvider().findElementAt(offset);
-    final BnfChoice choice = PsiTreeUtil.getParentOfType(element, BnfChoice.class);
-    if (choice == null) return null;
-    for (PsiElement cur = choice.getFirstChild(), prev = null; cur != null; cur = cur.getNextSibling()) {
-      if (!(cur instanceof BnfExpression) ) continue;
-      int start = prev == null? choice.getTextRange().getStartOffset() : prev.getTextRange().getEndOffset();
-      int end = cur.getTextRange().getStartOffset();
-      if (start <= offset && offset <= end) return prev == null ? null : Pair.create(cur, prev);
-      prev = cur;
+    @Nonnull
+    @Override
+    public String getText() {
+        return "Flip arguments";
     }
-    return null;
-  }
 
-  @Override
-  public boolean startInWriteAction() {
-    return true;
-  }
+    @Override
+    public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
+        return getArguments(file, editor.getCaretModel().getOffset()) != null;
+    }
+
+    @Override
+    public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
+        final Pair<PsiElement, PsiElement> arguments = getArguments(file, editor.getCaretModel().getOffset());
+      if (arguments == null) {
+        return;
+      }
+        PsiElement newFirst = BnfElementFactory.createRuleFromText(project, "a ::=" + arguments.second.getText()).getExpression();
+        PsiElement newSecond = BnfElementFactory.createRuleFromText(project, "a ::=" + arguments.first.getText()).getExpression();
+        arguments.second.replace(newSecond);
+        arguments.first.replace(newFirst);
+    }
+
+    @Nullable
+    private static Pair<PsiElement, PsiElement> getArguments(PsiFile file, int offset) {
+        PsiElement element = file.getViewProvider().findElementAt(offset);
+        final BnfChoice choice = PsiTreeUtil.getParentOfType(element, BnfChoice.class);
+        if (choice == null) {
+            return null;
+        }
+        for (PsiElement cur = choice.getFirstChild(), prev = null; cur != null; cur = cur.getNextSibling()) {
+            if (!(cur instanceof BnfExpression)) {
+                continue;
+            }
+            int start = prev == null ? choice.getTextRange().getStartOffset() : prev.getTextRange().getEndOffset();
+            int end = cur.getTextRange().getStartOffset();
+            if (start <= offset && offset <= end) {
+                return prev == null ? null : Pair.create(cur, prev);
+            }
+            prev = cur;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean startInWriteAction() {
+        return true;
+    }
 }

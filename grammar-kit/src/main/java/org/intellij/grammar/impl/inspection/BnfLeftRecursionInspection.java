@@ -31,6 +31,7 @@ import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.jetbrains.annotations.Nls;
+
 import javax.annotation.Nonnull;
 
 import java.util.ArrayList;
@@ -40,60 +41,63 @@ import java.util.ArrayList;
  */
 @ExtensionImpl
 public class BnfLeftRecursionInspection extends LocalInspectionTool {
-
-  @Nls
-  @Nonnull
-  @Override
-  public String getGroupDisplayName() {
-    return "Grammar/BNF";
-  }
-
-  @Nls
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Left recursion";
-  }
-
-  @Nonnull
-  @Override
-  public String getShortName() {
-    return "BnfLeftRecursionInspection";
-  }
-
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.WARNING;
-  }
-
-  public boolean isEnabledByDefault() {
-    return true;
-  }
-
-  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-    if (file instanceof BnfFile bnfFile) {
-      ExpressionHelper expressionHelper = ExpressionHelper.getCached(bnfFile);
-      BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer();
-      ArrayList<ProblemDescriptor> list = new ArrayList<>();
-      for (BnfRule rule : bnfFile.getRules()) {
-        if (ParserGeneratorUtil.Rule.isFake(rule)) continue;
-        String ruleName = rule.getName();
-        boolean exprParsing = ExpressionGeneratorHelper.getInfoForExpressionParsing(expressionHelper, rule) != null;
-
-        if (!exprParsing && analyzer.asStrings(analyzer.calcFirst(rule)).contains(ruleName)) {
-          list.add(manager.createProblemDescriptor(
-            rule.getId(),
-            "'" + ruleName + "' employs left-recursion unsupported by generator",
-            isOnTheFly,
-            LocalQuickFix.EMPTY_ARRAY,
-            ProblemHighlightType.GENERIC_ERROR_OR_WARNING
-          ));
-        }
-      }
-      if (!list.isEmpty()) return list.toArray(new ProblemDescriptor[list.size()]);
+    @Nls
+    @Nonnull
+    @Override
+    public String getGroupDisplayName() {
+        return "Grammar/BNF";
     }
 
-    return ProblemDescriptor.EMPTY_ARRAY;
-  }
+    @Nls
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Left recursion";
+    }
+
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "BnfLeftRecursionInspection";
+    }
+
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.WARNING;
+    }
+
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
+    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+        if (file instanceof BnfFile bnfFile) {
+            ExpressionHelper expressionHelper = ExpressionHelper.getCached(bnfFile);
+            BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer();
+            ArrayList<ProblemDescriptor> list = new ArrayList<>();
+            for (BnfRule rule : bnfFile.getRules()) {
+                if (ParserGeneratorUtil.Rule.isFake(rule)) {
+                    continue;
+                }
+                String ruleName = rule.getName();
+                boolean exprParsing = ExpressionGeneratorHelper.getInfoForExpressionParsing(expressionHelper, rule) != null;
+
+                if (!exprParsing && analyzer.asStrings(analyzer.calcFirst(rule)).contains(ruleName)) {
+                    list.add(manager.createProblemDescriptor(
+                        rule.getId(),
+                        "'" + ruleName + "' employs left-recursion unsupported by generator",
+                        isOnTheFly,
+                        LocalQuickFix.EMPTY_ARRAY,
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING
+                    ));
+                }
+            }
+            if (!list.isEmpty()) {
+                return list.toArray(new ProblemDescriptor[list.size()]);
+            }
+        }
+
+        return ProblemDescriptor.EMPTY_ARRAY;
+    }
 }

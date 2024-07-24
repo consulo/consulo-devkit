@@ -61,178 +61,179 @@ import java.util.function.Function;
  * @author gregsh
  */
 public class LivePreviewHelper {
-
-  public static void showFor(BnfFile bnfFile) {
-    PsiFile psiFile = parseFile(bnfFile, "");
-    VirtualFile virtualFile = psiFile == null ? null : psiFile.getVirtualFile();
-    if (virtualFile == null) {
-      return;
-    }
-    Project project = bnfFile.getProject();
-    installUpdateListener(project);
-
-    FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
-    FileEditorWindow curWindow = fileEditorManager.getCurrentWindow();
-    curWindow.split(SwingConstants.HORIZONTAL, false, virtualFile, true);
-    fileEditorManager.openFile(virtualFile, true);
-  }
-
-  @Nullable
-  public static PsiFile parseFile(BnfFile bnfFile, String text) {
-    Language language = getLanguageFor(bnfFile);
-    if (language == null) {
-      return null;
-    }
-
-    String fileName = bnfFile.getName() + ".preview";
-    LightVirtualFile virtualFile = new LightVirtualFile(fileName, language, text);
-    final Project project = bnfFile.getProject();
-    return PsiManager.getInstance(project).findFile(virtualFile);
-  }
-
-  @Nullable
-  public static Language getLanguageFor(BnfFile psiFile) {
-    LivePreviewLanguage existing = LivePreviewLanguage.findInstance(psiFile);
-    if (existing != null) {
-      return existing;
-    }
-    LivePreviewLanguage language = LivePreviewLanguage.newInstance(psiFile);
-    registerLanguageExtensions(language);
-    return language;
-  }
-
-  public static void registerLanguageExtensions(LivePreviewLanguage language) {
-    //LanguageStructureViewBuilder.INSTANCE.addExplicitExtension(language, new LivePreviewStructureViewFactory());
-    //LanguageParserDefinitions.INSTANCE.addExplicitExtension(language, new LivePreviewParserDefinition(language));
-    //SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(language, new LivePreviewSyntaxHighlighterFactory(language));
-  }
-
-  public static void unregisterLanguageExtensions(LivePreviewLanguage language) {
-    //LanguageStructureViewBuilder.INSTANCE.removeExplicitExtension(language, LanguageStructureViewBuilder.INSTANCE.forLanguage(language));
-    //LanguageParserDefinitions.INSTANCE.removeExplicitExtension(language, LanguageParserDefinitions.INSTANCE.forLanguage(language));
-  }
-
-  private static final NotNullLazyKey<SingleAlarm, Project>
-    LIVE_PREVIEW_ALARM =
-    NotNullLazyKey.create("LIVE_PREVIEW_ALARM", new Function<Project, SingleAlarm>() {
-      @Nonnull
-      @Override
-      public SingleAlarm apply(final Project project) {
-        return new SingleAlarm(() -> reparseAllLivePreviews(project), 300, Alarm.ThreadToUse.SWING_THREAD, project);
-      }
-    });
-
-  private static void installUpdateListener(final Project project) {
-    EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new DocumentAdapter() {
-
-      FileDocumentManager fileManager = FileDocumentManager.getInstance();
-      PsiManager psiManager = PsiManager.getInstance(project);
-
-      @Override
-      public void documentChanged(DocumentEvent e) {
-        Document document = e.getDocument();
-        VirtualFile file = fileManager.getFile(document);
-        PsiFile psiFile = file == null ? null : psiManager.findFile(file);
-        if (psiFile instanceof BnfFile) {
-          LIVE_PREVIEW_ALARM.getValue(project).cancelAndRequest();
+    public static void showFor(BnfFile bnfFile) {
+        PsiFile psiFile = parseFile(bnfFile, "");
+        VirtualFile virtualFile = psiFile == null ? null : psiFile.getVirtualFile();
+        if (virtualFile == null) {
+            return;
         }
-      }
-    }, project);
+        Project project = bnfFile.getProject();
+        installUpdateListener(project);
 
-    //project.getMessageBus().connect(project).subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerAdapter() {
-    //  @Override
-    //  public void fileOpened(FileEditorManager source, VirtualFile file) {
-    //
-    //
-    //    // add structure component
-    //
-    //    FileEditor fileEditor = source.getSelectedEditor(file);
-    //    if (!(fileEditor instanceof TextEditor)) return;
-    //    StructureViewBuilder builder =
-    //      StructureViewBuilder.PROVIDER.getStructureViewBuilder(file.getFileType(), file, project);
-    //    if (builder == null) return;
-    //    StructureView structureView = builder.createStructureView(fileEditor, project);
-    //
-    //    Editor editor = ((TextEditor)fileEditor).getEditor();
-    //    editor.getComponent().getParent().getParent().add(structureView.getComponent(), BorderLayout.EAST);
-    //    Disposer.register(fileEditor, structureView);
-    //  }
-    //});
-  }
-
-  private static void reparseAllLivePreviews(@Nonnull Project project) {
-    if (!project.isOpen()) {
-      return;
+        FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+        FileEditorWindow curWindow = fileEditorManager.getCurrentWindow();
+        curWindow.split(SwingConstants.HORIZONTAL, false, virtualFile, true);
+        fileEditorManager.openFile(virtualFile, true);
     }
-    PsiDocumentManager.getInstance(project).commitAllDocuments();
-    Collection<VirtualFile> files = new LinkedHashSet<>();
-    FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
-    PsiManager psiManager = PsiManager.getInstance(project);
-    for (VirtualFile file : fileEditorManager.getOpenFiles()) {
-      PsiFile psiFile = psiManager.findFile(file);
-      Language language = psiFile == null ? null : psiFile.getLanguage();
-      if (!(language instanceof LivePreviewLanguage)) {
-        continue;
-      }
-      files.add(file);
-    }
-    consulo.ide.impl.idea.util.FileContentUtil.reparseFiles(project, files, false);
-  }
 
-  @RequiredReadAction
-  public static boolean collectExpressionsAtOffset(
-    Project project,
-    Editor previewEditor,
-    LivePreviewLanguage language,
-    final PairProcessor<BnfExpression, Boolean> processor
-  ) {
-    Lexer lexer = new LivePreviewLexer(project, language);
-    final ParserDefinition parserDefinition = ParserDefinition.forLanguage(language);
-    final PsiBuilder builder = PsiBuilderFactory.getInstance().createBuilder(
-      parserDefinition,
-      lexer,
-      LanguageVersionUtil.findDefaultVersion(language),
-      previewEditor.getDocument().getText()
-    );
-    final int caretOffset = previewEditor.getCaretModel().getOffset();
-    final PsiParser parser = new LivePreviewParser(project, language) {
-      @Override
-      @RequiredReadAction
-      protected boolean generateNodeCall(
-        PsiBuilder builder,
-        int level,
-        BnfRule rule,
-        @Nullable BnfExpression node,
-        String nextName,
-        Map<String, GeneratedParserUtilBase.Parser> externalArguments
-      ) {
-        int tokenStartOffset = builder.getCurrentOffset();
-        int initialOffset =
-          builder.rawLookup(-1) == TokenType.WHITE_SPACE ? builder.rawTokenTypeStart(-1) : builder.getCurrentOffset();
-        String tokenText = builder.getTokenText();
-        int tokenEndOffset = tokenText == null ? tokenStartOffset : tokenStartOffset + tokenText.length();
-        boolean result = super.generateNodeCall(builder, level, rule, node, nextName, externalArguments);
-        builder.getCurrentOffset(); // advance to the next token first
-        int finalOffset =
-          builder.rawLookup(-1) == TokenType.WHITE_SPACE ? builder.rawTokenTypeStart(-1) : builder.getCurrentOffset();
-        if (node != null) {
-          if (result && initialOffset <= caretOffset && finalOffset > caretOffset
-            || !result && initialOffset <= caretOffset && tokenEndOffset > caretOffset) {
-            boolean inWhitespace = isTokenExpression(node) && initialOffset <= caretOffset && tokenStartOffset > caretOffset;
-            if (!processor.process(node, result && !inWhitespace)) {
-              throw new ProcessCanceledException();
+    @Nullable
+    public static PsiFile parseFile(BnfFile bnfFile, String text) {
+        Language language = getLanguageFor(bnfFile);
+        if (language == null) {
+            return null;
+        }
+
+        String fileName = bnfFile.getName() + ".preview";
+        LightVirtualFile virtualFile = new LightVirtualFile(fileName, language, text);
+        final Project project = bnfFile.getProject();
+        return PsiManager.getInstance(project).findFile(virtualFile);
+    }
+
+    @Nullable
+    public static Language getLanguageFor(BnfFile psiFile) {
+        LivePreviewLanguage existing = LivePreviewLanguage.findInstance(psiFile);
+        if (existing != null) {
+            return existing;
+        }
+        LivePreviewLanguage language = LivePreviewLanguage.newInstance(psiFile);
+        registerLanguageExtensions(language);
+        return language;
+    }
+
+    public static void registerLanguageExtensions(LivePreviewLanguage language) {
+        //LanguageStructureViewBuilder.INSTANCE.addExplicitExtension(language, new LivePreviewStructureViewFactory());
+        //LanguageParserDefinitions.INSTANCE.addExplicitExtension(language, new LivePreviewParserDefinition(language));
+        //SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(language, new LivePreviewSyntaxHighlighterFactory(language));
+    }
+
+    public static void unregisterLanguageExtensions(LivePreviewLanguage language) {
+        //LanguageStructureViewBuilder.INSTANCE.removeExplicitExtension(language, LanguageStructureViewBuilder.INSTANCE.forLanguage(language));
+        //LanguageParserDefinitions.INSTANCE.removeExplicitExtension(language, LanguageParserDefinitions.INSTANCE.forLanguage(language));
+    }
+
+    private static final NotNullLazyKey<SingleAlarm, Project>
+        LIVE_PREVIEW_ALARM =
+        NotNullLazyKey.create("LIVE_PREVIEW_ALARM", new Function<Project, SingleAlarm>() {
+            @Nonnull
+            @Override
+            public SingleAlarm apply(final Project project) {
+                return new SingleAlarm(() -> reparseAllLivePreviews(project), 300, Alarm.ThreadToUse.SWING_THREAD, project);
             }
-          }
+        });
+
+    private static void installUpdateListener(final Project project) {
+        EditorFactory.getInstance().getEventMulticaster().addDocumentListener(
+            new DocumentAdapter() {
+                FileDocumentManager fileManager = FileDocumentManager.getInstance();
+                PsiManager psiManager = PsiManager.getInstance(project);
+
+                @Override
+                public void documentChanged(DocumentEvent e) {
+                    Document document = e.getDocument();
+                    VirtualFile file = fileManager.getFile(document);
+                    PsiFile psiFile = file == null ? null : psiManager.findFile(file);
+                    if (psiFile instanceof BnfFile) {
+                        LIVE_PREVIEW_ALARM.getValue(project).cancelAndRequest();
+                    }
+                }
+            },
+            project
+        );
+
+        //project.getMessageBus().connect(project).subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerAdapter() {
+        //  @Override
+        //  public void fileOpened(FileEditorManager source, VirtualFile file) {
+        //
+        //
+        //    // add structure component
+        //
+        //    FileEditor fileEditor = source.getSelectedEditor(file);
+        //    if (!(fileEditor instanceof TextEditor)) return;
+        //    StructureViewBuilder builder =
+        //      StructureViewBuilder.PROVIDER.getStructureViewBuilder(file.getFileType(), file, project);
+        //    if (builder == null) return;
+        //    StructureView structureView = builder.createStructureView(fileEditor, project);
+        //
+        //    Editor editor = ((TextEditor)fileEditor).getEditor();
+        //    editor.getComponent().getParent().getParent().add(structureView.getComponent(), BorderLayout.EAST);
+        //    Disposer.register(fileEditor, structureView);
+        //  }
+        //});
+    }
+
+    private static void reparseAllLivePreviews(@Nonnull Project project) {
+        if (!project.isOpen()) {
+            return;
         }
-        return result;
-      }
-    };
-    try {
-      parser.parse(parserDefinition.getFileNodeType(), builder, LanguageVersionUtil.findDefaultVersion(language));
-      return true;
+        PsiDocumentManager.getInstance(project).commitAllDocuments();
+        Collection<VirtualFile> files = new LinkedHashSet<>();
+        FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+        PsiManager psiManager = PsiManager.getInstance(project);
+        for (VirtualFile file : fileEditorManager.getOpenFiles()) {
+            PsiFile psiFile = psiManager.findFile(file);
+            Language language = psiFile == null ? null : psiFile.getLanguage();
+            if (!(language instanceof LivePreviewLanguage)) {
+                continue;
+            }
+            files.add(file);
+        }
+        consulo.ide.impl.idea.util.FileContentUtil.reparseFiles(project, files, false);
     }
-    catch (ProcessCanceledException e) {
-      return false;
+
+    @RequiredReadAction
+    public static boolean collectExpressionsAtOffset(
+        Project project,
+        Editor previewEditor,
+        LivePreviewLanguage language,
+        final PairProcessor<BnfExpression, Boolean> processor
+    ) {
+        Lexer lexer = new LivePreviewLexer(project, language);
+        final ParserDefinition parserDefinition = ParserDefinition.forLanguage(language);
+        final PsiBuilder builder = PsiBuilderFactory.getInstance().createBuilder(
+            parserDefinition,
+            lexer,
+            LanguageVersionUtil.findDefaultVersion(language),
+            previewEditor.getDocument().getText()
+        );
+        final int caretOffset = previewEditor.getCaretModel().getOffset();
+        final PsiParser parser = new LivePreviewParser(project, language) {
+            @Override
+            @RequiredReadAction
+            protected boolean generateNodeCall(
+                PsiBuilder builder,
+                int level,
+                BnfRule rule,
+                @Nullable BnfExpression node,
+                String nextName,
+                Map<String, GeneratedParserUtilBase.Parser> externalArguments
+            ) {
+                int tokenStartOffset = builder.getCurrentOffset();
+                int initialOffset =
+                    builder.rawLookup(-1) == TokenType.WHITE_SPACE ? builder.rawTokenTypeStart(-1) : builder.getCurrentOffset();
+                String tokenText = builder.getTokenText();
+                int tokenEndOffset = tokenText == null ? tokenStartOffset : tokenStartOffset + tokenText.length();
+                boolean result = super.generateNodeCall(builder, level, rule, node, nextName, externalArguments);
+                builder.getCurrentOffset(); // advance to the next token first
+                int finalOffset =
+                    builder.rawLookup(-1) == TokenType.WHITE_SPACE ? builder.rawTokenTypeStart(-1) : builder.getCurrentOffset();
+                if (node != null) {
+                    if (result && initialOffset <= caretOffset && finalOffset > caretOffset
+                        || !result && initialOffset <= caretOffset && tokenEndOffset > caretOffset) {
+                        boolean inWhitespace = isTokenExpression(node) && initialOffset <= caretOffset && tokenStartOffset > caretOffset;
+                        if (!processor.process(node, result && !inWhitespace)) {
+                            throw new ProcessCanceledException();
+                        }
+                    }
+                }
+                return result;
+            }
+        };
+        try {
+            parser.parse(parserDefinition.getFileNodeType(), builder, LanguageVersionUtil.findDefaultVersion(language));
+            return true;
+        }
+        catch (ProcessCanceledException e) {
+            return false;
+        }
     }
-  }
 }

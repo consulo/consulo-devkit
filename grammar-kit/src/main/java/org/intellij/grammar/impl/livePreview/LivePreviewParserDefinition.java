@@ -38,80 +38,80 @@ import consulo.virtualFileSystem.fileType.FileType;
  * @author gregsh
  */
 public class LivePreviewParserDefinition implements ParserDefinition {
-  public static final IElementType COMMENT = new IElementType("COMMENT", LivePreviewLanguage.BASE_INSTANCE);
-  public static final IElementType STRING = new IElementType("STRING", LivePreviewLanguage.BASE_INSTANCE);
-  public static final IElementType NUMBER = new IElementType("NUMBER", LivePreviewLanguage.BASE_INSTANCE);
-  public static final IElementType KEYWORD = new IElementType("KEYWORD", LivePreviewLanguage.BASE_INSTANCE);
+    public static final IElementType COMMENT = new IElementType("COMMENT", LivePreviewLanguage.BASE_INSTANCE);
+    public static final IElementType STRING = new IElementType("STRING", LivePreviewLanguage.BASE_INSTANCE);
+    public static final IElementType NUMBER = new IElementType("NUMBER", LivePreviewLanguage.BASE_INSTANCE);
+    public static final IElementType KEYWORD = new IElementType("KEYWORD", LivePreviewLanguage.BASE_INSTANCE);
 
-  private static final TokenSet ourWhiteSpaceTokens = TokenSet.create(TokenType.WHITE_SPACE);
-  private static final TokenSet ourCommentTokens = TokenSet.create(COMMENT);
-  private static final TokenSet ourStringLiteralElements = TokenSet.create(STRING);
+    private static final TokenSet ourWhiteSpaceTokens = TokenSet.create(TokenType.WHITE_SPACE);
+    private static final TokenSet ourCommentTokens = TokenSet.create(COMMENT);
+    private static final TokenSet ourStringLiteralElements = TokenSet.create(STRING);
 
-  private final LivePreviewLanguage myLanguage;
-  private final IFileElementType myFileElementType;
+    private final LivePreviewLanguage myLanguage;
+    private final IFileElementType myFileElementType;
 
-  public LivePreviewParserDefinition(LivePreviewLanguage language) {
-    myLanguage = language;
-    myFileElementType = new IFileElementType(myLanguage); // todo do not register
-  }
+    public LivePreviewParserDefinition(LivePreviewLanguage language) {
+        myLanguage = language;
+        myFileElementType = new IFileElementType(myLanguage); // todo do not register
+    }
 
-  public LivePreviewLanguage getLanguage() {
-    return myLanguage;
-  }
+    public LivePreviewLanguage getLanguage() {
+        return myLanguage;
+    }
 
-  @Nonnull
-  @Override
-  public Lexer createLexer(LanguageVersion languageVersion) {
-    return new LivePreviewLexer(null, myLanguage);
-  }
+    @Nonnull
+    @Override
+    public Lexer createLexer(LanguageVersion languageVersion) {
+        return new LivePreviewLexer(null, myLanguage);
+    }
 
-  @Override
-  public PsiParser createParser(LanguageVersion languageVersion) {
-    return new LivePreviewParser(null, myLanguage);
-  }
+    @Override
+    public PsiParser createParser(LanguageVersion languageVersion) {
+        return new LivePreviewParser(null, myLanguage);
+    }
 
-  @Override
-  public IFileElementType getFileNodeType() {
-    return myFileElementType;
-  }
+    @Override
+    public IFileElementType getFileNodeType() {
+        return myFileElementType;
+    }
 
-  @Nonnull
-  @Override
-  public TokenSet getWhitespaceTokens(LanguageVersion languageVersion) {
-    return ourWhiteSpaceTokens;
-  }
+    @Nonnull
+    @Override
+    public TokenSet getWhitespaceTokens(LanguageVersion languageVersion) {
+        return ourWhiteSpaceTokens;
+    }
 
-  @Nonnull
-  @Override
-  public TokenSet getCommentTokens(LanguageVersion languageVersion) {
-    return ourCommentTokens;
-  }
+    @Nonnull
+    @Override
+    public TokenSet getCommentTokens(LanguageVersion languageVersion) {
+        return ourCommentTokens;
+    }
 
-  @Nonnull
-  @Override
-  public TokenSet getStringLiteralElements(LanguageVersion languageVersion) {
-    return ourStringLiteralElements;
-  }
+    @Nonnull
+    @Override
+    public TokenSet getStringLiteralElements(LanguageVersion languageVersion) {
+        return ourStringLiteralElements;
+    }
 
-  @Nonnull
-  @Override
-  public PsiElement createElement(ASTNode node) {
-    return new ASTWrapperPsiElement(node);
-  }
+    @Nonnull
+    @Override
+    public PsiElement createElement(ASTNode node) {
+        return new ASTWrapperPsiElement(node);
+    }
 
-  @Override
-  public PsiFile createFile(FileViewProvider viewProvider) {
-    return new PsiFileBase(viewProvider, myLanguage) {
-      @Nonnull
-      @Override
-      public FileType getFileType() {
-        return LivePreviewFileType.INSTANCE;
-      }
-    };
-  }
+    @Override
+    public PsiFile createFile(FileViewProvider viewProvider) {
+        return new PsiFileBase(viewProvider, myLanguage) {
+            @Nonnull
+            @Override
+            public FileType getFileType() {
+                return LivePreviewFileType.INSTANCE;
+            }
+        };
+    }
 
-  @Override
-  public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
-    return SpaceRequirements.MAY;
-  }
+    @Override
+    public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {
+        return SpaceRequirements.MAY;
+    }
 }

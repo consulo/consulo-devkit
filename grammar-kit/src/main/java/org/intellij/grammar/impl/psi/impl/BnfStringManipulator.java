@@ -29,21 +29,21 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfStringManipulator extends AbstractElementManipulator<BnfStringImpl> {
-  @Override
-  public BnfStringImpl handleContentChange(BnfStringImpl psi, TextRange range, String newContent) throws IncorrectOperationException {
-    final String oldText = psi.getText();
-    final String newText = oldText.substring(0, range.getStartOffset()) + newContent + oldText.substring(range.getEndOffset());
-    return psi.updateText(newText);
-  }
+    @Override
+    public BnfStringImpl handleContentChange(BnfStringImpl psi, TextRange range, String newContent) throws IncorrectOperationException {
+        final String oldText = psi.getText();
+        final String newText = oldText.substring(0, range.getStartOffset()) + newContent + oldText.substring(range.getEndOffset());
+        return psi.updateText(newText);
+    }
 
-  @Override
-  public TextRange getRangeInElement(final BnfStringImpl element) {
-    return BnfStringImpl.getStringTokenRange(element);
-  }
+    @Override
+    public TextRange getRangeInElement(final BnfStringImpl element) {
+        return BnfStringImpl.getStringTokenRange(element);
+    }
 
-  @Nonnull
-  @Override
-  public Class<BnfStringImpl> getElementClass() {
-    return BnfStringImpl.class;
-  }
+    @Nonnull
+    @Override
+    public Class<BnfStringImpl> getElementClass() {
+        return BnfStringImpl.class;
+    }
 }

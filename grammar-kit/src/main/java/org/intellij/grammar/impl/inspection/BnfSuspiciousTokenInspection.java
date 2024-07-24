@@ -34,6 +34,7 @@ import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.impl.BnfRefOrTokenImpl;
 import org.jetbrains.annotations.Nls;
+
 import javax.annotation.Nonnull;
 
 import java.util.Set;
@@ -47,79 +48,82 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
+    @Nls
+    @Nonnull
+    @Override
+    public String getGroupDisplayName() {
+        return "Grammar/BNF";
+    }
 
-  @Nls
-  @Nonnull
-  @Override
-  public String getGroupDisplayName() {
-    return "Grammar/BNF";
-  }
+    @Nls
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Suspicious token";
+    }
 
-  @Nls
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Suspicious token";
-  }
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "BnfSuspiciousTokenInspection";
+    }
 
-  @Nonnull
-  @Override
-  public String getShortName() {
-    return "BnfSuspiciousTokenInspection";
-  }
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.WARNING;
+    }
 
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.WARNING;
-  }
+    @Override
+    public boolean isEnabledByDefault() {
+        return true;
+    }
 
-  @Override
-  public boolean isEnabledByDefault() {
-    return true;
-  }
+    @Override
+    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+        ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
+        checkFile(file, problemsHolder);
+        return problemsHolder.getResultsArray();
+    }
 
-  @Override
-  public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-    ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-    checkFile(file, problemsHolder);
-    return problemsHolder.getResultsArray();
-  }
-
-  private static void checkFile(final PsiFile file, final ProblemsHolder problemsHolder) {
-    if (!(file instanceof BnfFile)) return;
-    final Set<String> tokens = RuleGraphHelper.getTokenNameToTextMap((BnfFile)file).keySet();
-    file.accept(new PsiRecursiveElementWalkingVisitor() {
-      @Override
-      public void visitElement(PsiElement element) {
-        if (element instanceof BnfRule rule) {
-          // do not check external rules
-          if (ParserGeneratorUtil.Rule.isExternal(rule)) return;
+    private static void checkFile(final PsiFile file, final ProblemsHolder problemsHolder) {
+        if (!(file instanceof BnfFile)) {
+            return;
         }
-        else if (element instanceof BnfExternalExpression) {
-          // do not check external expressions
-          return;
-        }
-        else if (element instanceof BnfRefOrTokenImpl) {
-          PsiReference reference = element.getReference();
-          Object resolve = reference == null ? null : reference.resolve();
-          final String text = element.getText();
-          if (resolve == null && !tokens.contains(text) && isTokenTextSuspicious(text)) {
-            problemsHolder.registerProblem(
-              element,
-              "'" + text + "' token looks like a reference to a missing rule",
-              new CreateRuleFromTokenFix(text)
-            );
-          }
-        }
-        super.visitElement(element);
-      }
-    });
-  }
+        final Set<String> tokens = RuleGraphHelper.getTokenNameToTextMap((BnfFile)file).keySet();
+        file.accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(PsiElement element) {
+                if (element instanceof BnfRule rule) {
+                    // do not check external rules
+                    if (ParserGeneratorUtil.Rule.isExternal(rule)) {
+                        return;
+                    }
+                }
+                else if (element instanceof BnfExternalExpression) {
+                    // do not check external expressions
+                    return;
+                }
+                else if (element instanceof BnfRefOrTokenImpl) {
+                    PsiReference reference = element.getReference();
+                    Object resolve = reference == null ? null : reference.resolve();
+                    final String text = element.getText();
+                    if (resolve == null && !tokens.contains(text) && isTokenTextSuspicious(text)) {
+                        problemsHolder.registerProblem(
+                            element,
+                            "'" + text + "' token looks like a reference to a missing rule",
+                            new CreateRuleFromTokenFix(text)
+                        );
+                    }
+                }
+                super.visitElement(element);
+            }
+        });
+    }
 
-  public static boolean isTokenTextSuspicious(String text) {
-    boolean isLowercase = text.equals(text.toLowerCase());
-    boolean isUppercase = !isLowercase && text.equals(text.toUpperCase());
-    return !isLowercase && !isUppercase || isLowercase && StringUtil.containsAnyChar(text, "-_");
-  }
+    public static boolean isTokenTextSuspicious(String text) {
+        boolean isLowercase = text.equals(text.toLowerCase());
+        boolean isUppercase = !isLowercase && text.equals(text.toUpperCase());
+        return !isLowercase && !isUppercase || isLowercase && StringUtil.containsAnyChar(text, "-_");
+    }
 }

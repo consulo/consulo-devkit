@@ -33,39 +33,40 @@ import org.intellij.grammar.impl.refactor.BnfExpressionOptimizer;
  * @author gregsh
  */
 public class BnfRemoveExpressionFix implements LocalQuickFix {
-  @Nonnull
-  @Override
-  public String getName() {
-    return getFamilyName();
-  }
-
-  @Nonnull
-  @Override
-  public String getFamilyName() {
-    return "Remove expression";
-  }
-
-  @Override
-  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    PsiElement element = descriptor.getPsiElement();
-    if (!element.isValid()) return;
-    PsiElement parent = element.getParent();
-    if (element instanceof BnfExpression && parent instanceof BnfChoice) {
-      ASTNode node = element.getNode();
-      ASTNode nextOr = TreeUtil.findSibling(node, BnfTypes.BNF_OP_OR);
-      ASTNode prevOr = TreeUtil.findSiblingBackward(node, BnfTypes.BNF_OP_OR);
-      assert nextOr != null || prevOr != null: "'|' missing in choice";
-      if (nextOr != null && prevOr != null) {
-        parent.deleteChildRange(prevOr.getTreeNext().getPsi(), nextOr.getPsi());
-      }
-      else {
-        parent.deleteChildRange(prevOr == null? element : prevOr.getPsi(), prevOr == null? nextOr.getPsi() : element);
-
-      }
+    @Nonnull
+    @Override
+    public String getName() {
+        return getFamilyName();
     }
-    else {
-      element.delete();
+
+    @Nonnull
+    @Override
+    public String getFamilyName() {
+        return "Remove expression";
     }
-    BnfExpressionOptimizer.optimize(parent);
-  }
+
+    @Override
+    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        PsiElement element = descriptor.getPsiElement();
+        if (!element.isValid()) {
+            return;
+        }
+        PsiElement parent = element.getParent();
+        if (element instanceof BnfExpression && parent instanceof BnfChoice) {
+            ASTNode node = element.getNode();
+            ASTNode nextOr = TreeUtil.findSibling(node, BnfTypes.BNF_OP_OR);
+            ASTNode prevOr = TreeUtil.findSiblingBackward(node, BnfTypes.BNF_OP_OR);
+            assert nextOr != null || prevOr != null : "'|' missing in choice";
+            if (nextOr != null && prevOr != null) {
+                parent.deleteChildRange(prevOr.getTreeNext().getPsi(), nextOr.getPsi());
+            }
+            else {
+                parent.deleteChildRange(prevOr == null ? element : prevOr.getPsi(), prevOr == null ? nextOr.getPsi() : element);
+            }
+        }
+        else {
+            element.delete();
+        }
+        BnfExpressionOptimizer.optimize(parent);
+    }
 }
