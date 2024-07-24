@@ -30,58 +30,58 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl
 public class IconLibraryLineMarkerProvider implements LineMarkerProvider {
-  public static final String ICON_GROUP_SUFFIX = "IconGroup";
+    public static final String ICON_GROUP_SUFFIX = "IconGroup";
 
-  @Override
-  @RequiredReadAction
-  public boolean isAvailable(@Nonnull PsiFile file) {
-    return PluginModuleUtil.isConsuloOrPluginProject(file);
-  }
-
-  @RequiredReadAction
-  @Nullable
-  @Override
-  public LineMarkerInfo getLineMarkerInfo(@Nonnull PsiElement element) {
-    // method call like MyIconGroup.testMe()
-    if (element instanceof PsiIdentifier && element.getParent() instanceof PsiReferenceExpression && element.getParent()
-                                                                                                            .getParent() instanceof PsiMethodCallExpression) {
-      PsiMethodCallExpression methodCall = (PsiMethodCallExpression)element.getParent().getParent();
-
-      PsiMethod psiMethod = methodCall.resolveMethod();
-      if (psiMethod != null) {
-        return create(element, psiMethod);
-      }
-    }
-    // method declaration inside MyIconGroup
-    else if (element instanceof PsiIdentifier && element.getParent() instanceof PsiMethod) {
-      return create(element, (PsiMethod)element.getParent());
-    }
-    return null;
-  }
-
-  @Nullable
-  @RequiredReadAction
-  private LineMarkerInfo<PsiElement> create(@Nonnull PsiElement targetElement, @Nonnull PsiMethod psiMethod) {
-    Project project = targetElement.getProject();
-    Pair<Image, VirtualFile> pair = IconLibraryGroupImageCache.getInstance(project).getImage(psiMethod);
-    if (pair != null) {
-      return new LineMarkerInfo<>(targetElement,
-                                  targetElement.getTextRange(),
-                                  pair.getFirst(),
-                                  Pass.LINE_MARKERS,
-                                  null,
-                                  (mouseEvent, element) -> {
-                                    OpenFileDescriptorFactory.getInstance(project).builder(pair.getSecond()).build().navigate(true);
-                                  },
-                                  GutterIconRenderer.Alignment.RIGHT);
+    @Override
+    @RequiredReadAction
+    public boolean isAvailable(@Nonnull PsiFile file) {
+        return PluginModuleUtil.isConsuloOrPluginProject(file);
     }
 
-    return null;
-  }
+    @RequiredReadAction
+    @Nullable
+    @Override
+    public LineMarkerInfo getLineMarkerInfo(@Nonnull PsiElement element) {
+        // method call like MyIconGroup.testMe()
+        if (element instanceof PsiIdentifier && element.getParent() instanceof PsiReferenceExpression && element.getParent()
+            .getParent() instanceof PsiMethodCallExpression) {
+            PsiMethodCallExpression methodCall = (PsiMethodCallExpression) element.getParent().getParent();
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return JavaLanguage.INSTANCE;
-  }
+            PsiMethod psiMethod = methodCall.resolveMethod();
+            if (psiMethod != null) {
+                return create(element, psiMethod);
+            }
+        }
+        // method declaration inside MyIconGroup
+        else if (element instanceof PsiIdentifier && element.getParent() instanceof PsiMethod) {
+            return create(element, (PsiMethod) element.getParent());
+        }
+        return null;
+    }
+
+    @Nullable
+    @RequiredReadAction
+    private LineMarkerInfo<PsiElement> create(@Nonnull PsiElement targetElement, @Nonnull PsiMethod psiMethod) {
+        Project project = targetElement.getProject();
+        Pair<Image, VirtualFile> pair = IconLibraryGroupImageCache.getInstance(project).getImage(psiMethod);
+        if (pair != null) {
+            return new LineMarkerInfo<>(targetElement,
+                targetElement.getTextRange(),
+                pair.getFirst(),
+                Pass.LINE_MARKERS,
+                null,
+                (mouseEvent, element) -> {
+                    OpenFileDescriptorFactory.getInstance(project).builder(pair.getSecond()).build().navigate(true);
+                },
+                GutterIconRenderer.Alignment.RIGHT);
+        }
+
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return JavaLanguage.INSTANCE;
+    }
 }

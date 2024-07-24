@@ -25,94 +25,79 @@ import java.util.Set;
  * @since 26.05.2024
  */
 @ExtensionImpl
-public class IconLibraryIconDescritorUpdater implements IconDescriptorUpdater
-{
+public class IconLibraryIconDescritorUpdater implements IconDescriptorUpdater {
+    private static final Set<String> ourAllowedExtensions = Set.of("svg", "png");
 
-	private static final Set<String> ourAllowedExtensions = Set.of("svg", "png");
+    private final DirectoryIndex myDirectoryIndex;
+    private final IconDeferrer myIconDeferrer;
+    private final ProjectIconsAccessor myProjectIconsAccessor;
 
-	private final DirectoryIndex myDirectoryIndex;
-	private final IconDeferrer myIconDeferrer;
-	private final ProjectIconsAccessor myProjectIconsAccessor;
+    @Inject
+    public IconLibraryIconDescritorUpdater(DirectoryIndex directoryIndex, IconDeferrer iconDeferrer, ProjectIconsAccessor projectIconsAccessor) {
+        myDirectoryIndex = directoryIndex;
+        myIconDeferrer = iconDeferrer;
+        myProjectIconsAccessor = projectIconsAccessor;
+    }
 
-	@Inject
-	public IconLibraryIconDescritorUpdater(DirectoryIndex directoryIndex, IconDeferrer iconDeferrer, ProjectIconsAccessor projectIconsAccessor)
-	{
-		myDirectoryIndex = directoryIndex;
-		myIconDeferrer = iconDeferrer;
-		myProjectIconsAccessor = projectIconsAccessor;
-	}
+    @RequiredReadAction
+    @Override
+    public void updateIcon(@Nonnull IconDescriptor iconDescriptor, @Nonnull PsiElement psiElement, int flags) {
+        if (psiElement instanceof PsiFile psiFile) {
+            String extension = FileUtil.getExtension(psiFile.getName());
+            if (!ourAllowedExtensions.contains(extension)) {
+                return;
+            }
 
-	@RequiredReadAction
-	@Override
-	public void updateIcon(@Nonnull IconDescriptor iconDescriptor, @Nonnull PsiElement psiElement, int flags)
-	{
-		if(psiElement instanceof PsiFile psiFile)
-		{
-			String extension = FileUtil.getExtension(psiFile.getName());
-			if(!ourAllowedExtensions.contains(extension))
-			{
-				return;
-			}
+            if (!PluginModuleUtil.isConsuloOrPluginProject(psiElement)) {
+                return;
+            }
 
-			if(!PluginModuleUtil.isConsuloOrPluginProject(psiElement))
-			{
-				return;
-			}
+            VirtualFile virtualFile = psiFile.getVirtualFile();
+            assert virtualFile != null;
+            DirectoryInfo info = myDirectoryIndex.getInfoForFile(virtualFile);
 
-			VirtualFile virtualFile = psiFile.getVirtualFile();
-			assert virtualFile != null;
-			DirectoryInfo info = myDirectoryIndex.getInfoForFile(virtualFile);
+            if (!insideICON_LIB(info, virtualFile)) {
+                return;
+            }
 
-			if(!insideICON_LIB(info, virtualFile))
-			{
-				return;
-			}
+            Image mainIcon = iconDescriptor.getMainIcon();
+            if (mainIcon == null) {
+                mainIcon = virtualFile.getFileType().getIcon();
+            }
 
-			Image mainIcon = iconDescriptor.getMainIcon();
-			if(mainIcon == null)
-			{
-				mainIcon = virtualFile.getFileType().getIcon();
-			}
+            final Image finalMainIcon = mainIcon;
+            iconDescriptor.setMainIcon(myIconDeferrer.defer(mainIcon, virtualFile, file ->
+            {
+                Image image = myProjectIconsAccessor.getIcon(file, psiElement);
+                if (image == null) {
+                    image = finalMainIcon;
+                }
+                return image;
+            }));
+        }
+    }
 
-			final Image finalMainIcon = mainIcon;
-			iconDescriptor.setMainIcon(myIconDeferrer.defer(mainIcon, virtualFile, file ->
-			{
-				Image image = myProjectIconsAccessor.getIcon(file, psiElement);
-				if(image == null)
-				{
-					image = finalMainIcon;
-				}
-				return image;
-			}));
-		}
-	}
+    private boolean insideICON_LIB(DirectoryInfo info, VirtualFile virtualFile) {
+        VirtualFile contentRoot = info.getSourceRoot();
+        if (contentRoot != null) {
+            String relativePath = VirtualFileUtil.getRelativePath(virtualFile, contentRoot);
+            if (relativePath == null || !relativePath.startsWith("ICON-LIB/")) {
+                return false;
+            }
 
-	private boolean insideICON_LIB(DirectoryInfo info, VirtualFile virtualFile)
-	{
-		VirtualFile contentRoot = info.getSourceRoot();
-		if(contentRoot != null)
-		{
-			String relativePath = VirtualFileUtil.getRelativePath(virtualFile, contentRoot);
-			if(relativePath == null || !relativePath.startsWith("ICON-LIB/"))
-			{
-				return false;
-			}
+            return true;
+        }
 
-			return true;
-		}
+        VirtualFile libraryClassRoot = info.getLibraryClassRoot();
+        if (libraryClassRoot != null) {
+            String relativePath = VirtualFileUtil.getRelativePath(virtualFile, libraryClassRoot);
+            if (relativePath == null || !relativePath.startsWith("ICON-LIB/")) {
+                return false;
+            }
 
-		VirtualFile libraryClassRoot = info.getLibraryClassRoot();
-		if(libraryClassRoot != null)
-		{
-			String relativePath = VirtualFileUtil.getRelativePath(virtualFile, libraryClassRoot);
-			if(relativePath == null || !relativePath.startsWith("ICON-LIB/"))
-			{
-				return false;
-			}
+            return true;
+        }
 
-			return true;
-		}
-
-		return false;
-	}
+        return false;
+    }
 }
