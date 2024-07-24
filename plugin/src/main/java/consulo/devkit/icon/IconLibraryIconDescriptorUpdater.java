@@ -3,7 +3,6 @@ package consulo.devkit.icon;
 import com.intellij.java.impl.psi.util.ProjectIconsAccessor;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.icon.IconDescriptor;
 import consulo.language.icon.IconDescriptorUpdater;
 import consulo.language.psi.PsiElement;
@@ -48,7 +47,7 @@ public class IconLibraryIconDescriptorUpdater implements IconDescriptorUpdater {
                 return;
             }
 
-            if (!PluginModuleUtil.isConsuloOrPluginProject(psiElement)) {
+            if (!IconLibraryChecker.containsImageApi(psiElement)) {
                 return;
             }
 

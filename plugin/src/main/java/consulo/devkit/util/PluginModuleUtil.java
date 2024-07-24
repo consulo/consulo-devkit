@@ -18,6 +18,7 @@ package consulo.devkit.util;
 
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiClass;
+import consulo.annotation.DeprecationInfo;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.application.util.CachedValueProvider;
 import consulo.devkit.module.extension.PluginModuleExtension;
@@ -137,6 +138,8 @@ public class PluginModuleUtil {
   }
 
   @RequiredReadAction
+  @Deprecated
+  @DeprecationInfo("Make it more clear. See IconLibraryChecker")
   public static boolean isConsuloOrPluginProject(@Nonnull PsiElement element) {
     return LanguageCachedValueUtil.getCachedValue(element, () -> {
       Module module = element.getModule();

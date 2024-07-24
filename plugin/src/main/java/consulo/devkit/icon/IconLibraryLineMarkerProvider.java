@@ -8,7 +8,6 @@ import com.intellij.java.language.psi.PsiReferenceExpression;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.codeEditor.markup.GutterIconRenderer;
-import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.Language;
 import consulo.language.editor.Pass;
 import consulo.language.editor.gutter.LineMarkerInfo;
@@ -35,7 +34,7 @@ public class IconLibraryLineMarkerProvider implements LineMarkerProvider {
     @Override
     @RequiredReadAction
     public boolean isAvailable(@Nonnull PsiFile file) {
-        return PluginModuleUtil.isConsuloOrPluginProject(file);
+        return IconLibraryChecker.containsImageApi(file);
     }
 
     @RequiredReadAction
