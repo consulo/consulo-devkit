@@ -49,129 +49,133 @@ import java.util.List;
  */
 @ExtensionImpl
 public class BnfStructureViewFactory implements PsiStructureViewFactory {
-  public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
-    return new TreeBasedStructureViewBuilder() {
-      @Nonnull
-      public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
-        return new MyModel(psiFile);
-      }
+    public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
+        return new TreeBasedStructureViewBuilder() {
+            @Nonnull
+            public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
+                return new MyModel(psiFile);
+            }
 
-      @Override
-      public boolean isRootNodeShown() {
-        return false;
-      }
-    };
-  }
-
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
-
-  public static class MyModel extends StructureViewModelBase implements StructureViewModel.ElementInfoProvider {
-
-    protected MyModel(@Nonnull PsiFile psiFile) {
-      super(psiFile, new MyElement(psiFile));
-      withSuitableClasses(BnfFile.class, BnfRule.class, BnfAttrs.class, BnfAttr.class);
-    }
-
-
-    @Override
-    public boolean isAlwaysShowsPlus(StructureViewTreeElement element) {
-      return element.getValue() instanceof BnfAttrs;
-    }
-
-    @Override
-    public boolean isAlwaysLeaf(StructureViewTreeElement element) {
-      final Object value = element.getValue();
-      return value instanceof BnfRule || value instanceof BnfAttr;
-    }
-
-    @Override
-    public boolean shouldEnterElement(Object element) {
-      return false;
-    }
-
-    @Override
-    protected boolean isSuitable(PsiElement element) {
-      return element instanceof BnfAttrs || element instanceof BnfRule;
-    }
-  }
-
-  public static class MyElement extends PsiTreeElementBase<PsiElement> implements SortableTreeElement {
-
-    public MyElement(PsiElement element) {
-      super(element);
-    }
-
-    @Override
-    @RequiredReadAction
-    public String getAlphaSortKey() {
-      return getPresentableText();
+            @Override
+            public boolean isRootNodeShown() {
+                return false;
+            }
+        };
     }
 
     @Nonnull
     @Override
-    public Collection<StructureViewTreeElement> getChildrenBase() {
-      PsiElement element = getElement();
-      if (element instanceof BnfRule || element instanceof BnfAttr) {
-        return Collections.emptyList();
-      }
-      final ArrayList<StructureViewTreeElement> result = new ArrayList<>();
-      if (element instanceof BnfFile bnfFile) {
-        for (BnfAttrs o : bnfFile.getAttributes()) {
-          result.add(new MyElement(o));
-        }
-        for (BnfRule o : bnfFile.getRules()) {
-          result.add(new MyElement(o));
-        }
-      }
-      else if (element instanceof BnfAttrs bnfAttrs) {
-        for (BnfAttr o : bnfAttrs.getAttrList()) {
-          result.add(new MyElement(o));
-        }
-      }
-      return result;
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
     }
 
-    @Override
-    @RequiredReadAction
-    public String getPresentableText() {
-      PsiElement element = getElement();
-      if (element instanceof BnfRule rule) {
-        return rule.getName();
-      }
-      else if (element instanceof BnfAttr attr) {
-        return getAttrDisplayName(attr);
-      }
-      else if (element instanceof BnfAttrs attrs) {
-        List<BnfAttr> attrList = attrs.getAttrList();
-        final BnfAttr firstAttr = ContainerUtil.getFirstItem(attrList);
-        if (firstAttr == null) return "Attributes { <empty> }";
-        String suffix = attrList.size() > 1? " & " + attrList.size()+" more..." : " ";
-        return "Attributes { " + getAttrDisplayName(firstAttr) + suffix+ "}";
-      }
-      else if (element instanceof BnfFileImpl file) {
-        return file.getName();
-      }
-      return "" + element;
+    public static class MyModel extends StructureViewModelBase implements StructureViewModel.ElementInfoProvider {
+
+        protected MyModel(@Nonnull PsiFile psiFile) {
+            super(psiFile, new MyElement(psiFile));
+            withSuitableClasses(BnfFile.class, BnfRule.class, BnfAttrs.class, BnfAttr.class);
+        }
+
+
+        @Override
+        public boolean isAlwaysShowsPlus(StructureViewTreeElement element) {
+            return element.getValue() instanceof BnfAttrs;
+        }
+
+        @Override
+        public boolean isAlwaysLeaf(StructureViewTreeElement element) {
+            final Object value = element.getValue();
+            return value instanceof BnfRule || value instanceof BnfAttr;
+        }
+
+        @Override
+        public boolean shouldEnterElement(Object element) {
+            return false;
+        }
+
+        @Override
+        protected boolean isSuitable(PsiElement element) {
+            return element instanceof BnfAttrs || element instanceof BnfRule;
+        }
     }
 
-    @RequiredReadAction
-    private static String getAttrDisplayName(BnfAttr attr) {
-      final BnfAttrPattern attrPattern = attr.getAttrPattern();
-      final BnfExpression attrValue = attr.getExpression();
-      String attrValueText = attrValue == null? "" : attrValue instanceof BnfValueList ? "[ ... ]" : attrValue.getText();
-      return attr.getName() + (attrPattern == null ? "" : attrPattern.getText()) + " = " + attrValueText;
-    }
+    public static class MyElement extends PsiTreeElementBase<PsiElement> implements SortableTreeElement {
 
-    @Override
-    @RequiredReadAction
-    public Image getIcon(boolean open) {
-      PsiElement element = getElement();
-      if (element == null) return null;
-      return element instanceof BnfAttrs ? AllIcons.Nodes.Package : IconDescriptorUpdaters.getIcon(element, 0);
+        public MyElement(PsiElement element) {
+            super(element);
+        }
+
+        @Override
+        @RequiredReadAction
+        public String getAlphaSortKey() {
+            return getPresentableText();
+        }
+
+        @Nonnull
+        @Override
+        public Collection<StructureViewTreeElement> getChildrenBase() {
+            PsiElement element = getElement();
+            if (element instanceof BnfRule || element instanceof BnfAttr) {
+                return Collections.emptyList();
+            }
+            final ArrayList<StructureViewTreeElement> result = new ArrayList<>();
+            if (element instanceof BnfFile bnfFile) {
+                for (BnfAttrs o : bnfFile.getAttributes()) {
+                    result.add(new MyElement(o));
+                }
+                for (BnfRule o : bnfFile.getRules()) {
+                    result.add(new MyElement(o));
+                }
+            }
+            else if (element instanceof BnfAttrs bnfAttrs) {
+                for (BnfAttr o : bnfAttrs.getAttrList()) {
+                    result.add(new MyElement(o));
+                }
+            }
+            return result;
+        }
+
+        @Override
+        @RequiredReadAction
+        public String getPresentableText() {
+            PsiElement element = getElement();
+            if (element instanceof BnfRule rule) {
+                return rule.getName();
+            }
+            else if (element instanceof BnfAttr attr) {
+                return getAttrDisplayName(attr);
+            }
+            else if (element instanceof BnfAttrs attrs) {
+                List<BnfAttr> attrList = attrs.getAttrList();
+                final BnfAttr firstAttr = ContainerUtil.getFirstItem(attrList);
+              if (firstAttr == null) {
+                return "Attributes { <empty> }";
+              }
+                String suffix = attrList.size() > 1 ? " & " + attrList.size() + " more..." : " ";
+                return "Attributes { " + getAttrDisplayName(firstAttr) + suffix + "}";
+            }
+            else if (element instanceof BnfFileImpl file) {
+                return file.getName();
+            }
+            return "" + element;
+        }
+
+        @RequiredReadAction
+        private static String getAttrDisplayName(BnfAttr attr) {
+            final BnfAttrPattern attrPattern = attr.getAttrPattern();
+            final BnfExpression attrValue = attr.getExpression();
+            String attrValueText = attrValue == null ? "" : attrValue instanceof BnfValueList ? "[ ... ]" : attrValue.getText();
+            return attr.getName() + (attrPattern == null ? "" : attrPattern.getText()) + " = " + attrValueText;
+        }
+
+        @Override
+        @RequiredReadAction
+        public Image getIcon(boolean open) {
+            PsiElement element = getElement();
+            if (element == null) {
+                return null;
+            }
+            return element instanceof BnfAttrs ? AllIcons.Nodes.Package : IconDescriptorUpdaters.getIcon(element, 0);
+        }
     }
-  }
 }

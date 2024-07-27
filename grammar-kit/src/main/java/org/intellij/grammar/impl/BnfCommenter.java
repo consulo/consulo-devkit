@@ -30,64 +30,64 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfCommenter implements CodeDocumentationAwareCommenter {
-  public String getLineCommentPrefix() {
-    return "//";
-  }
+    public String getLineCommentPrefix() {
+        return "//";
+    }
 
-  public String getBlockCommentPrefix() {
-    return "/*";
-  }
+    public String getBlockCommentPrefix() {
+        return "/*";
+    }
 
-  public String getBlockCommentSuffix() {
-    return "*/";
-  }
+    public String getBlockCommentSuffix() {
+        return "*/";
+    }
 
-  public String getCommentedBlockCommentPrefix() {
-    return null;
-  }
+    public String getCommentedBlockCommentPrefix() {
+        return null;
+    }
 
-  public String getCommentedBlockCommentSuffix() {
-    return null;
-  }
+    public String getCommentedBlockCommentSuffix() {
+        return null;
+    }
 
-  @Override
-  public IElementType getLineCommentTokenType() {
-    return BnfParserDefinition.BNF_LINE_COMMENT;
-  }
+    @Override
+    public IElementType getLineCommentTokenType() {
+        return BnfParserDefinition.BNF_LINE_COMMENT;
+    }
 
-  @Override
-  public IElementType getBlockCommentTokenType() {
-    return BnfParserDefinition.BNF_BLOCK_COMMENT;
-  }
+    @Override
+    public IElementType getBlockCommentTokenType() {
+        return BnfParserDefinition.BNF_BLOCK_COMMENT;
+    }
 
-  @Override
-  public IElementType getDocumentationCommentTokenType() {
-    return null;
-  }
+    @Override
+    public IElementType getDocumentationCommentTokenType() {
+        return null;
+    }
 
-  @Override
-  public String getDocumentationCommentPrefix() {
-    return null;
-  }
+    @Override
+    public String getDocumentationCommentPrefix() {
+        return null;
+    }
 
-  @Override
-  public String getDocumentationCommentLinePrefix() {
-    return null;
-  }
+    @Override
+    public String getDocumentationCommentLinePrefix() {
+        return null;
+    }
 
-  @Override
-  public String getDocumentationCommentSuffix() {
-    return null;
-  }
+    @Override
+    public String getDocumentationCommentSuffix() {
+        return null;
+    }
 
-  @Override
-  public boolean isDocumentationComment(PsiComment element) {
-    return false;
-  }
+    @Override
+    public boolean isDocumentationComment(PsiComment element) {
+        return false;
+    }
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 }

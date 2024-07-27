@@ -25,35 +25,35 @@ import java.util.function.Supplier;
  * @author gregsh
  */
 abstract class Option<T> implements Supplier<T> {
-  public final String id;
-  public final T defValue;
+    public final String id;
+    public final T defValue;
 
-  Option(String id, T defValue) {
-    this.id = id;
-    this.defValue = defValue;
-  }
+    Option(String id, T defValue) {
+        this.id = id;
+        this.defValue = defValue;
+    }
 
-  public abstract T get();
+    public abstract T get();
 
-  String innerValue() {
-    return System.getProperty(id);
-  }
+    String innerValue() {
+        return System.getProperty(id);
+    }
 
-  static Option<Integer> intOption(String id, int def) {
-    return new Option<Integer>(id, def) {
-      @Override
-      public Integer get() {
-        return StringUtil.parseInt(innerValue(), defValue);
-      }
-    };
-  }
+    static Option<Integer> intOption(String id, int def) {
+        return new Option<Integer>(id, def) {
+            @Override
+            public Integer get() {
+                return StringUtil.parseInt(innerValue(), defValue);
+            }
+        };
+    }
 
-  static Option<String> strOption(String id, String def) {
-    return new Option<String>(id, def) {
-      @Override
-      public String get() {
-        return ObjectUtil.chooseNotNull(innerValue(), defValue);
-      }
-    };
-  }
+    static Option<String> strOption(String id, String def) {
+        return new Option<String>(id, def) {
+            @Override
+            public String get() {
+                return ObjectUtil.chooseNotNull(innerValue(), defValue);
+            }
+        };
+    }
 }
