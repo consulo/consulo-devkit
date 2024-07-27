@@ -38,64 +38,62 @@ import static org.intellij.grammar.KnownAttribute.*;
  * @author gregsh
  */
 public class BnfStringRefContributor extends PsiReferenceContributor {
+    private static final Set<KnownAttribute> RULE_ATTRIBUTES = Set.of(EXTENDS, IMPLEMENTS, RECOVER_WHILE, NAME);
 
-  private static final Set<KnownAttribute> RULE_ATTRIBUTES = Set.of(
-    EXTENDS, IMPLEMENTS, RECOVER_WHILE, NAME);
+    private static final Set<KnownAttribute> JAVA_CLASS_ATTRIBUTES = Set.of(EXTENDS, IMPLEMENTS, MIXIN);
 
-  private static final Set<KnownAttribute> JAVA_CLASS_ATTRIBUTES = Set.of(
-    EXTENDS, IMPLEMENTS, MIXIN);
+    @Override
+    public void registerReferenceProviders(@Nonnull PsiReferenceRegistrar registrar) {
+        registrar.registerReferenceProvider(
+            psiElement(BnfStringImpl.class).withParent(psiElement(BnfAttrPattern.class)), new PsiReferenceProvider() {
 
-  @Override
-  public void registerReferenceProviders(@Nonnull PsiReferenceRegistrar registrar) {
-    registrar.registerReferenceProvider(
-      psiElement(BnfStringImpl.class).withParent(psiElement(BnfAttrPattern.class)), new PsiReferenceProvider() {
+                @Nonnull
+                @Override
+                public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
+                    return new PsiReference[]{BnfStringImpl.createPatternReference((BnfStringImpl)element)};
+                }
+            }
+        );
 
-        @Nonnull
-        @Override
-        public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
-          return new PsiReference[]{BnfStringImpl.createPatternReference((BnfStringImpl)element)};
-        }
-      }
-    );
+        registrar.registerReferenceProvider(
+            psiElement(BnfStringImpl.class).withParent(psiElement(BnfAttr.class).withName(string().with(oneOf(RULE_ATTRIBUTES)))),
+            new PsiReferenceProvider() {
 
-    registrar.registerReferenceProvider(
-      psiElement(BnfStringImpl.class).withParent(psiElement(BnfAttr.class).withName(string().with(oneOf(RULE_ATTRIBUTES)))),
-      new PsiReferenceProvider() {
+                @Nonnull
+                @Override
+                public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
+                    return new PsiReference[]{BnfStringImpl.createRuleReference((BnfStringImpl)element)};
+                }
+            }
+        );
 
-        @Nonnull
-        @Override
-        public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
-          return new PsiReference[]{BnfStringImpl.createRuleReference((BnfStringImpl)element)};
-        }
-      }
-    );
+        registrar.registerReferenceProvider(
+            psiElement(BnfStringImpl.class).withParent(psiElement(BnfAttr.class).withName(
+                or(string().endsWith("Class"), string().endsWith("Package"), string().with(oneOf(JAVA_CLASS_ATTRIBUTES))))),
+            new PsiReferenceProvider() {
 
-    registrar.registerReferenceProvider(
-      psiElement(BnfStringImpl.class).withParent(psiElement(BnfAttr.class).withName(
-        or(string().endsWith("Class"), string().endsWith("Package"), string().with(oneOf(JAVA_CLASS_ATTRIBUTES))))),
-      new PsiReferenceProvider() {
+                @Nonnull
+                @Override
+                public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
+                    PsiReferenceProvider provider = JavaHelper.getJavaHelper(element).getClassReferenceProvider();
+                    return provider == null ? PsiReference.EMPTY_ARRAY : provider.getReferencesByElement(element, new ProcessingContext());
+                }
+            }
+        );
+    }
 
-        @Nonnull
-        @Override
-        public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull ProcessingContext context) {
-          PsiReferenceProvider provider = JavaHelper.getJavaHelper(element).getClassReferenceProvider();
-          return provider == null ? PsiReference.EMPTY_ARRAY : provider.getReferencesByElement(element, new ProcessingContext());
-        }
-      });
-  }
+    private static PatternCondition<String> oneOf(final Set<KnownAttribute> attributes) {
+        return new PatternCondition<>("oneOf") {
+            @Override
+            public boolean accepts(@Nonnull String s, ProcessingContext context) {
+                return attributes.contains(KnownAttribute.getCompatibleAttribute(s));
+            }
+        };
+    }
 
-  private static PatternCondition<String> oneOf(final Set<KnownAttribute> attributes) {
-    return new PatternCondition<String>("oneOf") {
-      @Override
-      public boolean accepts(@Nonnull String s, ProcessingContext context) {
-        return attributes.contains(KnownAttribute.getCompatibleAttribute(s));
-      }
-    };
-  }
-
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 }

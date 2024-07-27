@@ -17,31 +17,31 @@ import javax.annotation.Nonnull;
  * Time: 19:11
  */
 public class BnfCompositeImpl extends ASTWrapperPsiElement implements BnfComposite {
-  public BnfCompositeImpl(@Nonnull ASTNode node) {
-    super(node);
-  }
-
-  /**
-   * @noinspection InstanceofThis
-   */
-  @Override
-  public String toString() {
-    String elementType = getNode().getElementType().toString();
-    boolean addText = this instanceof BnfExpression && !(this instanceof BnfValueList);
-    if (addText) {
-      String text = getText();
-      if (!(this instanceof BnfLiteralExpression) && text.length() > 50) {
-        text = text.substring(0, 30) + " ... " + text.substring(text.length() - 20, text.length());
-      }
-      return elementType + (StringUtil.isEmptyOrSpaces(text) ? "" : ": " + text);
+    public BnfCompositeImpl(@Nonnull ASTNode node) {
+        super(node);
     }
-    else {
-      return elementType;
-    }
-  }
 
-  @Override
-  public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
-    return visitor.visitComposite(this);
-  }
+    /**
+     * @noinspection InstanceofThis
+     */
+    @Override
+    public String toString() {
+        String elementType = getNode().getElementType().toString();
+        boolean addText = this instanceof BnfExpression && !(this instanceof BnfValueList);
+        if (addText) {
+            String text = getText();
+            if (!(this instanceof BnfLiteralExpression) && text.length() > 50) {
+                text = text.substring(0, 30) + " ... " + text.substring(text.length() - 20, text.length());
+            }
+            return elementType + (StringUtil.isEmptyOrSpaces(text) ? "" : ": " + text);
+        }
+        else {
+            return elementType;
+        }
+    }
+
+    @Override
+    public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
+        return visitor.visitComposite(this);
+    }
 }

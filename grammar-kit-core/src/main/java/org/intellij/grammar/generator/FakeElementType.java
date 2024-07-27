@@ -27,11 +27,11 @@ import javax.annotation.Nullable;
  * @author gregsh
  */
 public class FakeElementType extends IElementType {
-  public FakeElementType(String debugName, Language language) {
-    super(debugName, language, false);
-  }
+    public FakeElementType(String debugName, Language language) {
+        super(debugName, language, false);
+    }
 
-  public static boolean isFakeElement(@Nullable PsiElement e) {
-    return PsiUtilCore.getElementType(e) instanceof FakeElementType;
-  }
+    public static boolean isFakeElement(@Nullable PsiElement e) {
+        return PsiUtilCore.getElementType(e) instanceof FakeElementType;
+    }
 }

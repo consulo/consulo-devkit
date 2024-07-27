@@ -34,36 +34,37 @@ import java.util.List;
  * @author gregsh
  */
 public class BnfReferenceImpl<T extends BnfComposite> extends PsiReferenceBase<T> {
-
-  public BnfReferenceImpl(@Nonnull T element, TextRange range) {
-    super(element, range);
-  }
-
-  @Override
-  public PsiElement resolve() {
-    PsiFile containingFile = myElement.getContainingFile();
-    String referenceName = getRangeInElement().substring(myElement.getText());
-    PsiElement result = containingFile instanceof BnfFile ? ((BnfFile)containingFile).getRule(referenceName) : null;
-    String version = containingFile instanceof BnfFile ? ((BnfFile)containingFile).getVersion() : null;
-    if (result == null && GrammarUtil.isExternalReference(myElement)) {
-      PsiElement parent = myElement.getParent();
-      int paramCount = parent instanceof BnfSequence ? ((BnfSequence)parent).getExpressionList().size() - 1 :
-        parent instanceof BnfExternalExpression ? ((BnfExternalExpression)parent).getExpressionList().size() - 1 : 0;
-      BnfRule rule = PsiTreeUtil.getParentOfType(myElement, BnfRule.class);
-      String parserClass = ParserGeneratorUtil.getAttribute(version, rule, KnownAttribute.PARSER_UTIL_CLASS);
-      // paramCount + 2 (builder and level)
-      JavaHelper helper = JavaHelper.getJavaHelper(myElement);
-      for (String className = parserClass; className != null; className = helper.getSuperClassName(className)) {
-        List<NavigatablePsiElement> methods =
-          helper.findClassMethods(version, className, JavaHelper.MethodType.STATIC, referenceName, paramCount + 2);
-        result = ContainerUtil.getFirstItem(methods);
-        if (result != null) break;
-      }
+    public BnfReferenceImpl(@Nonnull T element, TextRange range) {
+        super(element, range);
     }
-    return result;
-  }
 
-  // TODO [VISTALL] remove that
+    @Override
+    public PsiElement resolve() {
+        PsiFile containingFile = myElement.getContainingFile();
+        String referenceName = getRangeInElement().substring(myElement.getText());
+        PsiElement result = containingFile instanceof BnfFile bnfFile ? bnfFile.getRule(referenceName) : null;
+        String version = containingFile instanceof BnfFile bnfFile ? bnfFile.getVersion() : null;
+        if (result == null && GrammarUtil.isExternalReference(myElement)) {
+            PsiElement parent = myElement.getParent();
+            int paramCount = parent instanceof BnfSequence bnfSequence ? bnfSequence.getExpressionList().size() - 1
+                : parent instanceof BnfExternalExpression bnfExternalExpression ? bnfExternalExpression.getExpressionList().size() - 1 : 0;
+            BnfRule rule = PsiTreeUtil.getParentOfType(myElement, BnfRule.class);
+            String parserClass = ParserGeneratorUtil.getAttribute(version, rule, KnownAttribute.PARSER_UTIL_CLASS);
+            // paramCount + 2 (builder and level)
+            JavaHelper helper = JavaHelper.getJavaHelper(myElement);
+            for (String className = parserClass; className != null; className = helper.getSuperClassName(className)) {
+                List<NavigatablePsiElement> methods =
+                    helper.findClassMethods(version, className, JavaHelper.MethodType.STATIC, referenceName, paramCount + 2);
+                result = ContainerUtil.getFirstItem(methods);
+                if (result != null) {
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    // TODO [VISTALL] remove that
 
 //  @Nonnull
 //  @Override
@@ -106,5 +107,4 @@ public class BnfReferenceImpl<T extends BnfComposite> extends PsiReferenceBase<T
 //    }
 //    return ArrayUtil.toObjectArray(list);
 //  }
-
 }
