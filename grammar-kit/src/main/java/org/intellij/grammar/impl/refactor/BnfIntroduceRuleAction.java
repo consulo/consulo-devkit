@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.refactor;
 
 import consulo.language.editor.refactoring.RefactoringSupportProvider;
@@ -33,25 +32,25 @@ import javax.annotation.Nonnull;
  * @author Vadim Romansky
  */
 public class BnfIntroduceRuleAction extends BasePlatformRefactoringAction {
-  public BnfIntroduceRuleAction() {
-    setInjectedContext(true);
-  }
+    public BnfIntroduceRuleAction() {
+        setInjectedContext(true);
+    }
 
-  protected boolean isAvailableInEditorOnly() {
-    return true;
-  }
+    protected boolean isAvailableInEditorOnly() {
+        return true;
+    }
 
-  @Override
-  protected boolean isAvailableForFile(PsiFile file) {
-    return file instanceof BnfFile;
-  }
+    @Override
+    protected boolean isAvailableForFile(PsiFile file) {
+        return file instanceof BnfFile;
+    }
 
-  protected boolean isEnabledOnElements(PsiElement[] elements) {
-    return false;
-  }
+    protected boolean isEnabledOnElements(PsiElement[] elements) {
+        return false;
+    }
 
-  @Override
-  protected RefactoringActionHandler getRefactoringHandler(@Nonnull RefactoringSupportProvider provider) {
-    return new BnfIntroduceRuleHandler();
-  }
+    @Override
+    protected RefactoringActionHandler getRefactoringHandler(@Nonnull RefactoringSupportProvider provider) {
+        return new BnfIntroduceRuleHandler();
+    }
 }

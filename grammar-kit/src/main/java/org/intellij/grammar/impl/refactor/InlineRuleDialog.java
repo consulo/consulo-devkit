@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.refactor;
 
 import consulo.component.util.localize.BundleBase;
@@ -32,45 +31,45 @@ import org.intellij.grammar.psi.BnfRule;
  * @author Vadim Romansky
  */
 public class InlineRuleDialog extends InlineOptionsDialog {
-  private final PsiReference myReference;
+    private final PsiReference myReference;
 
-  private final BnfRule myRule;
+    private final BnfRule myRule;
 
-  public InlineRuleDialog(Project project, BnfRule rule, PsiReference ref) {
-    super(project, true, rule);
-    myRule = rule;
-    myReference = ref;
-    myInvokedOnReference = myReference != null;
+    public InlineRuleDialog(Project project, BnfRule rule, PsiReference ref) {
+        super(project, true, rule);
+        myRule = rule;
+        myReference = ref;
+        myInvokedOnReference = myReference != null;
 
-    setTitle("Inline Rule");
+        setTitle("Inline Rule");
 
-    init();
-  }
+        init();
+    }
 
-  protected String getNameLabelText() {
-    return ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE);
-  }
+    protected String getNameLabelText() {
+        return ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE);
+    }
 
-  protected String getBorderTitle() {
-    return "Inline";
-  }
+    protected String getBorderTitle() {
+        return "Inline";
+    }
 
-  protected String getInlineThisText() {
-    return BundleBase.replaceMnemonicAmpersand("&This reference only and keep the rule");
-  }
+    protected String getInlineThisText() {
+        return BundleBase.replaceMnemonicAmpersand("&This reference only and keep the rule");
+    }
 
-  protected String getInlineAllText() {
-    return BundleBase.replaceMnemonicAmpersand("&All references and remove the rule");
-  }
+    protected String getInlineAllText() {
+        return BundleBase.replaceMnemonicAmpersand("&All references and remove the rule");
+    }
 
-  protected boolean isInlineThis() {
-    return false;
-  }
+    protected boolean isInlineThis() {
+        return false;
+    }
 
-  protected void doAction() {
-    invokeRefactoring(new BnfInlineRuleProcessor(myRule, getProject(), myReference, isInlineThisOnly()));
-  }
+    protected void doAction() {
+        invokeRefactoring(new BnfInlineRuleProcessor(myRule, getProject(), myReference, isInlineThisOnly()));
+    }
 
-  protected void doHelpAction() {
-  }
+    protected void doHelpAction() {
+    }
 }

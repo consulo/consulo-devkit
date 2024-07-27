@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.refactor;
 
 import consulo.language.editor.refactoring.RefactoringBundle;
@@ -40,19 +39,21 @@ public class BnfInlineViewDescriptor implements UsageViewDescriptor {
 
     @Nonnull
     public PsiElement[] getElements() {
-      return new PsiElement[] {myElement};
+        return new PsiElement[]{myElement};
     }
 
     public String getProcessedElementsHeader() {
-      return "Rule";
+        return "Rule";
     }
 
     public String getCodeReferencesText(int usagesCount, int filesCount) {
-      return RefactoringBundle.message("invocations.to.be.inlined", UsageViewBundle.getReferencesString(usagesCount, filesCount));
+        return RefactoringBundle.message("invocations.to.be.inlined", UsageViewBundle.getReferencesString(usagesCount, filesCount));
     }
 
     public String getCommentReferencesText(int usagesCount, int filesCount) {
-      return RefactoringBundle.message("comments.elements.header",
-                                       UsageViewBundle.getOccurencesString(usagesCount, filesCount));
+        return RefactoringBundle.message(
+            "comments.elements.header",
+            UsageViewBundle.getOccurencesString(usagesCount, filesCount)
+        );
     }
 }

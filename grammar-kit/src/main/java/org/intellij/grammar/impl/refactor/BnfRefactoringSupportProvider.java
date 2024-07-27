@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.refactor;
 
 import consulo.annotation.component.ExtensionImpl;
@@ -34,14 +33,14 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfRefactoringSupportProvider extends RefactoringSupportProvider {
-  @Override
-  public boolean isMemberInplaceRenameAvailable(PsiElement element, PsiElement context) {
-    return element instanceof BnfNamedElement;
-  }
+    @Override
+    public boolean isMemberInplaceRenameAvailable(PsiElement element, PsiElement context) {
+        return element instanceof BnfNamedElement;
+    }
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 }
