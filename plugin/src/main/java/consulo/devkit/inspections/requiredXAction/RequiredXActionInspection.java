@@ -43,84 +43,80 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class RequiredXActionInspection extends InternalInspection {
-  public static class RequiredXActionVisitor extends JavaElementVisitor {
-    private final ProblemsHolder myHolder;
+    public static class RequiredXActionVisitor extends JavaElementVisitor {
+        private final ProblemsHolder myHolder;
 
-    public RequiredXActionVisitor(ProblemsHolder holder) {
-      myHolder = holder;
-    }
-
-    @Override
-    @RequiredReadAction
-    public void visitMethodReferenceExpression(PsiMethodReferenceExpression expression) {
-      PsiElement psiElement = expression.resolve();
-      if (!(psiElement instanceof PsiMethod)) {
-        return;
-      }
-
-      reportError(expression, (PsiMethod)psiElement, MethodReferenceResolver.INSTANCE);
-    }
-
-    @Override
-    @RequiredReadAction
-    public void visitCallExpression(PsiCallExpression expression) {
-      PsiMethod psiMethod = expression.resolveMethod();
-      if (psiMethod == null) {
-        return;
-      }
-
-      reportError(expression, psiMethod, LambdaStateResolver.INSTANCE, AnonymousClassStateResolver.INSTANCE);
-    }
-
-    @RequiredReadAction
-    private void reportError(PsiExpression expression, PsiMethod psiMethod, StateResolver... stateResolvers) {
-      CallStateType actionType = CallStateType.findActionType(psiMethod);
-      if (actionType == CallStateType.NONE) {
-        return;
-      }
-
-      for (StateResolver stateResolver : stateResolvers) {
-        Boolean state = stateResolver.resolveState(actionType, expression);
-        if (state == null) {
-          continue;
+        public RequiredXActionVisitor(ProblemsHolder holder) {
+            myHolder = holder;
         }
 
-        if (state) {
-          break;
+        @Override
+        @RequiredReadAction
+        public void visitMethodReferenceExpression(PsiMethodReferenceExpression expression) {
+            PsiElement psiElement = expression.resolve();
+            if (psiElement instanceof PsiMethod method) {
+                reportError(expression, method, MethodReferenceResolver.INSTANCE);
+            }
         }
 
-        reportError(expression, actionType);
-        break;
-      }
+        @Override
+        @RequiredReadAction
+        public void visitCallExpression(PsiCallExpression expression) {
+            PsiMethod psiMethod = expression.resolveMethod();
+            if (psiMethod != null) {
+                reportError(expression, psiMethod, LambdaStateResolver.INSTANCE, AnonymousClassStateResolver.INSTANCE);
+            }
+        }
+
+        @RequiredReadAction
+        private void reportError(PsiExpression expression, PsiMethod psiMethod, StateResolver... stateResolvers) {
+            CallStateType actionType = CallStateType.findActionType(psiMethod);
+            if (actionType == CallStateType.NONE) {
+                return;
+            }
+
+            for (StateResolver stateResolver : stateResolvers) {
+                Boolean state = stateResolver.resolveState(actionType, expression);
+                if (state == null) {
+                    continue;
+                }
+
+                if (state) {
+                    break;
+                }
+
+                reportError(expression, actionType);
+                break;
+            }
+        }
+
+        private void reportError(@Nonnull PsiExpression expression, @Nonnull CallStateType type) {
+            LocalizeValue text;
+            switch (type) {
+                case READ:
+                case WRITE:
+                    text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRun(StringUtil.capitalize(type.name().toLowerCase()));
+                    break;
+                case UI_ACCESS:
+                    text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRunUi();
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+            LocalQuickFix[] quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(type.getActionClass())};
+            myHolder.registerProblem(expression, text.get(), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, quickFixes);
+        }
     }
 
-    private void reportError(@Nonnull PsiExpression expression, @Nonnull CallStateType type) {
-      LocalizeValue text;
-      switch (type) {
-        case READ:
-        case WRITE:
-          text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRun(StringUtil.capitalize(type.name().toLowerCase()));
-          break;
-        case UI_ACCESS:
-          text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRunUi();
-          break;
-        default:
-          throw new IllegalArgumentException();
-      }
-      LocalQuickFix[] quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(type.getActionClass())};
-      myHolder.registerProblem(expression, text.get(), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, quickFixes);
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Invocation state(read, write, dispatch) validate inspection";
     }
-  }
 
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Invocation state(read, write, dispatch) validate inspection";
-  }
-
-  @Nonnull
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
-    return new RequiredXActionVisitor(holder);
-  }
+    @Nonnull
+    @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        return new RequiredXActionVisitor(holder);
+    }
 }

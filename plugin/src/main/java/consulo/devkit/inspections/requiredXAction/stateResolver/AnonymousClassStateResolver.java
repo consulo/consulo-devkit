@@ -30,56 +30,56 @@ import javax.annotation.Nullable;
  * @since 01-Oct-16
  */
 public class AnonymousClassStateResolver extends StateResolver {
-  public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
+    public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
 
-  @RequiredReadAction
-  @Override
-  @Nullable
-  public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
-    PsiMethod callMethod = PsiTreeUtil.getParentOfType(expression, PsiMethod.class);
-    if (callMethod == null) {
-      return null;
-    }
+    @RequiredReadAction
+    @Override
+    @Nullable
+    public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
+        PsiMethod callMethod = PsiTreeUtil.getParentOfType(expression, PsiMethod.class);
+        if (callMethod == null) {
+            return null;
+        }
 
-    // method annotated by annotation
-    CallStateType callMethodActionType = CallStateType.findActionType(callMethod);
-    if (actionType.isAcceptableActionType(callMethodActionType, expression)) {
-      return true;
-    }
+        // method annotated by annotation
+        CallStateType callMethodActionType = CallStateType.findActionType(callMethod);
+        if (actionType.isAcceptableActionType(callMethodActionType, expression)) {
+            return true;
+        }
 
-    if (callMethod.getParameterList().getParametersCount() == 0) {
-      Class[] qualifiedNames = ourInterfaces.get(callMethod.getName());
-      if (qualifiedNames == null) {
+        if (callMethod.getParameterList().getParametersCount() == 0) {
+            Class[] qualifiedNames = ourInterfaces.get(callMethod.getName());
+            if (qualifiedNames == null) {
+                return false;
+            }
+
+            PsiClass containingClass = callMethod.getContainingClass();
+            if (containingClass == null) {
+                return false;
+            }
+
+            boolean inherit = false;
+            for (Class clazz : qualifiedNames) {
+                if (InheritanceUtil.isInheritor(containingClass, clazz.getName())) {
+                    inherit = true;
+                    break;
+                }
+            }
+
+            if (inherit) {
+                // non anonym class - cant handle
+                if (!(containingClass instanceof PsiAnonymousClass)) {
+                    return false;
+                }
+
+                PsiElement parent = containingClass.getParent();
+                if (parent instanceof PsiNewExpression) {
+                    PsiElement maybeParameterListOrVariable = parent.getParent();
+                    return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
+                }
+            }
+        }
+
         return false;
-      }
-
-      PsiClass containingClass = callMethod.getContainingClass();
-      if (containingClass == null) {
-        return false;
-      }
-
-      boolean inherit = false;
-      for (Class clazz : qualifiedNames) {
-        if (InheritanceUtil.isInheritor(containingClass, clazz.getName())) {
-          inherit = true;
-          break;
-        }
-      }
-
-      if (inherit) {
-        // non anonym class - cant handle
-        if (!(containingClass instanceof PsiAnonymousClass)) {
-          return false;
-        }
-
-        PsiElement parent = containingClass.getParent();
-        if (parent instanceof PsiNewExpression) {
-          PsiElement maybeParameterListOrVariable = parent.getParent();
-          return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
-        }
-      }
     }
-
-    return false;
-  }
 }

@@ -18,96 +18,100 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class WrongCastRequireExplicitConversionInspection extends InternalInspection {
-  private enum PossibleWrondCast {
-    AWT_COMPONENT_TO_UI_COMPONENT("java.awt.Component", "consulo.ui.Component"),
-    UI_COMPONENT_TO_AWT_COMPONENT("consulo.ui.Component", "java.awt.Component"),
+    private enum PossibleWrondCast {
+        AWT_COMPONENT_TO_UI_COMPONENT("java.awt.Component", "consulo.ui.Component"),
+        UI_COMPONENT_TO_AWT_COMPONENT("consulo.ui.Component", "java.awt.Component"),
 
-    VAADIN_COMPONENT_TO_UI_COMPONENT("com.vaadin.ui.Component", "consulo.ui.Component"),
-    UI_COMPONENT_TO_VAADIN_COMPONENT("consulo.ui.Component", "com.vaadin.ui.Component"),
+        VAADIN_COMPONENT_TO_UI_COMPONENT("com.vaadin.ui.Component", "consulo.ui.Component"),
+        UI_COMPONENT_TO_VAADIN_COMPONENT("consulo.ui.Component", "com.vaadin.ui.Component"),
 
-    IDE_FRAME_TO_AWT_WINDOW(IdeFrame.class.getName(), "java.awt.Component"),
-    AWT_WINDOW_TO_IDE_FRAME("java.awt.Component", IdeFrame.class.getName()),
+        IDE_FRAME_TO_AWT_WINDOW(IdeFrame.class.getName(), "java.awt.Component"),
+        AWT_WINDOW_TO_IDE_FRAME("java.awt.Component", IdeFrame.class.getName()),
 
-    IDE_FRAME_EX_TO_AWT_WINDOW("consulo.project.ui.wm.IdeFrame", "java.awt.Component"),
-    AWT_WINDOW_TO_IDE_FRAME_EX("java.awt.Component", "consulo.project.ui.wm.IdeFrame");
+        IDE_FRAME_EX_TO_AWT_WINDOW("consulo.project.ui.wm.IdeFrame", "java.awt.Component"),
+        AWT_WINDOW_TO_IDE_FRAME_EX("java.awt.Component", "consulo.project.ui.wm.IdeFrame");
 
-    private final String myType1;
-    private final String myType2;
+        private final String myType1;
+        private final String myType2;
 
-    PossibleWrondCast(String type1, String type2) {
-      myType1 = type1;
-      myType2 = type2;
+        PossibleWrondCast(String type1, String type2) {
+            myType1 = type1;
+            myType2 = type2;
+        }
     }
-  }
 
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Wrong cast - require explicit conversion";
-  }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Wrong cast - require explicit conversion";
+    }
 
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.ERROR;
-  }
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.ERROR;
+    }
 
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      public void visitTypeCastExpression(PsiTypeCastExpression expression) {
-        super.visitTypeCastExpression(expression);
+    @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            public void visitTypeCastExpression(PsiTypeCastExpression expression) {
+                super.visitTypeCastExpression(expression);
 
-        PsiTypeElement castTypeElement = expression.getCastType();
+                PsiTypeElement castTypeElement = expression.getCastType();
 
-        PsiExpression operand = expression.getOperand();
-        if (operand == null || castTypeElement == null) {
-          return;
-        }
+                PsiExpression operand = expression.getOperand();
+                if (operand == null || castTypeElement == null) {
+                    return;
+                }
 
-        PsiType castType = castTypeElement.getType();
-        PsiType expressionType = operand.getType();
-        checkType(expression, castTypeElement, castType, expressionType);
-      }
+                PsiType castType = castTypeElement.getType();
+                PsiType expressionType = operand.getType();
+                checkType(expression, castTypeElement, castType, expressionType);
+            }
 
-      @Override
-      public void visitInstanceOfExpression(PsiInstanceOfExpression expression) {
-        super.visitInstanceOfExpression(expression);
+            @Override
+            public void visitInstanceOfExpression(PsiInstanceOfExpression expression) {
+                super.visitInstanceOfExpression(expression);
 
-        PsiTypeElement checkTypeElement = expression.getCheckType();
-        PsiExpression operand = expression.getOperand();
-        if (checkTypeElement == null) {
-          return;
-        }
+                PsiTypeElement checkTypeElement = expression.getCheckType();
+                PsiExpression operand = expression.getOperand();
+                if (checkTypeElement == null) {
+                    return;
+                }
 
-        PsiType castType = checkTypeElement.getType();
-        PsiType expressionType = operand.getType();
-        checkType(expression, checkTypeElement, castType, expressionType);
-      }
+                PsiType castType = checkTypeElement.getType();
+                PsiType expressionType = operand.getType();
+                checkType(expression, checkTypeElement, castType, expressionType);
+            }
 
-      private void checkType(PsiExpression expression, PsiTypeElement castTypeElement, PsiType castType, PsiType expressionType) {
-        if (expressionType == null || PsiType.NULL.equals(castType) || PsiType.NULL.equals(expressionType)) {
-          return;
-        }
+            private void checkType(PsiExpression expression, PsiTypeElement castTypeElement, PsiType castType, PsiType expressionType) {
+                if (expressionType == null || PsiType.NULL.equals(castType) || PsiType.NULL.equals(expressionType)) {
+                    return;
+                }
 
-        for (PossibleWrondCast possibleWrondCast : PossibleWrondCast.values()) {
-          PsiClassType type1Ref =
-            JavaPsiFacade.getElementFactory(expression.getProject()).createTypeByFQClassName(possibleWrondCast.myType1);
-          PsiClassType type2Ref =
-            JavaPsiFacade.getElementFactory(expression.getProject()).createTypeByFQClassName(possibleWrondCast.myType2);
+                for (PossibleWrondCast possibleWrondCast : PossibleWrondCast.values()) {
+                    PsiClassType type1Ref =
+                        JavaPsiFacade.getElementFactory(expression.getProject()).createTypeByFQClassName(possibleWrondCast.myType1);
+                    PsiClassType type2Ref =
+                        JavaPsiFacade.getElementFactory(expression.getProject()).createTypeByFQClassName(possibleWrondCast.myType2);
 
-          if (!TypeConversionUtil.isAssignable(type1Ref, castType)) {
-            continue;
-          }
+                    if (!TypeConversionUtil.isAssignable(type1Ref, castType)) {
+                        continue;
+                    }
 
-          if (!TypeConversionUtil.isAssignable(type2Ref, expressionType)) {
-            continue;
-          }
+                    if (!TypeConversionUtil.isAssignable(type2Ref, expressionType)) {
+                        continue;
+                    }
 
-          holder.registerProblem(castTypeElement, "Wrong cast - require explicit conversion", ProblemHighlightType.GENERIC_ERROR);
-        }
-      }
-    };
-  }
+                    holder.registerProblem(
+                        castTypeElement,
+                        "Wrong cast - require explicit conversion",
+                        ProblemHighlightType.GENERIC_ERROR
+                    );
+                }
+            }
+        };
+    }
 }

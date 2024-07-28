@@ -26,36 +26,36 @@ import consulo.language.psi.PsiElement;
  * @since 22-Jun-16
  */
 public class AcceptableMethodCallCheck {
-  private final String myParentClass;
-  private final String myMethodName;
+    private final String myParentClass;
+    private final String myMethodName;
 
-  public AcceptableMethodCallCheck(String parentClass, String methodName) {
-    myParentClass = parentClass;
-    myMethodName = methodName;
-  }
-
-  public AcceptableMethodCallCheck(Class<?> parentClass, String methodName) {
-    this(parentClass.getName(), methodName);
-  }
-
-  public boolean accept(PsiElement parent) {
-    if (parent instanceof PsiMethodCallExpression methodCallExpression) {
-      PsiMethod psiMethod = methodCallExpression.resolveMethod();
-      if (psiMethod == null) {
-        return false;
-      }
-
-      if (myMethodName.equals(psiMethod.getName())) {
-        PsiClass containingClass = psiMethod.getContainingClass();
-        if (containingClass == null) {
-          return false;
-        }
-
-        if (myParentClass.equals(containingClass.getQualifiedName())) {
-          return true;
-        }
-      }
+    public AcceptableMethodCallCheck(String parentClass, String methodName) {
+        myParentClass = parentClass;
+        myMethodName = methodName;
     }
-    return false;
-  }
+
+    public AcceptableMethodCallCheck(Class<?> parentClass, String methodName) {
+        this(parentClass.getName(), methodName);
+    }
+
+    public boolean accept(PsiElement parent) {
+        if (parent instanceof PsiMethodCallExpression methodCallExpression) {
+            PsiMethod psiMethod = methodCallExpression.resolveMethod();
+            if (psiMethod == null) {
+                return false;
+            }
+
+            if (myMethodName.equals(psiMethod.getName())) {
+                PsiClass containingClass = psiMethod.getContainingClass();
+                if (containingClass == null) {
+                    return false;
+                }
+
+                if (myParentClass.equals(containingClass.getQualifiedName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
