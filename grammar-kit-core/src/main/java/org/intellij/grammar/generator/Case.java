@@ -11,33 +11,29 @@ import java.util.Locale;
 /**
  * @author gregsh
  */
-public enum Case
-{
-	LOWER,
-	UPPER,
-	AS_IS,
-	CAMEL;
+public enum Case {
+    LOWER,
+    UPPER,
+    AS_IS,
+    CAMEL;
 
-	@Nonnull
-	public String apply(@Nonnull String s)
-	{
-		if(s.isEmpty())
-		{
-			return s;
-		}
-		switch(this)
-		{
-			case LOWER:
-				return s.toLowerCase(Locale.ENGLISH);
-			case UPPER:
-				return s.toUpperCase(Locale.ENGLISH);
-			case AS_IS:
-				return s;
-			case CAMEL:
-				return s.substring(0, 1).toUpperCase(Locale.ENGLISH) +
-						s.substring(1).toLowerCase(Locale.ENGLISH);
-			default:
-				throw new AssertionError();
-		}
-	}
+    @Nonnull
+    public String apply(@Nonnull String s) {
+        if (s.isEmpty()) {
+            return s;
+        }
+        switch (this) {
+            case LOWER:
+                return s.toLowerCase(Locale.ENGLISH);
+            case UPPER:
+                return s.toUpperCase(Locale.ENGLISH);
+            case AS_IS:
+                return s;
+            case CAMEL:
+                return s.substring(0, 1).toUpperCase(Locale.ENGLISH) +
+                    s.substring(1).toLowerCase(Locale.ENGLISH);
+            default:
+                throw new AssertionError();
+        }
+    }
 }
