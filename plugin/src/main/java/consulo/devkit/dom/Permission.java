@@ -10,10 +10,10 @@ import java.util.List;
  * @since 01/11/2021
  */
 public interface Permission extends DomElement {
-  @Required
-  @Attribute("type")
-  GenericAttributeValue<PluginPermissionType> getType();
+    @Required
+    @Attribute("type")
+    GenericAttributeValue<PluginPermissionType> getType();
 
-  @SubTagList("permission-option")
-  List<PermissionOption> getPermissionOptions();
+    @SubTagList("permission-option")
+    List<PermissionOption> getPermissionOptions();
 }

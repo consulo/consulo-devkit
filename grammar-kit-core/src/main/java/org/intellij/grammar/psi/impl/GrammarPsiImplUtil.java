@@ -36,69 +36,68 @@ import static org.intellij.grammar.generator.ParserGeneratorUtil.*;
  * @author gregsh
  */
 public class GrammarPsiImplUtil {
-  @Nonnull
-  public static PsiReference[] getReferences(BnfListEntry o) {
-    BnfAttr attr = PsiTreeUtil.getParentOfType(o, BnfAttr.class);
-    if (attr == null || !Comparing.equal(KnownAttribute.METHODS.getName(), attr.getName())) {
-      return PsiReference.EMPTY_ARRAY;
+    @Nonnull
+    public static PsiReference[] getReferences(BnfListEntry o) {
+        BnfAttr attr = PsiTreeUtil.getParentOfType(o, BnfAttr.class);
+        if (attr == null || !Comparing.equal(KnownAttribute.METHODS.getName(), attr.getName())) {
+            return PsiReference.EMPTY_ARRAY;
+        }
+        PsiElement id = o.getId();
+        BnfLiteralExpression value = o.getLiteralExpression();
+        if (id == null || value != null) {
+            return PsiReference.EMPTY_ARRAY;
+        }
+        PsiFile containingFile = o.getContainingFile();
+        String version = containingFile instanceof BnfFile bnfFile ? bnfFile.getVersion() : null;
+
+        final String psiImplUtilClass = getRootAttribute(version, attr, KnownAttribute.PSI_IMPL_UTIL_CLASS);
+        final JavaHelper javaHelper = JavaHelper.getJavaHelper(o);
+
+        return new PsiReference[]{
+            new PsiPolyVariantReferenceBase<>(o, TextRange.from(id.getStartOffsetInParent(), id.getTextLength())) {
+                private List<NavigatablePsiElement> getTargetMethods(String methodName) {
+                    BnfRule rule = PsiTreeUtil.getParentOfType(getElement(), BnfRule.class);
+                    String mixinClass = rule == null ? null : getAttribute(version, rule, KnownAttribute.MIXIN);
+                    List<NavigatablePsiElement> implMethods = findRuleImplMethods(version, javaHelper, psiImplUtilClass, methodName, rule);
+                    if (!implMethods.isEmpty()) {
+                        return implMethods;
+                    }
+                    List<NavigatablePsiElement> mixinMethods =
+                        javaHelper.findClassMethods(version, mixinClass, JavaHelper.MethodType.INSTANCE, methodName, -1);
+                    return ContainerUtil.concat(implMethods, mixinMethods);
+                }
+
+                @Nonnull
+                @Override
+                public ResolveResult[] multiResolve(boolean b) {
+                    return PsiElementResolveResult.createResults(getTargetMethods(getElement().getText()));
+                }
+
+                // TODO [VISTALL] remove that
+                //        @Nonnull
+                //        @Override
+                //        public Object[] getVariants() {
+                //          List<LookupElement> list = ContainerUtil.newArrayList();
+                //          for (NavigatablePsiElement element : getTargetMethods("*")) {
+                //            list.add(LookupElementBuilder.createWithIcon((PsiNamedElement)element));
+                //          }
+                //          return ArrayUtil.toObjectArray(list);
+                //        }
+
+                @Override
+                public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+                    BnfListEntry element = getElement();
+                    PsiElement id = ObjectUtil.assertNotNull(element.getId());
+                    id.replace(BnfElementFactory.createLeafFromText(element.getProject(), newElementName));
+                    return element;
+                }
+            }
+        };
     }
-    PsiElement id = o.getId();
-    BnfLiteralExpression value = o.getLiteralExpression();
-    if (id == null || value != null) {
-      return PsiReference.EMPTY_ARRAY;
+
+    @Nonnull
+    public static List<BnfExpression> getArguments(@Nonnull BnfExternalExpression expr) {
+        List<BnfExpression> expressions = expr.getExpressionList();
+        return expressions.subList(1, expressions.size());
     }
-    PsiFile containingFile = o.getContainingFile();
-    String version = containingFile instanceof BnfFile ? ((BnfFile)containingFile).getVersion() : null;
-
-    final String psiImplUtilClass = getRootAttribute(version, attr, KnownAttribute.PSI_IMPL_UTIL_CLASS);
-    final JavaHelper javaHelper = JavaHelper.getJavaHelper(o);
-
-    return new PsiReference[]{
-      new PsiPolyVariantReferenceBase<>(o, TextRange.from(id.getStartOffsetInParent(), id.getTextLength())) {
-
-        private List<NavigatablePsiElement> getTargetMethods(String methodName) {
-          BnfRule rule = PsiTreeUtil.getParentOfType(getElement(), BnfRule.class);
-          String mixinClass = rule == null ? null : getAttribute(version, rule, KnownAttribute.MIXIN);
-          List<NavigatablePsiElement> implMethods = findRuleImplMethods(version, javaHelper, psiImplUtilClass, methodName, rule);
-          if (!implMethods.isEmpty()) {
-            return implMethods;
-          }
-          List<NavigatablePsiElement> mixinMethods =
-            javaHelper.findClassMethods(version, mixinClass, JavaHelper.MethodType.INSTANCE, methodName, -1);
-          return ContainerUtil.concat(implMethods, mixinMethods);
-        }
-
-        @Nonnull
-        @Override
-        public ResolveResult[] multiResolve(boolean b) {
-          return PsiElementResolveResult.createResults(getTargetMethods(getElement().getText()));
-        }
-
-        // TODO [VISTALL] remove that
-        //        @Nonnull
-        //        @Override
-        //        public Object[] getVariants() {
-        //          List<LookupElement> list = ContainerUtil.newArrayList();
-        //          for (NavigatablePsiElement element : getTargetMethods("*")) {
-        //            list.add(LookupElementBuilder.createWithIcon((PsiNamedElement)element));
-        //          }
-        //          return ArrayUtil.toObjectArray(list);
-        //        }
-
-        @Override
-        public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-          BnfListEntry element = getElement();
-          PsiElement id = ObjectUtil.assertNotNull(element.getId());
-          id.replace(BnfElementFactory.createLeafFromText(element.getProject(), newElementName));
-          return element;
-        }
-      }
-    };
-  }
-
-  @Nonnull
-  public static List<BnfExpression> getArguments(@Nonnull BnfExternalExpression expr) {
-    List<BnfExpression> expressions = expr.getExpressionList();
-    return expressions.subList(1, expressions.size());
-  }
 }

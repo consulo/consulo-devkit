@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
  * Date: 13.07.11
  * Time: 19:02
  */
-public interface BnfComposite extends PsiElement
-{
-	<R> R accept(@Nonnull BnfVisitor<R> visitor);
+public interface BnfComposite extends PsiElement {
+    <R> R accept(@Nonnull BnfVisitor<R> visitor);
 }

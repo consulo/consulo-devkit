@@ -7,7 +7,7 @@ import consulo.xml.util.xml.DomElement;
  * @since 01/11/2021
  */
 public interface PermissionOption extends DomElement {
-  String getValue();
+    String getValue();
 
-  void setValue(String value);
+    void setValue(String value);
 }

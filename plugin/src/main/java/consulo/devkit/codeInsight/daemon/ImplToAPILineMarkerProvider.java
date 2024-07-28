@@ -32,62 +32,61 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class ImplToAPILineMarkerProvider implements LineMarkerProvider {
-  @Override
-  @RequiredReadAction
-  public boolean isAvailable(@Nonnull PsiFile file) {
-    return PluginModuleUtil.isConsuloOrPluginProject(file);
-  }
-
-  @RequiredReadAction
-  @Nullable
-  @Override
-  public LineMarkerInfo getLineMarkerInfo(@Nonnull PsiElement psiElement) {
-    if (PsiUtilCore.getElementType(psiElement) == JavaTokenType.IDENTIFIER && psiElement.getParent() instanceof PsiClass) {
-      PsiClass psiClass = (PsiClass)psiElement.getParent();
-
-      Pair<PsiElement, String> apiInfo = findAPIElement(psiClass);
-      if (apiInfo != null) {
-        String navigationText = "Navigate to @" + StringUtil.getShortName(apiInfo.getSecond());
-        return new LineMarkerInfo<>(psiElement,
-                                    psiElement.getTextRange(),
-                                    AllIcons.Nodes.Plugin,
-                                    Pass.LINE_MARKERS,
-                                    element -> navigationText,
-                                    (mouseEvent, element) ->
-                                    {
-                                      Pair<PsiElement, String> target = findAPIElement(psiClass);
-                                      if (target != null) {
-                                        PsiNavigateUtil.navigate(target.getFirst());
-                                      }
-                                    },
-                                    GutterIconRenderer.Alignment.RIGHT);
-      }
+    @Override
+    @RequiredReadAction
+    public boolean isAvailable(@Nonnull PsiFile file) {
+        return PluginModuleUtil.isConsuloOrPluginProject(file);
     }
-    return null;
-  }
 
-  @Nullable
-  private Pair<PsiElement, String> findAPIElement(PsiClass psiClass) {
-    for (Pair<String, String> apiPair : ValhallaClasses.ApiToImpl) {
-      if (AnnotationUtil.isAnnotated(psiClass, apiPair.getSecond(), 0)) {
-        PsiAnnotation annotationInHierarchy = AnnotationUtil.findAnnotationInHierarchy(psiClass, Set.of(apiPair.getFirst()));
-        if (annotationInHierarchy != null) {
-          //					PsiClass apiType = PsiTreeUtil.getParentOfType(annotationInHierarchy, PsiClass.class);
-          //					if(apiType != null)
-          //					{
-          //						return apiType;
-          //					}
-          return Pair.create(annotationInHierarchy, apiPair.getFirst());
+    @RequiredReadAction
+    @Nullable
+    @Override
+    public LineMarkerInfo getLineMarkerInfo(@Nonnull PsiElement psiElement) {
+        if (PsiUtilCore.getElementType(psiElement) == JavaTokenType.IDENTIFIER && psiElement.getParent() instanceof PsiClass psiClass) {
+            Pair<PsiElement, String> apiInfo = findAPIElement(psiClass);
+            if (apiInfo != null) {
+                String navigationText = "Navigate to @" + StringUtil.getShortName(apiInfo.getSecond());
+                return new LineMarkerInfo<>(
+                    psiElement,
+                    psiElement.getTextRange(),
+                    AllIcons.Nodes.Plugin,
+                    Pass.LINE_MARKERS,
+                    element -> navigationText,
+                    (mouseEvent, element) -> {
+                        Pair<PsiElement, String> target = findAPIElement(psiClass);
+                        if (target != null) {
+                            PsiNavigateUtil.navigate(target.getFirst());
+                        }
+                    },
+                    GutterIconRenderer.Alignment.RIGHT
+                );
+            }
         }
-      }
+        return null;
     }
 
-    return null;
-  }
+    @Nullable
+    private Pair<PsiElement, String> findAPIElement(PsiClass psiClass) {
+        for (Pair<String, String> apiPair : ValhallaClasses.ApiToImpl) {
+            if (AnnotationUtil.isAnnotated(psiClass, apiPair.getSecond(), 0)) {
+                PsiAnnotation annotationInHierarchy = AnnotationUtil.findAnnotationInHierarchy(psiClass, Set.of(apiPair.getFirst()));
+                if (annotationInHierarchy != null) {
+                    //					PsiClass apiType = PsiTreeUtil.getParentOfType(annotationInHierarchy, PsiClass.class);
+                    //					if(apiType != null)
+                    //					{
+                    //						return apiType;
+                    //					}
+                    return Pair.create(annotationInHierarchy, apiPair.getFirst());
+                }
+            }
+        }
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return JavaLanguage.INSTANCE;
-  }
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return JavaLanguage.INSTANCE;
+    }
 }

@@ -26,9 +26,9 @@ import javax.annotation.Nonnull;
  * Time: 19:02
  */
 public interface BnfNamedElement extends BnfComposite, PsiNameIdentifierOwner {
-  @Nonnull
-  String getName();
+    @Nonnull
+    String getName();
 
-  @Nonnull
-  PsiElement getId();
+    @Nonnull
+    PsiElement getId();
 }
