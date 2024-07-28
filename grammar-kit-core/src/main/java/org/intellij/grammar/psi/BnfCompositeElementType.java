@@ -25,7 +25,7 @@ import org.intellij.grammar.BnfLanguage;
  * Time: 19:11
  */
 public class BnfCompositeElementType extends IElementType {
-  public BnfCompositeElementType(String debug) {
-    super(debug, BnfLanguage.INSTANCE);
-  }
+    public BnfCompositeElementType(String debug) {
+        super(debug, BnfLanguage.INSTANCE);
+    }
 }

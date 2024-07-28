@@ -39,67 +39,66 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfParserDefinition implements ParserDefinition {
+    public static final IFileElementType BNF_FILE_ELEMENT_TYPE = new IFileElementType("BNF_FILE", BnfLanguage.INSTANCE);
+    public static final TokenSet WS = TokenSet.create(TokenType.WHITE_SPACE);
+    public static final IElementType BNF_LINE_COMMENT = BnfTypes.BNF_LINE_COMMENT;
+    public static final IElementType BNF_BLOCK_COMMENT = BnfTypes.BNF_BLOCK_COMMENT;
+    public static final TokenSet COMMENTS = TokenSet.create(BNF_LINE_COMMENT, BNF_BLOCK_COMMENT);
+    public static final TokenSet LITERALS = TokenSet.create(BnfTypes.BNF_STRING);
 
-  public static final IFileElementType BNF_FILE_ELEMENT_TYPE = new IFileElementType("BNF_FILE", BnfLanguage.INSTANCE);
-  public static final TokenSet WS = TokenSet.create(TokenType.WHITE_SPACE);
-  public static final IElementType BNF_LINE_COMMENT = BnfTypes.BNF_LINE_COMMENT;
-  public static final IElementType BNF_BLOCK_COMMENT = BnfTypes.BNF_BLOCK_COMMENT;
-  public static final TokenSet COMMENTS = TokenSet.create(BNF_LINE_COMMENT, BNF_BLOCK_COMMENT);
-  public static final TokenSet LITERALS = TokenSet.create(BnfTypes.BNF_STRING);
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Lexer createLexer(LanguageVersion languageVersion) {
+        return new BnfLexer();
+    }
 
-  @Nonnull
-  @Override
-  public Lexer createLexer(LanguageVersion languageVersion) {
-    return new BnfLexer();
-  }
+    @Override
+    public PsiParser createParser(LanguageVersion languageVersion) {
+        return new GrammarParser();
+    }
 
-  @Override
-  public PsiParser createParser(LanguageVersion languageVersion) {
-    return new GrammarParser();
-  }
+    @Override
+    public IFileElementType getFileNodeType() {
+        return BNF_FILE_ELEMENT_TYPE;
+    }
 
-  @Override
-  public IFileElementType getFileNodeType() {
-    return BNF_FILE_ELEMENT_TYPE;
-  }
+    @Nonnull
+    @Override
+    public TokenSet getWhitespaceTokens(LanguageVersion languageVersion) {
+        return WS;
+    }
 
-  @Nonnull
-  @Override
-  public TokenSet getWhitespaceTokens(LanguageVersion languageVersion) {
-    return WS;
-  }
+    @Nonnull
+    @Override
+    public TokenSet getCommentTokens(LanguageVersion languageVersion) {
+        return COMMENTS;
+    }
 
-  @Nonnull
-  @Override
-  public TokenSet getCommentTokens(LanguageVersion languageVersion) {
-    return COMMENTS;
-  }
+    @Nonnull
+    @Override
+    public TokenSet getStringLiteralElements(LanguageVersion languageVersion) {
+        return LITERALS;
+    }
 
-  @Nonnull
-  @Override
-  public TokenSet getStringLiteralElements(LanguageVersion languageVersion) {
-    return LITERALS;
-  }
+    @Nonnull
+    @Override
+    public PsiElement createElement(ASTNode astNode) {
+        return BnfTypes.Factory.createElement(astNode);
+    }
 
-  @Nonnull
-  @Override
-  public PsiElement createElement(ASTNode astNode) {
-    return BnfTypes.Factory.createElement(astNode);
-  }
+    @Override
+    public PsiFile createFile(FileViewProvider fileViewProvider) {
+        return new BnfFileImpl(fileViewProvider);
+    }
 
-  @Override
-  public PsiFile createFile(FileViewProvider fileViewProvider) {
-    return new BnfFileImpl(fileViewProvider);
-  }
-
-  @Override
-  public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode astNode, ASTNode astNode1) {
-    return SpaceRequirements.MAY;
-  }
+    @Override
+    public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode astNode, ASTNode astNode1) {
+        return SpaceRequirements.MAY;
+    }
 }

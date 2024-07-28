@@ -29,10 +29,10 @@ import javax.annotation.Nonnull;
  * @since 28-Jan-17
  */
 public class InternalGroup extends DefaultActionGroup {
-  @RequiredUIAccess
-  @Override
-  public void update(@Nonnull AnActionEvent e) {
-    Project project = e.getData(Project.KEY);
-    e.getPresentation().setVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
-  }
+    @RequiredUIAccess
+    @Override
+    public void update(@Nonnull AnActionEvent e) {
+        Project project = e.getData(Project.KEY);
+        e.getPresentation().setVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
+    }
 }

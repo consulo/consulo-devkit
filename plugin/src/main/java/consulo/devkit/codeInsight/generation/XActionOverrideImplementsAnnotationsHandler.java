@@ -32,24 +32,24 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class XActionOverrideImplementsAnnotationsHandler implements OverrideImplementsAnnotationsHandler {
-  private static final String[] ourAnnotations = new String[]{
-    RequiredReadAction.class.getName(),
-    RequiredWriteAction.class.getName(),
-    RequiredUIAccess.class.getName(),
-    RequiredUIAccess.class.getName()
-  };
+    private static final String[] ourAnnotations = new String[]{
+        RequiredReadAction.class.getName(),
+        RequiredWriteAction.class.getName(),
+        RequiredUIAccess.class.getName(),
+        RequiredUIAccess.class.getName()
+    };
 
-  @Override
-  public String[] getAnnotations(Project project) {
-    return ourAnnotations;
-  }
-
-  @Nonnull
-  @Override
-  public String[] annotationsToRemove(Project project, @Nonnull String s) {
-    if (ArrayUtil.contains(s, ourAnnotations)) {
-      return ourAnnotations;
+    @Override
+    public String[] getAnnotations(Project project) {
+        return ourAnnotations;
     }
-    return ArrayUtil.EMPTY_STRING_ARRAY;
-  }
+
+    @Nonnull
+    @Override
+    public String[] annotationsToRemove(Project project, @Nonnull String s) {
+        if (ArrayUtil.contains(s, ourAnnotations)) {
+            return ourAnnotations;
+        }
+        return ArrayUtil.EMPTY_STRING_ARRAY;
+    }
 }

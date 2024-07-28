@@ -29,8 +29,8 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfFileTypeFactory extends FileTypeFactory {
-  @Override
-  public void createFileTypes(@Nonnull FileTypeConsumer fileTypeConsumer) {
-    fileTypeConsumer.consume(BnfFileType.INSTANCE);
-  }
+    @Override
+    public void createFileTypes(@Nonnull FileTypeConsumer fileTypeConsumer) {
+        fileTypeConsumer.consume(BnfFileType.INSTANCE);
+    }
 }

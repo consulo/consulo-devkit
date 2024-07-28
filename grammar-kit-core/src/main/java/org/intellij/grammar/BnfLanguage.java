@@ -26,16 +26,15 @@ import javax.annotation.Nonnull;
  * Time: 22:44
  */
 public class BnfLanguage extends Language {
+    public static final BnfLanguage INSTANCE = new BnfLanguage();
 
-  public static final BnfLanguage INSTANCE = new BnfLanguage();
+    protected BnfLanguage() {
+        super("BNF");
+    }
 
-  protected BnfLanguage() {
-    super("BNF");
-  }
-
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Grammar-Kit BNF";
-  }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Grammar-Kit BNF";
+    }
 }

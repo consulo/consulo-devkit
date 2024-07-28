@@ -29,32 +29,32 @@ import javax.annotation.Nonnull;
  * Time: 22:46
  */
 public class BnfFileType extends LanguageFileType {
-  public static final BnfFileType INSTANCE = new BnfFileType();
+    public static final BnfFileType INSTANCE = new BnfFileType();
 
-  protected BnfFileType() {
-    super(BnfLanguage.INSTANCE);
-  }
+    protected BnfFileType() {
+        super(BnfLanguage.INSTANCE);
+    }
 
-  @Nonnull
-  @Override
-  public String getId() {
-    return "BNF";
-  }
+    @Nonnull
+    @Override
+    public String getId() {
+        return "BNF";
+    }
 
-  @Nonnull
-  @Override
-  public LocalizeValue getDescription() {
-    return LocalizeValue.localizeTODO("BNF Grammar");
-  }
+    @Nonnull
+    @Override
+    public LocalizeValue getDescription() {
+        return LocalizeValue.localizeTODO("BNF Grammar");
+    }
 
-  @Nonnull
-  @Override
-  public String getDefaultExtension() {
-    return "bnf";
-  }
+    @Nonnull
+    @Override
+    public String getDefaultExtension() {
+        return "bnf";
+    }
 
-  @Override
-  public Image getIcon() {
-    return GrammarKitIconGroup.grammarfile();
-  }
+    @Override
+    public Image getIcon() {
+        return GrammarKitIconGroup.grammarfile();
+    }
 }
