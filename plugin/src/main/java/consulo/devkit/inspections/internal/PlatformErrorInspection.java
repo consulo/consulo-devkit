@@ -40,55 +40,57 @@ import java.util.Collection;
  */
 @ExtensionImpl
 public class PlatformErrorInspection extends InternalInspection {
-  private final MultiMap<String, String> myRestrictedMethodList = MultiMap.create();
+    private final MultiMap<String, String> myRestrictedMethodList = MultiMap.create();
 
-  public PlatformErrorInspection() {
-    myRestrictedMethodList.putValue(System.class.getName(), "getProperties");
-    myRestrictedMethodList.putValue(System.class.getName(), "getProperty");
-    myRestrictedMethodList.putValue(System.class.getName(), "getenv");
-    myRestrictedMethodList.putValue(System.class.getName(), "lineSeparator");
-    myRestrictedMethodList.putValue(System.class.getName(), "setProperties");
-    myRestrictedMethodList.putValue(System.class.getName(), "setProperty");
-    myRestrictedMethodList.putValue(System.class.getName(), "clearProperty");
+    public PlatformErrorInspection() {
+        myRestrictedMethodList.putValue(System.class.getName(), "getProperties");
+        myRestrictedMethodList.putValue(System.class.getName(), "getProperty");
+        myRestrictedMethodList.putValue(System.class.getName(), "getenv");
+        myRestrictedMethodList.putValue(System.class.getName(), "lineSeparator");
+        myRestrictedMethodList.putValue(System.class.getName(), "setProperties");
+        myRestrictedMethodList.putValue(System.class.getName(), "setProperty");
+        myRestrictedMethodList.putValue(System.class.getName(), "clearProperty");
 
-    myRestrictedMethodList.putValue(Boolean.class.getName(), "getBoolean");
-    myRestrictedMethodList.putValue(Integer.class.getName(), "getInteger");
-    myRestrictedMethodList.putValue(Long.class.getName(), "getLong");
-  }
-
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Platform method specific restriction";
-  }
-
-  @Nonnull
-  @Override
-  @RequiredReadAction
-  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
-    if (PluginModuleUtil.searchClassInFileUseScope(holder.getFile(), Platform.class.getName()) == null) {
-      return PsiElementVisitor.EMPTY_VISITOR;
+        myRestrictedMethodList.putValue(Boolean.class.getName(), "getBoolean");
+        myRestrictedMethodList.putValue(Integer.class.getName(), "getInteger");
+        myRestrictedMethodList.putValue(Long.class.getName(), "getLong");
     }
 
-    return new JavaElementVisitor() {
-      @Override
-      @RequiredReadAction
-      public void visitMethodCallExpression(PsiMethodCallExpression expression) {
-        PsiMethod method = expression.resolveMethod();
-        if (method != null && myRestrictedMethodList.containsScalarValue(method.getName())) {
-          PsiClass containingClass = method.getContainingClass();
-          if (containingClass != null) {
-            Collection<String> strings = myRestrictedMethodList.get(containingClass.getQualifiedName());
-            if (strings.contains(method.getName())) {
-              TextRange range = expression.getMethodExpression().getRangeInElement();
-              holder.registerProblem(expression,
-                                     "Platform call restricted. Use 'consulo.platform.Platform.current()'",
-                                     ProblemHighlightType.GENERIC_ERROR,
-                                     range);
-            }
-          }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Platform method specific restriction";
+    }
+
+    @Nonnull
+    @Override
+    @RequiredReadAction
+    public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        if (PluginModuleUtil.searchClassInFileUseScope(holder.getFile(), Platform.class.getName()) == null) {
+            return PsiElementVisitor.EMPTY_VISITOR;
         }
-      }
-    };
-  }
+
+        return new JavaElementVisitor() {
+            @Override
+            @RequiredReadAction
+            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+                PsiMethod method = expression.resolveMethod();
+                if (method != null && myRestrictedMethodList.containsScalarValue(method.getName())) {
+                    PsiClass containingClass = method.getContainingClass();
+                    if (containingClass != null) {
+                        Collection<String> strings = myRestrictedMethodList.get(containingClass.getQualifiedName());
+                        if (strings.contains(method.getName())) {
+                            TextRange range = expression.getMethodExpression().getRangeInElement();
+                            holder.registerProblem(
+                                expression,
+                                "Platform call restricted. Use 'consulo.platform.Platform.current()'",
+                                ProblemHighlightType.GENERIC_ERROR,
+                                range
+                            );
+                        }
+                    }
+                }
+            }
+        };
+    }
 }

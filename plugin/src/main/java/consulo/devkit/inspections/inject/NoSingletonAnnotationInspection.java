@@ -22,46 +22,48 @@ import java.util.List;
  */
 @ExtensionImpl
 public class NoSingletonAnnotationInspection extends InternalInspection {
-  private static final List<String> SINGLETON_ANNOTATIONS = List.of("jakarta.inject.Singleton");
+    private static final List<String> SINGLETON_ANNOTATIONS = List.of("jakarta.inject.Singleton");
 
-  private static class Visitor extends JavaElementVisitor {
-    private final ProblemsHolder myHolder;
+    private static class Visitor extends JavaElementVisitor {
+        private final ProblemsHolder myHolder;
 
-    public Visitor(ProblemsHolder holder) {
-      myHolder = holder;
+        public Visitor(ProblemsHolder holder) {
+            myHolder = holder;
+        }
+
+        @Override
+        @RequiredReadAction
+        public void visitClass(PsiClass aClass) {
+            if (isSingleton(aClass) && !AnnotationUtil.isAnnotated(aClass, SINGLETON_ANNOTATIONS, 0)) {
+                myHolder.registerProblem(
+                    aClass.getNameIdentifier(),
+                    "Missed @Singleton annotation",
+                    new AddAnnotationFix(SINGLETON_ANNOTATIONS.get(0), aClass)
+                );
+            }
+        }
+    }
+
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.ERROR;
+    }
+
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Missed @Singleton annotation for services";
     }
 
     @Override
-    @RequiredReadAction
-    public void visitClass(PsiClass aClass) {
-      if (isSingleton(aClass) && !AnnotationUtil.isAnnotated(aClass, SINGLETON_ANNOTATIONS, 0)) {
-        myHolder.registerProblem(aClass.getNameIdentifier(),
-                                 "Missed @Singleton annotation",
-                                 new AddAnnotationFix(SINGLETON_ANNOTATIONS.get(0), aClass));
-      }
+    public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        return new Visitor(holder);
     }
-  }
 
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.ERROR;
-  }
-
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Missed @Singleton annotation for services";
-  }
-
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
-    return new Visitor(holder);
-  }
-
-  @RequiredReadAction
-  private static boolean isSingleton(PsiClass psiClass) {
-    ServiceInfo serviceInfo = ServiceLocator.findImplementationService(psiClass);
-    return serviceInfo != null;
-  }
+    @RequiredReadAction
+    private static boolean isSingleton(PsiClass psiClass) {
+        ServiceInfo serviceInfo = ServiceLocator.findImplementationService(psiClass);
+        return serviceInfo != null;
+    }
 }

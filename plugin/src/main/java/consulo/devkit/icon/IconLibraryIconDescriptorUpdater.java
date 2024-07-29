@@ -32,7 +32,11 @@ public class IconLibraryIconDescriptorUpdater implements IconDescriptorUpdater {
     private final ProjectIconsAccessor myProjectIconsAccessor;
 
     @Inject
-    public IconLibraryIconDescriptorUpdater(DirectoryIndex directoryIndex, IconDeferrer iconDeferrer, ProjectIconsAccessor projectIconsAccessor) {
+    public IconLibraryIconDescriptorUpdater(
+        DirectoryIndex directoryIndex,
+        IconDeferrer iconDeferrer,
+        ProjectIconsAccessor projectIconsAccessor
+    ) {
         myDirectoryIndex = directoryIndex;
         myIconDeferrer = iconDeferrer;
         myProjectIconsAccessor = projectIconsAccessor;
@@ -80,21 +84,13 @@ public class IconLibraryIconDescriptorUpdater implements IconDescriptorUpdater {
         VirtualFile contentRoot = info.getSourceRoot();
         if (contentRoot != null) {
             String relativePath = VirtualFileUtil.getRelativePath(virtualFile, contentRoot);
-            if (relativePath == null || !relativePath.startsWith("ICON-LIB/")) {
-                return false;
-            }
-
-            return true;
+            return relativePath != null && relativePath.startsWith("ICON-LIB/");
         }
 
         VirtualFile libraryClassRoot = info.getLibraryClassRoot();
         if (libraryClassRoot != null) {
             String relativePath = VirtualFileUtil.getRelativePath(virtualFile, libraryClassRoot);
-            if (relativePath == null || !relativePath.startsWith("ICON-LIB/")) {
-                return false;
-            }
-
-            return true;
+            return relativePath != null && relativePath.startsWith("ICON-LIB/");
         }
 
         return false;

@@ -42,9 +42,9 @@ public class IconLibraryLineMarkerProvider implements LineMarkerProvider {
     @Override
     public LineMarkerInfo getLineMarkerInfo(@Nonnull PsiElement element) {
         // method call like MyIconGroup.testMe()
-        if (element instanceof PsiIdentifier && element.getParent() instanceof PsiReferenceExpression && element.getParent()
-            .getParent() instanceof PsiMethodCallExpression) {
-            PsiMethodCallExpression methodCall = (PsiMethodCallExpression) element.getParent().getParent();
+        if (element instanceof PsiIdentifier && element.getParent() instanceof PsiReferenceExpression
+            && element.getParent().getParent() instanceof PsiMethodCallExpression) {
+            PsiMethodCallExpression methodCall = (PsiMethodCallExpression)element.getParent().getParent();
 
             PsiMethod psiMethod = methodCall.resolveMethod();
             if (psiMethod != null) {
@@ -52,8 +52,8 @@ public class IconLibraryLineMarkerProvider implements LineMarkerProvider {
             }
         }
         // method declaration inside MyIconGroup
-        else if (element instanceof PsiIdentifier && element.getParent() instanceof PsiMethod) {
-            return create(element, (PsiMethod) element.getParent());
+        else if (element instanceof PsiIdentifier && element.getParent() instanceof PsiMethod method) {
+            return create(element, method);
         }
         return null;
     }
@@ -64,15 +64,15 @@ public class IconLibraryLineMarkerProvider implements LineMarkerProvider {
         Project project = targetElement.getProject();
         Pair<Image, VirtualFile> pair = IconLibraryGroupImageCache.getInstance(project).getImage(psiMethod);
         if (pair != null) {
-            return new LineMarkerInfo<>(targetElement,
+            return new LineMarkerInfo<>(
+                targetElement,
                 targetElement.getTextRange(),
                 pair.getFirst(),
                 Pass.LINE_MARKERS,
                 null,
-                (mouseEvent, element) -> {
-                    OpenFileDescriptorFactory.getInstance(project).builder(pair.getSecond()).build().navigate(true);
-                },
-                GutterIconRenderer.Alignment.RIGHT);
+                (mouseEvent, element) -> OpenFileDescriptorFactory.getInstance(project).builder(pair.getSecond()).build().navigate(true),
+                GutterIconRenderer.Alignment.RIGHT
+            );
         }
 
         return null;

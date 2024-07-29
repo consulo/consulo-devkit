@@ -6,7 +6,7 @@ package consulo.devkit.inspections.util.service;
  */
 @Deprecated
 public enum ExtensionAreaId {
-  APPLICATION,
-  PROJECT,
-  MODULE
+    APPLICATION,
+    PROJECT,
+    MODULE
 }

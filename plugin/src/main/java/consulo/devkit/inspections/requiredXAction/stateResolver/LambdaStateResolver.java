@@ -30,19 +30,21 @@ import javax.annotation.Nullable;
  * @since 01-Oct-16
  */
 public class LambdaStateResolver extends StateResolver {
-  public static final StateResolver INSTANCE = new LambdaStateResolver();
+    public static final StateResolver INSTANCE = new LambdaStateResolver();
 
-  @RequiredReadAction
-  @Nullable
-  @Override
-  public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
-    PsiLambdaExpression lambdaExpression = PsiTreeUtil.getParentOfType(expression, PsiLambdaExpression.class);
-    if (lambdaExpression == null) {
-      return null;
+    @RequiredReadAction
+    @Nullable
+    @Override
+    public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
+        PsiLambdaExpression lambdaExpression = PsiTreeUtil.getParentOfType(expression, PsiLambdaExpression.class);
+        if (lambdaExpression == null) {
+            return null;
+        }
+
+        PsiElement maybeParameterListOrVariable = lambdaExpression.getParent();
+        return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType) || isAllowedFunctionCall(
+            lambdaExpression,
+            actionType
+        );
     }
-
-    PsiElement maybeParameterListOrVariable = lambdaExpression.getParent();
-    return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType) || isAllowedFunctionCall(lambdaExpression,
-                                                                                                                    actionType);
-  }
 }

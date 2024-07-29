@@ -21,44 +21,46 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection {
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Extension implementation is not annotated by @ExtensionImpl";
-  }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Extension implementation is not annotated by @ExtensionImpl";
+    }
 
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      @RequiredReadAction
-      public void visitClass(PsiClass aClass) {
-        PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
-        if (nameIdentifier == null) {
-          return;
-        }
+    @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            @RequiredReadAction
+            public void visitClass(PsiClass aClass) {
+                PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
+                if (nameIdentifier == null) {
+                    return;
+                }
 
-        if (!ExtensionImplUtil.isTargetClass(aClass)) {
-          return;
-        }
+                if (!ExtensionImplUtil.isTargetClass(aClass)) {
+                    return;
+                }
 
-        // not annotated by @ExtensionAPI, and not annotated by @ExtensionImpl, but has @ExtensionAPI in class hierarchy
-        if (!AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, 0) &&
-          !AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionImpl, 0) &&
-          AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, AnnotationUtil.CHECK_HIERARCHY)) {
-          PsiClass syntheticAction =
-            JavaPsiFacade.getInstance(aClass.getProject()).findClass(ValhallaClasses.SyntheticIntentionAction, aClass.getResolveScope());
-          if (syntheticAction != null && aClass.isInheritor(syntheticAction, true)) {
-            return;
-          }
+                // not annotated by @ExtensionAPI, and not annotated by @ExtensionImpl, but has @ExtensionAPI in class hierarchy
+                if (!AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, 0) &&
+                    !AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionImpl, 0) &&
+                    AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, AnnotationUtil.CHECK_HIERARCHY)) {
+                    PsiClass syntheticAction = JavaPsiFacade.getInstance(aClass.getProject())
+                        .findClass(ValhallaClasses.SyntheticIntentionAction, aClass.getResolveScope());
+                    if (syntheticAction != null && aClass.isInheritor(syntheticAction, true)) {
+                        return;
+                    }
 
-          AddAnnotationFix addAnnotationFix = new AddAnnotationFix(ValhallaClasses.ExtensionImpl, aClass);
-          holder.registerProblem(nameIdentifier,
-                                 "Extension implementation not annotated by @ExtensionImpl",
-                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                 addAnnotationFix);
-        }
-      }
-    };
-  }
+                    AddAnnotationFix addAnnotationFix = new AddAnnotationFix(ValhallaClasses.ExtensionImpl, aClass);
+                    holder.registerProblem(
+                        nameIdentifier,
+                        "Extension implementation not annotated by @ExtensionImpl",
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        addAnnotationFix
+                    );
+                }
+            }
+        };
+    }
 }

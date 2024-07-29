@@ -28,15 +28,14 @@ import javax.annotation.Nullable;
  * @since 01-Oct-16
  */
 public class MethodReferenceResolver extends StateResolver {
-  public static final StateResolver INSTANCE = new MethodReferenceResolver();
+    public static final StateResolver INSTANCE = new MethodReferenceResolver();
 
-  @RequiredReadAction
-  @Nullable
-  @Override
-  public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
-    PsiMethodReferenceExpression methodReferenceExpression = (PsiMethodReferenceExpression)expression;
-    return resolveByMaybeParameterListOrVariable(methodReferenceExpression.getParent(), actionType) || isAllowedFunctionCall(
-      methodReferenceExpression,
-      actionType);
-  }
+    @RequiredReadAction
+    @Nullable
+    @Override
+    public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
+        PsiMethodReferenceExpression methodReferenceExpression = (PsiMethodReferenceExpression)expression;
+        return resolveByMaybeParameterListOrVariable(methodReferenceExpression.getParent(), actionType)
+            || isAllowedFunctionCall(methodReferenceExpression, actionType);
+    }
 }

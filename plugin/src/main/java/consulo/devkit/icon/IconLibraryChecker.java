@@ -24,10 +24,14 @@ public class IconLibraryChecker {
             return false;
         }
 
-        return LanguageCachedValueUtil.getCachedValue(containingFile, () -> {
-            Project project = containingFile.getProject();
-            PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(ImageKey.class.getName(), containingFile.getResolveScope());
-            return CachedValueProvider.Result.create(psiClass != null, ProjectRootManager.getInstance(project));
-        });
+        return LanguageCachedValueUtil.getCachedValue(
+            containingFile,
+            () -> {
+                Project project = containingFile.getProject();
+                PsiClass psiClass =
+                    JavaPsiFacade.getInstance(project).findClass(ImageKey.class.getName(), containingFile.getResolveScope());
+                return CachedValueProvider.Result.create(psiClass != null, ProjectRootManager.getInstance(project));
+            }
+        );
     }
 }

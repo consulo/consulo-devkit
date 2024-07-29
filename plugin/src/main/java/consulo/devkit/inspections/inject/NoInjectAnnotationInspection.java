@@ -24,80 +24,80 @@ import java.util.List;
  */
 @ExtensionImpl
 public class NoInjectAnnotationInspection extends InternalInspection {
-  public static final List<String> INJECT_ANNOTATIONS = List.of("jakarta.inject.Inject");
+    public static final List<String> INJECT_ANNOTATIONS = List.of("jakarta.inject.Inject");
 
-  private static class Visitor extends JavaElementVisitor {
-    private final ProblemsHolder myHolder;
+    private static class Visitor extends JavaElementVisitor {
+        private final ProblemsHolder myHolder;
 
-    public Visitor(ProblemsHolder holder) {
-      myHolder = holder;
+        public Visitor(ProblemsHolder holder) {
+            myHolder = holder;
+        }
+
+        @Override
+        @RequiredReadAction
+        public void visitClass(PsiClass aClass) {
+            if (!isInjectionTarget(aClass)) {
+                return;
+            }
+
+            PsiMethod[] constructors = aClass.getConstructors();
+            if (constructors.length == 0) {
+                // default constructor
+                if (aClass.hasModifierProperty(PsiModifier.PUBLIC)) {
+                    return;
+                }
+            }
+            else {
+                PsiMethod defaultConstructor = null;
+                for (PsiMethod constructor : constructors) {
+                    if (constructor.hasModifierProperty(PsiModifier.PUBLIC) && constructor.getParameterList().getParametersCount() == 0) {
+                        defaultConstructor = constructor;
+                    }
+
+                    if (AnnotationUtil.isAnnotated(constructor, INJECT_ANNOTATIONS, 0)) {
+                        return;
+                    }
+                }
+
+                if (constructors.length == 1 && defaultConstructor != null) {
+                    return;
+                }
+            }
+
+            myHolder.registerProblem(aClass.getNameIdentifier(), "Missed @Inject annotation");
+        }
+    }
+
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Missed @Inject annotation for services & extensions";
+    }
+
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.ERROR;
     }
 
     @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        return new Visitor(holder);
+    }
+
     @RequiredReadAction
-    public void visitClass(PsiClass aClass) {
-      if (!isInjectionTarget(aClass)) {
-        return;
-      }
-
-      PsiMethod[] constructors = aClass.getConstructors();
-      if (constructors.length == 0) {
-        // default constructor
-        if (aClass.hasModifierProperty(PsiModifier.PUBLIC)) {
-          return;
-        }
-      }
-      else {
-        PsiMethod defaultConstructor = null;
-        for (PsiMethod constructor : constructors) {
-          if (constructor.hasModifierProperty(PsiModifier.PUBLIC) && constructor.getParameterList().getParametersCount() == 0) {
-            defaultConstructor = constructor;
-          }
-
-          if (AnnotationUtil.isAnnotated(constructor, INJECT_ANNOTATIONS, 0)) {
-            return;
-          }
+    private static boolean isInjectionTarget(PsiClass psiClass) {
+        ServiceInfo serviceInfo = ServiceLocator.findImplementationService(psiClass);
+        if (serviceInfo != null) {
+            // old XML service
+            return true;
         }
 
-        if (constructors.length == 1 && defaultConstructor != null) {
-          return;
+        for (String annotation : ValhallaClasses.Impl) {
+            if (AnnotationUtil.isAnnotated(psiClass, annotation, 0)) {
+                return true;
+            }
         }
-      }
-
-      myHolder.registerProblem(aClass.getNameIdentifier(), "Missed @Inject annotation");
+        return false;
     }
-  }
-
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Missed @Inject annotation for services & extensions";
-  }
-
-  @Nonnull
-  @Override
-  public HighlightDisplayLevel getDefaultLevel() {
-    return HighlightDisplayLevel.ERROR;
-  }
-
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
-    return new Visitor(holder);
-  }
-
-  @RequiredReadAction
-  private static boolean isInjectionTarget(PsiClass psiClass) {
-    ServiceInfo serviceInfo = ServiceLocator.findImplementationService(psiClass);
-    if (serviceInfo != null) {
-      // old XML service
-      return true;
-    }
-
-    for (String annotation : ValhallaClasses.Impl) {
-      if (AnnotationUtil.isAnnotated(psiClass, annotation, 0)) {
-        return true;
-      }
-    }
-    return false;
-  }
 }

@@ -10,6 +10,6 @@ import java.util.List;
  * @since 01/11/2021
  */
 public interface Permissions extends DomElement {
-  @SubTagList("permission")
-  List<Permission> getPermissions();
+    @SubTagList("permission")
+    List<Permission> getPermissions();
 }

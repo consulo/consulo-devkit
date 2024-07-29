@@ -41,114 +41,118 @@ import javax.swing.*;
  * @since 22-Jun-16
  */
 public enum CallStateType {
-  NONE(null, null),
-  @SuppressWarnings("deprecation")
-  READ(
-    RequiredReadAction.class.getName(),
-    new AcceptableMethodCallCheck(Application.class, "runReadAction"),
-    new AcceptableMethodCallCheck(ReadAction.class, "run"),
-    new AcceptableMethodCallCheck(ReadAction.class, "compute")
-  ) {
-    @Override
-    @RequiredReadAction
+    NONE(null, null),
+    @SuppressWarnings("deprecation")
+    READ(
+        RequiredReadAction.class.getName(),
+        new AcceptableMethodCallCheck(Application.class, "runReadAction"),
+        new AcceptableMethodCallCheck(ReadAction.class, "run"),
+        new AcceptableMethodCallCheck(ReadAction.class, "compute")
+    ) {
+        @Override
+        @RequiredReadAction
+        public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
+            if (type == READ) {
+                return true;
+            }
+            // in new data lock model ui thread not provide read lock
+            if (type == UI_ACCESS) {
+                return !isNewDataLockModel(context);
+            }
+            return type == WRITE;
+        }
+
+        @RequiredReadAction
+        private boolean isNewDataLockModel(PsiElement context) {
+            Module module = context.getModule();
+            //noinspection SimplifiableIfStatement
+            if (module == null) {
+                return false;
+            }
+            return JavaPsiFacade.getInstance(context.getProject())
+                .findClass("consulo.application.concurrent.DataLock", GlobalSearchScope.moduleWithDependenciesScope(module)) != null;
+        }
+    },
+    WRITE(
+        RequiredWriteAction.class.getName(),
+        new AcceptableMethodCallCheck(Application.class, "runWriteAction"),
+        new AcceptableMethodCallCheck(WriteAction.class, "run"),
+        new AcceptableMethodCallCheck(WriteAction.class, "compute"),
+        new AcceptableMethodCallCheck(WriteCommandAction.class, "runWriteCommandAction")
+    ),
+    UI_ACCESS(
+        RequiredUIAccess.class.getName(),
+        new AcceptableMethodCallCheck(UIAccess.class, "give"),
+        new AcceptableMethodCallCheck(UIAccess.class, "giveIfNeed"),
+        new AcceptableMethodCallCheck(UIAccess.class, "giveAndWait"),
+        new AcceptableMethodCallCheck(UIAccess.class, "giveAndWaitIfNeed"),
+        new AcceptableMethodCallCheck(Application.class, "invokeLater"),
+        new AcceptableMethodCallCheck(Application.class, "invokeAndWait"),
+        new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),
+        new AcceptableMethodCallCheck(UIUtil.class, "invokeLaterIfNeeded"),
+        new AcceptableMethodCallCheck(SwingUtilities.class, "invokeAndWait"),
+        new AcceptableMethodCallCheck(SwingUtilities.class, "invokeLater")
+    ) {
+        @Override
+        public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
+            // write actions required call from dispatch thread, and it inherit dispatch state
+            return type == UI_ACCESS || type == WRITE;
+        }
+    };
+
+    @Nullable
+    private final String myActionClass;
+    @Nonnull
+    private final AcceptableMethodCallCheck[] myAcceptableMethodCallChecks;
+
+    @SuppressWarnings("NullableProblems")
+    CallStateType(@Nullable String actionClass, AcceptableMethodCallCheck... methodCallChecks) {
+        myActionClass = actionClass;
+        myAcceptableMethodCallChecks = methodCallChecks;
+    }
+
+    @Nonnull
+    public static CallStateType findSelfActionType(@Nonnull PsiMethod method) {
+        for (CallStateType actionType : values()) {
+            String actionClass = actionType.myActionClass;
+            if (actionClass == null) {
+                continue;
+            }
+
+            if (AnnotationUtil.isAnnotated(method, actionClass, 0)) {
+                return actionType;
+            }
+        }
+        return NONE;
+    }
+
+    @Nonnull
+    public AcceptableMethodCallCheck[] getAcceptableMethodCallChecks() {
+        return myAcceptableMethodCallChecks;
+    }
+
+    @Nonnull
+    public String getActionClass() {
+        assert myActionClass != null;
+        return myActionClass;
+    }
+
+    @Nonnull
+    public static CallStateType findActionType(@Nonnull PsiMethod method) {
+        for (CallStateType actionType : values()) {
+            String actionClass = actionType.myActionClass;
+            if (actionClass == null) {
+                continue;
+            }
+
+            if (AnnotationUtil.isAnnotated(method, actionClass, 0)) {
+                return actionType;
+            }
+        }
+        return NONE;
+    }
+
     public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
-      if (type == READ) return true;
-      // in new data lock model ui thread not provide read lock
-      if (type == UI_ACCESS) return !isNewDataLockModel(context);
-      return type == WRITE;
+        return type == this;
     }
-
-    @RequiredReadAction
-    private boolean isNewDataLockModel(PsiElement context) {
-      Module module = context.getModule();
-      //noinspection SimplifiableIfStatement
-      if (module == null) {
-        return false;
-      }
-      return JavaPsiFacade.getInstance(context.getProject())
-        .findClass("consulo.application.concurrent.DataLock", GlobalSearchScope.moduleWithDependenciesScope(module)) != null;
-    }
-  },
-  WRITE(
-    RequiredWriteAction.class.getName(),
-    new AcceptableMethodCallCheck(Application.class, "runWriteAction"),
-    new AcceptableMethodCallCheck(WriteAction.class, "run"),
-    new AcceptableMethodCallCheck(WriteAction.class, "compute"),
-    new AcceptableMethodCallCheck(WriteCommandAction.class, "runWriteCommandAction")
-  ),
-  UI_ACCESS(
-    RequiredUIAccess.class.getName(),
-    new AcceptableMethodCallCheck(UIAccess.class, "give"),
-    new AcceptableMethodCallCheck(UIAccess.class, "giveIfNeed"),
-    new AcceptableMethodCallCheck(UIAccess.class, "giveAndWait"),
-    new AcceptableMethodCallCheck(UIAccess.class, "giveAndWaitIfNeed"),
-    new AcceptableMethodCallCheck(Application.class, "invokeLater"),
-    new AcceptableMethodCallCheck(Application.class, "invokeAndWait"),
-    new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),
-    new AcceptableMethodCallCheck(UIUtil.class, "invokeLaterIfNeeded"),
-    new AcceptableMethodCallCheck(SwingUtilities.class, "invokeAndWait"),
-    new AcceptableMethodCallCheck(SwingUtilities.class, "invokeLater")
-  ) {
-    @Override
-    public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
-      // write actions required call from dispatch thread, and it inherit dispatch state
-      return type == UI_ACCESS || type == WRITE;
-    }
-  };
-
-  @Nullable
-  private final String myActionClass;
-  @Nonnull
-  private final AcceptableMethodCallCheck[] myAcceptableMethodCallChecks;
-
-  @SuppressWarnings("NullableProblems")
-  CallStateType(@Nullable String actionClass, AcceptableMethodCallCheck... methodCallChecks) {
-    myActionClass = actionClass;
-    myAcceptableMethodCallChecks = methodCallChecks;
-  }
-
-  @Nonnull
-  public static CallStateType findSelfActionType(@Nonnull PsiMethod method) {
-    for (CallStateType actionType : values()) {
-      String actionClass = actionType.myActionClass;
-      if (actionClass == null) {
-        continue;
-      }
-
-      if (AnnotationUtil.isAnnotated(method, actionClass, 0)) {
-        return actionType;
-      }
-    }
-    return NONE;
-  }
-
-  @Nonnull
-  public AcceptableMethodCallCheck[] getAcceptableMethodCallChecks() {
-    return myAcceptableMethodCallChecks;
-  }
-
-  @Nonnull
-  public String getActionClass() {
-    assert myActionClass != null;
-    return myActionClass;
-  }
-
-  @Nonnull
-  public static CallStateType findActionType(@Nonnull PsiMethod method) {
-    for (CallStateType actionType : values()) {
-      String actionClass = actionType.myActionClass;
-      if (actionClass == null) {
-        continue;
-      }
-
-      if (AnnotationUtil.isAnnotated(method, actionClass, 0)) {
-        return actionType;
-      }
-    }
-    return NONE;
-  }
-
-  public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
-    return type == this;
-  }
 }

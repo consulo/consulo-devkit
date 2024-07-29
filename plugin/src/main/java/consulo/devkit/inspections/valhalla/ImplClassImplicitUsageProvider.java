@@ -13,27 +13,22 @@ import consulo.language.psi.PsiElement;
  */
 @ExtensionImpl
 public class ImplClassImplicitUsageProvider implements ImplicitUsageProvider {
-  @Override
-  @RequiredReadAction
-  public boolean isImplicitUsage(PsiElement psiElement) {
-    if (psiElement instanceof PsiClass) {
-      if (ExtensionImplUtil.isTargetClass((PsiClass)psiElement) && AnnotationUtil.isAnnotated((PsiClass)psiElement,
-                                                                                              ValhallaClasses.Impl,
-                                                                                              0)) {
-        return true;
-      }
+    @Override
+    @RequiredReadAction
+    public boolean isImplicitUsage(PsiElement psiElement) {
+        return psiElement instanceof PsiClass psiClass
+            && ExtensionImplUtil.isTargetClass(psiClass)
+            && AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.Impl, 0);
     }
-    return false;
-  }
 
-  @Override
-  @RequiredReadAction
-  public boolean isImplicitRead(PsiElement psiElement) {
-    return isImplicitUsage(psiElement);
-  }
+    @Override
+    @RequiredReadAction
+    public boolean isImplicitRead(PsiElement psiElement) {
+        return isImplicitUsage(psiElement);
+    }
 
-  @Override
-  public boolean isImplicitWrite(PsiElement psiElement) {
-    return false;
-  }
+    @Override
+    public boolean isImplicitWrite(PsiElement psiElement) {
+        return false;
+    }
 }

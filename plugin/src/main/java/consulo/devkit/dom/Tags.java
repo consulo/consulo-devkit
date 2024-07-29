@@ -11,7 +11,7 @@ import java.util.List;
  * @since 03/11/2021
  */
 public interface Tags extends DomElement {
-  @SubTagList("tag")
-  @Required
-  List<Tag> getTags();
+    @SubTagList("tag")
+    @Required
+    List<Tag> getTags();
 }
