@@ -12,6 +12,6 @@ import java.util.List;
  */
 @DefinesXml
 public interface PluginRequires extends DomElement {
-  @SubTagList("plugins")
-  List<Plugins> getPlugins();
+    @SubTagList("plugins")
+    List<Plugins> getPlugins();
 }

@@ -25,10 +25,8 @@ import javax.annotation.Nonnull;
  * @author VISTALL
  * @since 1:58/23.05.13
  */
-public class PluginModuleExtension extends ModuleExtensionBase<PluginModuleExtension>
-{
-	public PluginModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module)
-	{
-		super(id, module);
-	}
+public class PluginModuleExtension extends ModuleExtensionBase<PluginModuleExtension> {
+    public PluginModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module) {
+        super(id, module);
+    }
 }

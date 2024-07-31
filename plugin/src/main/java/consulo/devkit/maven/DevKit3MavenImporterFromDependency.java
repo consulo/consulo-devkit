@@ -9,8 +9,8 @@ import jakarta.inject.Inject;
  */
 @ExtensionImpl
 public class DevKit3MavenImporterFromDependency extends DevKitMavenImporterFromDependency {
-  @Inject
-  public DevKit3MavenImporterFromDependency() {
-    super("consulo", "consulo-component-api");
-  }
+    @Inject
+    public DevKit3MavenImporterFromDependency() {
+        super("consulo", "consulo-component-api");
+    }
 }

@@ -18,39 +18,39 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl
 public class PluginModuleExtensionProvider implements ModuleExtensionProvider<PluginModuleExtension> {
-  @Nonnull
-  @Override
-  public String getId() {
-    return "consulo-plugin";
-  }
+    @Nonnull
+    @Override
+    public String getId() {
+        return "consulo-plugin";
+    }
 
-  @Nullable
-  @Override
-  public String getParentId() {
-    return "java";
-  }
+    @Nullable
+    @Override
+    public String getParentId() {
+        return "java";
+    }
 
-  @Nonnull
-  @Override
-  public LocalizeValue getName() {
-    return LocalizeValue.localizeTODO("Consulo Plugin");
-  }
+    @Nonnull
+    @Override
+    public LocalizeValue getName() {
+        return LocalizeValue.localizeTODO("Consulo Plugin");
+    }
 
-  @Nonnull
-  @Override
-  public Image getIcon() {
-    return PlatformIconGroup.icon16();
-  }
+    @Nonnull
+    @Override
+    public Image getIcon() {
+        return PlatformIconGroup.icon16();
+    }
 
-  @Nonnull
-  @Override
-  public ModuleExtension<PluginModuleExtension> createImmutableExtension(@Nonnull ModuleRootLayer moduleRootLayer) {
-    return new PluginModuleExtension(getId(), moduleRootLayer);
-  }
+    @Nonnull
+    @Override
+    public ModuleExtension<PluginModuleExtension> createImmutableExtension(@Nonnull ModuleRootLayer moduleRootLayer) {
+        return new PluginModuleExtension(getId(), moduleRootLayer);
+    }
 
-  @Nonnull
-  @Override
-  public MutableModuleExtension<PluginModuleExtension> createMutableExtension(@Nonnull ModuleRootLayer moduleRootLayer) {
-    return new PluginMutableModuleExtension(getId(), moduleRootLayer);
-  }
+    @Nonnull
+    @Override
+    public MutableModuleExtension<PluginModuleExtension> createMutableExtension(@Nonnull ModuleRootLayer moduleRootLayer) {
+        return new PluginMutableModuleExtension(getId(), moduleRootLayer);
+    }
 }
