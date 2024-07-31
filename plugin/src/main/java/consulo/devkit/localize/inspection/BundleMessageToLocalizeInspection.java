@@ -114,11 +114,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
         protected final LocalizeValue myInspectionName;
         protected final String myReplacementCodeBlock;
 
-        protected TransformToLocalizeFix(
-            @Nonnull PsiElement element,
-            LocalizeValue inspectionName,
-            String replacementCodeBlock
-        ) {
+        protected TransformToLocalizeFix(@Nonnull PsiElement element, LocalizeValue inspectionName, String replacementCodeBlock) {
             super(element);
             myInspectionName = inspectionName;
             myReplacementCodeBlock = replacementCodeBlock;

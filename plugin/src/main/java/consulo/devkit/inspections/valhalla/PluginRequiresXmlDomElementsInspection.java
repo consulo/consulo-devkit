@@ -14,24 +14,24 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class PluginRequiresXmlDomElementsInspection extends BasicDomElementsInspection<PluginRequires, Object> {
-  public PluginRequiresXmlDomElementsInspection() {
-    super(PluginRequires.class);
-  }
+    public PluginRequiresXmlDomElementsInspection() {
+        super(PluginRequires.class);
+    }
 
-  @Nls
-  @Nonnull
-  public String getGroupDisplayName() {
-    return DevKitLocalize.inspectionsGroupName().get();
-  }
+    @Nls
+    @Nonnull
+    public String getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName().get();
+    }
 
-  @Nls
-  @Nonnull
-  public String getDisplayName() {
-    return "Plugin Requires.xml Validity";
-  }
+    @Nls
+    @Nonnull
+    public String getDisplayName() {
+        return "Plugin Requires.xml Validity";
+    }
 
-  @Nonnull
-  public String getShortName() {
-    return "PluginRequiresXmlValidity";
-  }
+    @Nonnull
+    public String getShortName() {
+        return "PluginRequiresXmlValidity";
+    }
 }

@@ -29,30 +29,25 @@ import javax.annotation.Nullable;
  * @author VISTALL
  * @since 1:58/23.05.13
  */
-public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtension<PluginModuleExtension>
-{
-	public PluginMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module)
-	{
-		super(id, module);
-	}
+public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtension<PluginModuleExtension> {
+    public PluginMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module) {
+        super(id, module);
+    }
 
-	@RequiredUIAccess
-	@Nullable
-	@Override
-	public Component createConfigurationComponent(@Nonnull Disposable disposable, @Nonnull Runnable runnable)
-	{
-		return null;
-	}
+    @RequiredUIAccess
+    @Nullable
+    @Override
+    public Component createConfigurationComponent(@Nonnull Disposable disposable, @Nonnull Runnable runnable) {
+        return null;
+    }
 
-	@Override
-	public void setEnabled(boolean val)
-	{
-		myIsEnabled = val;
-	}
+    @Override
+    public void setEnabled(boolean val) {
+        myIsEnabled = val;
+    }
 
-	@Override
-	public boolean isModified(@Nonnull PluginModuleExtension pluginModuleExtension)
-	{
-		return isEnabled() != pluginModuleExtension.isEnabled();
-	}
+    @Override
+    public boolean isModified(@Nonnull PluginModuleExtension pluginModuleExtension) {
+        return isEnabled() != pluginModuleExtension.isEnabled();
+    }
 }

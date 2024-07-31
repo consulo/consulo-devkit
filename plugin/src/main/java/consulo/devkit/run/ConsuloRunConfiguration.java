@@ -33,27 +33,30 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase implements GenericDebugRunnerConfiguration {
-  public ConsuloRunConfiguration(Project project, ConfigurationFactory factory, String name) {
-    super(project, factory, name);
-  }
+    public ConsuloRunConfiguration(Project project, ConfigurationFactory factory, String name) {
+        super(project, factory, name);
+    }
 
-  @Nonnull
-  @Override
-  @SuppressWarnings("unchecked")
-  public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-    SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
-    settingsEditorGroup.addEditor("General", new ConsuloRunConfigurationEditor(getProject()));
-    settingsEditorGroup.addEditor("Coverage", new CoverageConfigurable(this));
-    settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfiguration>());
-    return settingsEditorGroup;
-  }
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
+        SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
+        settingsEditorGroup.addEditor("General", new ConsuloRunConfigurationEditor(getProject()));
+        settingsEditorGroup.addEditor("Coverage", new CoverageConfigurable(this));
+        settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfiguration>());
+        return settingsEditorGroup;
+    }
 
-  @Nonnull
-  @Override
-  public ConsuloSandboxRunState createState(Executor executor, @Nonnull ExecutionEnvironment env,
-                                            @Nonnull Sdk javaSdk,
-                                            @Nonnull String consuloHome,
-                                            @Nullable String pluginsHomePath) throws ExecutionException {
-    return new ConsuloSandboxRunState(env, javaSdk, consuloHome, pluginsHomePath);
-  }
+    @Nonnull
+    @Override
+    public ConsuloSandboxRunState createState(
+        Executor executor,
+        @Nonnull ExecutionEnvironment env,
+        @Nonnull Sdk javaSdk,
+        @Nonnull String consuloHome,
+        @Nullable String pluginsHomePath
+    ) throws ExecutionException {
+        return new ConsuloSandboxRunState(env, javaSdk, consuloHome, pluginsHomePath);
+    }
 }

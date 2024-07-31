@@ -45,63 +45,68 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl(order = "before defaultJavaDebugRunner")
 public class ConsuloDebuggerRunner extends GenericDebuggerRunner {
-  @Nonnull
-  @Override
-  public String getRunnerId() {
-    return "ConsuloDebuggerRunner";
-  }
-
-  @Override
-  public boolean canRun(@Nonnull String executorId, @Nonnull RunProfile profile) {
-    return super.canRun(executorId, profile) && profile instanceof ConsuloRunConfigurationBase;
-  }
-
-  @Nullable
-  @Override
-  protected RunContentDescriptor createContentDescriptor(@Nonnull RunProfileState state,
-                                                         @Nonnull ExecutionEnvironment env) throws ExecutionException {
-    String address = DebuggerUtils.getInstance().findAvailableDebugAddress(DebuggerSettings.SOCKET_TRANSPORT).address();
-    RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", address, false);
-
-    ConsuloSandboxRunState consuloSandboxRunState = (ConsuloSandboxRunState)state;
-
-    consuloSandboxRunState.addAdditionalVMParameter(connection.getLaunchCommandLine());
-    return attachVirtualMachine(consuloSandboxRunState, env, connection, true);
-  }
-
-  @Override
-  @Nullable
-  protected RunContentDescriptor attachVirtualMachine(RunProfileState state,
-                                                      @Nonnull ExecutionEnvironment env,
-                                                      RemoteConnection connection,
-                                                      boolean pollConnection) throws ExecutionException {
-    DebugEnvironment environment = new ConsuloDebugEnvironment(env, (ConsuloSandboxRunState)state, connection, pollConnection);
-    final DebuggerSession debuggerSession = DebuggerManagerEx.getInstanceEx(env.getProject()).attachVirtualMachine(environment);
-    if (debuggerSession == null) {
-      return null;
+    @Nonnull
+    @Override
+    public String getRunnerId() {
+        return "ConsuloDebuggerRunner";
     }
-    else {
-      final DebugProcessImpl debugProcess = debuggerSession.getProcess();
-      if (!debugProcess.isDetached() && !debugProcess.isDetaching()) {
-        if (environment.isRemote()) {
-          debugProcess.putUserData(BatchEvaluator.REMOTE_SESSION_KEY, Boolean.TRUE);
+
+    @Override
+    public boolean canRun(@Nonnull String executorId, @Nonnull RunProfile profile) {
+        return super.canRun(executorId, profile) && profile instanceof ConsuloRunConfigurationBase;
+    }
+
+    @Nullable
+    @Override
+    protected RunContentDescriptor createContentDescriptor(
+        @Nonnull RunProfileState state,
+        @Nonnull ExecutionEnvironment env
+    ) throws ExecutionException {
+        String address = DebuggerUtils.getInstance().findAvailableDebugAddress(DebuggerSettings.SOCKET_TRANSPORT).address();
+        RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", address, false);
+
+        ConsuloSandboxRunState consuloSandboxRunState = (ConsuloSandboxRunState)state;
+
+        consuloSandboxRunState.addAdditionalVMParameter(connection.getLaunchCommandLine());
+        return attachVirtualMachine(consuloSandboxRunState, env, connection, true);
+    }
+
+    @Override
+    @Nullable
+    protected RunContentDescriptor attachVirtualMachine(
+        RunProfileState state,
+        @Nonnull ExecutionEnvironment env,
+        RemoteConnection connection,
+        boolean pollConnection
+    ) throws ExecutionException {
+        DebugEnvironment environment = new ConsuloDebugEnvironment(env, (ConsuloSandboxRunState)state, connection, pollConnection);
+        final DebuggerSession debuggerSession = DebuggerManagerEx.getInstanceEx(env.getProject()).attachVirtualMachine(environment);
+        if (debuggerSession == null) {
+            return null;
         }
+        else {
+            final DebugProcessImpl debugProcess = debuggerSession.getProcess();
+            if (!debugProcess.isDetached() && !debugProcess.isDetaching()) {
+                if (environment.isRemote()) {
+                    debugProcess.putUserData(BatchEvaluator.REMOTE_SESSION_KEY, Boolean.TRUE);
+                }
 
-        return XDebuggerManager.getInstance(env.getProject()).startSession(env, session ->
-        {
-          ExecutionResult executionResult = debugProcess.getExecutionResult();
-          session.addExtraActions(executionResult.getActions());
-          if (executionResult instanceof DefaultExecutionResult) {
-            session.addRestartActions(((DefaultExecutionResult)executionResult).getRestartActions());
-          }
+                return XDebuggerManager.getInstance(env.getProject())
+                    .startSession(env, session -> {
+                        ExecutionResult executionResult = debugProcess.getExecutionResult();
+                        session.addExtraActions(executionResult.getActions());
+                        if (executionResult instanceof DefaultExecutionResult) {
+                            session.addRestartActions(((DefaultExecutionResult)executionResult).getRestartActions());
+                        }
 
-          return JavaDebugProcess.create(session, debuggerSession);
-        }).getRunContentDescriptor();
-      }
-      else {
-        debuggerSession.dispose();
-        return null;
-      }
+                        return JavaDebugProcess.create(session, debuggerSession);
+                    })
+                    .getRunContentDescriptor();
+            }
+            else {
+                debuggerSession.dispose();
+                return null;
+            }
+        }
     }
-  }
 }

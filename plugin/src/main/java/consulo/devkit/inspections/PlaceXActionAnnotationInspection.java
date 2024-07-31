@@ -38,79 +38,79 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class PlaceXActionAnnotationInspection extends InternalInspection {
-  private static class MyAnnotateMethodFix extends AnnotateMethodFix {
-    public MyAnnotateMethodFix(String fqn, String... annotationsToRemove) {
-      super(fqn, annotationsToRemove);
+    private static class MyAnnotateMethodFix extends AnnotateMethodFix {
+        public MyAnnotateMethodFix(String fqn, String... annotationsToRemove) {
+            super(fqn, annotationsToRemove);
+        }
+
+        @Nonnull
+        @Override
+        protected String getPreposition() {
+            return "as";
+        }
+
+        @Override
+        protected boolean annotateOverriddenMethods() {
+            return true;
+        }
+
+        @Override
+        protected boolean annotateSelf() {
+            return false;
+        }
     }
 
     @Nonnull
     @Override
-    protected String getPreposition() {
-      return "as";
-    }
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            public void visitMethod(PsiMethod method) {
+                if (method.isConstructor()) {
+                    return;
+                }
 
-    @Override
-    protected boolean annotateOverriddenMethods() {
-      return true;
-    }
+                PsiIdentifier nameIdentifier = method.getNameIdentifier();
+                if (nameIdentifier == null) {
+                    return;
+                }
 
-    @Override
-    protected boolean annotateSelf() {
-      return false;
-    }
-  }
-
-  @Nonnull
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      public void visitMethod(PsiMethod method) {
-        if (method.isConstructor()) {
-          return;
-        }
-
-        PsiIdentifier nameIdentifier = method.getNameIdentifier();
-        if (nameIdentifier == null) {
-          return;
-        }
-
-        CallStateType selfActionType = CallStateType.findSelfActionType(method);
-        if (selfActionType != CallStateType.NONE) {
-          Query<PsiMethod> query = OverridingMethodsSearch.search(method);
-          for (PsiMethod itMethod : query) {
-            if (CallStateType.findSelfActionType(itMethod) == CallStateType.NONE) {
-              String actionClass = selfActionType.getActionClass();
-              holder.registerProblem(
-                nameIdentifier,
-                "Overriden methods are not annotated by @" + StringUtil.getShortName(actionClass),
-                new MyAnnotateMethodFix(actionClass)
-              );
-              break;
+                CallStateType selfActionType = CallStateType.findSelfActionType(method);
+                if (selfActionType != CallStateType.NONE) {
+                    Query<PsiMethod> query = OverridingMethodsSearch.search(method);
+                    for (PsiMethod itMethod : query) {
+                        if (CallStateType.findSelfActionType(itMethod) == CallStateType.NONE) {
+                            String actionClass = selfActionType.getActionClass();
+                            holder.registerProblem(
+                                nameIdentifier,
+                                "Overriden methods are not annotated by @" + StringUtil.getShortName(actionClass),
+                                new MyAnnotateMethodFix(actionClass)
+                            );
+                            break;
+                        }
+                    }
+                }
+                else {
+                    PsiMethod[] superMethods = method.findSuperMethods();
+                    for (PsiMethod superMethod : superMethods) {
+                        CallStateType superActionType = CallStateType.findSelfActionType(superMethod);
+                        if (superActionType != CallStateType.NONE) {
+                            String actionClass = superActionType.getActionClass();
+                            holder.registerProblem(
+                                nameIdentifier,
+                                "Missed annotation @" + StringUtil.getShortName(actionClass) + ", provided by super method",
+                                new AddAnnotationFix(actionClass, method)
+                            );
+                        }
+                    }
+                }
             }
-          }
-        }
-        else {
-          PsiMethod[] superMethods = method.findSuperMethods();
-          for (PsiMethod superMethod : superMethods) {
-            CallStateType superActionType = CallStateType.findSelfActionType(superMethod);
-            if (superActionType != CallStateType.NONE) {
-              String actionClass = superActionType.getActionClass();
-              holder.registerProblem(
-                nameIdentifier,
-                "Missed annotation @" + StringUtil.getShortName(actionClass) + ", provided by super method",
-                new AddAnnotationFix(actionClass, method)
-              );
-            }
-          }
-        }
-      }
-    };
-  }
+        };
+    }
 
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Invocation state(read, write, dispatch) annotation place inspection";
-  }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Invocation state(read, write, dispatch) annotation place inspection";
+    }
 }

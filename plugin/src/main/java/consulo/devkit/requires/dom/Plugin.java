@@ -10,6 +10,5 @@ import consulo.xml.util.xml.GenericDomValue;
  * @since 28-Aug-22
  */
 @Convert(PluginDescriptorResolver.class)
-public interface Plugin extends GenericDomValue<PluginDescriptor>
-{
+public interface Plugin extends GenericDomValue<PluginDescriptor> {
 }

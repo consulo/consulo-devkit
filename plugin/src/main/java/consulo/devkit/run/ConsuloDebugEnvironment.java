@@ -29,19 +29,21 @@ import javax.annotation.Nullable;
  * @since 23-May-17
  */
 class ConsuloDebugEnvironment extends DefaultDebugEnvironment {
-  private final ConsuloSandboxRunState myState;
+    private final ConsuloSandboxRunState myState;
 
-  public ConsuloDebugEnvironment(@Nonnull ExecutionEnvironment environment,
-                                 @Nonnull ConsuloSandboxRunState state,
-                                 RemoteConnection remoteConnection,
-                                 boolean pollConnection) {
-    super(environment, state, remoteConnection, pollConnection);
-    myState = state;
-  }
+    public ConsuloDebugEnvironment(
+        @Nonnull ExecutionEnvironment environment,
+        @Nonnull ConsuloSandboxRunState state,
+        RemoteConnection remoteConnection,
+        boolean pollConnection
+    ) {
+        super(environment, state, remoteConnection, pollConnection);
+        myState = state;
+    }
 
-  @Nullable
-  @Override
-  public Sdk getRunJre() {
-    return myState.getJavaSdk();
-  }
+    @Nullable
+    @Override
+    public Sdk getRunJre() {
+        return myState.getJavaSdk();
+    }
 }
