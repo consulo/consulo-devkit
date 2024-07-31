@@ -28,7 +28,7 @@ import java.io.File;
  * @author Konstantin Bulenkov
  */
 public interface FileManager {
-  public File releaseOutputFile(File outFile);
+    public File releaseOutputFile(File outFile);
 
-  public File getOutputFile(File target);
+    public File getOutputFile(File target);
 }

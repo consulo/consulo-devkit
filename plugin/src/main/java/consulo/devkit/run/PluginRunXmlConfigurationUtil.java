@@ -29,31 +29,33 @@ import java.util.function.Supplier;
  * @since 29.05.14
  */
 public class PluginRunXmlConfigurationUtil {
-  private static final String NAME = "name";
+    private static final String NAME = "name";
 
-  @Nullable
-  public static <T extends Named> NamedPointer<T> readPointer(String childName,
-                                                              Element parent,
-                                                              Supplier<NamedPointerManager<T>> fun) {
-    final NamedPointerManager<T> namedPointerManager = fun.get();
+    @Nullable
+    public static <T extends Named> NamedPointer<T> readPointer(
+        String childName,
+        Element parent,
+        Supplier<NamedPointerManager<T>> fun
+    ) {
+        final NamedPointerManager<T> namedPointerManager = fun.get();
 
-    Element child = parent.getChild(childName);
-    if (child != null) {
-      final String attributeValue = child.getAttributeValue(NAME);
-      if (attributeValue != null) {
-        return namedPointerManager.create(attributeValue);
-      }
+        Element child = parent.getChild(childName);
+        if (child != null) {
+            final String attributeValue = child.getAttributeValue(NAME);
+            if (attributeValue != null) {
+                return namedPointerManager.create(attributeValue);
+            }
+        }
+        return null;
     }
-    return null;
-  }
 
-  public static void writePointer(String childName, Element parent, NamedPointer<?> pointer) {
-    if (pointer == null) {
-      return;
+    public static void writePointer(String childName, Element parent, NamedPointer<?> pointer) {
+        if (pointer == null) {
+            return;
+        }
+        Element element = new Element(childName);
+        element.setAttribute(NAME, pointer.getName());
+
+        parent.addContent(element);
     }
-    Element element = new Element(childName);
-    element.setAttribute(NAME, pointer.getName());
-
-    parent.addContent(element);
-  }
 }

@@ -26,53 +26,52 @@ package org.jetbrains.idea.devkit.dom.generator;
  * @author Konstantin Bulenkov
  */
 public class FieldDesc implements Comparable<FieldDesc> {
-  final static int STR = 1;
-  final static int BOOL = 2;
-  final static int OBJ = 3;
-  final static int ATTR = 4;
-  final static int DOUBLE = 5;
-  final static int SIMPLE = 6;
+    final static int STR = 1;
+    final static int BOOL = 2;
+    final static int OBJ = 3;
+    final static int ATTR = 4;
+    final static int DOUBLE = 5;
+    final static int SIMPLE = 6;
 
-  public FieldDesc(String name, String def) {
-    this.name = name;
-    this.def = def;
-  }
+    public FieldDesc(String name, String def) {
+        this.name = name;
+        this.def = def;
+    }
 
-  public FieldDesc(int clType, String name, String type, String elementType, String def, boolean required) {
-    this.clType = clType;
-    this.name = name;
-    this.type = type;
-    this.elementType = elementType;
-    this.def = def;
-    this.required = required;
-  }
+    public FieldDesc(int clType, String name, String type, String elementType, String def, boolean required) {
+        this.clType = clType;
+        this.name = name;
+        this.type = type;
+        this.elementType = elementType;
+        this.def = def;
+        this.required = required;
+    }
 
-  int clType = STR;
-  String name;
-  String type;
-  String elementType;
-  String def;
-  boolean required;
+    int clType = STR;
+    String name;
+    String type;
+    String elementType;
+    String def;
+    boolean required;
 
-  int idx;
-  String tagName;
-  String elementName;
-  String comment;
-  FieldDesc[] choice;
-  boolean choiceOpt;
+    int idx;
+    String tagName;
+    String elementName;
+    String comment;
+    FieldDesc[] choice;
+    boolean choiceOpt;
 
-  String documentation;
-  String simpleTypesString;
-  int duplicateIndex = -1;
-  int realIndex;
-  String contentQualifiedName;
+    String documentation;
+    String simpleTypesString;
+    int duplicateIndex = -1;
+    int realIndex;
+    String contentQualifiedName;
 
-  public int compareTo(FieldDesc o) {
-    return name.compareTo(o.name);
-  }
+    public int compareTo(FieldDesc o) {
+        return name.compareTo(o.name);
+    }
 
-  public String toString() {
-    return "Field: " + name + ";" + type + ";" + elementName + ";" + elementType;
-  }
-
+    public String toString() {
+        return "Field: " + name + ";" + type + ";" + elementName + ";" + elementType;
+    }
 }

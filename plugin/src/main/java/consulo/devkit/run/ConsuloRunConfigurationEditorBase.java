@@ -37,93 +37,99 @@ import javax.swing.*;
 import java.awt.*;
 
 public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConfigurationBase> extends SettingsEditor<T> {
-  private SdkComboBox myJavaSdkComboBox;
-  private RawCommandLineEditor myProgramParameters;
-  private RawCommandLineEditor myVMParameters;
+    private SdkComboBox myJavaSdkComboBox;
+    private RawCommandLineEditor myProgramParameters;
+    private RawCommandLineEditor myVMParameters;
 
-  private JPanel myRoot;
-  private JCheckBox myEnableJava9Modules;
-  private TextFieldWithBrowseButton myPluginsHomePath;
-  private TextFieldWithBrowseButton myConsuloSdkTextField;
+    private JPanel myRoot;
+    private JCheckBox myEnableJava9Modules;
+    private TextFieldWithBrowseButton myPluginsHomePath;
+    private TextFieldWithBrowseButton myConsuloSdkTextField;
 
-  private final Project myProject;
+    private final Project myProject;
 
-  public ConsuloRunConfigurationEditorBase(Project project) {
-    myProject = project;
-  }
-
-  protected void initPanel() {
-    FormBuilder builder = FormBuilder.createFormBuilder();
-
-    setupPanel(builder);
-
-    myRoot = new JPanel(new BorderLayout());
-    myRoot.add(builder.getPanel(), BorderLayout.NORTH);
-  }
-
-  protected void setupPanel(@Nonnull FormBuilder builder) {
-    SettingsSdksModel projectSdksModel = ShowSettingsUtil.getInstance().getSdksModel();
-    myJavaSdkComboBox = new SdkComboBox(projectSdksModel, it -> it instanceof JavaSdkType, false);
-    builder.addLabeledComponent("Java SDK", myJavaSdkComboBox);
-
-    myConsuloSdkTextField = new TextFieldWithBrowseButton();
-    myConsuloSdkTextField.addBrowseFolderListener("Select SDK", "Select alternative consulo sdk for run", myProject,
-                                                     FileChooserDescriptorFactory.createSingleFolderDescriptor());
-    myConsuloSdkTextField.setEditable(true);
-    builder.addLabeledComponent("Consulo SDK", myConsuloSdkTextField);
-
-
-    myPluginsHomePath = new TextFieldWithBrowseButton();
-    myPluginsHomePath.addBrowseFolderListener("Select Plugins Home Path",
-                                              "Select plugins home path",
-                                              myProject,
-                                              FileChooserDescriptorFactory.createSingleFolderDescriptor());
-
-    builder.addLabeledComponent("Plugins Home Path", myPluginsHomePath);
-
-    myProgramParameters = new RawCommandLineEditor();
-    builder.addLabeledComponent("Program Parameters", myProgramParameters);
-    myVMParameters = new RawCommandLineEditor();
-    builder.addLabeledComponent("VM Parameters", myVMParameters);
-
-    myEnableJava9Modules = new JBCheckBox("Enable Java 9 modules?");
-
-    builder.addComponent(myEnableJava9Modules);
-  }
-
-  @Override
-  public void resetEditorFrom(T prc) {
-    myVMParameters.setText(prc.VM_PARAMETERS);
-    myEnableJava9Modules.setSelected(prc.ENABLED_JAVA9_MODULES);
-    if (prc.ALT_CONSULO_SDK_PATH != null) {
-      myConsuloSdkTextField.setText(FileUtil.toSystemDependentName(prc.ALT_CONSULO_SDK_PATH));
+    public ConsuloRunConfigurationEditorBase(Project project) {
+        myProject = project;
     }
 
-    if (prc.PLUGINS_HOME_PATH != null) {
-      myPluginsHomePath.setText(FileUtil.toSystemDependentName(prc.PLUGINS_HOME_PATH));
+    protected void initPanel() {
+        FormBuilder builder = FormBuilder.createFormBuilder();
+
+        setupPanel(builder);
+
+        myRoot = new JPanel(new BorderLayout());
+        myRoot.add(builder.getPanel(), BorderLayout.NORTH);
     }
 
-    myVMParameters.setDialogCaption(DevKitLocalize.labelVmParameters().get());
-    myProgramParameters.setText(prc.PROGRAM_PARAMETERS);
-    myProgramParameters.setDialogCaption(DevKitLocalize.labelProgramParameters().get());
+    protected void setupPanel(@Nonnull FormBuilder builder) {
+        SettingsSdksModel projectSdksModel = ShowSettingsUtil.getInstance().getSdksModel();
+        myJavaSdkComboBox = new SdkComboBox(projectSdksModel, it -> it instanceof JavaSdkType, false);
+        builder.addLabeledComponent("Java SDK", myJavaSdkComboBox);
 
-    myJavaSdkComboBox.setSelectedSdk(prc.getJavaSdkName());
-  }
+        myConsuloSdkTextField = new TextFieldWithBrowseButton();
+        myConsuloSdkTextField.addBrowseFolderListener(
+            "Select SDK",
+            "Select alternative consulo sdk for run",
+            myProject,
+            FileChooserDescriptorFactory.createSingleFolderDescriptor()
+        );
+        myConsuloSdkTextField.setEditable(true);
+        builder.addLabeledComponent("Consulo SDK", myConsuloSdkTextField);
 
-  @Override
-  public void applyEditorTo(T prc) throws ConfigurationException {
-    prc.setJavaSdkName(myJavaSdkComboBox.getSelectedSdkName());
-    prc.ENABLED_JAVA9_MODULES = myEnableJava9Modules.isSelected();
 
-    prc.VM_PARAMETERS = myVMParameters.getText();
-    prc.PROGRAM_PARAMETERS = myProgramParameters.getText();
-    prc.PLUGINS_HOME_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myPluginsHomePath.getText()));
-    prc.ALT_CONSULO_SDK_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myConsuloSdkTextField.getText()));
-  }
+        myPluginsHomePath = new TextFieldWithBrowseButton();
+        myPluginsHomePath.addBrowseFolderListener(
+            "Select Plugins Home Path",
+            "Select plugins home path",
+            myProject,
+            FileChooserDescriptorFactory.createSingleFolderDescriptor()
+        );
 
-  @Override
-  @Nonnull
-  public JComponent createEditor() {
-    return myRoot;
-  }
+        builder.addLabeledComponent("Plugins Home Path", myPluginsHomePath);
+
+        myProgramParameters = new RawCommandLineEditor();
+        builder.addLabeledComponent("Program Parameters", myProgramParameters);
+        myVMParameters = new RawCommandLineEditor();
+        builder.addLabeledComponent("VM Parameters", myVMParameters);
+
+        myEnableJava9Modules = new JBCheckBox("Enable Java 9 modules?");
+
+        builder.addComponent(myEnableJava9Modules);
+    }
+
+    @Override
+    public void resetEditorFrom(T prc) {
+        myVMParameters.setText(prc.VM_PARAMETERS);
+        myEnableJava9Modules.setSelected(prc.ENABLED_JAVA9_MODULES);
+        if (prc.ALT_CONSULO_SDK_PATH != null) {
+            myConsuloSdkTextField.setText(FileUtil.toSystemDependentName(prc.ALT_CONSULO_SDK_PATH));
+        }
+
+        if (prc.PLUGINS_HOME_PATH != null) {
+            myPluginsHomePath.setText(FileUtil.toSystemDependentName(prc.PLUGINS_HOME_PATH));
+        }
+
+        myVMParameters.setDialogCaption(DevKitLocalize.labelVmParameters().get());
+        myProgramParameters.setText(prc.PROGRAM_PARAMETERS);
+        myProgramParameters.setDialogCaption(DevKitLocalize.labelProgramParameters().get());
+
+        myJavaSdkComboBox.setSelectedSdk(prc.getJavaSdkName());
+    }
+
+    @Override
+    public void applyEditorTo(T prc) throws ConfigurationException {
+        prc.setJavaSdkName(myJavaSdkComboBox.getSelectedSdkName());
+        prc.ENABLED_JAVA9_MODULES = myEnableJava9Modules.isSelected();
+
+        prc.VM_PARAMETERS = myVMParameters.getText();
+        prc.PROGRAM_PARAMETERS = myProgramParameters.getText();
+        prc.PLUGINS_HOME_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myPluginsHomePath.getText()));
+        prc.ALT_CONSULO_SDK_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myConsuloSdkTextField.getText()));
+    }
+
+    @Override
+    @Nonnull
+    public JComponent createEditor() {
+        return myRoot;
+    }
 }

@@ -22,11 +22,9 @@ import consulo.project.Project;
  * @author VISTALL
  * @since 12.04.2015
  */
-public class ConsuloRunConfigurationEditor extends ConsuloRunConfigurationEditorBase<ConsuloRunConfiguration>
-{
-	public ConsuloRunConfigurationEditor(Project project)
-	{
-		super(project);
-		initPanel();
-	}
+public class ConsuloRunConfigurationEditor extends ConsuloRunConfigurationEditorBase<ConsuloRunConfiguration> {
+    public ConsuloRunConfigurationEditor(Project project) {
+        super(project);
+        initPanel();
+    }
 }

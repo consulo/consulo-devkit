@@ -32,38 +32,38 @@ import java.util.function.Consumer;
  * @author yole
  */
 public class NewActionAction extends GeneratePluginClassAction {
-  private NewActionDialog myDialog;
+    private NewActionDialog myDialog;
 
-  public NewActionAction() {
-    super(DevKitLocalize.newMenuActionText(), DevKitLocalize.newMenuActionDescription(), null);
-  }
+    public NewActionAction() {
+        super(DevKitLocalize.newMenuActionText(), DevKitLocalize.newMenuActionDescription(), null);
+    }
 
-  @Override
-  @RequiredUIAccess
-  protected void invokeDialogImpl(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer) {
-    final MyInputValidator validator = new MyInputValidator(project, directory);
+    @Override
+    @RequiredUIAccess
+    protected void invokeDialogImpl(Project project, PsiDirectory directory, @Nonnull Consumer<PsiElement[]> consumer) {
+        final MyInputValidator validator = new MyInputValidator(project, directory);
 
-    myDialog = new NewActionDialog(project);
-    myDialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
-  }
+        myDialog = new NewActionDialog(project);
+        myDialog.showAsync().doWhenDone(() -> consumer.accept(validator.getCreatedElements()));
+    }
 
-  protected String getClassTemplateName() {
-    return "Action.java";
-  }
+    protected String getClassTemplateName() {
+        return "Action.java";
+    }
 
-  public void patchPluginXml(final XmlFile pluginXml, final PsiClass klass) throws IncorrectOperationException {
-    ActionType.ACTION.patchPluginXml(pluginXml, klass, myDialog);
-  }
+    public void patchPluginXml(final XmlFile pluginXml, final PsiClass klass) throws IncorrectOperationException {
+        ActionType.ACTION.patchPluginXml(pluginXml, klass, myDialog);
+    }
 
-  protected String getErrorTitle() {
-    return DevKitLocalize.newActionError().get();
-  }
+    protected String getErrorTitle() {
+        return DevKitLocalize.newActionError().get();
+    }
 
-  protected String getCommandName() {
-    return DevKitLocalize.newActionCommand().get();
-  }
+    protected String getCommandName() {
+        return DevKitLocalize.newActionCommand().get();
+    }
 
-  protected String getActionName(PsiDirectory directory, String newName) {
-    return DevKitLocalize.newActionActionName(directory, newName).get();
-  }
+    protected String getActionName(PsiDirectory directory, String newName) {
+        return DevKitLocalize.newActionActionName(directory, newName).get();
+    }
 }
