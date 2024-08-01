@@ -28,8 +28,8 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl
 public class ConsuloRunCoverageEngineExtension extends JavaCoverageEngineExtension {
-  @Override
-  public boolean isApplicableTo(@Nullable RunConfigurationBase runConfigurationBase) {
-    return runConfigurationBase instanceof ConsuloRunConfigurationBase;
-  }
+    @Override
+    public boolean isApplicableTo(@Nullable RunConfigurationBase runConfigurationBase) {
+        return runConfigurationBase instanceof ConsuloRunConfigurationBase;
+    }
 }
