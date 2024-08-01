@@ -37,29 +37,30 @@ import java.util.List;
 /**
  * @author mike
  */
-public class IdeaPluginConverter  {
-  public static Collection<IdeaPlugin> getAllPlugins(final Project project) {
-    if (DumbService.isDumb(project)) {
-      return Collections.emptyList();
+public class IdeaPluginConverter {
+    public static Collection<IdeaPlugin> getAllPlugins(final Project project) {
+        if (DumbService.isDumb(project)) {
+            return Collections.emptyList();
+        }
+
+        return CachedValuesManager.getManager(project).getCachedValue(project, new CachedValueProvider<Collection<IdeaPlugin>>() {
+            @Nullable
+            @Override
+            public Result<Collection<IdeaPlugin>> compute() {
+                GlobalSearchScope scope =
+                    GlobalSearchScopesCore.projectProductionScope(project).union(ProjectScopes.getLibrariesScope(project));
+                return Result.create(getPlugins(project, scope), PsiModificationTracker.OUT_OF_CODE_BLOCK_MODIFICATION_COUNT);
+            }
+        });
     }
 
-    return CachedValuesManager.getManager(project).getCachedValue(project, new CachedValueProvider<Collection<IdeaPlugin>>() {
-      @Nullable
-      @Override
-      public Result<Collection<IdeaPlugin>> compute() {
-        GlobalSearchScope scope = GlobalSearchScopesCore.projectProductionScope(project).union(ProjectScopes.getLibrariesScope(project));
-        return Result.create(getPlugins(project, scope), PsiModificationTracker.OUT_OF_CODE_BLOCK_MODIFICATION_COUNT);
-      }
-    });
-  }
+    @Nonnull
+    public static Collection<IdeaPlugin> getPlugins(Project project, GlobalSearchScope scope) {
+        if (DumbService.isDumb(project)) {
+            return Collections.emptyList();
+        }
 
-  @Nonnull
-  public static Collection<IdeaPlugin> getPlugins(Project project, GlobalSearchScope scope) {
-    if (DumbService.isDumb(project)) {
-      return Collections.emptyList();
+        List<DomFileElement<IdeaPlugin>> files = DomService.getInstance().getFileElements(IdeaPlugin.class, project, scope);
+        return ContainerUtil.map(files, DomFileElement::getRootElement);
     }
-
-    List<DomFileElement<IdeaPlugin>> files = DomService.getInstance().getFileElements(IdeaPlugin.class, project, scope);
-    return ContainerUtil.map(files, DomFileElement::getRootElement);
-  }
 }

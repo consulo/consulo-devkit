@@ -29,18 +29,20 @@ import javax.annotation.Nonnull;
  * @author peter
  */
 public class PluginPsiClassConverter extends PsiClassConverter {
-  @Override
-  protected GlobalSearchScope getScope(@Nonnull ConvertContext context) {
-    return GlobalSearchScope.allScope(context.getProject());
-  }
+    @Override
+    protected GlobalSearchScope getScope(@Nonnull ConvertContext context) {
+        return GlobalSearchScope.allScope(context.getProject());
+    }
 
-  @Override
-  protected JavaClassReferenceProvider createClassReferenceProvider(GenericDomValue<PsiClass> genericDomValue,
-                                                                    ConvertContext context,
-                                                                    ExtendClass extendClass) {
-    final JavaClassReferenceProvider provider = super.createClassReferenceProvider(genericDomValue, context, extendClass);
-    provider.setOption(JavaClassReferenceProvider.JVM_FORMAT, Boolean.TRUE);
-    provider.setOption(JavaClassReferenceProvider.ALLOW_DOLLAR_NAMES, Boolean.TRUE);
-    return provider;
-  }
+    @Override
+    protected JavaClassReferenceProvider createClassReferenceProvider(
+        GenericDomValue<PsiClass> genericDomValue,
+        ConvertContext context,
+        ExtendClass extendClass
+    ) {
+        final JavaClassReferenceProvider provider = super.createClassReferenceProvider(genericDomValue, context, extendClass);
+        provider.setOption(JavaClassReferenceProvider.JVM_FORMAT, Boolean.TRUE);
+        provider.setOption(JavaClassReferenceProvider.ALLOW_DOLLAR_NAMES, Boolean.TRUE);
+        return provider;
+    }
 }

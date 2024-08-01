@@ -41,97 +41,106 @@ import java.util.*;
 
 public class DependencyConfigFileConverter extends PathReferenceConverter {
 
-  private static final PathReferenceProvider ourProvider = new StaticPathReferenceProvider(null) {
+    private static final PathReferenceProvider ourProvider = new StaticPathReferenceProvider(null) {
+
+        @Override
+        public boolean createReferences(
+            @Nonnull final PsiElement psiElement,
+            int offset,
+            String text,
+            @Nonnull List<PsiReference> references,
+            boolean soft
+        ) {
+            FileReferenceSet set = new FileReferenceSet(
+                text,
+                psiElement,
+                offset,
+                null,
+                true,
+                true,
+                new FileType[]{XmlFileType.INSTANCE}
+            ) {
+                private final Condition<PsiFileSystemItem> PLUGIN_XML_CONDITION =
+                    item -> !item.isDirectory() && !item.equals(getContainingFile())
+                        && item instanceof XmlFile xmlFile && DescriptorUtil.isPluginXml(xmlFile) && !isAlreadyUsed(xmlFile);
+
+                private boolean isAlreadyUsed(final XmlFile xmlFile) {
+                    final PsiFile file = getContainingFile();
+                    if (!(file instanceof XmlFile)) {
+                        return false;
+                    }
+                    final DomFileElement<IdeaPlugin> ideaPlugin = DescriptorUtil.getConsuloPlugin((XmlFile)file);
+                    if (ideaPlugin == null) {
+                        return false;
+                    }
+                    return !ContainerUtil.process(ideaPlugin.getRootElement().getDependencies(), dependency ->
+                    {
+                        final GenericAttributeValue<PathReference> configFileAttribute = dependency.getConfigFile();
+                        if (!DomUtil.hasXml(configFileAttribute)) {
+                            return true;
+                        }
+                        final PathReference pathReference = configFileAttribute.getValue();
+                        return pathReference == null || !xmlFile.equals(pathReference.resolve());
+                    });
+                }
+
+                @Nonnull
+                @Override
+                @RequiredReadAction
+                public Collection<PsiFileSystemItem> computeDefaultContexts() {
+                    final PsiFile containingFile = getContainingFile();
+                    if (containingFile == null) {
+                        return Collections.emptyList();
+                    }
+
+                    final Module module = ModuleUtilCore.findModuleForPsiElement(getElement());
+                    if (module == null) {
+                        return Collections.emptyList();
+                    }
+
+                    final Set<VirtualFile> roots = new HashSet<>();
+                    final VirtualFile parent = containingFile.getVirtualFile().getParent();
+                    roots.add(parent);
+
+                    roots.addAll(SpecialDirUtil.collectSpecialDirs(module, SpecialDirUtil.META_INF));
+                    return toFileSystemItems(roots);
+                }
+
+                @Override
+                @Nonnull
+                protected Collection<PsiFileSystemItem> toFileSystemItems(@Nonnull Collection<VirtualFile> files) {
+                    final PsiManager manager = getElement().getManager();
+                    return ContainerUtil.mapNotNull(files, file -> file != null ? manager.findDirectory(file) : null);
+                }
+
+                @Override
+                protected boolean isSoft() {
+                    return true;
+                }
+
+                @Override
+                public Condition<PsiFileSystemItem> getReferenceCompletionFilter() {
+                    return PLUGIN_XML_CONDITION;
+                }
+            };
+            Collections.addAll(references, set.getAllReferences());
+            return true;
+        }
+    };
 
     @Override
-    public boolean createReferences(@Nonnull final PsiElement psiElement,
-                                    int offset,
-                                    String text,
-                                    @Nonnull List<PsiReference> references,
-                                    boolean soft) {
-      FileReferenceSet set = new FileReferenceSet(text, psiElement, offset, null, true, true, new FileType[]{XmlFileType.INSTANCE}) {
-
-        private final Condition<PsiFileSystemItem> PLUGIN_XML_CONDITION =
-          item -> !item.isDirectory() && !item.equals(getContainingFile()) && (item instanceof XmlFile && DescriptorUtil
-            .isPluginXml((PsiFile)item)) && !isAlreadyUsed((XmlFile)item);
-
-        private boolean isAlreadyUsed(final XmlFile xmlFile) {
-          final PsiFile file = getContainingFile();
-          if (!(file instanceof XmlFile)) {
-            return false;
-          }
-          final DomFileElement<IdeaPlugin> ideaPlugin = DescriptorUtil.getConsuloPlugin((XmlFile)file);
-          if (ideaPlugin == null) {
-            return false;
-          }
-          return !ContainerUtil.process(ideaPlugin.getRootElement().getDependencies(), dependency ->
-          {
-            final GenericAttributeValue<PathReference> configFileAttribute = dependency.getConfigFile();
-            if (!DomUtil.hasXml(configFileAttribute)) {
-              return true;
-            }
-            final PathReference pathReference = configFileAttribute.getValue();
-            return pathReference == null || !xmlFile.equals(pathReference.resolve());
-          });
+    public PathReference fromString(@Nullable String s, ConvertContext context) {
+        final XmlElement element = context.getXmlElement();
+        final Module module = context.getModule();
+        if (s == null || element == null || module == null) {
+            return null;
         }
-
-        @Nonnull
-        @Override
-        @RequiredReadAction
-        public Collection<PsiFileSystemItem> computeDefaultContexts() {
-          final PsiFile containingFile = getContainingFile();
-          if (containingFile == null) {
-            return Collections.emptyList();
-          }
-
-          final Module module = ModuleUtilCore.findModuleForPsiElement(getElement());
-          if (module == null) {
-            return Collections.emptyList();
-          }
-
-          final Set<VirtualFile> roots = new HashSet<>();
-          final VirtualFile parent = containingFile.getVirtualFile().getParent();
-          roots.add(parent);
-
-          roots.addAll(SpecialDirUtil.collectSpecialDirs(module, SpecialDirUtil.META_INF));
-          return toFileSystemItems(roots);
-        }
-
-        @Override
-        @Nonnull
-        protected Collection<PsiFileSystemItem> toFileSystemItems(@Nonnull Collection<VirtualFile> files) {
-          final PsiManager manager = getElement().getManager();
-          return ContainerUtil.mapNotNull(files, file -> file != null ? manager.findDirectory(file) : null);
-        }
-
-        @Override
-        protected boolean isSoft() {
-          return true;
-        }
-
-        @Override
-        public Condition<PsiFileSystemItem> getReferenceCompletionFilter() {
-          return PLUGIN_XML_CONDITION;
-        }
-      };
-      Collections.addAll(references, set.getAllReferences());
-      return true;
+        return PathReferenceManager.getInstance().getCustomPathReference(s, module, element, ourProvider);
     }
-  };
 
-  @Override
-  public PathReference fromString(@Nullable String s, ConvertContext context) {
-    final XmlElement element = context.getXmlElement();
-    final Module module = context.getModule();
-    if (s == null || element == null || module == null) {
-      return null;
+    @Nonnull
+    @Override
+    public PsiReference[] createReferences(@Nonnull PsiElement psiElement, boolean soft) {
+        return PathReferenceManager.getInstance().createCustomReferences(psiElement, soft, ourProvider);
     }
-    return PathReferenceManager.getInstance().getCustomPathReference(s, module, element, ourProvider);
-  }
-
-  @Nonnull
-  @Override
-  public PsiReference[] createReferences(@Nonnull PsiElement psiElement, boolean soft) {
-    return PathReferenceManager.getInstance().createCustomReferences(psiElement, soft, ourProvider);
-  }
 }

@@ -24,5 +24,5 @@ import java.util.Collection;
  * @author Konstantin Bulenkov
  */
 public interface ModelLoader {
-  void loadModel(ModelDesc model, Collection<File> files, XMLEntityResolver resolver) throws Exception;
+    void loadModel(ModelDesc model, Collection<File> files, XMLEntityResolver resolver) throws Exception;
 }

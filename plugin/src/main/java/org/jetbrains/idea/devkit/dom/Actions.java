@@ -26,21 +26,20 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface Actions extends DomElement {
-  @Nonnull
-  @Stubbed
-  List<Action> getActions();
+    @Nonnull
+    @Stubbed
+    List<Action> getActions();
 
-  Action addAction();
+    Action addAction();
 
+    @Nonnull
+    @Stubbed
+    List<Group> getGroups();
 
-  @Nonnull
-  @Stubbed
-  List<Group> getGroups();
+    Group addGroup();
 
-  Group addGroup();
+    @Nonnull
+    List<Reference> getReferences();
 
-  @Nonnull
-  List<Reference> getReferences();
-
-  Reference addReference();
+    Reference addReference();
 }
