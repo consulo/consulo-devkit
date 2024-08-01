@@ -26,44 +26,44 @@ import javax.annotation.Nullable;
  * @author mike
  */
 public interface ExtensionPoint extends DomElement {
-  enum Area {
-    PROJECT,
-    MODULE
-  }
+    enum Area {
+        PROJECT,
+        MODULE
+    }
 
-  @Nonnull
-  @NameValue
-  GenericAttributeValue<String> getName();
+    @Nonnull
+    @NameValue
+    GenericAttributeValue<String> getName();
 
-  @Nonnull
-  @Convert(PluginPsiClassConverter.class)
-  GenericAttributeValue<PsiClass> getInterface();
+    @Nonnull
+    @Convert(PluginPsiClassConverter.class)
+    GenericAttributeValue<PsiClass> getInterface();
 
-  @Nonnull
-  @Attribute("beanClass")
-  @Convert(PluginPsiClassConverter.class)
-  GenericAttributeValue<PsiClass> getBeanClass();
+    @Nonnull
+    @Attribute("beanClass")
+    @Convert(PluginPsiClassConverter.class)
+    GenericAttributeValue<PsiClass> getBeanClass();
 
-  @Nonnull
-  GenericAttributeValue<Boolean> getInternal();
+    @Nonnull
+    GenericAttributeValue<Boolean> getInternal();
 
-  @Nonnull
-  GenericAttributeValue<Area> getArea();
+    @Nonnull
+    GenericAttributeValue<Area> getArea();
 
-  /**
-   * Returns the fully qualified EP name
-   *
-   * @return {@code PluginID.name} or {@code qualifiedName}.
-   * @since 14
-   */
-  @Nonnull
-  String getEffectiveQualifiedName();
+    /**
+     * Returns the fully qualified EP name
+     *
+     * @return {@code PluginID.name} or {@code qualifiedName}.
+     * @since 14
+     */
+    @Nonnull
+    String getEffectiveQualifiedName();
 
-  /**
-   * Returns EP name prefix (Plugin ID).
-   *
-   * @return {@code null} if {@code qualifiedName} is set.
-   */
-  @Nullable
-  String getNamePrefix();
+    /**
+     * Returns EP name prefix (Plugin ID).
+     *
+     * @return {@code null} if {@code qualifiedName} is set.
+     */
+    @Nullable
+    String getNamePrefix();
 }

@@ -35,27 +35,23 @@ import javax.annotation.Nonnull;
  * </pre>
  */
 public interface Helpset extends DomElement {
+    /**
+     * Returns the value of the file child.
+     * Attribute file
+     *
+     * @return the value of the file child.
+     */
+    @Nonnull
+    @Required
+    GenericAttributeValue<String> getFile();
 
-  /**
-   * Returns the value of the file child.
-   * Attribute file
-   *
-   * @return the value of the file child.
-   */
-  @Nonnull
-  @Required
-  GenericAttributeValue<String> getFile();
-
-
-  /**
-   * Returns the value of the path child.
-   * Attribute path
-   *
-   * @return the value of the path child.
-   */
-  @Nonnull
-  @Required
-  GenericAttributeValue<String> getPath();
-
-
+    /**
+     * Returns the value of the path child.
+     * Attribute path
+     *
+     * @return the value of the path child.
+     */
+    @Nonnull
+    @Required
+    GenericAttributeValue<String> getPath();
 }

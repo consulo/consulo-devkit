@@ -19,6 +19,8 @@ package org.jetbrains.idea.devkit.dom;
  * @author Dmitry Avdeev
  */
 public enum Anchor {
-
-  first, last, before, after
+    first,
+    last,
+    before,
+    after
 }

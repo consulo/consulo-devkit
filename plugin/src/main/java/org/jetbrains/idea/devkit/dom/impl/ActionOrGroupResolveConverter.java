@@ -44,171 +44,171 @@ import java.util.*;
 import java.util.function.BiPredicate;
 
 public class ActionOrGroupResolveConverter extends ResolvingConverter<ActionOrGroup> {
-  @Nonnull
-  @Override
-  public Collection<? extends ActionOrGroup> getVariants(ConvertContext context) {
-    final List<ActionOrGroup> variants = new ArrayList<>();
-    BiPredicate<String, ActionOrGroup> collectProcessor = (s, actionOrGroup) -> {
-      if (isRelevant(actionOrGroup)) {
-        variants.add(actionOrGroup);
-      }
-      return true;
-    };
-    processActionOrGroup(context, collectProcessor);
-    return variants;
-  }
-
-  @Nullable
-  @Override
-  public ActionOrGroup fromString(@Nullable final String value, ConvertContext context) {
-    if (StringUtil.isEmptyOrSpaces(value)) {
-      return null;
-    }
-
-    final ActionOrGroup[] result = {null};
-    BiPredicate<String, ActionOrGroup> findProcessor = (s, actionOrGroup) -> {
-      if (isRelevant(actionOrGroup) && Comparing.strEqual(value, s)) {
-        result[0] = actionOrGroup;
-        return false;
-      }
-      return true;
-    };
-    processActionOrGroup(context, findProcessor);
-    return result[0];
-  }
-
-  @Nullable
-  @Override
-  public String toString(@Nullable ActionOrGroup actionGroup, ConvertContext context) {
-    return actionGroup == null ? null : getName(actionGroup);
-  }
-
-  @Nonnull
-  @Override
-  public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
-    return LocalizeValue.localizeTODO("Cannot resolve action or group '" + s + "'");
-  }
-
-  @Nullable
-  @Override
-  public LookupElement createLookupElement(ActionOrGroup actionOrGroup) {
-    if (actionOrGroup instanceof Action) {
-      Action action = (Action)actionOrGroup;
-      String msg = action.getId().getStringValue() + " in " + DomUtil.getFile(action) + " " + action.isValid() + " ";
-      DomImplUtil.assertValidity(action, msg);
-      final PsiElement element = getPsiElement(actionOrGroup);
-      if (element == null) {
-        throw new IllegalStateException("no PSI: " + msg);
-      }
-
-      LookupElementBuilder builder =
-        LookupElementBuilder.create(ObjectUtil.assertNotNull(element), ObjectUtil.assertNotNull(getName(action)));
-
-      final String text = action.getText().getStringValue();
-      if (StringUtil.isNotEmpty(text)) {
-        String withoutMnemonic = StringUtil.replace(text, "_", "");
-        builder = builder.withTailText(" \"" + withoutMnemonic + "\"", true);
-      }
-
-      return builder;
-    }
-
-    return super.createLookupElement(actionOrGroup);
-  }
-
-  protected boolean isRelevant(ActionOrGroup actionOrGroup) {
-    return true;
-  }
-
-  public static class OnlyActions extends ActionOrGroupResolveConverter {
+    @Nonnull
     @Override
-    protected boolean isRelevant(ActionOrGroup actionOrGroup) {
-      return actionOrGroup instanceof Action;
+    public Collection<? extends ActionOrGroup> getVariants(ConvertContext context) {
+        final List<ActionOrGroup> variants = new ArrayList<>();
+        BiPredicate<String, ActionOrGroup> collectProcessor = (s, actionOrGroup) -> {
+            if (isRelevant(actionOrGroup)) {
+                variants.add(actionOrGroup);
+            }
+            return true;
+        };
+        processActionOrGroup(context, collectProcessor);
+        return variants;
+    }
+
+    @Nullable
+    @Override
+    public ActionOrGroup fromString(@Nullable final String value, ConvertContext context) {
+        if (StringUtil.isEmptyOrSpaces(value)) {
+            return null;
+        }
+
+        final ActionOrGroup[] result = {null};
+        BiPredicate<String, ActionOrGroup> findProcessor = (s, actionOrGroup) -> {
+            if (isRelevant(actionOrGroup) && Comparing.strEqual(value, s)) {
+                result[0] = actionOrGroup;
+                return false;
+            }
+            return true;
+        };
+        processActionOrGroup(context, findProcessor);
+        return result[0];
+    }
+
+    @Nullable
+    @Override
+    public String toString(@Nullable ActionOrGroup actionGroup, ConvertContext context) {
+        return actionGroup == null ? null : getName(actionGroup);
     }
 
     @Nonnull
     @Override
     public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
-      return LocalizeValue.localizeTODO("Cannot resolve action '" + s + "'");
+        return LocalizeValue.localizeTODO("Cannot resolve action or group '" + s + "'");
     }
-  }
 
-  public static class OnlyGroups extends ActionOrGroupResolveConverter {
+    @Nullable
     @Override
+    public LookupElement createLookupElement(ActionOrGroup actionOrGroup) {
+        if (actionOrGroup instanceof Action) {
+            Action action = (Action)actionOrGroup;
+            String msg = action.getId().getStringValue() + " in " + DomUtil.getFile(action) + " " + action.isValid() + " ";
+            DomImplUtil.assertValidity(action, msg);
+            final PsiElement element = getPsiElement(actionOrGroup);
+            if (element == null) {
+                throw new IllegalStateException("no PSI: " + msg);
+            }
+
+            LookupElementBuilder builder =
+                LookupElementBuilder.create(ObjectUtil.assertNotNull(element), ObjectUtil.assertNotNull(getName(action)));
+
+            final String text = action.getText().getStringValue();
+            if (StringUtil.isNotEmpty(text)) {
+                String withoutMnemonic = StringUtil.replace(text, "_", "");
+                builder = builder.withTailText(" \"" + withoutMnemonic + "\"", true);
+            }
+
+            return builder;
+        }
+
+        return super.createLookupElement(actionOrGroup);
+    }
+
     protected boolean isRelevant(ActionOrGroup actionOrGroup) {
-      return actionOrGroup instanceof Group;
+        return true;
     }
 
-    @Nonnull
-    @Override
-    public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
-      return LocalizeValue.localizeTODO("Cannot resolve group '" + s + "'");
-    }
-  }
-
-  @RequiredReadAction
-  private static boolean processActionOrGroup(ConvertContext context, final BiPredicate<String, ActionOrGroup> processor) {
-    final Project project = context.getProject();
-
-    Module module = context.getModule();
-    if (module == null) {
-      final Collection<IdeaPlugin> plugins = IdeaPluginConverter.getAllPlugins(project);
-      return processPlugins(plugins, processor);
-    }
-
-    return ModuleUtilCore.visitMeAndDependentModules(module, module1 -> {
-      final Collection<IdeaPlugin> dependenciesAndLibs =
-        IdeaPluginConverter.getPlugins(project, GlobalSearchScope.moduleRuntimeScope(module1, false));
-      return processPlugins(dependenciesAndLibs, processor);
-    });
-  }
-
-  private static boolean processPlugins(Collection<IdeaPlugin> plugins, BiPredicate<String, ActionOrGroup> processor) {
-    for (IdeaPlugin plugin : plugins) {
-      final Map<String, ActionOrGroup> forFile = collectForFile(plugin);
-      for (Map.Entry<String, ActionOrGroup> entry : forFile.entrySet()) {
-        if (!processor.test(entry.getKey(), entry.getValue())) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  private static Map<String, ActionOrGroup> collectForFile(final IdeaPlugin plugin) {
-    final XmlFile xmlFile = DomUtil.getFile(plugin);
-    return LanguageCachedValueUtil.getCachedValue(xmlFile, new CachedValueProvider<Map<String, ActionOrGroup>>() {
-      @Nullable
-      @Override
-      public Result<Map<String, ActionOrGroup>> compute() {
-        Map<String, ActionOrGroup> result = new HashMap<>();
-        for (Actions actions : plugin.getActions()) {
-          collectRecursive(result, actions);
+    public static class OnlyActions extends ActionOrGroupResolveConverter {
+        @Override
+        protected boolean isRelevant(ActionOrGroup actionOrGroup) {
+            return actionOrGroup instanceof Action;
         }
 
-        return Result.create(result, xmlFile);
-      }
-    });
-  }
-
-  private static void collectRecursive(Map<String, ActionOrGroup> result, Actions actions) {
-    for (Action action : actions.getActions()) {
-      final String name = getName(action);
-      if (!StringUtil.isEmptyOrSpaces(name)) {
-        result.put(name, action);
-      }
+        @Nonnull
+        @Override
+        public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
+            return LocalizeValue.localizeTODO("Cannot resolve action '" + s + "'");
+        }
     }
-    for (Group group : actions.getGroups()) {
-      final String name = getName(group);
-      if (!StringUtil.isEmptyOrSpaces(name)) {
-        result.put(name, group);
-      }
-      collectRecursive(result, group);
-    }
-  }
 
-  @Nullable
-  private static String getName(@Nonnull ActionOrGroup actionOrGroup) {
-    return ElementPresentationManager.getElementName(actionOrGroup);
-  }
+    public static class OnlyGroups extends ActionOrGroupResolveConverter {
+        @Override
+        protected boolean isRelevant(ActionOrGroup actionOrGroup) {
+            return actionOrGroup instanceof Group;
+        }
+
+        @Nonnull
+        @Override
+        public LocalizeValue buildUnresolvedMessage(@Nullable String s, ConvertContext context) {
+            return LocalizeValue.localizeTODO("Cannot resolve group '" + s + "'");
+        }
+    }
+
+    @RequiredReadAction
+    private static boolean processActionOrGroup(ConvertContext context, final BiPredicate<String, ActionOrGroup> processor) {
+        final Project project = context.getProject();
+
+        Module module = context.getModule();
+        if (module == null) {
+            final Collection<IdeaPlugin> plugins = IdeaPluginConverter.getAllPlugins(project);
+            return processPlugins(plugins, processor);
+        }
+
+        return ModuleUtilCore.visitMeAndDependentModules(module, module1 -> {
+            final Collection<IdeaPlugin> dependenciesAndLibs =
+                IdeaPluginConverter.getPlugins(project, GlobalSearchScope.moduleRuntimeScope(module1, false));
+            return processPlugins(dependenciesAndLibs, processor);
+        });
+    }
+
+    private static boolean processPlugins(Collection<IdeaPlugin> plugins, BiPredicate<String, ActionOrGroup> processor) {
+        for (IdeaPlugin plugin : plugins) {
+            final Map<String, ActionOrGroup> forFile = collectForFile(plugin);
+            for (Map.Entry<String, ActionOrGroup> entry : forFile.entrySet()) {
+                if (!processor.test(entry.getKey(), entry.getValue())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static Map<String, ActionOrGroup> collectForFile(final IdeaPlugin plugin) {
+        final XmlFile xmlFile = DomUtil.getFile(plugin);
+        return LanguageCachedValueUtil.getCachedValue(xmlFile, new CachedValueProvider<Map<String, ActionOrGroup>>() {
+            @Nullable
+            @Override
+            public Result<Map<String, ActionOrGroup>> compute() {
+                Map<String, ActionOrGroup> result = new HashMap<>();
+                for (Actions actions : plugin.getActions()) {
+                    collectRecursive(result, actions);
+                }
+
+                return Result.create(result, xmlFile);
+            }
+        });
+    }
+
+    private static void collectRecursive(Map<String, ActionOrGroup> result, Actions actions) {
+        for (Action action : actions.getActions()) {
+            final String name = getName(action);
+            if (!StringUtil.isEmptyOrSpaces(name)) {
+                result.put(name, action);
+            }
+        }
+        for (Group group : actions.getGroups()) {
+            final String name = getName(group);
+            if (!StringUtil.isEmptyOrSpaces(name)) {
+                result.put(name, group);
+            }
+            collectRecursive(result, group);
+        }
+    }
+
+    @Nullable
+    private static String getName(@Nonnull ActionOrGroup actionOrGroup) {
+        return ElementPresentationManager.getElementName(actionOrGroup);
+    }
 }
