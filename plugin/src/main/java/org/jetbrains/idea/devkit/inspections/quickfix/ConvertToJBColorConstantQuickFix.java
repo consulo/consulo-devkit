@@ -31,20 +31,20 @@ import javax.annotation.Nonnull;
  * @author Konstantin Bulenkov
  */
 public class ConvertToJBColorConstantQuickFix extends LocalQuickFixBase {
-  private final String myConstantName;
+    private final String myConstantName;
 
-  public ConvertToJBColorConstantQuickFix(String constantName) {
-    super("Convert to JBColor." + constantName, "Convert to JBColor");
-    myConstantName = constantName;
-  }
+    public ConvertToJBColorConstantQuickFix(String constantName) {
+        super("Convert to JBColor." + constantName, "Convert to JBColor");
+        myConstantName = constantName;
+    }
 
-  @Override
-  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    final PsiElement element = descriptor.getPsiElement();
-    final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-    final String jbColorConstant = String.format("%s.%s", JBColor.class.getName(), myConstantName);
-    final PsiExpression expression = factory.createExpressionFromText(jbColorConstant, element.getContext());
-    final PsiElement newElement = element.replace(expression);
-    JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-  }
+    @Override
+    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        final PsiElement element = descriptor.getPsiElement();
+        final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+        final String jbColorConstant = String.format("%s.%s", JBColor.class.getName(), myConstantName);
+        final PsiExpression expression = factory.createExpressionFromText(jbColorConstant, element.getContext());
+        final PsiElement newElement = element.replace(expression);
+        JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+    }
 }

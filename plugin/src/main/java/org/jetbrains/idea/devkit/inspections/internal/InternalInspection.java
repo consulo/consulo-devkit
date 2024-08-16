@@ -26,35 +26,32 @@ import consulo.language.psi.PsiElementVisitor;
 import javax.annotation.Nonnull;
 
 public abstract class InternalInspection extends BaseJavaLocalInspectionTool<Object> {
-  @Nonnull
-  @Override
-  public String getGroupDisplayName() {
-    return DevKitLocalize.inspectionsGroupName().get();
-  }
-
-  @Override
-  public boolean isEnabledByDefault() {
-    return true;
-  }
-
-  @Nonnull
-  @Override
-  public PsiElementVisitor buildVisitorImpl(
-    @Nonnull ProblemsHolder holder,
-    boolean isOnTheFly,
-    LocalInspectionToolSession session,
-    Object o
-  ) {
-    if (!isAllowed(holder)) {
-      return PsiElementVisitor.EMPTY_VISITOR;
+    @Nonnull
+    @Override
+    public String getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName().get();
     }
-    return buildInternalVisitor(holder, isOnTheFly);
-  }
 
-  @RequiredReadAction
-  protected boolean isAllowed(ProblemsHolder holder) {
-    return PluginModuleUtil.isConsuloOrPluginProject(holder.getFile());
-  }
+    @Override
+    public boolean isEnabledByDefault() {
+        return true;
+    }
 
-  public abstract PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly);
+    @Nonnull
+    @Override
+    public PsiElementVisitor buildVisitorImpl(
+        @Nonnull ProblemsHolder holder,
+        boolean isOnTheFly,
+        LocalInspectionToolSession session,
+        Object o
+    ) {
+        return isAllowed(holder) ? buildInternalVisitor(holder, isOnTheFly) : PsiElementVisitor.EMPTY_VISITOR;
+    }
+
+    @RequiredReadAction
+    protected boolean isAllowed(ProblemsHolder holder) {
+        return PluginModuleUtil.isConsuloOrPluginProject(holder.getFile());
+    }
+
+    public abstract PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly);
 }

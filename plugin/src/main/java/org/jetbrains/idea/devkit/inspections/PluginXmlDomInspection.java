@@ -29,25 +29,25 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugin, Object> {
-  public PluginXmlDomInspection() {
-    super(IdeaPlugin.class);
-  }
+    public PluginXmlDomInspection() {
+        super(IdeaPlugin.class);
+    }
 
-  @Nls
-  @Nonnull
-  public String getGroupDisplayName() {
-    return DevKitLocalize.inspectionsGroupName().get();
-  }
+    @Nls
+    @Nonnull
+    public String getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName().get();
+    }
 
-  @Nls
-  @Nonnull
-  public String getDisplayName() {
-    return "Plugin.xml Validity";
-  }
+    @Nls
+    @Nonnull
+    public String getDisplayName() {
+        return "Plugin.xml Validity";
+    }
 
-  @NonNls
-  @Nonnull
-  public String getShortName() {
-    return "PluginXmlValidity";
-  }
+    @NonNls
+    @Nonnull
+    public String getShortName() {
+        return "PluginXmlValidity";
+    }
 }

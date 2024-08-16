@@ -33,22 +33,22 @@ import javax.annotation.Nonnull;
  * @author Konstantin Bulenkov
  */
 public class ConvertToJBColorQuickFix extends LocalQuickFixBase {
-  public ConvertToJBColorQuickFix() {
-    super("Convert to JBColor");
-  }
-
-  @Override
-  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    final PsiElement element = descriptor.getPsiElement();
-    final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-    final String newJBColor = String.format("new %s(%s, new java.awt.Color())", JBColor.class.getName(), element.getText());
-    final PsiExpression expression = factory.createExpressionFromText(newJBColor, element.getContext());
-    final PsiElement newElement = element.replace(expression);
-    final PsiElement el = JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-    final int offset = el.getTextOffset() + el.getText().length() - 2;
-    final Editor editor = PsiUtilBase.findEditor(el);
-    if (editor != null) {
-      editor.getCaretModel().moveToOffset(offset);
+    public ConvertToJBColorQuickFix() {
+        super("Convert to JBColor");
     }
-  }
+
+    @Override
+    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        final PsiElement element = descriptor.getPsiElement();
+        final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+        final String newJBColor = String.format("new %s(%s, new java.awt.Color())", JBColor.class.getName(), element.getText());
+        final PsiExpression expression = factory.createExpressionFromText(newJBColor, element.getContext());
+        final PsiElement newElement = element.replace(expression);
+        final PsiElement el = JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+        final int offset = el.getTextOffset() + el.getText().length() - 2;
+        final Editor editor = PsiUtilBase.findEditor(el);
+        if (editor != null) {
+            editor.getCaretModel().moveToOffset(offset);
+        }
+    }
 }

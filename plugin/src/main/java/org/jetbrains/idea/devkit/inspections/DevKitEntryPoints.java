@@ -29,29 +29,27 @@ import consulo.xml.util.xml.DomElement;
  */
 @ExtensionImpl
 public class DevKitEntryPoints implements ImplicitUsageProvider {
-  private static final String domClassName = DomElement.class.getName();
+    private static final String domClassName = DomElement.class.getName();
 
-  @Override
-  public boolean isImplicitUsage(PsiElement element) {
-    if (element instanceof PsiClass psiClass) {
-      if (InheritanceUtil.isInheritor(psiClass, domClassName)) {
-        return true;
-      }
+    @Override
+    public boolean isImplicitUsage(PsiElement element) {
+        if (element instanceof PsiClass psiClass && InheritanceUtil.isInheritor(psiClass, domClassName)) {
+            return true;
+        }
+
+        if (element instanceof PsiField || element instanceof PsiMethod || element instanceof PsiClass) {
+            return AnnotationUtil.isAnnotated((PsiModifierListOwner)element, UsedInPlugin.class.getName(), 0);
+        }
+        return false;
     }
-    
-    if (element instanceof PsiField || element instanceof PsiMethod || element instanceof PsiClass) {
-      return AnnotationUtil.isAnnotated((PsiModifierListOwner)element, UsedInPlugin.class.getName(), 0);
+
+    @Override
+    public boolean isImplicitRead(PsiElement element) {
+        return false;
     }
-    return false;
-  }
 
-  @Override
-  public boolean isImplicitRead(PsiElement element) {
-    return false;
-  }
-
-  @Override
-  public boolean isImplicitWrite(PsiElement element) {
-    return false;
-  }
+    @Override
+    public boolean isImplicitWrite(PsiElement element) {
+        return false;
+    }
 }

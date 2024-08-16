@@ -33,28 +33,28 @@ import javax.annotation.Nonnull;
  * @author Konstantin Bulenkov
  */
 public class UseCoupleQuickFix extends LocalQuickFixBase {
-
-  public UseCoupleQuickFix(String text) {
-    super(text);
-  }
-
-  @Override
-  @RequiredReadAction
-  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    final PsiElement element = descriptor.getPsiElement();
-    final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-    final PsiElement newElement;
-    if (element instanceof PsiTypeElement psiTypeElement) {
-      final String canonicalText = psiTypeElement.getType().getCanonicalText();
-      final String type = canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.indexOf(','));
-      final PsiTypeElement newType = factory.createTypeElementFromText(Couple.class.getName() + "<" + type + ">", element.getContext());
-      newElement = element.replace(newType);
+    public UseCoupleQuickFix(String text) {
+        super(text);
     }
-    else {
-      final String text = Couple.class.getName() + ".of" + element.getText().substring("Pair.create".length());
-      final PsiExpression expression = factory.createExpressionFromText(text, element.getContext());
-      newElement = element.replace(expression);
+
+    @Override
+    @RequiredReadAction
+    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        final PsiElement element = descriptor.getPsiElement();
+        final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+        final PsiElement newElement;
+        if (element instanceof PsiTypeElement psiTypeElement) {
+            final String canonicalText = psiTypeElement.getType().getCanonicalText();
+            final String type = canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.indexOf(','));
+            final PsiTypeElement newType =
+                factory.createTypeElementFromText(Couple.class.getName() + "<" + type + ">", element.getContext());
+            newElement = element.replace(newType);
+        }
+        else {
+            final String text = Couple.class.getName() + ".of" + element.getText().substring("Pair.create".length());
+            final PsiExpression expression = factory.createExpressionFromText(text, element.getContext());
+            newElement = element.replace(expression);
+        }
+        JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
     }
-    JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-  }
 }

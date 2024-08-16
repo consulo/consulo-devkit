@@ -26,41 +26,41 @@ import javax.annotation.Nonnull;
 
 @ExtensionImpl
 public class FileEqualsUsageInspection extends InternalInspection {
-  private static final String MESSAGE =
-    "Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. " + "Please use " +
-      "FileUtil.filesEquals/fileHashCode/compareFiles instead";
+    private static final String MESSAGE =
+        "Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. " +
+            "Please use FileUtil.filesEquals/fileHashCode/compareFiles instead";
 
-  @Override
-  @Nonnull
-  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      public void visitMethodCallExpression(PsiMethodCallExpression expression) {
-        PsiReferenceExpression methodExpression = expression.getMethodExpression();
-        PsiElement resolved = methodExpression.resolve();
-        if (!(resolved instanceof PsiMethod)) {
-          return;
-        }
+    @Override
+    @Nonnull
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+                PsiReferenceExpression methodExpression = expression.getMethodExpression();
+                PsiElement resolved = methodExpression.resolve();
+                if (!(resolved instanceof PsiMethod)) {
+                    return;
+                }
 
-        PsiMethod method = (PsiMethod)resolved;
+                PsiMethod method = (PsiMethod)resolved;
 
-        PsiClass clazz = method.getContainingClass();
-        if (clazz == null) {
-          return;
-        }
+                PsiClass clazz = method.getContainingClass();
+                if (clazz == null) {
+                    return;
+                }
 
-        String methodName = method.getName();
-        if (CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && ("equals".equals(methodName) || "compareTo".equals(methodName)
-          || "hashCode".equals(methodName))) {
-          holder.registerProblem(methodExpression, MESSAGE, ProblemHighlightType.LIKE_DEPRECATED);
-        }
-      }
-    };
-  }
+                String methodName = method.getName();
+                if (CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName())
+                    && ("equals".equals(methodName) || "compareTo".equals(methodName) || "hashCode".equals(methodName))) {
+                    holder.registerProblem(methodExpression, MESSAGE, ProblemHighlightType.LIKE_DEPRECATED);
+                }
+            }
+        };
+    }
 
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "File.equals() usage";
-  }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "File.equals() usage";
+    }
 }

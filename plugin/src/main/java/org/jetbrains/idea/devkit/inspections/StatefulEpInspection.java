@@ -35,72 +35,55 @@ import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import javax.annotation.Nonnull;
 
 @ExtensionImpl
-public class StatefulEpInspection extends InternalInspection
-{
-	@Nonnull
-	@Override
-	public String getDisplayName()
-	{
-		return "Stateful Extension";
-	}
+public class StatefulEpInspection extends InternalInspection {
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Stateful Extension";
+    }
 
-	@Override
-	public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly)
-	{
-		return new JavaElementVisitor()
-		{
-			@Override
-			public void visitField(PsiField field)
-			{
-				checkField(field, holder);
-			}
-		};
-	}
+    @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            public void visitField(PsiField field) {
+                checkField(field, holder);
+            }
+        };
+    }
 
-	private void checkField(PsiField field, ProblemsHolder holder)
-	{
-		PsiClass psiClass = field.getContainingClass();
-		if(psiClass == null)
-		{
-			return;
-		}
+    private void checkField(PsiField field, ProblemsHolder holder) {
+        PsiClass psiClass = field.getContainingClass();
+        if (psiClass == null) {
+            return;
+        }
 
-		final boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
-		if(isQuickFix || AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.Impl, 0))
-		{
-			final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
+        final boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
+        if (isQuickFix || AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.Impl, 0)) {
+            final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
 
-			for(Class c : new Class[]{
-					PsiElement.class,
-					PsiReference.class,
-					Project.class
-			})
-			{
-				if(c == Project.class && (field.hasModifierProperty(PsiModifier.FINAL) || isProjectComponent))
-				{
-					continue;
-				}
-				String message;
-				if(c != PsiElement.class)
-				{
-					message = "Don't use " + c.getSimpleName() + " as a field in extension";
-				}
-				else
-				{
-					message = "Potential memory leak: don't hold PsiElement, use SmartPsiElementPointer instead" + (isQuickFix ? "; also see LocalQuickFixOnPsiElement" : "");
-				}
+            for (Class c : new Class[]{PsiElement.class, PsiReference.class, Project.class}) {
+                if (c == Project.class && (field.hasModifierProperty(PsiModifier.FINAL) || isProjectComponent)) {
+                    continue;
+                }
+                String message;
+                if (c != PsiElement.class) {
+                    message = "Don't use " + c.getSimpleName() + " as a field in extension";
+                }
+                else {
+                    message = "Potential memory leak: don't hold PsiElement, use SmartPsiElementPointer instead" +
+                        (isQuickFix ? "; also see LocalQuickFixOnPsiElement" : "");
+                }
 
-				if(InheritanceUtil.isInheritor(field.getType(), c.getCanonicalName()))
-				{
-					holder.registerProblem(field, message, ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
-				}
-			}
-		}
-	}
+                if (InheritanceUtil.isInheritor(field.getType(), c.getCanonicalName())) {
+                    holder.registerProblem(field, message, ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
+                }
+            }
+        }
+    }
 
-	private static boolean isProjectServiceOrComponent(PsiClass psiClass)
-	{
-		// TODO check ServiceAPI
-		return true;
-	}
+    private static boolean isProjectServiceOrComponent(PsiClass psiClass) {
+        // TODO check ServiceAPI
+        return true;
+    }
 }

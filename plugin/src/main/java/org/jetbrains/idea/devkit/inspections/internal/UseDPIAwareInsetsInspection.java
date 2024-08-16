@@ -37,63 +37,60 @@ import javax.annotation.Nullable;
  */
 @ExtensionImpl
 public class UseDPIAwareInsetsInspection extends InternalInspection {
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Use DPI-aware insets";
-  }
-
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      public void visitNewExpression(PsiNewExpression expression) {
-        final ProblemDescriptor
-          descriptor = checkNewExpression(expression, holder.getManager(), isOnTheFly);
-        if (descriptor != null) {
-          holder.registerProblem(descriptor);
-        }
-        super.visitNewExpression(expression);
-      }
-    };
-  }
-
-  @Nullable
-  private static ProblemDescriptor checkNewExpression(PsiNewExpression expression, InspectionManager manager, boolean isOnTheFly) {
-    final Project project = manager.getProject();
-    final PsiType type = expression.getType();
-    final PsiExpressionList arguments = expression.getArgumentList();
-    if (type != null && arguments != null && type.equalsToText("java.awt.Insets")) {
-      if (expression.getParent() instanceof PsiExpressionList) {
-        PsiElement parent = expression.getParent();
-        PsiElement superParent = parent.getParent();
-        if (superParent instanceof PsiMethodCallExpression) {
-          PsiType methodType = ((PsiMethodCallExpression)superParent).getType();
-          if (methodType != null && methodType.equalsToText(JBInsets.class.getName())) {
-            return null;
-          }
-        }
-      }
-      final JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
-      final PsiClass jbuiClass = facade.findClass(JBUI.class.getName(), GlobalSearchScope.allScope(project));
-      if (jbuiClass != null && facade.getResolveHelper().isAccessible(jbuiClass, expression, jbuiClass)) {
-        final PsiElement parent = expression.getParent();
-        if (parent instanceof PsiExpressionList && parent.getParent() instanceof PsiNewExpression) {
-          final PsiType parentType = ((PsiNewExpression)parent.getParent()).getType();
-          if (parentType == null || JBInsets.class.getName().equals(parentType.getCanonicalText())) {
-            return null;
-          }
-        }
-        if (arguments.getExpressions().length == 4) {
-          return manager.createProblemDescriptor(expression,
-                                                 "Replace with JBUI.insets(...)",
-                                                 new ConvertToJBInsetsQuickFix(),
-                                                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                                 isOnTheFly);
-        }
-      }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Use DPI-aware insets";
     }
-    return null;
-  }
 
+    @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            public void visitNewExpression(PsiNewExpression expression) {
+                final ProblemDescriptor descriptor = checkNewExpression(expression, holder.getManager(), isOnTheFly);
+                if (descriptor != null) {
+                    holder.registerProblem(descriptor);
+                }
+                super.visitNewExpression(expression);
+            }
+        };
+    }
+
+    @Nullable
+    private static ProblemDescriptor checkNewExpression(PsiNewExpression expression, InspectionManager manager, boolean isOnTheFly) {
+        final Project project = manager.getProject();
+        final PsiType type = expression.getType();
+        final PsiExpressionList arguments = expression.getArgumentList();
+        if (type != null && arguments != null && type.equalsToText("java.awt.Insets")) {
+            if (expression.getParent() instanceof PsiExpressionList expressionList
+                && expressionList.getParent() instanceof PsiMethodCallExpression methodCallExpression) {
+                PsiType methodType = methodCallExpression.getType();
+                if (methodType != null && methodType.equalsToText(JBInsets.class.getName())) {
+                    return null;
+                }
+            }
+            final JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
+            final PsiClass jbuiClass = facade.findClass(JBUI.class.getName(), GlobalSearchScope.allScope(project));
+            if (jbuiClass != null && facade.getResolveHelper().isAccessible(jbuiClass, expression, jbuiClass)) {
+                final PsiElement parent = expression.getParent();
+                if (parent instanceof PsiExpressionList && parent.getParent() instanceof PsiNewExpression newExpression) {
+                    final PsiType parentType = newExpression.getType();
+                    if (parentType == null || JBInsets.class.getName().equals(parentType.getCanonicalText())) {
+                        return null;
+                    }
+                }
+                if (arguments.getExpressions().length == 4) {
+                    return manager.createProblemDescriptor(
+                        expression,
+                        "Replace with JBUI.insets(...)",
+                        new ConvertToJBInsetsQuickFix(),
+                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                        isOnTheFly
+                    );
+                }
+            }
+        }
+        return null;
+    }
 }
