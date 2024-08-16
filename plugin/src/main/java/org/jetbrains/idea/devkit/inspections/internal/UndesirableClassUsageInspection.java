@@ -19,6 +19,7 @@ import com.intellij.java.language.psi.JavaElementVisitor;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiJavaCodeReferenceElement;
 import com.intellij.java.language.psi.PsiNewExpression;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.query.QueryExecutor;
 import consulo.language.editor.inspection.ProblemHighlightType;
@@ -39,7 +40,7 @@ import java.util.Map;
 
 @ExtensionImpl
 public class UndesirableClassUsageInspection extends InternalInspection {
-    private static final Map<String, String> CLASSES = new HashMap<String, String>();
+    private static final Map<String, String> CLASSES = new HashMap<>();
 
     static {
         CLASSES.put(JList.class.getName(), JBList.class.getName());
@@ -61,7 +62,8 @@ public class UndesirableClassUsageInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitNewExpression(PsiNewExpression expression) {
+            @RequiredReadAction
+            public void visitNewExpression(@Nonnull PsiNewExpression expression) {
                 PsiJavaCodeReferenceElement ref = expression.getClassReference();
                 if (ref == null) {
                     return;

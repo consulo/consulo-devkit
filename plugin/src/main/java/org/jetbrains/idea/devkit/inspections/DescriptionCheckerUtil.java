@@ -58,6 +58,7 @@ public class DescriptionCheckerUtil {
     }
 
     @Nullable
+    @RequiredReadAction
     public static String getDescriptionDirName(PsiClass aClass) {
         String descriptionDir = "";
         PsiClass each = aClass;

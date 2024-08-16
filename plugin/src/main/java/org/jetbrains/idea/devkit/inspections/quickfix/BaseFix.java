@@ -24,6 +24,7 @@ import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.UIUtil;
 import consulo.virtualFileSystem.ReadonlyStatusHandler;
@@ -43,6 +44,8 @@ abstract class BaseFix implements LocalQuickFix {
         myOnTheFly = onTheFly;
     }
 
+    @Override
+    @RequiredUIAccess
     public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
         // can happen during batch-inspection if resolution has already been applied
         // to plugin.xml or java class

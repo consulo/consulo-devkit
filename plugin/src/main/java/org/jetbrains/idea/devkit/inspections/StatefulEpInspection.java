@@ -46,7 +46,7 @@ public class StatefulEpInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitField(PsiField field) {
+            public void visitField(@Nonnull PsiField field) {
                 checkField(field, holder);
             }
         };

@@ -19,6 +19,7 @@ import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.PsiUtil;
 import com.siyeh.IntentionPowerPackBundle;
 import com.siyeh.ig.PsiReplacementUtil;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.ast.IElementType;
 import consulo.language.editor.inspection.LocalQuickFix;
@@ -28,7 +29,6 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.project.Project;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
 
 import javax.annotation.Nonnull;
 
@@ -38,7 +38,7 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitBinaryExpression(PsiBinaryExpression expression) {
+            public void visitBinaryExpression(@Nonnull PsiBinaryExpression expression) {
                 super.visitBinaryExpression(expression);
                 final IElementType tokenType = expression.getOperationTokenType();
                 if (JavaTokenType.EQEQ.equals(tokenType) || JavaTokenType.NE.equals(tokenType)) {
@@ -63,6 +63,7 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
         };
     }
 
+    @RequiredReadAction
     private static boolean isPrimitiveTypeRef(PsiExpression expression) {
         if (expression instanceof PsiReferenceExpression referenceExpression && referenceExpression.resolve() instanceof PsiField field) {
             final PsiClass containingClass = field.getContainingClass();
@@ -101,6 +102,7 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
         }
 
         @Override
+        @RequiredReadAction
         public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
             final PsiElement psiElement = descriptor.getPsiElement();
             if (psiElement instanceof PsiJavaToken javaToken) {
@@ -128,7 +130,7 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
                             final String lhText = flip ? rText : lText;
                             final String rhText = flip ? lText : rText;
 
-                            @NonNls final String expString = prefix + lhText + ".equals(" + rhText + ')';
+                            final String expString = prefix + lhText + ".equals(" + rhText + ')';
                             PsiReplacementUtil.replaceExpression(binaryExpression, expString);
                         }
                     }

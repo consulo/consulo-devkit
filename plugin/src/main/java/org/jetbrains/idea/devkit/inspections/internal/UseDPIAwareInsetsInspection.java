@@ -47,7 +47,7 @@ public class UseDPIAwareInsetsInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitNewExpression(PsiNewExpression expression) {
+            public void visitNewExpression(@Nonnull PsiNewExpression expression) {
                 final ProblemDescriptor descriptor = checkNewExpression(expression, holder.getManager(), isOnTheFly);
                 if (descriptor != null) {
                     holder.registerProblem(descriptor);
@@ -71,8 +71,9 @@ public class UseDPIAwareInsetsInspection extends InternalInspection {
                 }
             }
             final JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
+            final PsiResolveHelper resolveHelper = PsiResolveHelper.getInstance(project);
             final PsiClass jbuiClass = facade.findClass(JBUI.class.getName(), GlobalSearchScope.allScope(project));
-            if (jbuiClass != null && facade.getResolveHelper().isAccessible(jbuiClass, expression, jbuiClass)) {
+            if (jbuiClass != null && resolveHelper.isAccessible(jbuiClass, expression, jbuiClass)) {
                 final PsiElement parent = expression.getParent();
                 if (parent instanceof PsiExpressionList && parent.getParent() instanceof PsiNewExpression newExpression) {
                     final PsiType parentType = newExpression.getType();

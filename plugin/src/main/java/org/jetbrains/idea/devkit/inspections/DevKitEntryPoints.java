@@ -37,6 +37,7 @@ public class DevKitEntryPoints implements ImplicitUsageProvider {
             return true;
         }
 
+        //noinspection SimplifiableIfStatement
         if (element instanceof PsiField || element instanceof PsiMethod || element instanceof PsiClass) {
             return AnnotationUtil.isAnnotated((PsiModifierListOwner)element, UsedInPlugin.class.getName(), 0);
         }

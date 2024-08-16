@@ -39,6 +39,7 @@ public abstract class InternalInspection extends BaseJavaLocalInspectionTool<Obj
 
     @Nonnull
     @Override
+    @RequiredReadAction
     public PsiElementVisitor buildVisitorImpl(
         @Nonnull ProblemsHolder holder,
         boolean isOnTheFly,

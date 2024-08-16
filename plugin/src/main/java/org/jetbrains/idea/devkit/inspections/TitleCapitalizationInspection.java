@@ -20,6 +20,8 @@ import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.PropertyUtil;
 import com.intellij.lang.properties.psi.Property;
 import com.intellij.lang.properties.references.PropertyReference;
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.fileChooser.FileChooserDescriptor;
 import consulo.language.editor.inspection.*;
@@ -82,7 +84,8 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
     ) {
         return new JavaElementVisitor() {
             @Override
-            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+            @RequiredReadAction
+            public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
                 PsiReferenceExpression methodExpression = expression.getMethodExpression();
                 String calledName = methodExpression.getReferenceName();
                 if (calledName == null) {
@@ -150,6 +153,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
     }
 
     @Nullable
+    @RequiredReadAction
     private static String getTitleValue(PsiExpression arg) {
         if (arg instanceof PsiLiteralExpression argLiteralExpr) {
             if (argLiteralExpr.getValue() instanceof String strValue) {
@@ -167,11 +171,10 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
                 return propertyArgument.getUnescapedValue();
             }
         }
-        if (arg instanceof PsiReferenceExpression argRefExpr) {
-            if (argRefExpr.resolve() instanceof PsiVariable resultVariable
-                && resultVariable.hasModifierProperty(PsiModifier.FINAL)) {
-                return getTitleValue(resultVariable.getInitializer());
-            }
+        if (arg instanceof PsiReferenceExpression argRefExpr
+            && argRefExpr.resolve() instanceof PsiVariable resultVariable
+            && resultVariable.hasModifierProperty(PsiModifier.FINAL)) {
+            return getTitleValue(resultVariable.getInitializer());
         }
         return null;
     }
@@ -216,6 +219,8 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
             return "Properly capitalize '" + myTitleValue + '\'';
         }
 
+        @Override
+        @RequiredWriteAction
         public final void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
             final PsiElement problemElement = descriptor.getPsiElement();
             if (problemElement == null || !problemElement.isValid()) {
@@ -235,17 +240,15 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
             }
         }
 
+        @RequiredWriteAction
         protected void doFix(Project project, PsiElement element) throws IncorrectOperationException {
             if (element instanceof PsiLiteralExpression literalExpression) {
-                final Object value = literalExpression.getValue();
-                if (!(value instanceof String)) {
-                    return;
+                if (literalExpression.getValue() instanceof String strValue) {
+                    final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
+                    final PsiExpression newExpression =
+                        factory.createExpressionFromText('"' + StringUtil.wordsToBeginFromUpperCase(strValue) + '"', element);
+                    literalExpression.replace(newExpression);
                 }
-                final String string = (String)value;
-                final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
-                final PsiExpression newExpression =
-                    factory.createExpressionFromText('"' + StringUtil.wordsToBeginFromUpperCase(string) + '"', element);
-                literalExpression.replace(newExpression);
             }
             else if (element instanceof PsiMethodCallExpression methodCallExpression) {
                 final PsiMethod method = methodCallExpression.resolveMethod();
@@ -265,12 +268,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
                 property.setValue(capitalizedString);
             }
             else if (element instanceof PsiReferenceExpression referenceExpression) {
-                final PsiElement target = referenceExpression.resolve();
-                if (!(target instanceof PsiVariable)) {
-                    return;
-                }
-                final PsiVariable variable = (PsiVariable)target;
-                if (variable.hasModifierProperty(PsiModifier.FINAL)) {
+                if (referenceExpression.resolve() instanceof PsiVariable variable && variable.hasModifierProperty(PsiModifier.FINAL)) {
                     doFix(project, variable.getInitializer());
                 }
             }

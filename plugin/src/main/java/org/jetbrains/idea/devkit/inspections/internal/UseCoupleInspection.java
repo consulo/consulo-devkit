@@ -16,10 +16,10 @@
 package org.jetbrains.idea.devkit.inspections.internal;
 
 import com.intellij.java.language.psi.*;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiReference;
 import consulo.util.lang.Pair;
@@ -47,7 +47,7 @@ public class UseCoupleInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitTypeElement(PsiTypeElement type) {
+            public void visitTypeElement(@Nonnull PsiTypeElement type) {
                 final String canonicalText = type.getType().getCanonicalText();
                 if (canonicalText.startsWith(PAIR_FQN)) {
                     if (canonicalText.contains("<") && canonicalText.endsWith(">")) {
@@ -67,7 +67,8 @@ public class UseCoupleInspection extends InternalInspection {
             }
 
             @Override
-            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+            @RequiredReadAction
+            public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
                 if (expression.getText().startsWith("Pair.create")) {
                     final PsiReference reference = expression.getMethodExpression().getReference();
                     if (reference != null && reference.resolve() instanceof PsiMethod method) {

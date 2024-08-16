@@ -17,6 +17,7 @@ package org.jetbrains.idea.devkit.inspections;
 
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiMethod;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.inspection.InspectionTool;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiFile;
@@ -39,6 +40,7 @@ public class InspectionDescriptionInfo {
         myDescriptionFile = descriptionFile;
     }
 
+    @RequiredReadAction
     public static InspectionDescriptionInfo create(Module module, PsiClass psiClass) {
         PsiMethod method = PsiUtil.findNearestMethod("getShortName", psiClass);
         if (method != null && DescriptionType.INSPECTION.getClassNames().contains(method.getContainingClass().getQualifiedName())) {
@@ -54,6 +56,7 @@ public class InspectionDescriptionInfo {
     }
 
     @Nullable
+    @RequiredReadAction
     private static PsiFile resolveInspectionDescriptionFile(Module module, @Nullable String filename) {
         if (filename == null) {
             return null;

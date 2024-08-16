@@ -43,7 +43,7 @@ public class UseGrayInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitNewExpression(PsiNewExpression expression) {
+            public void visitNewExpression(@Nonnull PsiNewExpression expression) {
                 final ProblemDescriptor descriptor = checkNewExpression(expression, holder.getManager(), isOnTheFly);
                 if (descriptor != null) {
                     holder.registerProblem(descriptor);
@@ -63,7 +63,7 @@ public class UseGrayInspection extends InternalInspection {
             if (arguments != null) {
                 final PsiExpression[] expressions = arguments.getExpressions();
                 if (expressions.length == 3 && "java.awt.Color".equals(type.getCanonicalText())) {
-                    if (!facade.getResolveHelper().isAccessible(grayClass, expression, grayClass)) {
+                    if (!PsiResolveHelper.getInstance(project).isAccessible(grayClass, expression, grayClass)) {
                         return null;
                     }
                     final PsiExpression r = expressions[0];

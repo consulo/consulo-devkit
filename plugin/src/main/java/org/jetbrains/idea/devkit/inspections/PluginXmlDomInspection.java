@@ -35,18 +35,20 @@ public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugi
 
     @Nls
     @Nonnull
+    @Override
     public String getGroupDisplayName() {
         return DevKitLocalize.inspectionsGroupName().get();
     }
 
     @Nls
     @Nonnull
+    @Override
     public String getDisplayName() {
         return "Plugin.xml Validity";
     }
 
-    @NonNls
     @Nonnull
+    @Override
     public String getShortName() {
         return "PluginXmlValidity";
     }

@@ -20,6 +20,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.util.IncorrectOperationException;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.idea.devkit.actions.NewActionDialog;
 import org.jetbrains.idea.devkit.util.ActionType;
@@ -33,10 +34,13 @@ public class RegisterActionFix extends AbstractRegisterFix {
         super(klass);
     }
 
+    @Override
     protected String getType() {
         return DevKitLocalize.newMenuActionText().get();
     }
 
+    @Override
+    @RequiredUIAccess
     public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
         try {
             myDialog = new NewActionDialog(myClass);
@@ -51,6 +55,7 @@ public class RegisterActionFix extends AbstractRegisterFix {
         }
     }
 
+    @Override
     public void patchPluginXml(XmlFile pluginXml, PsiClass aClass) throws IncorrectOperationException {
         if (ActionType.GROUP.isOfType(aClass)) {
             ActionType.GROUP.patchPluginXml(pluginXml, aClass, myDialog);

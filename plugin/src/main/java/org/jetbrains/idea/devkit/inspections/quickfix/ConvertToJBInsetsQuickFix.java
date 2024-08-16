@@ -17,6 +17,7 @@ package org.jetbrains.idea.devkit.inspections.quickfix;
 
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.Editor;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
@@ -36,6 +37,7 @@ public class ConvertToJBInsetsQuickFix extends LocalQuickFixBase {
     }
 
     @Override
+    @RequiredReadAction
     public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
         final PsiNewExpression newExpression = (PsiNewExpression)descriptor.getPsiElement();
         PsiExpressionList list = newExpression.getArgumentList();

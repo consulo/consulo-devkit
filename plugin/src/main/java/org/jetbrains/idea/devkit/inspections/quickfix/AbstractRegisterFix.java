@@ -28,11 +28,11 @@ import consulo.language.util.ModuleUtilCore;
 import consulo.logging.Logger;
 import consulo.module.Module;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.UIUtil;
 import consulo.undoRedo.CommandProcessor;
 import consulo.xml.psi.xml.XmlFile;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 
@@ -48,11 +48,13 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
     }
 
     @Nonnull
+    @Override
     public String getFamilyName() {
         return DevKitLocalize.inspectionsComponentNotRegisteredQuickfixFamily().get();
     }
 
     @Nonnull
+    @Override
     public String getName() {
         return DevKitLocalize.inspectionsComponentNotRegisteredQuickfixName(getType()).get();
     }
@@ -64,13 +66,15 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
         if (message == null) {
             return null;
         }
-        @NonNls final String ioExceptionPrefix = "java.io.IOException:";
+        final String ioExceptionPrefix = "java.io.IOException:";
         if (message.startsWith(ioExceptionPrefix)) {
             message = message.substring(ioExceptionPrefix.length());
         }
         return message;
     }
 
+    @Override
+    @RequiredUIAccess
     public void applyFix(@Nonnull final Project project, @Nonnull ProblemDescriptor descriptor) {
         if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.getPsiElement())) {
             return;
@@ -88,9 +92,11 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
                     }
                 }
                 else {
+                    //noinspection RequiredXAction
                     List<Module> modules = PluginModuleUtil.getCandidateModules(module);
                     if (modules.size() > 1) {
                         final ChooseModulesDialog dialog = new ChooseModulesDialog(project, modules, getName());
+                        //noinspection RequiredXAction
                         dialog.show();
 
                         if (!dialog.isOK()) {
@@ -108,6 +114,7 @@ abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patc
                 CommandProcessor.getInstance().markCurrentCommandAsGlobal(project);
             }
             catch (IncorrectOperationException e) {
+                //noinspection RequiredXAction
                 Messages.showMessageDialog(
                     project,
                     filterMessage(e.getMessage()),

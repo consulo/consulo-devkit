@@ -17,6 +17,7 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.InheritanceUtil;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
@@ -49,7 +50,8 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitMethodCallExpression(final PsiMethodCallExpression expression) {
+            @RequiredReadAction
+            public void visitMethodCallExpression(@Nonnull final PsiMethodCallExpression expression) {
                 final Project project = expression.getProject();
                 final JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
 
@@ -58,35 +60,33 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
                     return;
                 }
                 final PsiElement methodElement = methodRef.resolve();
-                if (!(methodElement instanceof PsiMethod)) {
-                    return;
-                }
-                final PsiMethod method = (PsiMethod)methodElement;
-                final PsiClass aClass = method.getContainingClass();
-                final PsiClass virtualFileClass = facade.findClass(VIRTUAL_FILE_CLASS_NAME, GlobalSearchScope.allScope(project));
-                if (!InheritanceUtil.isInheritorOrSelf(aClass, virtualFileClass, true)) {
-                    return;
-                }
-
-                final PsiMethod containingMethod = PsiTreeUtil.getParentOfType(expression, PsiMethod.class);
-                if (containingMethod == null) {
-                    return;
-                }
-                final String containingMethodName = containingMethod.getName();
-                final Ref<Boolean> result = Ref.create();
-                containingMethod.accept(new JavaRecursiveElementVisitor() {
-                    @Override
-                    public void visitMethodCallExpression(final PsiMethodCallExpression expression2) {
-                        if (expression2 != expression
-                            && containingMethodName.equals(expression2.getMethodExpression().getReferenceName())
-                            && expression2.resolveMethod() == containingMethod) {
-                            result.set(Boolean.TRUE);
-                        }
+                if (methodElement instanceof PsiMethod method) {
+                    final PsiClass aClass = method.getContainingClass();
+                    final PsiClass virtualFileClass = facade.findClass(VIRTUAL_FILE_CLASS_NAME, GlobalSearchScope.allScope(project));
+                    if (!InheritanceUtil.isInheritorOrSelf(aClass, virtualFileClass, true)) {
+                        return;
                     }
-                });
 
-                if (!result.isNull()) {
-                    holder.registerProblem(expression, MESSAGE);
+                    final PsiMethod containingMethod = PsiTreeUtil.getParentOfType(expression, PsiMethod.class);
+                    if (containingMethod == null) {
+                        return;
+                    }
+                    final String containingMethodName = containingMethod.getName();
+                    final Ref<Boolean> result = Ref.create();
+                    containingMethod.accept(new JavaRecursiveElementVisitor() {
+                        @Override
+                        public void visitMethodCallExpression(@Nonnull final PsiMethodCallExpression expression2) {
+                            if (expression2 != expression
+                                && containingMethodName.equals(expression2.getMethodExpression().getReferenceName())
+                                && expression2.resolveMethod() == containingMethod) {
+                                result.set(Boolean.TRUE);
+                            }
+                        }
+                    });
+
+                    if (!result.isNull()) {
+                        holder.registerProblem(expression, MESSAGE);
+                    }
                 }
             }
         };

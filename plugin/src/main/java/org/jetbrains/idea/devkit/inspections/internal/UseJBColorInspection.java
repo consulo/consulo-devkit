@@ -16,12 +16,12 @@
 package org.jetbrains.idea.devkit.inspections.internal;
 
 import com.intellij.java.language.psi.*;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.inspection.scheme.InspectionManager;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.project.Project;
@@ -44,7 +44,7 @@ public class UseJBColorInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitNewExpression(PsiNewExpression expression) {
+            public void visitNewExpression(@Nonnull PsiNewExpression expression) {
                 final ProblemDescriptor descriptor = checkNewExpression(expression, holder.getManager(), isOnTheFly);
                 if (descriptor != null) {
                     holder.registerProblem(descriptor);
@@ -53,7 +53,8 @@ public class UseJBColorInspection extends InternalInspection {
             }
 
             @Override
-            public void visitReferenceExpression(PsiReferenceExpression expression) {
+            @RequiredReadAction
+            public void visitReferenceExpression(@Nonnull PsiReferenceExpression expression) {
                 super.visitReferenceExpression(expression);
                 if (expression.resolve() instanceof PsiField colorField && colorField.hasModifierProperty(PsiModifier.STATIC)) {
                     final PsiClass colorClass = colorField.getContainingClass();
@@ -92,7 +93,7 @@ public class UseJBColorInspection extends InternalInspection {
         final PsiClass jbColorClass = facade.findClass(JBColor.class.getName(), GlobalSearchScope.allScope(project));
         final PsiType type = expression.getType();
         if (type != null && jbColorClass != null) {
-            if (!facade.getResolveHelper().isAccessible(jbColorClass, expression, jbColorClass)) {
+            if (!PsiResolveHelper.getInstance(project).isAccessible(jbColorClass, expression, jbColorClass)) {
                 return null;
             }
             final PsiExpressionList arguments = expression.getArgumentList();

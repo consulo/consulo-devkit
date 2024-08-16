@@ -44,7 +44,6 @@ import consulo.ui.image.ImageEffects;
 import consulo.util.collection.ArrayUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection;
 import org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection;
 
@@ -61,7 +60,6 @@ import java.util.Map;
 public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
     private final String myFilename;
     private final Module myModule;
-    @NonNls
     private static final String TEMPLATE_NAME = "InspectionDescription.html";
     private final boolean isIntention;
 
@@ -102,7 +100,7 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
                 }
                 options.add(path);
             }
-            final JBList files = new JBList(ArrayUtil.toStringArray(options));
+            final JBList<String> files = new JBList<>(ArrayUtil.toStringArray(options));
             files.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             final JBPopup popup = JBPopupFactory.getInstance()
                 .createPopupChooserBuilder(options)

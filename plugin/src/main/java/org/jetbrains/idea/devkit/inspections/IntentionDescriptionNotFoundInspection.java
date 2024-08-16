@@ -19,6 +19,7 @@ import com.intellij.java.language.psi.JavaElementVisitor;
 import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiIdentifier;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.content.LanguageContentFolderScopes;
 import consulo.language.editor.inspection.ProblemHighlightType;
@@ -26,7 +27,6 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.intention.IntentionAction;
 import consulo.language.psi.*;
 import consulo.language.psi.scope.GlobalSearchScope;
-import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.module.content.ModuleRootManager;
 import consulo.project.Project;
@@ -55,16 +55,18 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitClass(PsiClass aClass) {
+            @RequiredReadAction
+            public void visitClass(@Nonnull PsiClass aClass) {
                 checkClass(aClass, holder, isOnTheFly);
             }
         };
     }
 
+    @RequiredReadAction
     private void checkClass(PsiClass psiClass, ProblemsHolder holder, boolean isOnTheFly) {
         final Project project = psiClass.getProject();
         final PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
-        final Module module = ModuleUtilCore.findModuleForPsiElement(psiClass);
+        final Module module = psiClass.getModule();
 
         if (nameIdentifier == null || module == null || !PsiUtil.isInstantiable(psiClass)) {
             return;
@@ -111,6 +113,7 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
     }
 
     @Nullable
+    @RequiredReadAction
     private static String getDescriptionDirName(PsiClass aClass) {
         String descriptionDir = "";
         PsiClass each = aClass;
@@ -146,7 +149,7 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
 
     public static List<VirtualFile> getPotentialRoots(Module module) {
         final PsiDirectory[] dirs = getIntentionDescriptionsDirs(module);
-        final List<VirtualFile> result = new ArrayList<VirtualFile>();
+        final List<VirtualFile> result = new ArrayList<>();
         if (dirs.length != 0) {
             for (PsiDirectory dir : dirs) {
                 final PsiDirectory parent = dir.getParentDirectory();
@@ -176,11 +179,13 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
 
     @Nls
     @Nonnull
+    @Override
     public String getDisplayName() {
         return "Intention Description Checker";
     }
 
     @Nonnull
+    @Override
     public String getShortName() {
         return "IntentionDescriptionNotFoundInspection";
     }

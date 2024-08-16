@@ -28,7 +28,6 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.scope.GlobalSearchScope;
-import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.module.content.ModuleRootManager;
 import consulo.project.Project;
@@ -54,7 +53,8 @@ public class InspectionDescriptionNotFoundInspection extends InternalInspection 
     public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitClass(PsiClass aClass) {
+            @RequiredReadAction
+            public void visitClass(@Nonnull PsiClass aClass) {
                 checkClass(aClass, holder);
             }
         };
@@ -64,7 +64,7 @@ public class InspectionDescriptionNotFoundInspection extends InternalInspection 
     private void checkClass(PsiClass psiClass, ProblemsHolder holder) {
         final Project project = psiClass.getProject();
         final PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
-        final Module module = ModuleUtilCore.findModuleForPsiElement(psiClass);
+        final Module module = psiClass.getModule();
 
         if (nameIdentifier == null || module == null || !PsiUtil.isInstantiable(psiClass)) {
             return;
@@ -140,6 +140,7 @@ public class InspectionDescriptionNotFoundInspection extends InternalInspection 
         return isLastMethodDefinitionIn(methodName, classFQN, cls.getSuperClass());
     }
 
+    @RequiredReadAction
     public static List<VirtualFile> getPotentialRoots(Module module) {
         final PsiDirectory[] dirs = getInspectionDescriptionsDirs(module);
         final List<VirtualFile> result = new ArrayList<>();
@@ -180,11 +181,13 @@ public class InspectionDescriptionNotFoundInspection extends InternalInspection 
 
     @Nls
     @Nonnull
+    @Override
     public String getDisplayName() {
         return "Inspection Description Checker";
     }
 
     @Nonnull
+    @Override
     public String getShortName() {
         return "InspectionDescriptionNotFoundInspection";
     }

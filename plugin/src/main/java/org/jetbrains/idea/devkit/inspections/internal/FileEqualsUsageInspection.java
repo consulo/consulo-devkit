@@ -16,7 +16,9 @@
 package org.jetbrains.idea.devkit.inspections.internal;
 
 import com.intellij.java.language.psi.*;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.java.language.module.util.JavaClassNames;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
@@ -35,24 +37,21 @@ public class FileEqualsUsageInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+            @RequiredReadAction
+            public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
                 PsiReferenceExpression methodExpression = expression.getMethodExpression();
                 PsiElement resolved = methodExpression.resolve();
-                if (!(resolved instanceof PsiMethod)) {
-                    return;
-                }
+                if (resolved instanceof PsiMethod method) {
+                    PsiClass clazz = method.getContainingClass();
+                    if (clazz == null) {
+                        return;
+                    }
 
-                PsiMethod method = (PsiMethod)resolved;
-
-                PsiClass clazz = method.getContainingClass();
-                if (clazz == null) {
-                    return;
-                }
-
-                String methodName = method.getName();
-                if (CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName())
-                    && ("equals".equals(methodName) || "compareTo".equals(methodName) || "hashCode".equals(methodName))) {
-                    holder.registerProblem(methodExpression, MESSAGE, ProblemHighlightType.LIKE_DEPRECATED);
+                    String methodName = method.getName();
+                    if (JavaClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName())
+                        && ("equals".equals(methodName) || "compareTo".equals(methodName) || "hashCode".equals(methodName))) {
+                        holder.registerProblem(methodExpression, MESSAGE, ProblemHighlightType.LIKE_DEPRECATED);
+                    }
                 }
             }
         };
