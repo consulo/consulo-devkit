@@ -19,6 +19,7 @@ import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
@@ -30,19 +31,20 @@ import javax.annotation.Nonnull;
  * @author Konstantin Bulenkov
  */
 public class ConvertToGrayQuickFix extends LocalQuickFixBase {
-  private final int myNum;
+    private final int myNum;
 
-  public ConvertToGrayQuickFix(int num) {
-    super("Convert to Gray._" + num, "Convert to Gray");
-    myNum = num;
-  }
+    public ConvertToGrayQuickFix(int num) {
+        super("Convert to Gray._" + num, "Convert to Gray");
+        myNum = num;
+    }
 
-  @Override
-  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    final PsiElement element = descriptor.getPsiElement();
-    final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-    final PsiExpression expression = factory.createExpressionFromText("com.intellij.ui.Gray._" + myNum, element.getContext());
-    final PsiElement newElement = element.replace(expression);
-    JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-  }
+    @Override
+    @RequiredReadAction
+    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        final PsiElement element = descriptor.getPsiElement();
+        final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+        final PsiExpression expression = factory.createExpressionFromText("com.intellij.ui.Gray._" + myNum, element.getContext());
+        final PsiElement newElement = element.replace(expression);
+        JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+    }
 }

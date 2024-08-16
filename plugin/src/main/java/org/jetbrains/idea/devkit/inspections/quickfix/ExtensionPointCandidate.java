@@ -19,27 +19,27 @@ package org.jetbrains.idea.devkit.inspections.quickfix;
  * @author yole
  */
 class ExtensionPointCandidate {
-  public final String epName;
-  public final String attributeName;
-  public final String tagName;
-  public final String beanClassName;
+    public final String epName;
+    public final String attributeName;
+    public final String tagName;
+    public final String beanClassName;
 
-  ExtensionPointCandidate(String epName, String attributeName, String tagName, String beanClassName) {
-    this.epName = epName;
-    this.attributeName = attributeName;
-    this.tagName = tagName;
-    this.beanClassName = beanClassName;
-  }
+    ExtensionPointCandidate(String epName, String attributeName, String tagName, String beanClassName) {
+        this.epName = epName;
+        this.attributeName = attributeName;
+        this.tagName = tagName;
+        this.beanClassName = beanClassName;
+    }
 
-  ExtensionPointCandidate(String epName) {
-    this.epName = epName;
-    this.attributeName = "implementation";
-    this.tagName = null;
-    this.beanClassName = null;
-  }
+    ExtensionPointCandidate(String epName) {
+        this.epName = epName;
+        this.attributeName = "implementation";
+        this.tagName = null;
+        this.beanClassName = null;
+    }
 
-  @Override
-  public String toString() {
-    return epName;
-  }
+    @Override
+    public String toString() {
+        return epName;
+    }
 }

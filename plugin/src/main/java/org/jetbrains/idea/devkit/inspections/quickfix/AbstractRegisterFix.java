@@ -28,11 +28,11 @@ import consulo.language.util.ModuleUtilCore;
 import consulo.logging.Logger;
 import consulo.module.Module;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.UIUtil;
 import consulo.undoRedo.CommandProcessor;
 import consulo.xml.psi.xml.XmlFile;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.idea.devkit.util.ChooseModulesDialog;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 
@@ -40,78 +40,89 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 abstract class AbstractRegisterFix implements LocalQuickFix, DescriptorUtil.Patcher {
-  protected final PsiClass myClass;
-  private static final Logger LOG = Logger.getInstance(AbstractRegisterFix.class);
+    protected final PsiClass myClass;
+    private static final Logger LOG = Logger.getInstance(AbstractRegisterFix.class);
 
-  public AbstractRegisterFix(PsiClass klass) {
-    myClass = klass;
-  }
-
-  @Nonnull
-  public String getFamilyName() {
-    return DevKitLocalize.inspectionsComponentNotRegisteredQuickfixFamily().get();
-  }
-
-  @Nonnull
-  public String getName() {
-    return DevKitLocalize.inspectionsComponentNotRegisteredQuickfixName(getType()).get();
-  }
-
-  protected abstract String getType();
-
-  // copy of com.intellij.ide.actions.CreateElementActionBase.filterMessage()
-  protected static String filterMessage(String message) {
-    if (message == null) return null;
-    @NonNls final String ioExceptionPrefix = "java.io.IOException:";
-    if (message.startsWith(ioExceptionPrefix)) {
-      message = message.substring(ioExceptionPrefix.length());
+    public AbstractRegisterFix(PsiClass klass) {
+        myClass = klass;
     }
-    return message;
-  }
 
-  public void applyFix(@Nonnull final Project project, @Nonnull ProblemDescriptor descriptor) {
-    if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.getPsiElement())) return;
-    final PsiFile psiFile = myClass.getContainingFile();
-    LOG.assertTrue(psiFile != null);
-    final Module module = ModuleUtilCore.findModuleForFile(psiFile.getVirtualFile(), project);
+    @Nonnull
+    @Override
+    public String getFamilyName() {
+        return DevKitLocalize.inspectionsComponentNotRegisteredQuickfixFamily().get();
+    }
 
-    Runnable command = () -> {
-      try {
-        if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
-          final XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
-          if (pluginXml != null) {
-            DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXml);
-          }
+    @Nonnull
+    @Override
+    public String getName() {
+        return DevKitLocalize.inspectionsComponentNotRegisteredQuickfixName(getType()).get();
+    }
+
+    protected abstract String getType();
+
+    // copy of com.intellij.ide.actions.CreateElementActionBase.filterMessage()
+    protected static String filterMessage(String message) {
+        if (message == null) {
+            return null;
         }
-        else {
-          List<Module> modules = PluginModuleUtil.getCandidateModules(module);
-          if (modules.size() > 1) {
-            final ChooseModulesDialog dialog = new ChooseModulesDialog(project, modules, getName());
-            dialog.show();
+        final String ioExceptionPrefix = "java.io.IOException:";
+        if (message.startsWith(ioExceptionPrefix)) {
+            message = message.substring(ioExceptionPrefix.length());
+        }
+        return message;
+    }
 
-            if (!dialog.isOK()) {
-              return;
+    @Override
+    @RequiredUIAccess
+    public void applyFix(@Nonnull final Project project, @Nonnull ProblemDescriptor descriptor) {
+        if (!FileModificationService.getInstance().preparePsiElementForWrite(descriptor.getPsiElement())) {
+            return;
+        }
+        final PsiFile psiFile = myClass.getContainingFile();
+        LOG.assertTrue(psiFile != null);
+        final Module module = ModuleUtilCore.findModuleForFile(psiFile.getVirtualFile(), project);
+
+        Runnable command = () -> {
+            try {
+                if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
+                    final XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
+                    if (pluginXml != null) {
+                        DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXml);
+                    }
+                }
+                else {
+                    //noinspection RequiredXAction
+                    List<Module> modules = PluginModuleUtil.getCandidateModules(module);
+                    if (modules.size() > 1) {
+                        final ChooseModulesDialog dialog = new ChooseModulesDialog(project, modules, getName());
+                        //noinspection RequiredXAction
+                        dialog.show();
+
+                        if (!dialog.isOK()) {
+                            return;
+                        }
+                        modules = dialog.getSelectedModules();
+                    }
+                    final XmlFile[] pluginXmls = new XmlFile[modules.size()];
+                    for (int i = 0; i < pluginXmls.length; i++) {
+                        pluginXmls[i] = PluginModuleUtil.getPluginXml(modules.get(i));
+                    }
+
+                    DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXmls);
+                }
+                CommandProcessor.getInstance().markCurrentCommandAsGlobal(project);
             }
-            modules = dialog.getSelectedModules();
-          }
-          final XmlFile[] pluginXmls = new XmlFile[modules.size()];
-          for (int i = 0; i < pluginXmls.length; i++) {
-            pluginXmls[i] = PluginModuleUtil.getPluginXml(modules.get(i));
-          }
-
-          DescriptorUtil.patchPluginXml(AbstractRegisterFix.this, myClass, pluginXmls);
-        }
-        CommandProcessor.getInstance().markCurrentCommandAsGlobal(project);
-      }
-      catch (IncorrectOperationException e) {
-        Messages.showMessageDialog(
-          project,
-          filterMessage(e.getMessage()),
-          DevKitLocalize.inspectionsComponentNotRegisteredQuickfixError(getType()).get(),
-          UIUtil.getErrorIcon()
-        );
-      }
-    };
-    CommandProcessor.getInstance().executeCommand(project, command, getName(), null);
-  }
+            catch (IncorrectOperationException e) {
+                //noinspection RequiredXAction
+                Messages.showMessageDialog(
+                    project,
+                    filterMessage(e.getMessage()),
+                    DevKitLocalize.inspectionsComponentNotRegisteredQuickfixError(getType()).get(),
+                    UIUtil.getErrorIcon()
+                );
+            }
+        };
+        CommandProcessor.getInstance().executeCommand(project, command, getName(), null);
+    }
 }

@@ -32,44 +32,44 @@ import java.util.Arrays;
  */
 @ExtensionImpl
 public class DontUseNewPairInspection extends InternalInspection {
-  private static final String PAIR_FQN = Pair.class.getName();
+    private static final String PAIR_FQN = Pair.class.getName();
 
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Don't use constructor of Pair class";
-  }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Don't use constructor of Pair class";
+    }
 
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      public void visitNewExpression(@Nonnull PsiNewExpression expression) {
-        final PsiType type = expression.getType();
-        final PsiExpressionList params = expression.getArgumentList();
-        if (type instanceof PsiClassType
-          && ((PsiClassType)type).rawType().equalsToText(PAIR_FQN)
-          && params != null
-          && expression.getArgumentList() != null
-        ) {
-          final PsiType[] types = ((PsiClassType)type).getParameters();
-          if (Arrays.equals(types, params.getExpressionTypes())) {
-            holder.registerProblem(
-              expression,
-              LocalizeValue.localizeTODO("Replace with Pair.create()").get(),
-              ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-              new ChangeToPairCreateQuickFix()
-            );
-          }
-        }
-        super.visitNewExpression(expression);
-      }
-    };
-  }
+    @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            public void visitNewExpression(@Nonnull PsiNewExpression expression) {
+                final PsiType type = expression.getType();
+                final PsiExpressionList params = expression.getArgumentList();
+                if (type instanceof PsiClassType classType
+                    && classType.rawType().equalsToText(PAIR_FQN)
+                    && params != null
+                    && expression.getArgumentList() != null
+                ) {
+                    final PsiType[] types = ((PsiClassType)type).getParameters();
+                    if (Arrays.equals(types, params.getExpressionTypes())) {
+                        holder.registerProblem(
+                            expression,
+                            LocalizeValue.localizeTODO("Replace with Pair.create()").get(),
+                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
+                            new ChangeToPairCreateQuickFix()
+                        );
+                    }
+                }
+                super.visitNewExpression(expression);
+            }
+        };
+    }
 
-  @Nonnull
-  @Override
-  public String getShortName() {
-    return "DontUsePairConstructor";
-  }
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "DontUsePairConstructor";
+    }
 }

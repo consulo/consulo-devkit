@@ -38,6 +38,7 @@ public class JetBrainsEmitter implements Emitter {
     static final boolean REPLACE_TYPES_WITH_INTERFACES = true;
     private String AUTHOR = null;
 
+    @Override
     public void emit(FileManager fileManager, ModelDesc model, File outputRoot) {
         final NamespaceDesc nsdDef = model.nsdMap.get("");
         final Set<String> simpleTypes = new TreeSet<>();
@@ -95,7 +96,7 @@ public class JetBrainsEmitter implements Emitter {
                     }
                 }
                 for (FieldDesc fd : td.fdMap.values()) {
-                    if (fd.simpleTypesString != null && fd.simpleTypesString.indexOf(":fully-qualified-classType;") != -1) {
+                    if (fd.simpleTypesString != null && fd.simpleTypesString.contains(":fully-qualified-classType;")) {
                         externalClasses.add("com.intellij.psi.PsiClass");
                     }
                     if (fd.contentQualifiedName != null && fd.contentQualifiedName.indexOf('.') > 0) {
@@ -119,7 +120,7 @@ public class JetBrainsEmitter implements Emitter {
                 out.println("// DTD/Schema  :    " + nsd.name);
             }
             out.println("");
-            if (NOT_COMPARE_MODE && pkgName != null && pkgName.length() > 0) {
+            if (NOT_COMPARE_MODE && pkgName != null && !pkgName.isEmpty()) {
                 out.println("package " + pkgName + ";");
             }
             out.println();
@@ -264,44 +265,44 @@ public class JetBrainsEmitter implements Emitter {
                 String newType = field.clType < 0 ? elementType : type;
                 String converterString = null;
                 if (field.simpleTypesString != null) {
-                    if (field.simpleTypesString.indexOf(":fully-qualified-classType;") != -1) { // localType, remoteType, etc.
+                    if (field.simpleTypesString.contains(":fully-qualified-classType;")) { // localType, remoteType, etc.
                         newType = "PsiClass";
                         //converterString = (JB_OFF ? "//" : "")+"\t@Convert (PsiClassReferenceConverter.class)";
                     }
-                    else if (field.simpleTypesString.indexOf(":ejb-linkType;") != -1) {
+                    else if (field.simpleTypesString.contains(":ejb-linkType;")) {
                     }
-                    else if (field.simpleTypesString.indexOf(":ejb-ref-nameType;") != -1) { // jndi-nameType
+                    else if (field.simpleTypesString.contains(":ejb-ref-nameType;")) { // jndi-nameType
                     }
-                    else if (field.simpleTypesString.indexOf(":pathType;") != -1) {
+                    else if (field.simpleTypesString.contains(":pathType;")) {
                     }
-                    else if (field.simpleTypesString.indexOf(":java-identifierType;") != -1) {
+                    else if (field.simpleTypesString.contains(":java-identifierType;")) {
                         //out.println((JB_OFF ? "//" : "") +"\t@Convert (JavaIdentifierConverter.class)");
                     }
-                    else if (field.simpleTypesString.indexOf(":QName;") != -1) {
+                    else if (field.simpleTypesString.contains(":QName;")) {
                         // ???
                     }
-                    else if (field.simpleTypesString.indexOf(":integer;") != -1) { // BigDecimal
+                    else if (field.simpleTypesString.contains(":integer;")) { // BigDecimal
                         newType = REPLACE_TYPES_WITH_INTERFACES ? "Integer" : "int";
                     }
-                    else if (field.simpleTypesString.indexOf(":int;") != -1) {
+                    else if (field.simpleTypesString.contains(":int;")) {
                         newType = REPLACE_TYPES_WITH_INTERFACES ? "Integer" : "int";
                     }
-                    else if (field.simpleTypesString.indexOf(":byte;") != -1) {
+                    else if (field.simpleTypesString.contains(":byte;")) {
                         newType = REPLACE_TYPES_WITH_INTERFACES ? "Byte" : "byte";
                     }
-                    else if (field.simpleTypesString.indexOf(":short;") != -1) {
+                    else if (field.simpleTypesString.contains(":short;")) {
                         newType = REPLACE_TYPES_WITH_INTERFACES ? "Short" : "short";
                     }
-                    else if (field.simpleTypesString.indexOf(":long;") != -1) {
+                    else if (field.simpleTypesString.contains(":long;")) {
                         newType = REPLACE_TYPES_WITH_INTERFACES ? "Long" : "long";
                     }
-                    else if (field.simpleTypesString.indexOf(":float;") != -1) {
+                    else if (field.simpleTypesString.contains(":float;")) {
                         newType = REPLACE_TYPES_WITH_INTERFACES ? "Float" : "float";
                     }
-                    else if (field.simpleTypesString.indexOf(":double;") != -1) {
+                    else if (field.simpleTypesString.contains(":double;")) {
                         newType = REPLACE_TYPES_WITH_INTERFACES ? "Double" : "double";
                     }
-                    else if (field.simpleTypesString.indexOf(":boolean;") != -1) { // true-falseType
+                    else if (field.simpleTypesString.contains(":boolean;")) { // true-falseType
                         newType = REPLACE_TYPES_WITH_INTERFACES ? "Boolean" : "boolean";
                     }
                     for (int idx = 0; idx != -1; ) {
@@ -470,7 +471,7 @@ public class JetBrainsEmitter implements Emitter {
             try {
                 out.close();
             }
-            catch (Exception ex) {
+            catch (Exception ignore) {
             }
             fileManager.releaseOutputFile(outFile);
         }
@@ -531,7 +532,7 @@ public class JetBrainsEmitter implements Emitter {
                     out.close();
                 }
             }
-            catch (Exception ex) {
+            catch (Exception ignore) {
             }
             fileManager.releaseOutputFile(outFile);
         }
@@ -662,7 +663,7 @@ public class JetBrainsEmitter implements Emitter {
             try {
                 out.close();
             }
-            catch (Exception ex) {
+            catch (Exception ignore) {
             }
             fileManager.releaseOutputFile(outFile);
         }
@@ -680,7 +681,7 @@ public class JetBrainsEmitter implements Emitter {
     }
 
     public static String toPresentationName(String typeName) {
-        StringBuffer sb = new StringBuffer(typeName.length() + 10);
+        StringBuilder sb = new StringBuilder(typeName.length() + 10);
         boolean prevUp = true;
         for (int i = 0; i < typeName.length(); i++) {
             char c = typeName.charAt(i);

@@ -32,43 +32,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DescriptionCheckerUtil {
-  @Nonnull
-  @RequiredReadAction
-  public static PsiDirectory[] getDescriptionsDirs(Module module, DescriptionType descriptionType) {
-    List<PsiDirectory> dirs = new ArrayList<>();
-    ModuleRootManager manager = ModuleRootManager.getInstance(module);
-    PsiManager psiManager = PsiManager.getInstance(module.getProject());
+    @Nonnull
+    @RequiredReadAction
+    public static PsiDirectory[] getDescriptionsDirs(Module module, DescriptionType descriptionType) {
+        List<PsiDirectory> dirs = new ArrayList<>();
+        ModuleRootManager manager = ModuleRootManager.getInstance(module);
+        PsiManager psiManager = PsiManager.getInstance(module.getProject());
 
-    for (ContentFolder folder : manager.getContentFolders(LanguageContentFolderScopes.production())) {
-      VirtualFile file = folder.getFile();
-      if (file == null) {
-        continue;
-      }
+        for (ContentFolder folder : manager.getContentFolders(LanguageContentFolderScopes.production())) {
+            VirtualFile file = folder.getFile();
+            if (file == null) {
+                continue;
+            }
 
-      VirtualFile childDir = file.findFileByRelativePath(descriptionType.getDescriptionFolder());
-      if (childDir != null) {
-        PsiDirectory dir = psiManager.findDirectory(childDir);
-        if (dir != null) {
-          dirs.add(dir);
+            VirtualFile childDir = file.findFileByRelativePath(descriptionType.getDescriptionFolder());
+            if (childDir != null) {
+                PsiDirectory dir = psiManager.findDirectory(childDir);
+                if (dir != null) {
+                    dirs.add(dir);
+                }
+            }
         }
-      }
+
+        return dirs.toArray(PsiDirectory.EMPTY_ARRAY);
     }
 
-    return dirs.toArray(PsiDirectory.EMPTY_ARRAY);
-  }
-
-  @Nullable
-  public static String getDescriptionDirName(PsiClass aClass) {
-    String descriptionDir = "";
-    PsiClass each = aClass;
-    while (each != null) {
-      String name = each.getName();
-      if (StringUtil.isEmptyOrSpaces(name)) {
-        return null;
-      }
-      descriptionDir = name + descriptionDir;
-      each = each.getContainingClass();
+    @Nullable
+    @RequiredReadAction
+    public static String getDescriptionDirName(PsiClass aClass) {
+        String descriptionDir = "";
+        PsiClass each = aClass;
+        while (each != null) {
+            String name = each.getName();
+            if (StringUtil.isEmptyOrSpaces(name)) {
+                return null;
+            }
+            descriptionDir = name + descriptionDir;
+            each = each.getContainingClass();
+        }
+        return descriptionDir;
     }
-    return descriptionDir;
-  }
 }

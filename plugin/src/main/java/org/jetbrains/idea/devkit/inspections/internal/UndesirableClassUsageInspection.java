@@ -19,6 +19,7 @@ import com.intellij.java.language.psi.JavaElementVisitor;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiJavaCodeReferenceElement;
 import com.intellij.java.language.psi.PsiNewExpression;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.query.QueryExecutor;
 import consulo.language.editor.inspection.ProblemHighlightType;
@@ -39,51 +40,56 @@ import java.util.Map;
 
 @ExtensionImpl
 public class UndesirableClassUsageInspection extends InternalInspection {
-  private static final Map<String, String> CLASSES = new HashMap<String, String>();
+    private static final Map<String, String> CLASSES = new HashMap<>();
 
-  static {
-    CLASSES.put(JList.class.getName(), JBList.class.getName());
-    CLASSES.put(JTable.class.getName(), JBTable.class.getName());
-    CLASSES.put(JTree.class.getName(), Tree.class.getName());
-    CLASSES.put(JScrollPane.class.getName(), JBScrollPane.class.getName());
-    CLASSES.put(QueryExecutor.class.getName(), QueryExecutorBase.class.getName());
-    CLASSES.put(BufferedImage.class.getName(), "UIUtil.createImage()");
-  }
+    static {
+        CLASSES.put(JList.class.getName(), JBList.class.getName());
+        CLASSES.put(JTable.class.getName(), JBTable.class.getName());
+        CLASSES.put(JTree.class.getName(), Tree.class.getName());
+        CLASSES.put(JScrollPane.class.getName(), JBScrollPane.class.getName());
+        CLASSES.put(QueryExecutor.class.getName(), QueryExecutorBase.class.getName());
+        CLASSES.put(BufferedImage.class.getName(), "UIUtil.createImage()");
+    }
 
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Undesirable class usage";
-  }
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "Undesirable class usage";
+    }
 
-  @Override
-  @Nonnull
-  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      public void visitNewExpression(PsiNewExpression expression) {
-        PsiJavaCodeReferenceElement ref = expression.getClassReference();
-        if (ref == null) {
-          return;
-        }
+    @Override
+    @Nonnull
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            @RequiredReadAction
+            public void visitNewExpression(@Nonnull PsiNewExpression expression) {
+                PsiJavaCodeReferenceElement ref = expression.getClassReference();
+                if (ref == null) {
+                    return;
+                }
 
-        PsiElement res = ref.resolve();
-        if (res == null) {
-          return;
-        }
+                PsiElement res = ref.resolve();
+                if (res == null) {
+                    return;
+                }
 
-        String name = ((PsiClass)res).getQualifiedName();
-        if (name == null) {
-          return;
-        }
+                String name = ((PsiClass)res).getQualifiedName();
+                if (name == null) {
+                    return;
+                }
 
-        String replacement = CLASSES.get(name);
-        if (replacement == null) {
-          return;
-        }
+                String replacement = CLASSES.get(name);
+                if (replacement == null) {
+                    return;
+                }
 
-        holder.registerProblem(expression, "Please use '" + replacement + "' instead", ProblemHighlightType.LIKE_DEPRECATED);
-      }
-    };
-  }
+                holder.registerProblem(
+                    expression,
+                    "Please use '" + replacement + "' instead",
+                    ProblemHighlightType.LIKE_DEPRECATED
+                );
+            }
+        };
+    }
 }
