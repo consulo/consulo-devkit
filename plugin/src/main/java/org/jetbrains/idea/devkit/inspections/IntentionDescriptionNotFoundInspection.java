@@ -25,6 +25,7 @@ import consulo.language.content.LanguageContentFolderScopes;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.intention.IntentionAction;
+import consulo.language.editor.intention.SyntheticIntentionAction;
 import consulo.language.psi.*;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.module.Module;
@@ -49,6 +50,7 @@ import java.util.List;
 @ExtensionImpl
 public class IntentionDescriptionNotFoundInspection extends InternalInspection {
     private static final String INTENTION = IntentionAction.class.getName();
+    private static final String SYNTHETIC_INTENTION = SyntheticIntentionAction.class.getName();
     private static final String INSPECTION_DESCRIPTIONS = "intentionDescriptions";
 
     @Override
@@ -75,6 +77,11 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
         final PsiClass base = JavaPsiFacade.getInstance(project).findClass(INTENTION, GlobalSearchScope.allScope(project));
 
         if (base == null || !psiClass.isInheritor(base, true)) {
+            return;
+        }
+
+        final PsiClass ignoredBase = JavaPsiFacade.getInstance(project).findClass(SYNTHETIC_INTENTION, GlobalSearchScope.allScope(project));
+        if (ignoredBase != null && psiClass.isInheritor(ignoredBase, true)) {
             return;
         }
 
