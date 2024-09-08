@@ -24,6 +24,7 @@ import consulo.execution.runner.ExecutionEnvironment;
 import consulo.java.execution.configurations.OwnJavaParameters;
 import consulo.logging.Logger;
 import consulo.platform.Platform;
+import consulo.platform.PlatformOperatingSystem;
 import consulo.process.ExecutionException;
 import consulo.process.ProcessHandler;
 import consulo.process.cmd.ParametersList;
@@ -127,7 +128,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
     vm.defineProperty("idea.log.path", logFile.getParent());
     vm.defineProperty("consulo.log.path", logFile.getParent());
 
-    Platform.OperatingSystem os = Platform.current().os();
+    PlatformOperatingSystem os = Platform.current().os();
     if (os.isMac()) {
       vm.defineProperty("idea.smooth.progress", "false");
       vm.defineProperty("apple.laf.useScreenMenuBar", "true");
