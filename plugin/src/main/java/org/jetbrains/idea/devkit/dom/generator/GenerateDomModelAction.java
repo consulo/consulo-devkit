@@ -26,12 +26,12 @@ import javax.annotation.Nonnull;
  * @author Konstantin Bulenkov
  */
 public class GenerateDomModelAction extends InternalAction {
-  @RequiredUIAccess
-  @Override
-  public void actionPerformed(@Nonnull AnActionEvent e) {
-    final Project project = e.getData(Project.KEY);
-    if (project != null) {
-      new DomGenDialog(project).show();
+    @RequiredUIAccess
+    @Override
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        final Project project = e.getData(Project.KEY);
+        if (project != null) {
+            new DomGenDialog(project).show();
+        }
     }
-  }
 }

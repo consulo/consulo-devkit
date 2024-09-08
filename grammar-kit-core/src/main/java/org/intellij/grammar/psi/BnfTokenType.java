@@ -25,7 +25,7 @@ import org.intellij.grammar.BnfLanguage;
  * Time: 19:12
  */
 public class BnfTokenType extends IElementType {
-  public BnfTokenType(String debug) {
-    super(debug, BnfLanguage.INSTANCE);
-  }
+    public BnfTokenType(String debug) {
+        super(debug, BnfLanguage.INSTANCE);
+    }
 }

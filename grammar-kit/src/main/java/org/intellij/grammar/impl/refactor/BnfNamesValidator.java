@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.refactor;
 
 import consulo.annotation.component.ExtensionImpl;
@@ -31,21 +30,21 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfNamesValidator implements NamesValidator {
-  @Override
-  public boolean isKeyword(@Nonnull String s, Project project) {
-    return false;
-  }
+    @Override
+    public boolean isKeyword(@Nonnull String s, Project project) {
+        return false;
+    }
 
-  @Override
-  public boolean isIdentifier(@Nonnull String s, Project project) {
-    BnfLexer lexer = new BnfLexer();
-    lexer.start(s);
-    return lexer.getTokenEnd() == s.length() && lexer.getTokenType() == BnfTypes.BNF_ID;
-  }
+    @Override
+    public boolean isIdentifier(@Nonnull String s, Project project) {
+        BnfLexer lexer = new BnfLexer();
+        lexer.start(s);
+        return lexer.getTokenEnd() == s.length() && lexer.getTokenType() == BnfTypes.BNF_ID;
+    }
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 }

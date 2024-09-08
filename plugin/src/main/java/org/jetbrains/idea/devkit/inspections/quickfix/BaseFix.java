@@ -24,6 +24,7 @@ import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
 import consulo.logging.Logger;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.UIUtil;
 import consulo.virtualFileSystem.ReadonlyStatusHandler;
@@ -35,46 +36,50 @@ import javax.annotation.Nonnull;
  * @author swr
  */
 abstract class BaseFix implements LocalQuickFix {
-  protected final PsiElement myElement;
-  protected final boolean myOnTheFly;
+    protected final PsiElement myElement;
+    protected final boolean myOnTheFly;
 
-  protected BaseFix(PsiElement element, boolean onTheFly) {
-    myElement = element;
-    myOnTheFly = onTheFly;
-  }
-
-  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    // can happen during batch-inspection if resolution has already been applied
-    // to plugin.xml or java class
-    if (!myElement.isValid()) return;
-
-    final boolean external = descriptor.getPsiElement().getContainingFile() != myElement.getContainingFile();
-    if (external) {
-      final PsiClass clazz = PsiTreeUtil.getParentOfType(myElement, PsiClass.class, false);
-      final ReadonlyStatusHandler readonlyStatusHandler = ReadonlyStatusHandler.getInstance(project);
-      final VirtualFile[] files = new VirtualFile[]{myElement.getContainingFile().getVirtualFile()};
-      final ReadonlyStatusHandler.OperationStatus status = readonlyStatusHandler.ensureFilesWritable(files);
-
-      if (status.hasReadonlyFiles()) {
-        final String className = clazz != null ? clazz.getQualifiedName() : myElement.getContainingFile().getName();
-
-        Messages.showMessageDialog(
-          project,
-          DevKitLocalize.inspectionsRegistrationProblemsQuickfixReadOnly(className).get(),
-          getName(),
-          UIUtil.getErrorIcon()
-        );
-        return;
-      }
+    protected BaseFix(PsiElement element, boolean onTheFly) {
+        myElement = element;
+        myOnTheFly = onTheFly;
     }
 
-    try {
-      doFix(project, descriptor, external);
-    }
-    catch (IncorrectOperationException e) {
-      Logger.getInstance("#" + getClass().getName()).error(e);
-    }
-  }
+    @Override
+    @RequiredUIAccess
+    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        // can happen during batch-inspection if resolution has already been applied
+        // to plugin.xml or java class
+        if (!myElement.isValid()) {
+            return;
+        }
 
-  protected abstract void doFix(Project project, ProblemDescriptor descriptor, boolean external) throws IncorrectOperationException;
+        final boolean external = descriptor.getPsiElement().getContainingFile() != myElement.getContainingFile();
+        if (external) {
+            final PsiClass clazz = PsiTreeUtil.getParentOfType(myElement, PsiClass.class, false);
+            final ReadonlyStatusHandler readonlyStatusHandler = ReadonlyStatusHandler.getInstance(project);
+            final VirtualFile[] files = new VirtualFile[]{myElement.getContainingFile().getVirtualFile()};
+            final ReadonlyStatusHandler.OperationStatus status = readonlyStatusHandler.ensureFilesWritable(files);
+
+            if (status.hasReadonlyFiles()) {
+                final String className = clazz != null ? clazz.getQualifiedName() : myElement.getContainingFile().getName();
+
+                Messages.showMessageDialog(
+                    project,
+                    DevKitLocalize.inspectionsRegistrationProblemsQuickfixReadOnly(className).get(),
+                    getName(),
+                    UIUtil.getErrorIcon()
+                );
+                return;
+            }
+        }
+
+        try {
+            doFix(project, descriptor, external);
+        }
+        catch (IncorrectOperationException e) {
+            Logger.getInstance("#" + getClass().getName()).error(e);
+        }
+    }
+
+    protected abstract void doFix(Project project, ProblemDescriptor descriptor, boolean external) throws IncorrectOperationException;
 }

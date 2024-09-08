@@ -29,22 +29,21 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfBraceMatcher implements PairedBraceMatcher {
+    private static final BracePair[] PAIRS = new BracePair[]{
+        new BracePair(BnfTypes.BNF_LEFT_PAREN, BnfTypes.BNF_RIGHT_PAREN, false),
+        new BracePair(BnfTypes.BNF_LEFT_BRACE, BnfTypes.BNF_RIGHT_BRACE, false),
+        new BracePair(BnfTypes.BNF_LEFT_BRACKET, BnfTypes.BNF_RIGHT_BRACKET, false),
+        new BracePair(BnfTypes.BNF_EXTERNAL_START, BnfTypes.BNF_EXTERNAL_END, false)
+    };
 
-  private static final BracePair[] PAIRS = new BracePair[]{
-    new BracePair(BnfTypes.BNF_LEFT_PAREN, BnfTypes.BNF_RIGHT_PAREN, false),
-    new BracePair(BnfTypes.BNF_LEFT_BRACE, BnfTypes.BNF_RIGHT_BRACE, false),
-    new BracePair(BnfTypes.BNF_LEFT_BRACKET, BnfTypes.BNF_RIGHT_BRACKET, false),
-    new BracePair(BnfTypes.BNF_EXTERNAL_START, BnfTypes.BNF_EXTERNAL_END, false)
-  };
+    @Override
+    public BracePair[] getPairs() {
+        return PAIRS;
+    }
 
-  @Override
-  public BracePair[] getPairs() {
-    return PAIRS;
-  }
-
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 }

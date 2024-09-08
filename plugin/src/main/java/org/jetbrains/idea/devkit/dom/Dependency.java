@@ -32,10 +32,10 @@ import javax.annotation.Nonnull;
 @Stubbed
 @Convert(PluginDescriptorResolver.class)
 public interface Dependency extends GenericDomValue<PluginDescriptor> {
-  @Nonnull
-  GenericAttributeValue<Boolean> getOptional();
+    @Nonnull
+    GenericAttributeValue<Boolean> getOptional();
 
-  @Nonnull
-  @Convert(DependencyConfigFileConverter.class)
-  GenericAttributeValue<PathReference> getConfigFile();
+    @Nonnull
+    @Convert(DependencyConfigFileConverter.class)
+    GenericAttributeValue<PathReference> getConfigFile();
 }

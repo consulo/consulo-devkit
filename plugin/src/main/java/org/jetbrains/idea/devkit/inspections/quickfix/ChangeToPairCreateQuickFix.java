@@ -32,22 +32,22 @@ import javax.annotation.Nonnull;
  * @author Konstantin Bulenkov
  */
 public class ChangeToPairCreateQuickFix extends LocalQuickFixBase {
-  public ChangeToPairCreateQuickFix() {
-    super("Change to Pair.create(..., ...)");
-  }
-
-  @Override
-  @RequiredReadAction
-  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    PsiElement element = descriptor.getPsiElement();
-    if (element == null) {
-      return;
+    public ChangeToPairCreateQuickFix() {
+        super("Change to Pair.create(..., ...)");
     }
-    String text = element.getText();
-    String newText = Pair.class.getName() + ".create(" + text.substring(text.indexOf('(') + 1);
-    PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-    PsiExpression expression = factory.createExpressionFromText(newText, element.getContext());
-    PsiElement newElement = element.replace(expression);
-    JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-  }
+
+    @Override
+    @RequiredReadAction
+    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        PsiElement element = descriptor.getPsiElement();
+        if (element == null) {
+            return;
+        }
+        String text = element.getText();
+        String newText = Pair.class.getName() + ".create(" + text.substring(text.indexOf('(') + 1);
+        PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+        PsiExpression expression = factory.createExpressionFromText(newText, element.getContext());
+        PsiElement newElement = element.replace(expression);
+        JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+    }
 }

@@ -36,117 +36,118 @@ import java.util.*;
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "consulo.devkit.export.all.packages", fileExtensions = "java", categories = {"Java", "Consulo DevKit"})
 public class ExportAllPackageIntention implements IntentionAction {
-  @Nls
-  @Nonnull
-  @Override
-  public String getText() {
-    return "Export all packages";
-  }
-
-  @Override
-  @RequiredUIAccess
-  public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile psiFile) {
-    Module module = ModuleUtilCore.findModuleForFile(psiFile);
-    return findModule(editor, psiFile) != null && PluginModuleUtil.isConsuloOrPluginProject(project, module);
-  }
-
-  @Override
-  @RequiredUIAccess
-  public void invoke(@Nonnull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
-    PsiJavaModule javaModule = findModule(editor, psiFile);
-    if (javaModule == null) {
-      return;
+    @Nls
+    @Nonnull
+    @Override
+    public String getText() {
+        return "Export all packages";
     }
 
-    Module module = ModuleUtilCore.findModuleForFile(psiFile);
-    if (module == null) {
-      return;
+    @Override
+    @RequiredUIAccess
+    public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile psiFile) {
+        Module module = ModuleUtilCore.findModuleForFile(psiFile);
+        return findModule(editor, psiFile) != null && PluginModuleUtil.isConsuloOrPluginProject(project, module);
     }
 
-    ContentFolder[] folders = ModuleRootManager.getInstance(module).getContentFolders(LanguageContentFolderScopes.production());
-
-    List<VirtualFile> packageDirectories = new ArrayList<>();
-    for (ContentFolder folder : folders) {
-      VirtualFile contentFile = folder.getFile();
-      if (contentFile == null) {
-        continue;
-      }
-
-      VirtualFileUtil.visitChildrenRecursively(contentFile, new VirtualFileVisitor<>() {
-        @Override
-        public boolean visitFile(@Nonnull VirtualFile file) {
-          if (file.isDirectory() && file != contentFile) {
-            packageDirectories.add(file);
-          }
-          return true;
-        }
-      });
-    }
-
-    PsiManager psiManager = PsiManager.getInstance(project);
-
-    Set<String> alreadyExported = new HashSet<>();
-    for (PsiPackageAccessibilityStatement statement : javaModule.getExports()) {
-      alreadyExported.add(statement.getPackageName());
-    }
-
-    Set<String> packages = new TreeSet<>(Comparator.reverseOrder());
-    for (VirtualFile packageDirectory : packageDirectories) {
-      PsiDirectory directory = psiManager.findDirectory(packageDirectory);
-      if (directory == null) {
-        continue;
-      }
-
-      PsiPackage psiPackage = PsiPackageManager.getInstance(project).findPackage(directory, JavaModuleExtension.class);
-      if (psiPackage instanceof PsiJavaPackage psiJavaPackage) {
-        PsiClass[] classes = psiJavaPackage.getClasses(GlobalSearchScope.moduleScope(module));
-        if (classes.length == 0 || alreadyExported.contains(psiPackage.getQualifiedName())) {
-          continue;
+    @Override
+    @RequiredUIAccess
+    public void invoke(@Nonnull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
+        PsiJavaModule javaModule = findModule(editor, psiFile);
+        if (javaModule == null) {
+            return;
         }
 
-        packages.add(psiPackage.getQualifiedName());
-      }
+        Module module = ModuleUtilCore.findModuleForFile(psiFile);
+        if (module == null) {
+            return;
+        }
+
+        ContentFolder[] folders = ModuleRootManager.getInstance(module).getContentFolders(LanguageContentFolderScopes.production());
+
+        List<VirtualFile> packageDirectories = new ArrayList<>();
+        for (ContentFolder folder : folders) {
+            VirtualFile contentFile = folder.getFile();
+            if (contentFile == null) {
+                continue;
+            }
+
+            VirtualFileUtil.visitChildrenRecursively(contentFile, new VirtualFileVisitor<>() {
+                @Override
+                public boolean visitFile(@Nonnull VirtualFile file) {
+                    if (file.isDirectory() && file != contentFile) {
+                        packageDirectories.add(file);
+                    }
+                    return true;
+                }
+            });
+        }
+
+        PsiManager psiManager = PsiManager.getInstance(project);
+
+        Set<String> alreadyExported = new HashSet<>();
+        for (PsiPackageAccessibilityStatement statement : javaModule.getExports()) {
+            alreadyExported.add(statement.getPackageName());
+        }
+
+        Set<String> packages = new TreeSet<>(Comparator.reverseOrder());
+        for (VirtualFile packageDirectory : packageDirectories) {
+            PsiDirectory directory = psiManager.findDirectory(packageDirectory);
+            if (directory == null) {
+                continue;
+            }
+
+            PsiPackage psiPackage = PsiPackageManager.getInstance(project).findPackage(directory, JavaModuleExtension.class);
+            if (psiPackage instanceof PsiJavaPackage psiJavaPackage) {
+                PsiClass[] classes = psiJavaPackage.getClasses(GlobalSearchScope.moduleScope(module));
+                if (classes.length == 0 || alreadyExported.contains(psiPackage.getQualifiedName())) {
+                    continue;
+                }
+
+                packages.add(psiPackage.getQualifiedName());
+            }
+        }
+
+        com.intellij.java.language.psi.PsiElementFactory psiElementFactory =
+            com.intellij.java.language.psi.PsiElementFactory.getInstance(project);
+        WriteAction.run(() -> {
+            PsiElement anchor = getLastItem(javaModule.getExports());
+            if (anchor == null) {
+                ASTNode lbrace = javaModule.getNode().findChildByType(JavaTokenType.RBRACE);
+                anchor = lbrace == null ? null : lbrace.getPsi();
+            }
+
+            if (anchor == null) {
+                return;
+            }
+
+            for (String aPackage : packages) {
+                PsiStatement statement = psiElementFactory.createModuleStatementFromText("exports " + aPackage + ";", psiFile);
+
+                anchor = javaModule.addBefore(statement, anchor);
+            }
+        });
     }
 
-		com.intellij.java.language.psi.PsiElementFactory psiElementFactory = com.intellij.java.language.psi.PsiElementFactory.getInstance(project);
-    WriteAction.run(() -> {
-      PsiElement anchor = getLastItem(javaModule.getExports());
-      if (anchor == null) {
-        ASTNode lbrace = javaModule.getNode().findChildByType(JavaTokenType.RBRACE);
-        anchor = lbrace == null ? null : lbrace.getPsi();
-      }
-
-      if (anchor == null) {
-        return;
-      }
-
-      for (String aPackage : packages) {
-        PsiStatement statement = psiElementFactory.createModuleStatementFromText("exports " + aPackage + ";", psiFile);
-
-        anchor = javaModule.addBefore(statement, anchor);
-      }
-    });
-  }
-
-  private static <T> T getLastItem(Iterable<T> iterable) {
-    T element = null;
-    for (T t : iterable) {
-      element = t;
+    private static <T> T getLastItem(Iterable<T> iterable) {
+        T element = null;
+        for (T t : iterable) {
+            element = t;
+        }
+        return element;
     }
-    return element;
-  }
 
-  @RequiredReadAction
-  private PsiJavaModule findModule(Editor editor, PsiFile psiFile) {
-    PsiElement element = psiFile.getViewProvider().findElementAt(editor.getCaretModel().getOffset());
-    if (element == null || PsiUtilCore.getElementType(element) != JavaTokenType.IDENTIFIER) {
-      return null;
+    @RequiredReadAction
+    private PsiJavaModule findModule(Editor editor, PsiFile psiFile) {
+        PsiElement element = psiFile.getViewProvider().findElementAt(editor.getCaretModel().getOffset());
+        if (element == null || PsiUtilCore.getElementType(element) != JavaTokenType.IDENTIFIER) {
+            return null;
+        }
+        return PsiTreeUtil.getParentOfType(element, PsiJavaModule.class);
     }
-    return PsiTreeUtil.getParentOfType(element, PsiJavaModule.class);
-  }
 
-  @Override
-  public boolean startInWriteAction() {
-    return false;
-  }
+    @Override
+    public boolean startInWriteAction() {
+        return false;
+    }
 }

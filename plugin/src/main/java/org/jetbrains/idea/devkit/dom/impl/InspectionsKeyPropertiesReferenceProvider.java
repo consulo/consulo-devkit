@@ -38,58 +38,58 @@ import java.util.List;
  * Date: 10/7/11
  */
 public class InspectionsKeyPropertiesReferenceProvider extends PsiReferenceProvider {
+    private final boolean myDefaultSoft;
 
-  private final boolean myDefaultSoft;
-
-  public InspectionsKeyPropertiesReferenceProvider() {
-    this(false);
-  }
-
-  public InspectionsKeyPropertiesReferenceProvider(final boolean defaultSoft) {
-    myDefaultSoft = defaultSoft;
-  }
-
-  @Override
-  public boolean acceptsTarget(@Nonnull PsiElement target) {
-    return target instanceof IProperty;
-  }
-
-  @Nonnull
-  public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull final ProcessingContext context) {
-    boolean soft = myDefaultSoft;
-
-    if (element instanceof XmlAttributeValue) {
-      final XmlAttribute xmlAttribute = (XmlAttribute)element.getParent();
-      if (element.getTextLength() < 2) {
-        return PsiReference.EMPTY_ARRAY;
-      }
-
-      final XmlTag tag = xmlAttribute.getParent();
-      String value = null;
-      String bundle = tag.getAttributeValue("bundle");
-      if ("key".equals(xmlAttribute.getName())) {
-        value = xmlAttribute.getValue();
-      }
-      else if ("groupKey".equals(xmlAttribute.getName())) {
-        value = xmlAttribute.getValue();
-        final String groupBundle = tag.getAttributeValue("groupBundle");
-        if (groupBundle != null) {
-          bundle = groupBundle;
-        }
-      }
-      if (value != null) {
-        return new PsiReference[]{new PropertyReference(value, xmlAttribute.getValueElement(), bundle, soft) {
-          @Override
-          protected List<PropertiesFile> retrievePropertyFilesByBundleName(String bundleName, PsiElement element) {
-            final Project project = element.getProject();
-            return PropertiesReferenceManager.getInstance(project)
-                                             .findPropertiesFiles(GlobalSearchScope.projectScope(project),
-                                                                  bundleName,
-                                                                  BundleNameEvaluator.DEFAULT);
-          }
-        }};
-      }
+    public InspectionsKeyPropertiesReferenceProvider() {
+        this(false);
     }
-    return PsiReference.EMPTY_ARRAY;
-  }
+
+    public InspectionsKeyPropertiesReferenceProvider(final boolean defaultSoft) {
+        myDefaultSoft = defaultSoft;
+    }
+
+    @Override
+    public boolean acceptsTarget(@Nonnull PsiElement target) {
+        return target instanceof IProperty;
+    }
+
+    @Nonnull
+    public PsiReference[] getReferencesByElement(@Nonnull PsiElement element, @Nonnull final ProcessingContext context) {
+        boolean soft = myDefaultSoft;
+
+        if (element instanceof XmlAttributeValue) {
+            final XmlAttribute xmlAttribute = (XmlAttribute)element.getParent();
+            if (element.getTextLength() < 2) {
+                return PsiReference.EMPTY_ARRAY;
+            }
+
+            final XmlTag tag = xmlAttribute.getParent();
+            String value = null;
+            String bundle = tag.getAttributeValue("bundle");
+            if ("key".equals(xmlAttribute.getName())) {
+                value = xmlAttribute.getValue();
+            }
+            else if ("groupKey".equals(xmlAttribute.getName())) {
+                value = xmlAttribute.getValue();
+                final String groupBundle = tag.getAttributeValue("groupBundle");
+                if (groupBundle != null) {
+                    bundle = groupBundle;
+                }
+            }
+            if (value != null) {
+                return new PsiReference[]{new PropertyReference(value, xmlAttribute.getValueElement(), bundle, soft) {
+                    @Override
+                    protected List<PropertiesFile> retrievePropertyFilesByBundleName(String bundleName, PsiElement element) {
+                        final Project project = element.getProject();
+                        return PropertiesReferenceManager.getInstance(project).findPropertiesFiles(
+                            GlobalSearchScope.projectScope(project),
+                            bundleName,
+                            BundleNameEvaluator.DEFAULT
+                        );
+                    }
+                }};
+            }
+        }
+        return PsiReference.EMPTY_ARRAY;
+    }
 }

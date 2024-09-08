@@ -25,24 +25,24 @@ import org.intellij.grammar.psi.BnfVisitor;
 import javax.annotation.Nonnull;
 
 /**
-* @author gregsh
-*/
+ * @author gregsh
+ */
 public class FakeBnfExpression extends LeafPsiElement implements BnfExpression {
-  public FakeBnfExpression(@Nonnull String text) {
-    this(BnfTypes.BNF_EXPRESSION, text);
-  }
+    public FakeBnfExpression(@Nonnull String text) {
+        this(BnfTypes.BNF_EXPRESSION, text);
+    }
 
-  public FakeBnfExpression(@Nonnull IElementType elementType, @Nonnull String text) {
-    super(elementType, text);
-  }
+    public FakeBnfExpression(@Nonnull IElementType elementType, @Nonnull String text) {
+        super(elementType, text);
+    }
 
-  @Override
-  public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
-    return null;
-  }
+    @Override
+    public <R> R accept(@Nonnull BnfVisitor<R> visitor) {
+        return null;
+    }
 
-  @Override
-  public String toString() {
-    return getText();
-  }
+    @Override
+    public String toString() {
+        return getText();
+    }
 }

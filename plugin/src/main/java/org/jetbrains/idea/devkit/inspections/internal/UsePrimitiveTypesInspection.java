@@ -19,6 +19,7 @@ import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.PsiUtil;
 import com.siyeh.IntentionPowerPackBundle;
 import com.siyeh.ig.PsiReplacementUtil;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.ast.IElementType;
 import consulo.language.editor.inspection.LocalQuickFix;
@@ -28,115 +29,113 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.project.Project;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NonNls;
 
 import javax.annotation.Nonnull;
 
 @ExtensionImpl
 public class UsePrimitiveTypesInspection extends InternalInspection {
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      public void visitBinaryExpression(PsiBinaryExpression expression) {
-        super.visitBinaryExpression(expression);
-        final IElementType tokenType = expression.getOperationTokenType();
-        if (tokenType.equals(JavaTokenType.EQEQ) || tokenType.equals(JavaTokenType.NE)) {
-          final PsiExpression lOperand = expression.getLOperand();
-          final PsiExpression rOperand = expression.getROperand();
-          if (rOperand != null && (isPrimitiveTypeRef(lOperand) || isPrimitiveTypeRef(rOperand))) {
-            final String name;
-            if (JavaTokenType.NE.equals(tokenType)) {
-              name = IntentionPowerPackBundle.message("replace.equality.with.not.equals.intention.name");
+    @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            public void visitBinaryExpression(@Nonnull PsiBinaryExpression expression) {
+                super.visitBinaryExpression(expression);
+                final IElementType tokenType = expression.getOperationTokenType();
+                if (JavaTokenType.EQEQ.equals(tokenType) || JavaTokenType.NE.equals(tokenType)) {
+                    final PsiExpression lOperand = expression.getLOperand();
+                    final PsiExpression rOperand = expression.getROperand();
+                    if (rOperand != null && (isPrimitiveTypeRef(lOperand) || isPrimitiveTypeRef(rOperand))) {
+                        final String name;
+                        if (JavaTokenType.NE.equals(tokenType)) {
+                            name = IntentionPowerPackBundle.message("replace.equality.with.not.equals.intention.name");
+                        }
+                        else {
+                            name = IntentionPowerPackBundle.message("replace.equality.with.equals.intention.name");
+                        }
+                        holder.registerProblem(
+                            expression.getOperationSign(),
+                            "Primitive types should be compared with .equals",
+                            new ReplaceEqualityWithEqualsFix(name)
+                        );
+                    }
+                }
             }
-            else {
-              name = IntentionPowerPackBundle.message("replace.equality.with.equals.intention.name");
-            }
-            holder.registerProblem(expression.getOperationSign(),
-                                   "Primitive types should be compared with .equals",
-                                   new ReplaceEqualityWithEqualsFix(name));
-          }
+        };
+    }
+
+    @RequiredReadAction
+    private static boolean isPrimitiveTypeRef(PsiExpression expression) {
+        if (expression instanceof PsiReferenceExpression referenceExpression && referenceExpression.resolve() instanceof PsiField field) {
+            final PsiClass containingClass = field.getContainingClass();
+            return containingClass != null
+                && PsiType.class.getName().equals(containingClass.getQualifiedName())
+                && !"NULL".equals(field.getName());
         }
-      }
-    };
-  }
-
-  private static boolean isPrimitiveTypeRef(PsiExpression expression) {
-    if (expression instanceof PsiReferenceExpression) {
-      final PsiElement target = ((PsiReferenceExpression)expression).resolve();
-      if (target instanceof PsiField) {
-        final PsiClass containingClass = ((PsiField)target).getContainingClass();
-        return containingClass != null &&
-          PsiType.class.getName().equals(containingClass.getQualifiedName()) &&
-          !"NULL".equals(((PsiField)target).getName());
-      }
-    }
-    return false;
-  }
-
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "Use .equals with primitive types";
-  }
-
-  private static class ReplaceEqualityWithEqualsFix implements LocalQuickFix {
-    private final String myName;
-
-    public ReplaceEqualityWithEqualsFix(String name) {
-      myName = name;
+        return false;
     }
 
-    @Nls
     @Nonnull
     @Override
-    public String getName() {
-      return myName;
+    public String getDisplayName() {
+        return "Use .equals with primitive types";
     }
 
-    @Nls
-    @Nonnull
-    @Override
-    public String getFamilyName() {
-      return "Replace equality with .equals";
-    }
+    private static class ReplaceEqualityWithEqualsFix implements LocalQuickFix {
+        private final String myName;
 
-    @Override
-    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-      final PsiElement psiElement = descriptor.getPsiElement();
-      if (psiElement instanceof PsiJavaToken) {
-
-        final IElementType tokenType = ((PsiJavaToken)psiElement).getTokenType();
-        final String prefix;
-        if (tokenType.equals(JavaTokenType.EQEQ)) {
-          prefix = "";
-        }
-        else if (tokenType.equals(JavaTokenType.NE)) {
-          prefix = "!";
-        }
-        else {
-          return;
+        public ReplaceEqualityWithEqualsFix(String name) {
+            myName = name;
         }
 
-        final PsiElement parent = psiElement.getParent();
-        if (parent instanceof PsiBinaryExpression) {
-          final PsiExpression rOperand = ((PsiBinaryExpression)parent).getROperand();
-          final PsiExpression lOperand = ((PsiBinaryExpression)parent).getLOperand();
-          if (rOperand != null) {
-            final boolean flip = isPrimitiveTypeRef(rOperand);
-            if (flip || isPrimitiveTypeRef(lOperand)) {
-              final String rText = PsiUtil.skipParenthesizedExprUp(rOperand).getText();
-              final String lText = PsiUtil.skipParenthesizedExprUp(lOperand).getText();
+        @Nls
+        @Nonnull
+        @Override
+        public String getName() {
+            return myName;
+        }
 
-              final String lhText = flip ? rText : lText;
-              final String rhText = flip ? lText : rText;
+        @Nls
+        @Nonnull
+        @Override
+        public String getFamilyName() {
+            return "Replace equality with .equals";
+        }
 
-              @NonNls final String expString = prefix + lhText + ".equals(" + rhText + ')';
-              PsiReplacementUtil.replaceExpression((PsiBinaryExpression)parent, expString);
+        @Override
+        @RequiredReadAction
+        public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+            final PsiElement psiElement = descriptor.getPsiElement();
+            if (psiElement instanceof PsiJavaToken javaToken) {
+                final IElementType tokenType = javaToken.getTokenType();
+                final String prefix;
+                if (JavaTokenType.EQEQ.equals(tokenType)) {
+                    prefix = "";
+                }
+                else if (JavaTokenType.NE.equals(tokenType)) {
+                    prefix = "!";
+                }
+                else {
+                    return;
+                }
+
+                if (psiElement.getParent() instanceof PsiBinaryExpression binaryExpression) {
+                    final PsiExpression rOperand = binaryExpression.getROperand();
+                    final PsiExpression lOperand = binaryExpression.getLOperand();
+                    if (rOperand != null) {
+                        final boolean flip = isPrimitiveTypeRef(rOperand);
+                        if (flip || isPrimitiveTypeRef(lOperand)) {
+                            final String rText = PsiUtil.skipParenthesizedExprUp(rOperand).getText();
+                            final String lText = PsiUtil.skipParenthesizedExprUp(lOperand).getText();
+
+                            final String lhText = flip ? rText : lText;
+                            final String rhText = flip ? lText : rText;
+
+                            final String expString = prefix + lhText + ".equals(" + rhText + ')';
+                            PsiReplacementUtil.replaceExpression(binaryExpression, expString);
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
 }

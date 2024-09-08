@@ -34,32 +34,32 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class BnfFindUsagesProvider implements FindUsagesProvider {
-  @Override
-  public boolean canFindUsagesFor(@Nonnull PsiElement psiElement) {
-    return psiElement instanceof BnfRule || psiElement instanceof BnfAttr;
-  }
+    @Override
+    public boolean canFindUsagesFor(@Nonnull PsiElement psiElement) {
+        return psiElement instanceof BnfRule || psiElement instanceof BnfAttr;
+    }
 
-  @Nonnull
-  @Override
-  public String getType(@Nonnull PsiElement element) {
-    return ElementDescriptionUtil.getElementDescription(element, UsageViewTypeLocation.INSTANCE);
-  }
+    @Nonnull
+    @Override
+    public String getType(@Nonnull PsiElement element) {
+        return ElementDescriptionUtil.getElementDescription(element, UsageViewTypeLocation.INSTANCE);
+    }
 
-  @Nonnull
-  @Override
-  public String getDescriptiveName(@Nonnull PsiElement element) {
-    return ElementDescriptionUtil.getElementDescription(element, UsageViewLongNameLocation.INSTANCE);
-  }
+    @Nonnull
+    @Override
+    public String getDescriptiveName(@Nonnull PsiElement element) {
+        return ElementDescriptionUtil.getElementDescription(element, UsageViewLongNameLocation.INSTANCE);
+    }
 
-  @Nonnull
-  @Override
-  public String getNodeText(@Nonnull PsiElement element, boolean useFullName) {
-    return ElementDescriptionUtil.getElementDescription(element, UsageViewNodeTextLocation.INSTANCE);
-  }
+    @Nonnull
+    @Override
+    public String getNodeText(@Nonnull PsiElement element, boolean useFullName) {
+        return ElementDescriptionUtil.getElementDescription(element, UsageViewNodeTextLocation.INSTANCE);
+    }
 
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return BnfLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return BnfLanguage.INSTANCE;
+    }
 }

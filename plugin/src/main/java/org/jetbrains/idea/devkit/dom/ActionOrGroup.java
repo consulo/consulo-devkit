@@ -23,10 +23,9 @@ import javax.annotation.Nonnull;
  * @since 15
  */
 public interface ActionOrGroup extends DomElement {
-
-  @Nonnull
-  @NameValue
-  @Stubbed
-  @Required(value = false, nonEmpty = true)
-  GenericAttributeValue<String> getId();
+    @Nonnull
+    @NameValue
+    @Stubbed
+    @Required(value = false, nonEmpty = true)
+    GenericAttributeValue<String> getId();
 }

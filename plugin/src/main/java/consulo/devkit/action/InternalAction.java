@@ -33,26 +33,26 @@ import javax.annotation.Nullable;
  * @since 28-Jan-17
  */
 public abstract class InternalAction extends AnAction {
-  protected InternalAction() {
-  }
+    protected InternalAction() {
+    }
 
-  protected InternalAction(Image icon) {
-    super(icon);
-  }
+    protected InternalAction(Image icon) {
+        super(icon);
+    }
 
-  protected InternalAction(@Nullable String text) {
-    super(text);
-  }
+    protected InternalAction(@Nullable String text) {
+        super(text);
+    }
 
-  protected InternalAction(@Nullable String text, @Nullable String description, @Nullable Image icon) {
-    super(text, description, icon);
-  }
+    protected InternalAction(@Nullable String text, @Nullable String description, @Nullable Image icon) {
+        super(text, description, icon);
+    }
 
-  @RequiredUIAccess
-  @Override
-  public void update(@Nonnull AnActionEvent e) {
-    Project project = e.getData(Project.KEY);
-    Module module = e.getData(CommonDataKeys.MODULE);
-    e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, module));
-  }
+    @RequiredUIAccess
+    @Override
+    public void update(@Nonnull AnActionEvent e) {
+        Project project = e.getData(Project.KEY);
+        Module module = e.getData(CommonDataKeys.MODULE);
+        e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, module));
+    }
 }

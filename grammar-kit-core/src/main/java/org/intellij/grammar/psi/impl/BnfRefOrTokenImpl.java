@@ -34,27 +34,26 @@ import javax.annotation.Nullable;
  * Time: 19:17
  */
 public abstract class BnfRefOrTokenImpl extends BnfExpressionImpl implements BnfReferenceOrToken {
-  public BnfRefOrTokenImpl(ASTNode node) {
-    super(node);
-  }
+    public BnfRefOrTokenImpl(ASTNode node) {
+        super(node);
+    }
 
-  @Nullable
-  public BnfRule resolveRule() {
-    PsiFile file = getContainingFile();
-    return file instanceof BnfFile ? ((BnfFile)file).getRule(GrammarUtil.getIdText(getId())) : null;
-  }
+    @Nullable
+    public BnfRule resolveRule() {
+        PsiFile file = getContainingFile();
+        return file instanceof BnfFile bnfFile ? bnfFile.getRule(GrammarUtil.getIdText(getId())) : null;
+    }
 
-  @Override
-  public PsiReference getReference() {
-    int delta = GrammarUtil.isIdQuoted(getId().getText()) ? 1 : 0;
-    TextRange range = TextRange.create(delta, getTextLength() - delta);
-    return new BnfReferenceImpl<BnfReferenceOrToken>(this, range) {
-      @Override
-      public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-        myElement.getId().replace(BnfElementFactory.createLeafFromText(getElement().getProject(), newElementName));
-        return myElement;
-      }
-    };
-  }
-
+    @Override
+    public PsiReference getReference() {
+        int delta = GrammarUtil.isIdQuoted(getId().getText()) ? 1 : 0;
+        TextRange range = TextRange.create(delta, getTextLength() - delta);
+        return new BnfReferenceImpl<BnfReferenceOrToken>(this, range) {
+            @Override
+            public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+                myElement.getId().replace(BnfElementFactory.createLeafFromText(getElement().getProject(), newElementName));
+                return myElement;
+            }
+        };
+    }
 }

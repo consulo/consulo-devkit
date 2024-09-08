@@ -35,162 +35,177 @@ import java.util.stream.Collectors;
  */
 @ExtensionImpl
 public class LocalizeFoldingBuilder implements FoldingBuilder {
-  @RequiredReadAction
-  @Nonnull
-  @Override
-  public FoldingDescriptor[] buildFoldRegions(@Nonnull ASTNode astNode, @Nonnull Document document) {
-    PsiElement psi = astNode.getPsi();
+    @RequiredReadAction
+    @Nonnull
+    @Override
+    public FoldingDescriptor[] buildFoldRegions(@Nonnull ASTNode astNode, @Nonnull Document document) {
+        PsiElement psi = astNode.getPsi();
 
-    List<FoldingDescriptor> foldings = new ArrayList<>();
+        List<FoldingDescriptor> foldings = new ArrayList<>();
 
-    psi.accept(new JavaRecursiveElementVisitor() {
-      @Override
-      @RequiredReadAction
-      public void visitMethodCallExpression(PsiMethodCallExpression expression) {
-        PsiReferenceExpression methodExpression = expression.getMethodExpression();
+        psi.accept(new JavaRecursiveElementVisitor() {
+            @Override
+            @RequiredReadAction
+            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+                PsiReferenceExpression methodExpression = expression.getMethodExpression();
 
-        super.visitMethodCallExpression(expression);
+                super.visitMethodCallExpression(expression);
 
-        if ("getValue".equals(methodExpression.getReferenceName())) {
-          PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
+                if ("getValue".equals(methodExpression.getReferenceName())) {
+                    PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
 
-          if (qualifierExpression instanceof PsiMethodCallExpression) {
-            Couple<String> localizeInfo = findLocalizeInfo(((PsiMethodCallExpression)qualifierExpression).getMethodExpression(), true);
-            if (localizeInfo == null) {
-              return;
+                    if (qualifierExpression instanceof PsiMethodCallExpression methodCallExpression) {
+                        Couple<String> localizeInfo = findLocalizeInfo(methodCallExpression.getMethodExpression(), true);
+                        if (localizeInfo == null) {
+                            return;
+                        }
+
+                        foldings.add(new NamedFoldingDescriptor(
+                            expression.getNode(),
+                            expression.getTextRange(),
+                            null,
+                            localizeInfo.getSecond()
+                        ));
+                    }
+                }
+                else {
+                    PsiElement parent = expression.getParent();
+                    if (parent instanceof PsiReferenceExpression referenceExpression
+                        && "getValue".equals(referenceExpression.getReferenceName())) {
+                        return;
+                    }
+
+                    Couple<String> localizeInfo = findLocalizeInfo(methodExpression, true);
+                    if (localizeInfo == null) {
+                        return;
+                    }
+
+                    foldings.add(new NamedFoldingDescriptor(
+                        expression.getNode(),
+                        expression.getTextRange(),
+                        null,
+                        localizeInfo.getSecond()
+                    ));
+                }
             }
+        });
 
-            foldings.add(new NamedFoldingDescriptor(expression.getNode(), expression.getTextRange(), null, localizeInfo.getSecond()));
-          }
-        }
-        else {
-          PsiElement parent = expression.getParent();
-          if (parent instanceof PsiReferenceExpression && "getValue".equals(((PsiReferenceExpression)parent).getReferenceName())) {
-            return;
-          }
-
-          Couple<String> localizeInfo = findLocalizeInfo(methodExpression, true);
-          if (localizeInfo == null) {
-            return;
-          }
-
-          foldings.add(new NamedFoldingDescriptor(expression.getNode(), expression.getTextRange(), null, localizeInfo.getSecond()));
-        }
-      }
-    });
-
-    return foldings.toArray(FoldingDescriptor.EMPTY);
-  }
-
-  @RequiredReadAction
-  @Nullable
-  private Couple<String> findLocalizeInfo(@Nullable PsiReferenceExpression expression, boolean resolve) {
-    if (expression == null) {
-      return null;
+        return foldings.toArray(FoldingDescriptor.EMPTY);
     }
 
-    PsiExpression qualifierExpression = expression.getQualifierExpression();
-    if (!(qualifierExpression instanceof PsiReferenceExpression)) {
-      return null;
+    @RequiredReadAction
+    @Nullable
+    private Couple<String> findLocalizeInfo(@Nullable PsiReferenceExpression expression, boolean resolve) {
+        if (expression == null) {
+            return null;
+        }
+
+        PsiExpression qualifierExpression = expression.getQualifierExpression();
+        if (!(qualifierExpression instanceof PsiReferenceExpression)) {
+            return null;
+        }
+
+        String referenceName = ((PsiReferenceExpression)qualifierExpression).getReferenceName();
+
+        if (referenceName != null && StringUtil.endsWith(referenceName, "Localize")) {
+            PsiElement element = ((PsiReferenceExpression)qualifierExpression).resolve();
+
+            if (element instanceof PsiClass psiClass) {
+                String qualifiedName = psiClass.getQualifiedName();
+
+                if (qualifiedName == null) {
+                    return null;
+                }
+
+                Collection<VirtualFile> containingFiles = FileBasedIndex.getInstance()
+                    .getContainingFiles(
+                        LocalizeFileBasedIndexExtension.INDEX,
+                        qualifiedName,
+                        expression.getResolveScope()
+                    );
+
+                if (containingFiles.isEmpty()) {
+                    return null;
+                }
+
+                if (resolve) {
+                    VirtualFile item = ContainerUtil.getFirstItem(containingFiles);
+                    assert item != null;
+
+                    PsiFile file = PsiManager.getInstance(expression.getProject()).findFile(item);
+                    if (file instanceof YAMLFile) {
+                        Map<String, String> map = buildLocalizeCache((YAMLFile)file);
+
+                        String key = replaceCamelCase(expression.getReferenceName());
+
+                        String value = map.get(key);
+                        if (value == null) {
+                            return null;
+                        }
+
+                        return Couple.of(key, value);
+                    }
+                }
+                else {
+                    return Couple.of("", "");
+                }
+            }
+        }
+
+        return null;
     }
 
-    String referenceName = ((PsiReferenceExpression)qualifierExpression).getReferenceName();
+    private static Map<String, String> buildLocalizeCache(YAMLFile yamlFile) {
+        return LanguageCachedValueUtil.getCachedValue(
+            yamlFile,
+            () -> {
+                List<YAMLDocument> documents = yamlFile.getDocuments();
 
-    if (referenceName != null && StringUtil.endsWith(referenceName, "Localize")) {
-      PsiElement element = ((PsiReferenceExpression)qualifierExpression).resolve();
+                Map<String, String> map = new HashMap<>();
 
-      if (element instanceof PsiClass) {
-        String qualifiedName = ((PsiClass)element).getQualifiedName();
+                for (YAMLDocument document : documents) {
+                    YAMLValue topLevelValue = document.getTopLevelValue();
+                    if (topLevelValue instanceof YAMLMapping topLevelMapping) {
+                        for (YAMLKeyValue value : topLevelMapping.getKeyValues()) {
+                            String key = value.getKeyText();
 
-        if (qualifiedName == null) {
-          return null;
-        }
+                            YAMLValue yamlValue = value.getValue();
+                            if (yamlValue instanceof YAMLMapping valueMapping) {
+                                YAMLKeyValue text = valueMapping.getKeyValueByKey("text");
+                                if (text != null) {
+                                    map.put(key.toLowerCase(Locale.ROOT), text.getValueText());
+                                }
+                            }
+                        }
+                    }
+                }
 
-        Collection<VirtualFile> containingFiles = FileBasedIndex.getInstance()
-                                                                .getContainingFiles(LocalizeFileBasedIndexExtension.INDEX,
-                                                                                    qualifiedName,
-                                                                                    expression.getResolveScope());
-
-        if (containingFiles.isEmpty()) {
-          return null;
-        }
-
-        if (resolve) {
-          VirtualFile item = ContainerUtil.getFirstItem(containingFiles);
-          assert item != null;
-
-          PsiFile file = PsiManager.getInstance(expression.getProject()).findFile(item);
-          if (file instanceof YAMLFile) {
-            Map<String, String> map = buildLocalizeCache((YAMLFile)file);
-
-            String key = replaceCamelCase(expression.getReferenceName());
-
-            String value = map.get(key);
-            if (value == null) {
-              return null;
+                return CachedValueProvider.Result.create(map, yamlFile);
             }
-
-            return Couple.of(key, value);
-          }
-        }
-        else {
-          return Couple.of("", "");
-        }
-      }
+        );
     }
 
-    return null;
-  }
+    private static String replaceCamelCase(String camelCaseString) {
+        String[] strings = NameUtil.splitNameIntoWords(camelCaseString);
+        return Arrays.stream(strings).map(s -> s.toLowerCase(Locale.US)).collect(Collectors.joining("."));
+    }
 
-  private static Map<String, String> buildLocalizeCache(YAMLFile yamlFile) {
-    return LanguageCachedValueUtil.getCachedValue(yamlFile, () ->
-    {
-      List<YAMLDocument> documents = yamlFile.getDocuments();
+    @RequiredReadAction
+    @Nullable
+    @Override
+    public String getPlaceholderText(@Nonnull ASTNode astNode) {
+        return null;
+    }
 
-      Map<String, String> map = new HashMap<>();
+    @RequiredReadAction
+    @Override
+    public boolean isCollapsedByDefault(@Nonnull ASTNode astNode) {
+        return true;
+    }
 
-      for (YAMLDocument document : documents) {
-        YAMLValue topLevelValue = document.getTopLevelValue();
-        if (topLevelValue instanceof YAMLMapping) {
-          for (YAMLKeyValue value : ((YAMLMapping)topLevelValue).getKeyValues()) {
-            String key = value.getKeyText();
-
-            YAMLValue yamlValue = value.getValue();
-            if (yamlValue instanceof YAMLMapping) {
-              YAMLKeyValue text = ((YAMLMapping)yamlValue).getKeyValueByKey("text");
-              if (text != null) {
-                map.put(key.toLowerCase(Locale.ROOT), text.getValueText());
-              }
-            }
-          }
-        }
-      }
-
-      return CachedValueProvider.Result.create(map, yamlFile);
-    });
-  }
-
-  private static String replaceCamelCase(String camelCaseString) {
-    String[] strings = NameUtil.splitNameIntoWords(camelCaseString);
-    return Arrays.stream(strings).map(s -> s.toLowerCase(Locale.US)).collect(Collectors.joining("."));
-  }
-
-  @RequiredReadAction
-  @Nullable
-  @Override
-  public String getPlaceholderText(@Nonnull ASTNode astNode) {
-    return null;
-  }
-
-  @RequiredReadAction
-  @Override
-  public boolean isCollapsedByDefault(@Nonnull ASTNode astNode) {
-    return true;
-  }
-
-  @Nonnull
-  @Override
-  public Language getLanguage() {
-    return JavaLanguage.INSTANCE;
-  }
+    @Nonnull
+    @Override
+    public Language getLanguage() {
+        return JavaLanguage.INSTANCE;
+    }
 }

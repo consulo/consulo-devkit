@@ -9,5 +9,5 @@ import java.util.List;
  * @since 28-Aug-22
  */
 public interface Plugins extends DomElement {
-  List<Plugin> getPlugins();
+    List<Plugin> getPlugins();
 }

@@ -42,141 +42,137 @@ import java.util.Map;
  * @since 01-Oct-16
  */
 public abstract class StateResolver {
-  @Nullable
-  @RequiredReadAction
-  public abstract Boolean resolveState(CallStateType actionType, PsiExpression expression);
+    @Nullable
+    @RequiredReadAction
+    public abstract Boolean resolveState(CallStateType actionType, PsiExpression expression);
 
-  protected static Map<String, Class[]> ourInterfaces = new HashMap<>() {
-    {
-      put("compute", new Class[]{
-        Computable.class,
-        ThrowableComputable.class
-      });
-      put("run", new Class[]{
-        Runnable.class,
-        ThrowableRunnable.class
-      });
-    }
-  };
+    protected static Map<String, Class[]> ourInterfaces = new HashMap<>() {
+        {
+            put("compute", new Class[]{
+                Computable.class,
+                ThrowableComputable.class
+            });
+            put("run", new Class[]{
+                Runnable.class,
+                ThrowableRunnable.class
+            });
+        }
+    };
 
-  protected static boolean resolveByMaybeParameterListOrVariable(PsiElement maybeParameterListOrVariable, CallStateType actionType) {
-    // Runnable run = new Runnable() {};
-    // Application.get().runReadAction(run);
-    if (maybeParameterListOrVariable instanceof PsiVariable) {
-      CommonProcessors.CollectProcessor<PsiReference> processor = new CommonProcessors.CollectProcessor<>();
-      ReferencesSearch.search(maybeParameterListOrVariable).forEach(processor);
+    protected static boolean resolveByMaybeParameterListOrVariable(PsiElement maybeParameterListOrVariable, CallStateType actionType) {
+        // Runnable run = new Runnable() {};
+        // Application.get().runReadAction(run);
+        if (maybeParameterListOrVariable instanceof PsiVariable) {
+            CommonProcessors.CollectProcessor<PsiReference> processor = new CommonProcessors.CollectProcessor<>();
+            ReferencesSearch.search(maybeParameterListOrVariable).forEach(processor);
 
-      Collection<PsiReference> results = processor.getResults();
-      if (results.isEmpty()) {
-        return false;
-      }
-
-      boolean weFoundRunAction = false;
-      for (PsiReference result : results) {
-        if (result instanceof PsiReferenceExpression psiReferenceExpression) {
-          PsiElement maybeExpressionList = psiReferenceExpression.getParent();
-          if (maybeExpressionList instanceof PsiExpressionList psiExpressionList) {
-            if (acceptActionTypeFromCall(psiExpressionList, actionType)) {
-              weFoundRunAction = true;
-              break;
+            Collection<PsiReference> results = processor.getResults();
+            if (results.isEmpty()) {
+                return false;
             }
-          }
-        }
-      }
 
-      if (weFoundRunAction) {
-        return true;
-      }
-    }
-    // Application.get().runReadAction(new Runnable() {});
-    else if (maybeParameterListOrVariable instanceof PsiExpressionList) {
-      if (acceptActionTypeFromCall((PsiExpressionList)maybeParameterListOrVariable, actionType)) {
-        return true;
-      }
-    }
-    return false;
-  }
+            boolean weFoundRunAction = false;
+            for (PsiReference result : results) {
+                if (result instanceof PsiReferenceExpression psiReferenceExpression
+                    && psiReferenceExpression.getParent() instanceof PsiExpressionList expressionList
+                    && acceptActionTypeFromCall(expressionList, actionType)) {
+                    weFoundRunAction = true;
+                    break;
+                }
+            }
 
-  protected static boolean acceptActionTypeFromCall(@Nonnull PsiExpressionList expressionList, @Nonnull CallStateType actionType) {
-    for (CallStateType type : CallStateType.values()) {
-      if (actionType.isAcceptableActionType(type, expressionList)) {
-        PsiElement parent = expressionList.getParent();
-
-        for (AcceptableMethodCallCheck acceptableMethodCallCheck : type.getAcceptableMethodCallChecks()) {
-          if (acceptableMethodCallCheck.accept(parent)) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  @RequiredReadAction
-  protected static boolean isAllowedFunctionCall(@Nonnull PsiFunctionalExpression functionalExpression, @Nonnull CallStateType actionType) {
-    PsiElement superParent = functionalExpression.getParent();
-    if (superParent instanceof PsiVariable) {
-      return checkVariableType(actionType, (PsiVariable)superParent, ((PsiVariable)superParent).getType());
-    }
-    else {
-      if (!(superParent instanceof PsiExpressionList)) {
-        return false;
-      }
-
-      if (!(superParent.getParent() instanceof PsiMethodCallExpression)) {
-        return false;
-      }
-
-      PsiExpression[] expressions = ((PsiExpressionList)superParent).getExpressions();
-      int i = ArrayUtil.indexOf(expressions, functionalExpression);
-      if (i == -1) {
-        return false;
-      }
-
-      PsiElement target = ((PsiMethodCallExpression)superParent.getParent()).getMethodExpression().resolve();
-      if (!(target instanceof PsiParameterListOwner)) {
-        return false;
-      }
-
-      PsiParameter[] parameters = ((PsiParameterListOwner)target).getParameterList().getParameters();
-      if (i >= parameters.length) {
-        return false;
-      }
-
-      PsiParameter parameter = parameters[i];
-
-      PsiType type = parameter.getType();
-      if (checkVariableType(actionType, parameter, type)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static boolean checkVariableType(@Nonnull CallStateType actionType, PsiVariable variable, PsiType type) {
-    if (type instanceof PsiClassType) {
-      PsiClass psiClass = ((PsiClassType)type).resolve();
-      if (psiClass != null && psiClass.isInterface()) {
-        // check if target variable type can use lambda
-        List<HierarchicalMethodSignature> signatureList = LambdaUtil.findFunctionCandidates(psiClass);
-        if (signatureList != null && signatureList.size() == 1) {
-          HierarchicalMethodSignature signature = signatureList.get(0);
-
-          for (CallStateType callStateType : CallStateType.values()) {
-            if (actionType.isAcceptableActionType(callStateType, variable)) {
-              // if parameter of method is annotated - or annotated lambda abstract method
-              if (AnnotationUtil.isAnnotated(variable,
-                                             callStateType.getActionClass(),
-                                             0) || AnnotationUtil.isAnnotated(signature.getMethod(),
-                                                                              callStateType.getActionClass(),
-                                                                              0)) {
+            if (weFoundRunAction) {
                 return true;
-              }
             }
-          }
         }
-      }
+        // Application.get().runReadAction(new Runnable() {});
+        else if (maybeParameterListOrVariable instanceof PsiExpressionList expressionList
+            && acceptActionTypeFromCall(expressionList, actionType)) {
+          return true;
+        }
+        return false;
     }
-    return false;
-  }
+
+    protected static boolean acceptActionTypeFromCall(@Nonnull PsiExpressionList expressionList, @Nonnull CallStateType actionType) {
+        for (CallStateType type : CallStateType.values()) {
+            if (actionType.isAcceptableActionType(type, expressionList)) {
+                PsiElement parent = expressionList.getParent();
+
+                for (AcceptableMethodCallCheck acceptableMethodCallCheck : type.getAcceptableMethodCallChecks()) {
+                    if (acceptableMethodCallCheck.accept(parent)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @RequiredReadAction
+    protected static boolean isAllowedFunctionCall(
+        @Nonnull PsiFunctionalExpression functionalExpression,
+        @Nonnull CallStateType actionType
+    ) {
+        PsiElement superParent = functionalExpression.getParent();
+        if (superParent instanceof PsiVariable) {
+            return checkVariableType(actionType, (PsiVariable)superParent, ((PsiVariable)superParent).getType());
+        }
+        else {
+            if (!(superParent instanceof PsiExpressionList)) {
+                return false;
+            }
+
+            if (!(superParent.getParent() instanceof PsiMethodCallExpression)) {
+                return false;
+            }
+
+            PsiExpression[] expressions = ((PsiExpressionList)superParent).getExpressions();
+            int i = ArrayUtil.indexOf(expressions, functionalExpression);
+            if (i == -1) {
+                return false;
+            }
+
+            PsiElement target = ((PsiMethodCallExpression)superParent.getParent()).getMethodExpression().resolve();
+            if (!(target instanceof PsiParameterListOwner)) {
+                return false;
+            }
+
+            PsiParameter[] parameters = ((PsiParameterListOwner)target).getParameterList().getParameters();
+            if (i >= parameters.length) {
+                return false;
+            }
+
+            PsiParameter parameter = parameters[i];
+
+            PsiType type = parameter.getType();
+            if (checkVariableType(actionType, parameter, type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean checkVariableType(@Nonnull CallStateType actionType, PsiVariable variable, PsiType type) {
+        if (type instanceof PsiClassType classType) {
+            PsiClass psiClass = classType.resolve();
+            if (psiClass != null && psiClass.isInterface()) {
+                // check if target variable type can use lambda
+                List<HierarchicalMethodSignature> signatureList = LambdaUtil.findFunctionCandidates(psiClass);
+                if (signatureList != null && signatureList.size() == 1) {
+                    HierarchicalMethodSignature signature = signatureList.get(0);
+
+                    for (CallStateType callStateType : CallStateType.values()) {
+                        if (actionType.isAcceptableActionType(callStateType, variable)) {
+                            // if parameter of method is annotated - or annotated lambda abstract method
+                            if (AnnotationUtil.isAnnotated(variable, callStateType.getActionClass(), 0)
+                                || AnnotationUtil.isAnnotated(signature.getMethod(), callStateType.getActionClass(), 0)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

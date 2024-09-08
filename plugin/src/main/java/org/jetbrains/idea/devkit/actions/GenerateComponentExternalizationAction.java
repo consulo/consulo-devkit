@@ -47,103 +47,102 @@ import javax.annotation.Nullable;
  */
 // TODO review and resurrect
 public class GenerateComponentExternalizationAction extends AnAction {
-  private static final Logger LOG = Logger.getInstance(GenerateComponentExternalizationAction.class);
-  private final static String PERSISTENCE_STATE_COMPONENT = PersistentStateComponent.class.getName();
-  private final static String STATE = State.class.getName();
-  private final static String STORAGE = Storage.class.getName();
+    private static final Logger LOG = Logger.getInstance(GenerateComponentExternalizationAction.class);
+    private final static String PERSISTENCE_STATE_COMPONENT = PersistentStateComponent.class.getName();
+    private final static String STATE = State.class.getName();
+    private final static String STORAGE = Storage.class.getName();
 
-  @Override
-  @RequiredUIAccess
-  public void actionPerformed(@Nonnull AnActionEvent e) {
-    final PsiClass target = getComponentInContext(e.getDataContext());
-    assert target != null;
+    @Override
+    @RequiredUIAccess
+    public void actionPerformed(@Nonnull AnActionEvent e) {
+        final PsiClass target = getComponentInContext(e.getDataContext());
+        assert target != null;
 
-    final PsiElementFactory factory = JavaPsiFacade.getInstance(target.getProject()).getElementFactory();
-    final CodeStyleManager formatter = CodeStyleManager.getInstance(target.getManager().getProject());
-    final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(target.getProject());
-    final String qualifiedName = target.getQualifiedName();
-    Runnable runnable = () -> target.getProject().getApplication().runWriteAction(() -> {
-      try {
-        final PsiReferenceList implList = target.getImplementsList();
-        assert implList != null;
-        final PsiJavaCodeReferenceElement referenceElement =
-          factory.createReferenceFromText(PERSISTENCE_STATE_COMPONENT + "<" + qualifiedName + ">", target);
-        implList.add(styler.shortenClassReferences(referenceElement.copy()));
-        PsiMethod read = factory.createMethodFromText(
-          "public void loadState(" + qualifiedName + " state) {\n" +
-            "    consulo.util.xml.serializer.XmlSerializerUtil.copyBean(state, this);\n" +
-            "}",
-          target
-        );
+        final PsiElementFactory factory = JavaPsiFacade.getInstance(target.getProject()).getElementFactory();
+        final CodeStyleManager formatter = CodeStyleManager.getInstance(target.getManager().getProject());
+        final JavaCodeStyleManager styler = JavaCodeStyleManager.getInstance(target.getProject());
+        final String qualifiedName = target.getQualifiedName();
+        Runnable runnable = () -> target.getProject().getApplication().runWriteAction(() -> {
+            try {
+                final PsiReferenceList implList = target.getImplementsList();
+                assert implList != null;
+                final PsiJavaCodeReferenceElement referenceElement =
+                    factory.createReferenceFromText(PERSISTENCE_STATE_COMPONENT + "<" + qualifiedName + ">", target);
+                implList.add(styler.shortenClassReferences(referenceElement.copy()));
+                PsiMethod read = factory.createMethodFromText(
+                    "public void loadState(" + qualifiedName + " state) {\n" +
+                        "    consulo.util.xml.serializer.XmlSerializerUtil.copyBean(state, this);\n" +
+                        "}",
+                    target
+                );
 
-        read = (PsiMethod)formatter.reformat(target.add(read));
-        styler.shortenClassReferences(read);
+                read = (PsiMethod)formatter.reformat(target.add(read));
+                styler.shortenClassReferences(read);
 
-        PsiMethod write = factory.createMethodFromText(
-          "public " + qualifiedName + " getState() {\n" +
-            "    return this;\n" +
-            "}\n",
-          target
-        );
-        write = (PsiMethod)formatter.reformat(target.add(write));
-        styler.shortenClassReferences(write);
+                PsiMethod write = factory.createMethodFromText(
+                    "public " + qualifiedName + " getState() {\n" +
+                        "    return this;\n" +
+                        "}\n",
+                    target
+                );
+                write = (PsiMethod)formatter.reformat(target.add(write));
+                styler.shortenClassReferences(write);
 
-        PsiAnnotation annotation = target.getModifierList().addAnnotation(STATE);
+                PsiAnnotation annotation = target.getModifierList().addAnnotation(STATE);
 
-        annotation =
-          (PsiAnnotation)formatter.reformat(annotation.replace(factory.createAnnotationFromText(
-            "@" + STATE + "(name = \"" + qualifiedName + "\", " + "storages = {@" + STORAGE + "(StoragePathMacros.DEFAULT_FILE)})",
-            target
-          )));
-        styler.shortenClassReferences(annotation);
-      }
-      catch (IncorrectOperationException e1) {
-        LOG.error(e1);
-      }
-    });
+                annotation =
+                    (PsiAnnotation)formatter.reformat(annotation.replace(factory.createAnnotationFromText(
+                        "@" + STATE + "(name = \"" + qualifiedName + "\", " + "storages = {@" + STORAGE + "(StoragePathMacros.DEFAULT_FILE)})",
+                        target
+                    )));
+                styler.shortenClassReferences(annotation);
+            }
+            catch (IncorrectOperationException e1) {
+                LOG.error(e1);
+            }
+        });
 
-    CommandProcessor.getInstance()
-      .executeCommand(target.getProject(), runnable, DevKitLocalize.commandImplementExternalizable().get(), null);
-  }
-
-  @Nullable
-  private PsiClass getComponentInContext(DataContext context) {
-    Editor editor = context.getData(PlatformDataKeys.EDITOR);
-    Project project = context.getData(PlatformDataKeys.PROJECT);
-    if (editor == null || project == null) {
-      return null;
+        CommandProcessor.getInstance()
+            .executeCommand(target.getProject(), runnable, DevKitLocalize.commandImplementExternalizable().get(), null);
     }
 
-    PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
+    @Nullable
+    private PsiClass getComponentInContext(DataContext context) {
+        Editor editor = context.getData(PlatformDataKeys.EDITOR);
+        Project project = context.getData(PlatformDataKeys.PROJECT);
+        if (editor == null || project == null) {
+            return null;
+        }
 
-    PsiFile file = context.getData(LangDataKeys.PSI_FILE);
-    if (file == null) {
-      return null;
+        PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
+
+        PsiFile file = context.getData(LangDataKeys.PSI_FILE);
+        if (file == null) {
+            return null;
+        }
+
+        PsiClass contextClass = PsiTreeUtil.findElementOfClassAtOffset(file, editor.getCaretModel().getOffset(), PsiClass.class, false);
+        if (contextClass == null || contextClass.isEnum() || contextClass.isInterface() || contextClass instanceof PsiAnonymousClass) {
+            return null;
+        }
+
+        PsiClass externClass = JavaPsiFacade.getInstance(file.getProject()).findClass(PERSISTENCE_STATE_COMPONENT, file.getResolveScope());
+        if (externClass == null || contextClass.isInheritor(externClass, true)) {
+            return null;
+        }
+
+
+        return contextClass;
     }
 
-    PsiClass contextClass = PsiTreeUtil.findElementOfClassAtOffset(file, editor.getCaretModel().getOffset(), PsiClass.class, false);
-    if (contextClass == null || contextClass.isEnum() || contextClass.isInterface() || contextClass instanceof PsiAnonymousClass) {
-      return null;
+    @Override
+    @RequiredUIAccess
+    public void update(@Nonnull AnActionEvent e) {
+        super.update(e);
+        final PsiClass target = getComponentInContext(e.getDataContext());
+
+        final Presentation presentation = e.getPresentation();
+        presentation.setEnabled(target != null);
+        presentation.setVisible(target != null);
     }
-
-    PsiClass externClass = JavaPsiFacade.getInstance(file.getProject()).findClass(PERSISTENCE_STATE_COMPONENT, file.getResolveScope());
-    if (externClass == null || contextClass.isInheritor(externClass, true)) {
-      return null;
-    }
-
-
-    return contextClass;
-  }
-
-  @Override
-  @RequiredUIAccess
-  public void update(@Nonnull AnActionEvent e) {
-    super.update(e);
-    final PsiClass target = getComponentInContext(e.getDataContext());
-
-    final Presentation presentation = e.getPresentation();
-    presentation.setEnabled(target != null);
-    presentation.setVisible(target != null);
-  }
 }
-

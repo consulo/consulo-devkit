@@ -12,10 +12,10 @@ import java.net.URL;
  */
 @ExtensionImpl
 public class Consulo3MigrationProvider implements PredefinedMigrationProvider {
-  @Nonnull
-  @Override
-  public URL getMigrationMap() {
-    return getClass().getResource("Consulo2-Consulo3.xml");
-  }
+    @Nonnull
+    @Override
+    public URL getMigrationMap() {
+        return getClass().getResource("Consulo2-Consulo3.xml");
+    }
 }
 

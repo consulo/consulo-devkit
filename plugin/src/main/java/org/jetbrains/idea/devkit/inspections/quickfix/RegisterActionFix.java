@@ -20,6 +20,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.util.IncorrectOperationException;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.idea.devkit.actions.NewActionDialog;
 import org.jetbrains.idea.devkit.util.ActionType;
@@ -27,36 +28,40 @@ import org.jetbrains.idea.devkit.util.ActionType;
 import javax.annotation.Nonnull;
 
 public class RegisterActionFix extends AbstractRegisterFix {
-  private NewActionDialog myDialog;
+    private NewActionDialog myDialog;
 
-  public RegisterActionFix(PsiClass klass) {
-    super(klass);
-  }
-
-  protected String getType() {
-    return DevKitLocalize.newMenuActionText().get();
-  }
-
-  public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-    try {
-      myDialog = new NewActionDialog(myClass);
-      myDialog.show();
-
-      if (myDialog.isOK()) {
-        super.applyFix(project, descriptor);
-      }
+    public RegisterActionFix(PsiClass klass) {
+        super(klass);
     }
-    finally {
-      myDialog = null;
-    }
-  }
 
-  public void patchPluginXml(XmlFile pluginXml, PsiClass aClass) throws IncorrectOperationException {
-    if (ActionType.GROUP.isOfType(aClass)) {
-      ActionType.GROUP.patchPluginXml(pluginXml, aClass, myDialog);
+    @Override
+    protected String getType() {
+        return DevKitLocalize.newMenuActionText().get();
     }
-    else {
-      ActionType.ACTION.patchPluginXml(pluginXml, aClass, myDialog);
+
+    @Override
+    @RequiredUIAccess
+    public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
+        try {
+            myDialog = new NewActionDialog(myClass);
+            myDialog.show();
+
+            if (myDialog.isOK()) {
+                super.applyFix(project, descriptor);
+            }
+        }
+        finally {
+            myDialog = null;
+        }
     }
-  }
+
+    @Override
+    public void patchPluginXml(XmlFile pluginXml, PsiClass aClass) throws IncorrectOperationException {
+        if (ActionType.GROUP.isOfType(aClass)) {
+            ActionType.GROUP.patchPluginXml(pluginXml, aClass, myDialog);
+        }
+        else {
+            ActionType.ACTION.patchPluginXml(pluginXml, aClass, myDialog);
+        }
+    }
 }

@@ -36,68 +36,68 @@ import javax.annotation.Nonnull;
  */
 @ExtensionImpl
 public class AWTErrorInspection extends InternalInspection {
-  private static final String[] ourErrorPackages = {
-    "java.awt",
-    "javax.swing"
-  };
-
-  @Nonnull
-  @Override
-  public String getDisplayName() {
-    return "AWT & Swing implementation error reporting";
-  }
-
-  @Override
-  public boolean isEnabledByDefault() {
-    return false;
-  }
-
-  @Override
-  public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
-    return new JavaElementVisitor() {
-      @Override
-      public void visitTypeElement(PsiTypeElement type) {
-        checkType(type, type.getType());
-      }
-
-      @Override
-      public void visitNewExpression(PsiNewExpression expression) {
-        final PsiJavaCodeReferenceElement classReference = expression.getClassReference();
-        if (classReference == null) {
-          return;
-        }
-        checkType(classReference, expression.getType());
-      }
-
-      private void checkType(PsiElement owner, PsiType psiType) {
-        PsiClass psiClass = PsiUtil.resolveClassInType(psiType);
-        if (psiClass != null) {
-          final String qualifiedName = psiClass.getQualifiedName();
-          if (qualifiedName == null) {
-            return;
-          }
-          for (String errorPackage : ourErrorPackages) {
-            if (StringUtil.startsWith(qualifiedName, errorPackage)) {
-              holder.registerProblem(owner, "AWT & Swing implementation can not be used. Please visit guide for writing UI");
-            }
-          }
-        }
-      }
+    private static final String[] ourErrorPackages = {
+        "java.awt",
+        "javax.swing"
     };
-  }
 
-  @RequiredReadAction
-  @Override
-  protected boolean isAllowed(ProblemsHolder holder) {
-    Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
-    if (module == null) {
-      return false;
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return "AWT & Swing implementation error reporting";
     }
 
-    // allow AWT & Swing inside desktop modules
-    if (module.getName().startsWith("consulo-desktop-awt-")) {
-      return false;
+    @Override
+    public boolean isEnabledByDefault() {
+        return false;
     }
-    return true;
-  }
+
+    @Override
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
+        return new JavaElementVisitor() {
+            @Override
+            public void visitTypeElement(PsiTypeElement type) {
+                checkType(type, type.getType());
+            }
+
+            @Override
+            public void visitNewExpression(PsiNewExpression expression) {
+                final PsiJavaCodeReferenceElement classReference = expression.getClassReference();
+                if (classReference == null) {
+                    return;
+                }
+                checkType(classReference, expression.getType());
+            }
+
+            private void checkType(PsiElement owner, PsiType psiType) {
+                PsiClass psiClass = PsiUtil.resolveClassInType(psiType);
+                if (psiClass != null) {
+                    final String qualifiedName = psiClass.getQualifiedName();
+                    if (qualifiedName == null) {
+                        return;
+                    }
+                    for (String errorPackage : ourErrorPackages) {
+                        if (StringUtil.startsWith(qualifiedName, errorPackage)) {
+                            holder.registerProblem(
+                                owner,
+                                "AWT & Swing implementation can not be used. Please visit guide for writing UI"
+                            );
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    @RequiredReadAction
+    @Override
+    protected boolean isAllowed(ProblemsHolder holder) {
+        Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
+        if (module == null) {
+            return false;
+        }
+
+        // allow AWT & Swing inside desktop modules
+        return !module.getName().startsWith("consulo-desktop-awt-");
+    }
 }

@@ -24,43 +24,43 @@ import static org.intellij.grammar.psi.BnfTypes.BNF_ID;
  * Time: 20:04
  */
 public abstract class BnfNamedImpl extends BnfCompositeImpl implements BnfNamedElement {
-  private volatile String myCachedName;
+    private volatile String myCachedName;
 
-  protected BnfNamedImpl(@Nonnull ASTNode node) {
-    super(node);
-  }
-
-  @Override
-  public void subtreeChanged() {
-    super.subtreeChanged();
-    myCachedName = null;
-  }
-
-  @Nonnull
-  @Override
-  public String getName() {
-    if (myCachedName == null) {
-      myCachedName = GrammarUtil.getIdText(getId());
+    protected BnfNamedImpl(@Nonnull ASTNode node) {
+        super(node);
     }
-    return myCachedName;
-  }
 
-  @Override
-  public PsiElement setName(@NonNls @Nonnull String s) throws IncorrectOperationException {
-    getId().replace(BnfElementFactory.createLeafFromText(getProject(), s));
-    return this;
-  }
+    @Override
+    public void subtreeChanged() {
+        super.subtreeChanged();
+        myCachedName = null;
+    }
 
-  @Override
-  public int getTextOffset() {
-    return getId().getTextOffset();
-  }
+    @Nonnull
+    @Override
+    public String getName() {
+        if (myCachedName == null) {
+            myCachedName = GrammarUtil.getIdText(getId());
+        }
+        return myCachedName;
+    }
 
-  @Nonnull
-  @Override
-  public SearchScope getUseScope() {
-    return new LocalSearchScope(getContainingFile());
-  }
+    @Override
+    public PsiElement setName(@NonNls @Nonnull String s) throws IncorrectOperationException {
+        getId().replace(BnfElementFactory.createLeafFromText(getProject(), s));
+        return this;
+    }
+
+    @Override
+    public int getTextOffset() {
+        return getId().getTextOffset();
+    }
+
+    @Nonnull
+    @Override
+    public SearchScope getUseScope() {
+        return new LocalSearchScope(getContainingFile());
+    }
 
 //	@Override
 //	public Icon getIcon(int flags)
@@ -81,24 +81,24 @@ public abstract class BnfNamedImpl extends BnfCompositeImpl implements BnfNamedE
 //		return super.getIcon(flags);
 //	}
 
-  @Override
-  public PsiElement getNameIdentifier() {
-    return getId();
-  }
-
-  public static boolean hasModifier(BnfRule rule, String modifier) {
-    for (BnfModifier o : rule.getModifierList()) {
-      if (modifier.equals(o.getText())) {
-        return true;
-      }
+    @Override
+    public PsiElement getNameIdentifier() {
+        return getId();
     }
-    return false;
-  }
 
-  @Override
-  public String toString() {
-    // AE fix in LOG.toString in inconsistent state
-    PsiElement nullableId = findChildByType(BNF_ID);
-    return super.toString() + ":" + (nullableId == null ? null : nullableId.getText());
-  }
+    public static boolean hasModifier(BnfRule rule, String modifier) {
+        for (BnfModifier o : rule.getModifierList()) {
+            if (modifier.equals(o.getText())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        // AE fix in LOG.toString in inconsistent state
+        PsiElement nullableId = findChildByType(BNF_ID);
+        return super.toString() + ":" + (nullableId == null ? null : nullableId.getText());
+    }
 }

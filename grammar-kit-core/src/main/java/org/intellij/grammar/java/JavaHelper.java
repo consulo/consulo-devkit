@@ -35,143 +35,145 @@ import java.util.List;
  */
 @ServiceAPI(ComponentScope.PROJECT)
 public abstract class JavaHelper {
-  public static class TypeParameterInfo {
-    private final String name;
-    private final List<String> extendsList;
+    public static class TypeParameterInfo {
+        private final String name;
+        private final List<String> extendsList;
 
-    public TypeParameterInfo(@Nonnull String name) {
-      this.name = name;
-      this.extendsList = new SmartList<>();
+        public TypeParameterInfo(@Nonnull String name) {
+            this.name = name;
+            this.extendsList = new SmartList<>();
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public List<String> getExtendsList() {
+            return extendsList;
+        }
     }
 
-    public String getName() {
-      return name;
+    protected static class MyElement<T> extends FakePsiElement implements NavigatablePsiElement {
+        private final T myDelegate;
+
+        protected MyElement(T delegate) {
+            myDelegate = delegate;
+        }
+
+        @Override
+        public PsiElement getParent() {
+            return null;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            MyElement element = (MyElement)o;
+
+            if (!myDelegate.equals(element.myDelegate)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        public T getDelegate() {
+            return myDelegate;
+        }
+
+        @Override
+        public int hashCode() {
+            return myDelegate.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return myDelegate.toString();
+        }
     }
 
-    public List<String> getExtendsList() {
-      return extendsList;
-    }
-  }
-
-  protected static class MyElement<T> extends FakePsiElement implements NavigatablePsiElement {
-    private final T myDelegate;
-
-    protected MyElement(T delegate) {
-      myDelegate = delegate;
+    public enum MethodType {
+        STATIC,
+        INSTANCE,
+        CONSTRUCTOR
     }
 
-    @Override
-    public PsiElement getParent() {
-      return null;
+    @Nonnull
+    public static JavaHelper getJavaHelper(@Nonnull PsiElement context) {
+        return context.getProject().getInstance(JavaHelper.class);
     }
 
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
+    @Nullable
+    public NavigatablePsiElement findClass(@Nullable String className) {
+        return null;
+    }
+
+    @Nonnull
+    public List<NavigatablePsiElement> findClassMethods(
+        @Nullable String version,
+        @Nullable String className,
+        @Nonnull MethodType methodType,
+        @Nullable String methodName,
+        int paramCount,
+        String... paramTypes
+    ) {
+        return Collections.emptyList();
+    }
+
+    public List<TypeParameterInfo> getGenericParameters(NavigatablePsiElement method) {
+        return Collections.emptyList();
+    }
+
+    public List<String> getExceptionList(NavigatablePsiElement method) {
+        return Collections.emptyList();
+    }
+
+    @Nullable
+    public String getSuperClassName(@Nullable String className) {
+        return null;
+    }
+
+    @Nonnull
+    public List<String> getMethodTypes(String version, @Nullable NavigatablePsiElement method) {
+        return Collections.emptyList();
+    }
+
+    @Nonnull
+    public String getDeclaringClass(@Nullable NavigatablePsiElement method) {
+        return "";
+    }
+
+    public boolean isPublic(@Nullable NavigatablePsiElement element) {
         return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-
-      MyElement element = (MyElement)o;
-
-      if (!myDelegate.equals(element.myDelegate)) {
-        return false;
-      }
-
-      return true;
     }
 
-    public T getDelegate() {
-      return myDelegate;
+    @Nonnull
+    public List<String> getParameterAnnotations(@Nullable NavigatablePsiElement method, int paramIndex) {
+        return Collections.emptyList();
     }
 
-    @Override
-    public int hashCode() {
-      return myDelegate.hashCode();
+    @Nonnull
+    public List<String> getAnnotations(@Nullable NavigatablePsiElement element) {
+        return Collections.emptyList();
     }
 
-    @Override
-    public String toString() {
-      return myDelegate.toString();
+    @Nullable
+    public PsiReferenceProvider getClassReferenceProvider() {
+        return null;
     }
-  }
 
-  public enum MethodType {
-    STATIC,
-    INSTANCE,
-    CONSTRUCTOR
-  }
+    @Nullable
+    public NavigationItem findPackage(@Nullable String packageName) {
+        return null;
+    }
 
-  @Nonnull
-  public static JavaHelper getJavaHelper(@Nonnull PsiElement context) {
-    return context.getProject().getInstance(JavaHelper.class);
-  }
-
-  @Nullable
-  public NavigatablePsiElement findClass(@Nullable String className) {
-    return null;
-  }
-
-  @Nonnull
-  public List<NavigatablePsiElement> findClassMethods(@Nullable String version,
-                                                      @Nullable String className,
-                                                      @Nonnull MethodType methodType,
-                                                      @Nullable String methodName,
-                                                      int paramCount,
-                                                      String... paramTypes) {
-    return Collections.emptyList();
-  }
-
-  public List<TypeParameterInfo> getGenericParameters(NavigatablePsiElement method) {
-    return Collections.emptyList();
-  }
-
-  public List<String> getExceptionList(NavigatablePsiElement method) {
-    return Collections.emptyList();
-  }
-
-  @Nullable
-  public String getSuperClassName(@Nullable String className) {
-    return null;
-  }
-
-  @Nonnull
-  public List<String> getMethodTypes(String version, @Nullable NavigatablePsiElement method) {
-    return Collections.emptyList();
-  }
-
-  @Nonnull
-  public String getDeclaringClass(@Nullable NavigatablePsiElement method) {
-    return "";
-  }
-
-  public boolean isPublic(@Nullable NavigatablePsiElement element) {
-    return true;
-  }
-
-  @Nonnull
-  public List<String> getParameterAnnotations(@Nullable NavigatablePsiElement method, int paramIndex) {
-    return Collections.emptyList();
-  }
-
-  @Nonnull
-  public List<String> getAnnotations(@Nullable NavigatablePsiElement element) {
-    return Collections.emptyList();
-  }
-
-  @Nullable
-  public PsiReferenceProvider getClassReferenceProvider() {
-    return null;
-  }
-
-  @Nullable
-  public NavigationItem findPackage(@Nullable String packageName) {
-    return null;
-  }
-
-  protected static boolean acceptsName(@Nullable String expected, @Nullable String actual) {
-    return "*".equals(expected) || expected != null && expected.equals(actual);
-  }
+    protected static boolean acceptsName(@Nullable String expected, @Nullable String actual) {
+        return "*".equals(expected) || expected != null && expected.equals(actual);
+    }
 }

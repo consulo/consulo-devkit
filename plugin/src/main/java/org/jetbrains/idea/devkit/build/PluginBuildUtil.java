@@ -15,7 +15,6 @@
  */
 package org.jetbrains.idea.devkit.build;
 
-import consulo.application.Application;
 import consulo.application.util.function.Computable;
 import consulo.content.library.Library;
 import consulo.module.Module;
@@ -32,40 +31,40 @@ import java.util.Set;
  * Date: Nov 24, 2004
  */
 public class PluginBuildUtil {
-  private PluginBuildUtil() {
-  }
+    private PluginBuildUtil() {
+    }
 
-  public static void getDependencies(Module module, final Set<Module> modules) {
-    productionRuntimeDependencies(module).forEachModule(dep -> {
-      if (!modules.contains(dep)) {
-        modules.add(dep);
-        getDependencies(dep, modules);
-      }
-      return true;
-    });
-  }
+    public static void getDependencies(Module module, final Set<Module> modules) {
+        productionRuntimeDependencies(module).forEachModule(dep -> {
+            if (!modules.contains(dep)) {
+                modules.add(dep);
+                getDependencies(dep, modules);
+            }
+            return true;
+        });
+    }
 
-  public static Module[] getWrongSetDependencies(final Module module) {
-    return module.getProject().getApplication().runReadAction((Computable<Module[]>)() -> {
-      ArrayList<Module> result = new ArrayList<>();
-      final Module[] projectModules = ModuleManager.getInstance(module.getProject()).getModules();
-      for (Module projectModule : projectModules) {
-        if (ArrayUtil.find(ModuleRootManager.getInstance(projectModule).getDependencies(), module) > -1) {
-          result.add(projectModule);
-        }
-      }
-      return result.toArray(new Module[result.size()]);
-    });
-  }
+    public static Module[] getWrongSetDependencies(final Module module) {
+        return module.getProject().getApplication().runReadAction((Computable<Module[]>)() -> {
+            ArrayList<Module> result = new ArrayList<>();
+            final Module[] projectModules = ModuleManager.getInstance(module.getProject()).getModules();
+            for (Module projectModule : projectModules) {
+                if (ArrayUtil.find(ModuleRootManager.getInstance(projectModule).getDependencies(), module) > -1) {
+                    result.add(projectModule);
+                }
+            }
+            return result.toArray(new Module[result.size()]);
+        });
+    }
 
-  public static void getLibraries(Module module, final Set<Library> libs) {
-    productionRuntimeDependencies(module).forEachLibrary(library -> {
-      libs.add(library);
-      return true;
-    });
-  }
+    public static void getLibraries(Module module, final Set<Library> libs) {
+        productionRuntimeDependencies(module).forEachLibrary(library -> {
+            libs.add(library);
+            return true;
+        });
+    }
 
-  private static OrderEnumerator productionRuntimeDependencies(Module module) {
-    return OrderEnumerator.orderEntries(module).productionOnly().runtimeOnly();
-  }
+    private static OrderEnumerator productionRuntimeDependencies(Module module) {
+        return OrderEnumerator.orderEntries(module).productionOnly().runtimeOnly();
+    }
 }

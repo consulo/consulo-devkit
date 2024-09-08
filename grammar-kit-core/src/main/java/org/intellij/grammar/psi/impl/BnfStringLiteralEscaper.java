@@ -26,32 +26,36 @@ import javax.annotation.Nonnull;
  * @author gregsh
  */
 public class BnfStringLiteralEscaper extends LiteralTextEscaper<BnfStringImpl> {
-  public BnfStringLiteralEscaper(BnfStringImpl element) {
-    super(element);
-  }
+    public BnfStringLiteralEscaper(BnfStringImpl element) {
+        super(element);
+    }
 
-  @Override
-  public boolean decode(@Nonnull final TextRange rangeInsideHost, @Nonnull final StringBuilder outChars) {
-    // todo implement proper java-like string escapes support
-    ProperTextRange.assertProperRange(rangeInsideHost);
-    outChars.append(myHost.getText(), rangeInsideHost.getStartOffset(), rangeInsideHost.getEndOffset());
-    return true;
-  }
+    @Override
+    public boolean decode(@Nonnull final TextRange rangeInsideHost, @Nonnull final StringBuilder outChars) {
+        // todo implement proper java-like string escapes support
+        ProperTextRange.assertProperRange(rangeInsideHost);
+        outChars.append(myHost.getText(), rangeInsideHost.getStartOffset(), rangeInsideHost.getEndOffset());
+        return true;
+    }
 
-  @Override
-  public int getOffsetInHost(final int offsetInDecoded, @Nonnull final TextRange rangeInsideHost) {
-    ProperTextRange.assertProperRange(rangeInsideHost);
-    int offset = offsetInDecoded;
-    // todo implement proper java-like string escapes support
-    offset += rangeInsideHost.getStartOffset();
-    if (offset < rangeInsideHost.getStartOffset()) offset = rangeInsideHost.getStartOffset();
-    if (offset > rangeInsideHost.getEndOffset()) offset = rangeInsideHost.getEndOffset();
-    return offset;
-  }
+    @Override
+    public int getOffsetInHost(final int offsetInDecoded, @Nonnull final TextRange rangeInsideHost) {
+        ProperTextRange.assertProperRange(rangeInsideHost);
+        int offset = offsetInDecoded;
+        // todo implement proper java-like string escapes support
+        offset += rangeInsideHost.getStartOffset();
+        if (offset < rangeInsideHost.getStartOffset()) {
+            offset = rangeInsideHost.getStartOffset();
+        }
+        if (offset > rangeInsideHost.getEndOffset()) {
+            offset = rangeInsideHost.getEndOffset();
+        }
+        return offset;
+    }
 
-  @Override
-  public boolean isOneLine() {
-    return true;
-  }
+    @Override
+    public boolean isOneLine() {
+        return true;
+    }
 }
 
