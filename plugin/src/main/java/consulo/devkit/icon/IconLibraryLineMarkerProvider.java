@@ -70,7 +70,7 @@ public class IconLibraryLineMarkerProvider implements LineMarkerProvider {
                 pair.getFirst(),
                 Pass.LINE_MARKERS,
                 null,
-                (mouseEvent, element) -> OpenFileDescriptorFactory.getInstance(project).builder(pair.getSecond()).build().navigate(true),
+                (mouseEvent, element) -> OpenFileDescriptorFactory.getInstance(project).newBuilder(pair.getSecond()).build().navigate(true),
                 GutterIconRenderer.Alignment.RIGHT
             );
         }

@@ -25,7 +25,7 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class IconLibraryIconDescriptorUpdater implements IconDescriptorUpdater {
-    private static final Set<String> ourAllowedExtensions = Set.of("svg", "png");
+    public static final Set<String> ourAllowedExtensions = Set.of("svg", "png");
 
     private final DirectoryIndex myDirectoryIndex;
     private final IconDeferrer myIconDeferrer;
@@ -80,7 +80,7 @@ public class IconLibraryIconDescriptorUpdater implements IconDescriptorUpdater {
         }
     }
 
-    private boolean insideICON_LIB(DirectoryInfo info, VirtualFile virtualFile) {
+    public static boolean insideICON_LIB(DirectoryInfo info, VirtualFile virtualFile) {
         VirtualFile contentRoot = info.getSourceRoot();
         if (contentRoot != null) {
             String relativePath = VirtualFileUtil.getRelativePath(virtualFile, contentRoot);
