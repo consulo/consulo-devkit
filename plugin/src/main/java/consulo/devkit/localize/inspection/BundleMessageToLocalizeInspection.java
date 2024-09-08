@@ -7,6 +7,7 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.WriteAction;
 import consulo.devkit.localize.DevKitLocalize;
+import consulo.devkit.localize.LocalizeUtil;
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
@@ -14,12 +15,9 @@ import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
-import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
-
-import java.util.Locale;
 
 /**
  * @author <a href="mailto:nikolay@yurchenko.su">Nikolay Yurchenko</a>
@@ -213,11 +211,6 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
     }
 
     private static class LocalizeClassExistsChecker extends BundleClassChecker {
-        protected static final String
-            ZERO_PREFIX = "zero",
-            ONE_PREFIX = "one",
-            TWO_PREFIX = "two";
-
         protected String
             myClassName,
             myLocalizeClassName,
@@ -231,7 +224,6 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
         }
 
         @Override
-        @SuppressWarnings("ConstantConditions")
         @RequiredReadAction
         boolean isApplicable() {
             if (!super.isApplicable()) {
@@ -251,7 +243,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
                 return false;
             }
 
-            myLocalizeMethodName = normalizeName(capitalizeByDot(key));
+            myLocalizeMethodName = LocalizeUtil.formatMethodName(myProject, key);
 
             return true;
         }
@@ -267,40 +259,6 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
             myLocalizeClassName = localizeClass.getName();
             myLocalizeClassQualifiedName = localizeClass.getQualifiedName();
             return true;
-        }
-
-        private String normalizeName(String text) {
-            char c = text.charAt(0);
-            if (c == '0') {
-                return ZERO_PREFIX + text.substring(1, text.length());
-            }
-            else if (c == '1') {
-                return ONE_PREFIX + text.substring(1, text.length());
-            }
-            else if (c == '2') {
-                return TWO_PREFIX + text.substring(1, text.length());
-            }
-            return escapeString(text);
-        }
-
-        private String escapeString(String name) {
-            return PsiNameHelper.getInstance(myProject).isIdentifier(name) ? name : "_" + name;
-        }
-
-        private String capitalizeByDot(String key) {
-            String[] split = key.toLowerCase(Locale.ROOT).replace(" ", ".").split("\\.");
-
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < split.length; i++) {
-                if (i != 0) {
-                    builder.append(StringUtil.capitalize(split[i]));
-                }
-                else {
-                    builder.append(split[i]);
-                }
-            }
-
-            return builder.toString();
         }
     }
 }

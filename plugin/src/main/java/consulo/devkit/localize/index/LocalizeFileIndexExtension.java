@@ -1,6 +1,7 @@
 package consulo.devkit.localize.index;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.LocalizeUtil;
 import consulo.index.io.*;
 import consulo.index.io.data.DataExternalizer;
 import consulo.language.psi.stub.FileBasedIndex;
@@ -19,7 +20,7 @@ import java.util.Map;
  * @since 2020-06-01
  */
 @ExtensionImpl
-public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<String, Void> {
+public class LocalizeFileIndexExtension extends FileBasedIndexExtension<String, Void> {
     public static final ID<String, Void> INDEX = ID.create("consulo.localize.file.index");
 
     @Nonnull
@@ -34,11 +35,9 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
         return fileContent -> {
             VirtualFile file = fileContent.getFile();
 
-            if (isLocalizeFile(file)) {
+            if (LocalizeUtil.isLocalizeFile(file)) {
                 String fileName = file.getNameWithoutExtension();
-
                 String packageName = StringUtil.getPackageName(fileName);
-
                 String id = packageName + ".localize." + StringUtil.getShortName(fileName);
                 return Collections.singletonMap(id, null);
             }
@@ -68,24 +67,8 @@ public class LocalizeFileBasedIndexExtension extends FileBasedIndexExtension<Str
     @Override
     public FileBasedIndex.InputFilter getInputFilter() {
         return (project, file) -> {
-            if (file.getFileType() != YAMLFileType.YML) {
-                return false;
-            }
-
-            CharSequence nameSequence = file.getNameSequence();
-            return StringUtil.endsWith(nameSequence, "Localize.yaml") && isLocalizeFile(file);
+            return file.getFileType() == YAMLFileType.YML && LocalizeUtil.isLocalizeFile(file);
         };
-    }
-
-    private boolean isLocalizeFile(VirtualFile file) {
-        VirtualFile parentDir = file.getParent();
-        if (parentDir != null && "en_US".equals(parentDir.getName())) {
-            VirtualFile localizeLibParent = parentDir.getParent();
-            if (localizeLibParent != null && "LOCALIZE-LIB".equals(localizeLibParent.getName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

@@ -6,7 +6,7 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.CachedValueProvider;
 import consulo.application.util.matcher.NameUtil;
-import consulo.devkit.localize.index.LocalizeFileBasedIndexExtension;
+import consulo.devkit.localize.index.LocalizeFileIndexExtension;
 import consulo.document.Document;
 import consulo.language.Language;
 import consulo.language.ast.ASTNode;
@@ -55,7 +55,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
                     PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
 
                     if (qualifierExpression instanceof PsiMethodCallExpression methodCallExpression) {
-                        Couple<String> localizeInfo = findLocalizeInfo(methodCallExpression.getMethodExpression(), true);
+                        Couple<String> localizeInfo = findLocalizeInfo(methodCallExpression.getMethodExpression());
                         if (localizeInfo == null) {
                             return;
                         }
@@ -75,7 +75,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
                         return;
                     }
 
-                    Couple<String> localizeInfo = findLocalizeInfo(methodExpression, true);
+                    Couple<String> localizeInfo = findLocalizeInfo(methodExpression);
                     if (localizeInfo == null) {
                         return;
                     }
@@ -95,7 +95,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
 
     @RequiredReadAction
     @Nullable
-    private Couple<String> findLocalizeInfo(@Nullable PsiReferenceExpression expression, boolean resolve) {
+    private Couple<String> findLocalizeInfo(@Nullable PsiReferenceExpression expression) {
         if (expression == null) {
             return null;
         }
@@ -105,51 +105,59 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
             return null;
         }
 
-        String referenceName = ((PsiReferenceExpression)qualifierExpression).getReferenceName();
+        String referenceName = ((PsiReferenceExpression) qualifierExpression).getReferenceName();
 
         if (referenceName != null && StringUtil.endsWith(referenceName, "Localize")) {
-            PsiElement element = ((PsiReferenceExpression)qualifierExpression).resolve();
+            PsiElement element = ((PsiReferenceExpression) qualifierExpression).resolve();
 
-            if (element instanceof PsiClass psiClass) {
-                String qualifiedName = psiClass.getQualifiedName();
-
-                if (qualifiedName == null) {
-                    return null;
-                }
-
-                Collection<VirtualFile> containingFiles = FileBasedIndex.getInstance()
-                    .getContainingFiles(
-                        LocalizeFileBasedIndexExtension.INDEX,
-                        qualifiedName,
-                        expression.getResolveScope()
-                    );
-
-                if (containingFiles.isEmpty()) {
-                    return null;
-                }
-
-                if (resolve) {
-                    VirtualFile item = ContainerUtil.getFirstItem(containingFiles);
-                    assert item != null;
-
-                    PsiFile file = PsiManager.getInstance(expression.getProject()).findFile(item);
-                    if (file instanceof YAMLFile) {
-                        Map<String, String> map = buildLocalizeCache((YAMLFile)file);
-
-                        String key = replaceCamelCase(expression.getReferenceName());
-
-                        String value = map.get(key);
-                        if (value == null) {
-                            return null;
-                        }
-
-                        return Couple.of(key, value);
-                    }
-                }
-                else {
-                    return Couple.of("", "");
-                }
+            LocalizeResolveInfo info = findLocalizeInfo(expression, expression.getReferenceName(), element);
+            if (info != null) {
+                return Couple.of(info.key(), info.value());
             }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    @RequiredReadAction
+    public static LocalizeResolveInfo findLocalizeInfo(PsiElement scope, String referenceName, PsiElement possibleClass) {
+        if (!(possibleClass instanceof PsiClass psiClass)) {
+            return null;
+        }
+
+        String qualifiedName = psiClass.getQualifiedName();
+
+        if (qualifiedName == null) {
+            return null;
+        }
+
+        Collection<VirtualFile> containingFiles = FileBasedIndex.getInstance()
+            .getContainingFiles(
+                LocalizeFileIndexExtension.INDEX,
+                qualifiedName,
+                scope.getResolveScope()
+            );
+
+        if (containingFiles.isEmpty()) {
+            return null;
+        }
+
+        VirtualFile item = ContainerUtil.getFirstItem(containingFiles);
+        assert item != null;
+
+        PsiFile file = PsiManager.getInstance(scope.getProject()).findFile(item);
+        if (file instanceof YAMLFile yamlFile) {
+            Map<String, String> map = buildLocalizeCache(yamlFile);
+
+            String key = replaceCamelCase(referenceName);
+
+            String value = map.get(key);
+            if (value == null) {
+                return null;
+            }
+
+            return new LocalizeResolveInfo(yamlFile, key, value);
         }
 
         return null;
@@ -185,7 +193,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         );
     }
 
-    private static String replaceCamelCase(String camelCaseString) {
+    public static String replaceCamelCase(String camelCaseString) {
         String[] strings = NameUtil.splitNameIntoWords(camelCaseString);
         return Arrays.stream(strings).map(s -> s.toLowerCase(Locale.US)).collect(Collectors.joining("."));
     }
