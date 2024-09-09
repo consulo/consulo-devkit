@@ -26,12 +26,19 @@ public class LocalizeFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
                 return LocalizeUtil.isLocalizeFile(yamlFile.getVirtualFile());
             }
         }
+
+        if (element instanceof LocalizeKeyElement) {
+            return true;
+        }
         return false;
     }
 
     @Nullable
     @Override
     public FindUsagesHandler createFindUsagesHandler(@Nonnull PsiElement element, boolean forHighlightUsages) {
+        if (element instanceof LocalizeKeyElement localizeKeyElement) {
+            return new LocalizeFindUsagesHandler(localizeKeyElement.getOriginalElement());
+        }
         return new LocalizeFindUsagesHandler(element);
     }
 }

@@ -7,11 +7,13 @@ import consulo.devkit.localize.folding.LocalizeFoldingBuilder;
 import consulo.devkit.localize.folding.LocalizeResolveInfo;
 import consulo.language.editor.TargetElementUtilExtender;
 import consulo.language.psi.PsiElement;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.jetbrains.yaml.psi.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author VISTALL
@@ -41,6 +43,19 @@ public class LocalizeTargetElementUtilExtender implements TargetElementUtilExten
                         }
                     }
                 }
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    @RequiredReadAction
+    public PsiElement modifyTargetElement(@Nonnull PsiElement element, @Nonnull Set<String> flags) {
+        if (element instanceof YAMLKeyValue keyValue) {
+            PsiMethod psiMethod = LocalizeUtil.findMethodByYAMLKey(keyValue);
+            if (psiMethod != null) {
+                return new LocalizeKeyElement(keyValue);
             }
         }
         return null;
