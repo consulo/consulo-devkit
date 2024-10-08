@@ -50,42 +50,17 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
 
                 PsiReferenceExpression methodExpression = expression.getMethodExpression();
 
-                if ("getValue".equals(methodExpression.getReferenceName())) {
-                    PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
-
-                    if (qualifierExpression instanceof PsiMethodCallExpression methodCallExpression) {
-                        Couple<String> localizeInfo = findLocalizeInfo(methodCallExpression.getMethodExpression());
-                        if (localizeInfo == null) {
-                            return;
-                        }
-
-                        foldings.add(new NamedFoldingDescriptor(
-                            expression.getNode(),
-                            expression.getTextRange(),
-                            null,
-                            localizeInfo.getSecond()
-                        ));
-                    }
+                Couple<String> localizeInfo = findLocalizeInfo(methodExpression);
+                if (localizeInfo == null) {
+                    return;
                 }
-                else {
-                    PsiElement parent = expression.getParent();
-                    if (parent instanceof PsiReferenceExpression referenceExpression
-                        && "getValue".equals(referenceExpression.getReferenceName())) {
-                        return;
-                    }
 
-                    Couple<String> localizeInfo = findLocalizeInfo(methodExpression);
-                    if (localizeInfo == null) {
-                        return;
-                    }
-
-                    foldings.add(new NamedFoldingDescriptor(
-                        expression.getNode(),
-                        expression.getTextRange(),
-                        null,
-                        localizeInfo.getSecond()
-                    ));
-                }
+                foldings.add(new NamedFoldingDescriptor(
+                    expression.getNode(),
+                    expression.getTextRange(),
+                    null,
+                    localizeInfo.getSecond()
+                ));
             }
         });
 
