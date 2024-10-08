@@ -72,6 +72,35 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
                         }
                     }
                 }
+                else if ("of".equals(methodExpression.getReferenceName())) {
+                    if (methodExpression.getQualifierExpression() instanceof PsiReferenceExpression referenceExpression
+                        && "LocalizeKey".equals(referenceExpression.getReferenceName())) {
+                        PsiExpression[] args = expression.getArgumentList().getExpressions();
+                        if (args.length >= 2
+                            && args[1] instanceof PsiLiteralExpression keyExpr
+                            && keyExpr.getValue() instanceof String key
+                            && args[0] instanceof PsiReferenceExpression fileNameExpr
+                            && fileNameExpr.resolve() instanceof PsiField fileNameField) {
+
+                            Map<String, String> map = findLocalizeMap(methodExpression, fileNameField.getContainingClass());
+                            if (map == null) {
+                                return;
+                            }
+
+                            String value = map.get(key);
+                            if (value == null) {
+                                return;
+                            }
+
+                            foldings.add(new NamedFoldingDescriptor(
+                                expression.getNode(),
+                                expression.getTextRange(),
+                                null,
+                                value
+                            ));
+                        }
+                    }
+                }
                 else {
                     Couple<String> localizeInfo = findLocalizeInfo(methodExpression);
                     if (localizeInfo == null) {
@@ -117,6 +146,37 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
     @Nullable
     @RequiredReadAction
     public static LocalizeResolveInfo findLocalizeInfo(PsiElement scope, PsiElement possibleClass, String memberName) {
+        YAMLFile yamlFile = findYAMLFile(scope, possibleClass);
+        if (yamlFile == null) {
+            return null;
+        }
+
+        Map<String, String> map = buildLocalizeCache(yamlFile);
+
+        String key = replaceCamelCase(memberName);
+
+        String value = map.get(key);
+        if (value == null) {
+            return null;
+        }
+
+        return new LocalizeResolveInfo(yamlFile, key, value);
+    }
+
+    @Nullable
+    @RequiredReadAction
+    public static Map<String, String> findLocalizeMap(PsiElement scope, PsiElement possibleClass) {
+        YAMLFile yamlFile = findYAMLFile(scope, possibleClass);
+        if (yamlFile == null) {
+            return null;
+        }
+
+        return buildLocalizeCache(yamlFile);
+    }
+
+    @Nullable
+    @RequiredReadAction
+    public static YAMLFile findYAMLFile(PsiElement scope, PsiElement possibleClass) {
         if (!(possibleClass instanceof PsiClass psiClass)) {
             return null;
         }
@@ -141,20 +201,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         assert item != null;
 
         PsiFile file = PsiManager.getInstance(scope.getProject()).findFile(item);
-        if (file instanceof YAMLFile yamlFile) {
-            Map<String, String> map = buildLocalizeCache(yamlFile);
-
-            String key = replaceCamelCase(memberName);
-
-            String value = map.get(key);
-            if (value == null) {
-                return null;
-            }
-
-            return new LocalizeResolveInfo(yamlFile, key, value);
-        }
-
-        return null;
+        return file instanceof YAMLFile yamlFile ? yamlFile : null;
     }
 
     private static Map<String, String> buildLocalizeCache(YAMLFile yamlFile) {
