@@ -20,7 +20,6 @@ import consulo.language.psi.stub.FileBasedIndex;
 import consulo.language.psi.util.LanguageCachedValueUtil;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.Couple;
-import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.yaml.psi.*;
 
@@ -46,10 +45,10 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         psi.accept(new JavaRecursiveElementVisitor() {
             @Override
             @RequiredReadAction
-            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
-                PsiReferenceExpression methodExpression = expression.getMethodExpression();
-
+            public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
                 super.visitMethodCallExpression(expression);
+
+                PsiReferenceExpression methodExpression = expression.getMethodExpression();
 
                 if ("getValue".equals(methodExpression.getReferenceName())) {
                     PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
@@ -101,27 +100,24 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         }
 
         PsiExpression qualifierExpression = expression.getQualifierExpression();
-        if (!(qualifierExpression instanceof PsiReferenceExpression)) {
-            return null;
-        }
+        if (qualifierExpression instanceof PsiReferenceExpression referenceExpression) {
+            String className = referenceExpression.getReferenceName();
 
-        String referenceName = ((PsiReferenceExpression) qualifierExpression).getReferenceName();
+            if (className != null && className.endsWith("Localize")) {
+                PsiElement possibleClass = referenceExpression.resolve();
 
-        if (referenceName != null && StringUtil.endsWith(referenceName, "Localize")) {
-            PsiElement element = ((PsiReferenceExpression) qualifierExpression).resolve();
-
-            LocalizeResolveInfo info = findLocalizeInfo(expression, expression.getReferenceName(), element);
-            if (info != null) {
-                return Couple.of(info.key(), info.value());
+                LocalizeResolveInfo info = findLocalizeInfo(expression, possibleClass, expression.getReferenceName());
+                if (info != null) {
+                    return Couple.of(info.key(), info.value());
+                }
             }
         }
-
         return null;
     }
 
     @Nullable
     @RequiredReadAction
-    public static LocalizeResolveInfo findLocalizeInfo(PsiElement scope, String referenceName, PsiElement possibleClass) {
+    public static LocalizeResolveInfo findLocalizeInfo(PsiElement scope, PsiElement possibleClass, String methodName) {
         if (!(possibleClass instanceof PsiClass psiClass)) {
             return null;
         }
@@ -132,12 +128,11 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
             return null;
         }
 
-        Collection<VirtualFile> containingFiles = FileBasedIndex.getInstance()
-            .getContainingFiles(
-                LocalizeFileIndexExtension.INDEX,
-                qualifiedName,
-                scope.getResolveScope()
-            );
+        Collection<VirtualFile> containingFiles = FileBasedIndex.getInstance().getContainingFiles(
+            LocalizeFileIndexExtension.INDEX,
+            qualifiedName,
+            scope.getResolveScope()
+        );
 
         if (containingFiles.isEmpty()) {
             return null;
@@ -150,7 +145,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         if (file instanceof YAMLFile yamlFile) {
             Map<String, String> map = buildLocalizeCache(yamlFile);
 
-            String key = replaceCamelCase(referenceName);
+            String key = replaceCamelCase(methodName);
 
             String value = map.get(key);
             if (value == null) {
@@ -172,15 +167,12 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
                 Map<String, String> map = new HashMap<>();
 
                 for (YAMLDocument document : documents) {
-                    YAMLValue topLevelValue = document.getTopLevelValue();
-                    if (topLevelValue instanceof YAMLMapping topLevelMapping) {
+                    if (document.getTopLevelValue() instanceof YAMLMapping topLevelMapping) {
                         for (YAMLKeyValue value : topLevelMapping.getKeyValues()) {
-                            String key = value.getKeyText();
-
-                            YAMLValue yamlValue = value.getValue();
-                            if (yamlValue instanceof YAMLMapping valueMapping) {
+                            if (value.getValue() instanceof YAMLMapping valueMapping) {
                                 YAMLKeyValue text = valueMapping.getKeyValueByKey("text");
                                 if (text != null) {
+                                    String key = value.getKeyText();
                                     map.put(key.toLowerCase(Locale.ROOT), text.getValueText());
                                 }
                             }
@@ -194,8 +186,9 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
     }
 
     public static String replaceCamelCase(String camelCaseString) {
-        String[] strings = NameUtil.splitNameIntoWords(camelCaseString);
-        return Arrays.stream(strings).map(s -> s.toLowerCase(Locale.US)).collect(Collectors.joining("."));
+        return Arrays.stream(NameUtil.splitNameIntoWords(camelCaseString))
+            .map(s -> s.toLowerCase(Locale.US))
+            .collect(Collectors.joining("."));
     }
 
     @RequiredReadAction

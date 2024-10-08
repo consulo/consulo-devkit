@@ -26,14 +26,14 @@ public class LocalizeTargetElementUtilExtender implements TargetElementUtilExten
     @RequiredReadAction
     public PsiElement getGotoDeclarationTarget(PsiElement element, PsiElement navElement) {
         if (navElement instanceof PsiMethod method) {
-            LocalizeResolveInfo resolveInfo = LocalizeFoldingBuilder.findLocalizeInfo(navElement, method.getName(), method.getContainingClass());
+            LocalizeResolveInfo resolveInfo =
+                LocalizeFoldingBuilder.findLocalizeInfo(navElement, method.getContainingClass(), method.getName());
             if (resolveInfo != null) {
                 YAMLFile file = resolveInfo.file();
 
                 List<YAMLDocument> documents = file.getDocuments();
                 for (YAMLDocument document : documents) {
-                    YAMLValue topLevelValue = document.getTopLevelValue();
-                    if (topLevelValue instanceof YAMLMapping topLevelMapping) {
+                    if (document.getTopLevelValue() instanceof YAMLMapping topLevelMapping) {
                         for (YAMLKeyValue value : topLevelMapping.getKeyValues()) {
                             String key = value.getKeyText();
 
