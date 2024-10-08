@@ -50,17 +50,41 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
 
                 PsiReferenceExpression methodExpression = expression.getMethodExpression();
 
-                Couple<String> localizeInfo = findLocalizeInfo(methodExpression);
-                if (localizeInfo == null) {
-                    return;
-                }
+                if ("getValue".equals(methodExpression.getReferenceName())) {
+                    if (methodExpression.getQualifierExpression() instanceof PsiReferenceExpression referenceExpression
+                        && referenceExpression.resolve() instanceof PsiField field
+                        && field.hasModifierProperty(PsiModifier.STATIC)
+                        && field.hasModifierProperty(PsiModifier.FINAL)) {
+                        PsiClass psiClass = field.getContainingClass();
+                        String className = psiClass.getName();
+                        if (className != null && className.endsWith("Localize")) {
+                            LocalizeResolveInfo localizeInfo = findLocalizeInfo(methodExpression, psiClass, field.getName());
+                            if (localizeInfo == null) {
+                                return;
+                            }
 
-                foldings.add(new NamedFoldingDescriptor(
-                    expression.getNode(),
-                    expression.getTextRange(),
-                    null,
-                    localizeInfo.getSecond()
-                ));
+                            foldings.add(new NamedFoldingDescriptor(
+                                expression.getNode(),
+                                expression.getTextRange(),
+                                null,
+                                localizeInfo.value()
+                            ));
+                        }
+                    }
+                }
+                else {
+                    Couple<String> localizeInfo = findLocalizeInfo(methodExpression);
+                    if (localizeInfo == null) {
+                        return;
+                    }
+
+                    foldings.add(new NamedFoldingDescriptor(
+                        expression.getNode(),
+                        expression.getTextRange(),
+                        null,
+                        localizeInfo.getSecond()
+                    ));
+                }
             }
         });
 
@@ -92,7 +116,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
 
     @Nullable
     @RequiredReadAction
-    public static LocalizeResolveInfo findLocalizeInfo(PsiElement scope, PsiElement possibleClass, String methodName) {
+    public static LocalizeResolveInfo findLocalizeInfo(PsiElement scope, PsiElement possibleClass, String memberName) {
         if (!(possibleClass instanceof PsiClass psiClass)) {
             return null;
         }
@@ -120,7 +144,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         if (file instanceof YAMLFile yamlFile) {
             Map<String, String> map = buildLocalizeCache(yamlFile);
 
-            String key = replaceCamelCase(methodName);
+            String key = replaceCamelCase(memberName);
 
             String value = map.get(key);
             if (value == null) {
