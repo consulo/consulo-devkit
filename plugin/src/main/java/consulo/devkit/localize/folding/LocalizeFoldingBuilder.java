@@ -19,7 +19,6 @@ import consulo.language.psi.PsiManager;
 import consulo.language.psi.stub.FileBasedIndex;
 import consulo.language.psi.util.LanguageCachedValueUtil;
 import consulo.util.collection.ContainerUtil;
-import consulo.util.lang.Couple;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.yaml.psi.*;
 
@@ -29,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author VISTALL
+ * @author VISTALL, UNV
  * @since 2020-06-01
  */
 @ExtensionImpl
@@ -45,98 +44,105 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         psi.accept(new JavaRecursiveElementVisitor() {
             @Override
             @RequiredReadAction
-            public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
-                super.visitMethodCallExpression(expression);
+            public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression methodCall) {
+                super.visitMethodCallExpression(methodCall);
 
-                PsiReferenceExpression methodExpression = expression.getMethodExpression();
-
-                if ("getValue".equals(methodExpression.getReferenceName())) {
-                    if (methodExpression.getQualifierExpression() instanceof PsiReferenceExpression referenceExpression
-                        && referenceExpression.resolve() instanceof PsiField field
-                        && field.hasModifierProperty(PsiModifier.STATIC)
-                        && field.hasModifierProperty(PsiModifier.FINAL)) {
-                        PsiClass psiClass = field.getContainingClass();
-                        String className = psiClass.getName();
-                        if (className != null && className.endsWith("Localize")) {
-                            LocalizeResolveInfo localizeInfo = findLocalizeInfo(methodExpression, psiClass, field.getName());
-                            if (localizeInfo == null) {
-                                return;
-                            }
-
-                            foldings.add(new NamedFoldingDescriptor(
-                                expression.getNode(),
-                                expression.getTextRange(),
-                                null,
-                                localizeInfo.value()
-                            ));
-                        }
-                    }
+                String value = matchLocalizeKeyOf(methodCall);
+                if (value == null) {
+                    value = matchLocalizeKeyGetValue(methodCall);
                 }
-                else if ("of".equals(methodExpression.getReferenceName())) {
-                    if (methodExpression.getQualifierExpression() instanceof PsiReferenceExpression referenceExpression
-                        && "LocalizeKey".equals(referenceExpression.getReferenceName())) {
-                        PsiExpression[] args = expression.getArgumentList().getExpressions();
-                        if (args.length >= 2
-                            && args[1] instanceof PsiLiteralExpression keyExpr
-                            && keyExpr.getValue() instanceof String key
-                            && args[0] instanceof PsiReferenceExpression fileNameExpr
-                            && fileNameExpr.resolve() instanceof PsiField fileNameField) {
-
-                            Map<String, String> map = findLocalizeMap(methodExpression, fileNameField.getContainingClass());
-                            if (map == null) {
-                                return;
-                            }
-
-                            String value = map.get(key);
-                            if (value == null) {
-                                return;
-                            }
-
-                            foldings.add(new NamedFoldingDescriptor(
-                                expression.getNode(),
-                                expression.getTextRange(),
-                                null,
-                                value
-                            ));
-                        }
-                    }
+                if (value == null) {
+                    value = matchLocalizeClassMethodCall(methodCall);
                 }
-                else {
-                    Couple<String> localizeInfo = findLocalizeInfo(methodExpression);
-                    if (localizeInfo == null) {
-                        return;
-                    }
-
-                    foldings.add(new NamedFoldingDescriptor(
-                        expression.getNode(),
-                        expression.getTextRange(),
-                        null,
-                        localizeInfo.getSecond()
-                    ));
+                if (value == null) {
+                    return;
                 }
+
+                foldings.add(new NamedFoldingDescriptor(methodCall.getNode(), methodCall.getTextRange(), null, value));
             }
         });
 
         return foldings.toArray(FoldingDescriptor.EMPTY);
     }
 
-    @RequiredReadAction
+    /**
+     * Checks if provided method call expression represents {@code LocalizeKey} definition {@code LocalizeKey.of(ID, "localize.key")}.
+     *
+     * @param methodCall Method call expression to analyze.
+     * @return LocalizeValue text extracted by method call expression or null.
+     */
     @Nullable
-    private Couple<String> findLocalizeInfo(@Nullable PsiReferenceExpression expression) {
-        if (expression == null) {
-            return null;
+    @RequiredReadAction
+    private String matchLocalizeKeyOf(@Nonnull PsiMethodCallExpression methodCall) {
+        PsiReferenceExpression methodExpr = methodCall.getMethodExpression();
+
+        if ("of".equals(methodExpr.getReferenceName())
+            && methodExpr.getQualifierExpression() instanceof PsiReferenceExpression qualRefExpr
+            && "LocalizeKey".equals(qualRefExpr.getReferenceName())) {
+
+            PsiExpression[] args = methodCall.getArgumentList().getExpressions();
+            if (args.length >= 2
+                && args[1] instanceof PsiLiteralExpression keyExpr
+                && keyExpr.getValue() instanceof String key
+                && args[0] instanceof PsiReferenceExpression fileNameExpr
+                && fileNameExpr.resolve() instanceof PsiField fileNameField) {
+
+                Map<String, String> map = findLocalizeMap(methodExpr, fileNameField.getContainingClass());
+
+                return map == null ? null : map.get(key);
+            }
         }
 
-        PsiExpression qualifierExpression = expression.getQualifierExpression();
-        if (qualifierExpression instanceof PsiReferenceExpression referenceExpression) {
-            String className = referenceExpression.getReferenceName();
+        return null;
+    }
+
+    /**
+     * Checks if provided method call expression represents getting {@code LocalizeKey} value {@code LOCALIZE_KEY_CONSTANT.getValue()}.
+     *
+     * @param methodCall Method call expression to analyze.
+     * @return LocalizeValue text extracted by method call expression or null.
+     */
+    @Nullable
+    @RequiredReadAction
+    private String matchLocalizeKeyGetValue(@Nonnull PsiMethodCallExpression methodCall) {
+        PsiReferenceExpression methodExpr = methodCall.getMethodExpression();
+
+        if ("getValue".equals(methodExpr.getReferenceName())
+            && methodExpr.getQualifierExpression() instanceof PsiReferenceExpression qualRefExpr
+            && qualRefExpr.resolve() instanceof PsiField field
+            && field.hasModifierProperty(PsiModifier.STATIC)
+            && field.hasModifierProperty(PsiModifier.FINAL)) {
+            PsiClass psiClass = field.getContainingClass();
+            String className = psiClass == null ? null : psiClass.getName();
+            if (className != null && className.endsWith("Localize")) {
+                LocalizeResolveInfo localizeInfo = findLocalizeInfo(methodExpr, psiClass, field.getName());
+                return localizeInfo == null ? null : localizeInfo.value();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks if provided method call expression represents getting {@code LocalizeValue} constant {@code XxLocalize.localizeKey()}.
+     *
+     * @param methodCall Method call expression to analyze.
+     * @return LocalizeValue text extracted by method call expression or null.
+     */
+    @Nullable
+    @RequiredReadAction
+    private String matchLocalizeClassMethodCall(@Nonnull PsiMethodCallExpression methodCall) {
+        PsiReferenceExpression methodExpr = methodCall.getMethodExpression();
+
+        if (methodExpr.getQualifierExpression() instanceof PsiReferenceExpression qualRefExpr) {
+            String className = qualRefExpr.getReferenceName();
 
             if (className != null && className.endsWith("Localize")) {
-                PsiElement possibleClass = referenceExpression.resolve();
+                PsiElement possibleClass = qualRefExpr.resolve();
 
-                LocalizeResolveInfo info = findLocalizeInfo(expression, possibleClass, expression.getReferenceName());
+                LocalizeResolveInfo info = findLocalizeInfo(methodExpr, possibleClass, methodExpr.getReferenceName());
                 if (info != null) {
-                    return Couple.of(info.key(), info.value());
+                    return info.value();
                 }
             }
         }
@@ -154,29 +160,21 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         Map<String, String> map = buildLocalizeCache(yamlFile);
 
         String key = replaceCamelCase(memberName);
-
         String value = map.get(key);
-        if (value == null) {
-            return null;
-        }
 
-        return new LocalizeResolveInfo(yamlFile, key, value);
+        return value == null ? null : new LocalizeResolveInfo(yamlFile, key, value);
     }
 
     @Nullable
     @RequiredReadAction
-    public static Map<String, String> findLocalizeMap(PsiElement scope, PsiElement possibleClass) {
+    private static Map<String, String> findLocalizeMap(PsiElement scope, PsiElement possibleClass) {
         YAMLFile yamlFile = findYAMLFile(scope, possibleClass);
-        if (yamlFile == null) {
-            return null;
-        }
-
-        return buildLocalizeCache(yamlFile);
+        return yamlFile == null ? null : buildLocalizeCache(yamlFile);
     }
 
     @Nullable
     @RequiredReadAction
-    public static YAMLFile findYAMLFile(PsiElement scope, PsiElement possibleClass) {
+    private static YAMLFile findYAMLFile(PsiElement scope, PsiElement possibleClass) {
         if (!(possibleClass instanceof PsiClass psiClass)) {
             return null;
         }
@@ -231,7 +229,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         );
     }
 
-    public static String replaceCamelCase(String camelCaseString) {
+    private static String replaceCamelCase(String camelCaseString) {
         return Arrays.stream(NameUtil.splitNameIntoWords(camelCaseString))
             .map(s -> s.toLowerCase(Locale.US))
             .collect(Collectors.joining("."));
