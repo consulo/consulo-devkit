@@ -4,6 +4,11 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.WriteAction;
 import consulo.application.progress.Task;
+import consulo.devkit.localize.index.LocalizeFileIndexExtension;
+import consulo.diff.DiffContentFactory;
+import consulo.diff.DiffManager;
+import consulo.diff.content.DiffContent;
+import consulo.diff.request.SimpleDiffRequest;
 import consulo.document.Document;
 import consulo.fileEditor.EditorNotificationBuilder;
 import consulo.fileEditor.EditorNotificationProvider;
@@ -11,12 +16,15 @@ import consulo.fileEditor.FileEditor;
 import consulo.language.psi.PsiDocumentManager;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
+import consulo.language.psi.stub.FileBasedIndex;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
+import consulo.project.content.scope.ProjectScopes;
 import consulo.ui.Alerts;
 import consulo.ui.UIAccess;
 import consulo.undoRedo.CommandProcessor;
 import consulo.util.io.CharSequenceReader;
+import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -24,9 +32,7 @@ import jakarta.inject.Inject;
 import org.jetbrains.yaml.psi.YAMLFile;
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -39,16 +45,24 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
     private final PsiDocumentManager myDocumentManager;
     private final PsiManager myPsiManager;
     private final CommandProcessor myCommandProcessor;
+    private final FileBasedIndex myFileBasedIndex;
+    private final DiffContentFactory myDiffContentFactory;
+    private final DiffManager myDiffManager;
 
     @Inject
     public LocalizeEditorNotificationProvider(Project project,
                                               PsiDocumentManager documentManager,
                                               PsiManager psiManager,
-                                              CommandProcessor commandProcessor) {
+                                              CommandProcessor commandProcessor,
+                                              FileBasedIndex fileBasedIndex,
+                                              DiffContentFactory diffContentFactory, DiffManager diffManager) {
         myProject = project;
         myDocumentManager = documentManager;
         myPsiManager = psiManager;
         myCommandProcessor = commandProcessor;
+        myFileBasedIndex = fileBasedIndex;
+        myDiffContentFactory = diffContentFactory;
+        myDiffManager = diffManager;
     }
 
     @Nonnull
@@ -60,10 +74,10 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
     @RequiredReadAction
     @Nullable
     @Override
-    public EditorNotificationBuilder buildNotification(@Nonnull VirtualFile virtualFile,
+    public EditorNotificationBuilder buildNotification(@Nonnull VirtualFile file,
                                                        @Nonnull FileEditor fileEditor,
                                                        @Nonnull Supplier<EditorNotificationBuilder> supplier) {
-        Locale locale = LocalizeUtil.extractLocaleFromFile(virtualFile);
+        Locale locale = LocalizeUtil.extractLocaleFromFile(file);
         if (locale == null) {
             return null;
         }
@@ -71,9 +85,33 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
         EditorNotificationBuilder builder = supplier.get();
         builder.withText(LocalizeValue.localizeTODO("Locale: " + locale.getDisplayName()));
 
+        builder.withAction(LocalizeValue.localizeTODO("Compare"), e -> {
+            String fileName = file.getNameWithoutExtension();
+            String packageName = StringUtil.getPackageName(fileName);
+            String id = packageName + ".localize." + StringUtil.getShortName(fileName);
+
+            Collection<VirtualFile> containingFiles = myFileBasedIndex.getContainingFiles(
+                LocalizeFileIndexExtension.INDEX,
+                id,
+                ProjectScopes.getAllScope(myProject)
+            );
+
+            VirtualFile otherLocalizeFile = containingFiles.stream().filter(it -> !Objects.equals(it, file)).findAny().orElse(null);
+
+            if (otherLocalizeFile == null) {
+                Alerts.okError(LocalizeValue.localizeTODO("There not original localization")).showAsync(myProject);
+                return;
+            }
+
+            DiffContent currentContent = myDiffContentFactory.create(myProject, file);
+            DiffContent originalContent = myDiffContentFactory.create(myProject, otherLocalizeFile);
+
+            myDiffManager.showDiff(myProject, new SimpleDiffRequest(id, currentContent, originalContent, "Current Localize", "Original Localize"));
+        });
+
         builder.withAction(LocalizeValue.localizeTODO("Sort"), e -> {
-            PsiFile file = myPsiManager.findFile(virtualFile);
-            if (!(file instanceof YAMLFile yamlFile)) {
+            PsiFile psiFile = myPsiManager.findFile(file);
+            if (!(psiFile instanceof YAMLFile yamlFile)) {
                 return;
             }
 
