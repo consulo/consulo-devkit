@@ -55,7 +55,8 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
                                               PsiManager psiManager,
                                               CommandProcessor commandProcessor,
                                               FileBasedIndex fileBasedIndex,
-                                              DiffContentFactory diffContentFactory, DiffManager diffManager) {
+                                              DiffContentFactory diffContentFactory,
+                                              DiffManager diffManager) {
         myProject = project;
         myDocumentManager = documentManager;
         myPsiManager = psiManager;
