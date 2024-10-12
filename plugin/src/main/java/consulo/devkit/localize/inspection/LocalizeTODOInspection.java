@@ -3,6 +3,7 @@ package consulo.devkit.localize.inspection;
 import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.document.util.TextRange;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
@@ -24,7 +25,7 @@ public class LocalizeTODOInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return LocalizeValue.localizeTODO("Localize TODO inspection").get();
+        return DevKitLocalize.localizeTodoInspectionDisplayName().get();
     }
 
     @Nonnull

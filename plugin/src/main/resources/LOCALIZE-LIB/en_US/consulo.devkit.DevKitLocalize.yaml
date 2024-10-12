@@ -290,3 +290,6 @@ label.java.sdk:
   text: 'Java SDK:'
 alternative.consulo.sdk:
   text: 'Alt Consulo SDK:'
+localize.todo.inspection.display.name:
+  text: Localize TODO inspection
+
