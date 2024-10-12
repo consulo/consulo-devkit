@@ -3,6 +3,7 @@ package consulo.devkit.action;
 import com.intellij.lang.properties.IProperty;
 import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.lang.properties.psi.PropertiesFile;
+import consulo.devkit.localize.LocalizeYamlUtil;
 import consulo.language.editor.CommonDataKeys;
 import consulo.language.psi.PsiFile;
 import consulo.ui.annotation.RequiredUIAccess;
@@ -47,14 +48,7 @@ public class ConvertResourceBundleToYamlAction extends InternalAction {
             messages.put(property.getUnescapedKey(), messageInfo);
         }
 
-        DumperOptions dumperOptions = new DumperOptions();
-        dumperOptions.setPrettyFlow(true);
-        dumperOptions.setAllowUnicode(true);
-        dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
-        dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        dumperOptions.setWidth(1024);
-        dumperOptions.setMaxSimpleKeyLength(1024);
-        Yaml yaml = new Yaml(dumperOptions);
+        Yaml yaml = LocalizeYamlUtil.create();
 
         File ioFile = VirtualFileUtil.virtualToIoFile(file.getVirtualFile());
 

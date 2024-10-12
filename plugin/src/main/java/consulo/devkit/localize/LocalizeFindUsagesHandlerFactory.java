@@ -23,7 +23,7 @@ public class LocalizeFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
         if (element instanceof YAMLKeyValue yamlKeyValue) {
             YAMLFile yamlFile = ObjectUtil.tryCast(yamlKeyValue.getContainingFile(), YAMLFile.class);
             if (yamlFile != null) {
-                return LocalizeUtil.isLocalizeFile(yamlFile.getVirtualFile());
+                return LocalizeUtil.isDefaultLocalizeFile(yamlFile.getVirtualFile());
             }
         }
 

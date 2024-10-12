@@ -35,7 +35,7 @@ public class LocalizeFileIndexExtension extends FileBasedIndexExtension<String, 
         return fileContent -> {
             VirtualFile file = fileContent.getFile();
 
-            if (LocalizeUtil.isLocalizeFile(file)) {
+            if (LocalizeUtil.isDefaultLocalizeFile(file)) {
                 String fileName = file.getNameWithoutExtension();
                 String packageName = StringUtil.getPackageName(fileName);
                 String id = packageName + ".localize." + StringUtil.getShortName(fileName);
@@ -67,7 +67,7 @@ public class LocalizeFileIndexExtension extends FileBasedIndexExtension<String, 
     @Override
     public FileBasedIndex.InputFilter getInputFilter() {
         return (project, file) -> {
-            return file.getFileType() == YAMLFileType.YML && LocalizeUtil.isLocalizeFile(file);
+            return file.getFileType() == YAMLFileType.YML && LocalizeUtil.isDefaultLocalizeFile(file);
         };
     }
 

@@ -82,7 +82,7 @@ public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
             return PsiElementVisitor.EMPTY_VISITOR;
         }
 
-        if (!LocalizeUtil.isLocalizeFile(file.getVirtualFile())) {
+        if (!LocalizeUtil.isDefaultLocalizeFile(file.getVirtualFile())) {
             return PsiElementVisitor.EMPTY_VISITOR;
         }
 

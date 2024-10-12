@@ -16,7 +16,7 @@ import org.jetbrains.yaml.psi.YAMLKeyValue;
 public class LocalizeFindUsagesProvider implements FindUsagesProvider {
     @Override
     public boolean canFindUsagesFor(@Nonnull PsiElement psiElement) {
-        if (psiElement instanceof YAMLKeyValue keyValue && LocalizeUtil.isLocalizeFile(psiElement.getContainingFile().getVirtualFile())) {
+        if (psiElement instanceof YAMLKeyValue keyValue && LocalizeUtil.isDefaultLocalizeFile(psiElement.getContainingFile().getVirtualFile())) {
             return true;
         }
         return false;

@@ -5,10 +5,12 @@ import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiMethod;
 import com.intellij.java.language.psi.PsiNameHelper;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.localize.LocalizeManager;
 import consulo.project.Project;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nullable;
+import org.jetbrains.yaml.YAMLFileType;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 
 import java.util.Locale;
@@ -18,6 +20,9 @@ import java.util.Locale;
  * @since 2024-09-08
  */
 public class LocalizeUtil {
+    private static final String DEFAULT_LOCALE = "en_US";
+    private static final String LOCALIZE_LIB_DIR = "LOCALIZE-LIB";
+
     private static final String ZERO_PREFIX = "zero";
     private static final String ONE_PREFIX = "one";
     private static final String TWO_PREFIX = "two";
@@ -45,8 +50,36 @@ public class LocalizeUtil {
         return null;
     }
 
-    public static boolean isLocalizeFile(@Nullable VirtualFile file) {
-        if (file == null) {
+    @Nullable
+    public static Locale extractLocaleFromFile(@Nullable VirtualFile file) {
+        if (file == null || file.getFileType() != YAMLFileType.YML) {
+            return null;
+        }
+
+        CharSequence nameSequence = file.getNameSequence();
+
+        if (StringUtil.endsWith(nameSequence, "Localize.yaml")) {
+            VirtualFile parentDir = file.getParent();
+            if (parentDir != null) {
+                Locale locale = null;
+                try {
+                    locale = LocalizeManager.get().parseLocale(parentDir.getName());
+                }
+                catch (Exception e) {
+                    return null;
+                }
+
+                VirtualFile localizeLibParent = parentDir.getParent();
+                if (localizeLibParent != null && LOCALIZE_LIB_DIR.equals(localizeLibParent.getName())) {
+                    return locale;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static boolean isDefaultLocalizeFile(@Nullable VirtualFile file) {
+        if (file == null || file.getFileType() != YAMLFileType.YML) {
             return false;
         }
 
@@ -54,9 +87,9 @@ public class LocalizeUtil {
 
         if (StringUtil.endsWith(nameSequence, "Localize.yaml")) {
             VirtualFile parentDir = file.getParent();
-            if (parentDir != null && "en_US".equals(parentDir.getName())) {
+            if (parentDir != null && DEFAULT_LOCALE.equals(parentDir.getName())) {
                 VirtualFile localizeLibParent = parentDir.getParent();
-                if (localizeLibParent != null && "LOCALIZE-LIB".equals(localizeLibParent.getName())) {
+                if (localizeLibParent != null && LOCALIZE_LIB_DIR.equals(localizeLibParent.getName())) {
                     return true;
                 }
             }
