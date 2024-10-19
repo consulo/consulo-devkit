@@ -20,7 +20,8 @@ import java.util.Locale;
  * @since 2024-09-08
  */
 public class LocalizeUtil {
-    private static final String DEFAULT_LOCALE = "en_US";
+    public static final Locale DEFAULT_LOCALE = Locale.US;
+    private static final String DEFAULT_LOCALE_STR = DEFAULT_LOCALE.toString();
     private static final String LOCALIZE_LIB_DIR = "LOCALIZE-LIB";
 
     private static final String ZERO_PREFIX = "zero";
@@ -87,7 +88,7 @@ public class LocalizeUtil {
 
         if (StringUtil.endsWith(nameSequence, "Localize.yaml")) {
             VirtualFile parentDir = file.getParent();
-            if (parentDir != null && DEFAULT_LOCALE.equals(parentDir.getName())) {
+            if (parentDir != null && DEFAULT_LOCALE_STR.equals(parentDir.getName())) {
                 VirtualFile localizeLibParent = parentDir.getParent();
                 if (localizeLibParent != null && LOCALIZE_LIB_DIR.equals(localizeLibParent.getName())) {
                     return true;

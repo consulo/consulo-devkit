@@ -86,29 +86,32 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
         EditorNotificationBuilder builder = supplier.get();
         builder.withText(LocalizeValue.localizeTODO("Locale: " + locale.getDisplayName()));
 
-        builder.withAction(LocalizeValue.localizeTODO("Compare"), e -> {
-            String fileName = file.getNameWithoutExtension();
-            String packageName = StringUtil.getPackageName(fileName);
-            String id = packageName + ".localize." + StringUtil.getShortName(fileName);
+        // disable sorting for default locale
+        if (!LocalizeUtil.DEFAULT_LOCALE.equals(locale)) {
+            builder.withAction(LocalizeValue.localizeTODO("Compare"), e -> {
+                String fileName = file.getNameWithoutExtension();
+                String packageName = StringUtil.getPackageName(fileName);
+                String id = packageName + ".localize." + StringUtil.getShortName(fileName);
 
-            Collection<VirtualFile> containingFiles = myFileBasedIndex.getContainingFiles(
-                LocalizeFileIndexExtension.INDEX,
-                id,
-                ProjectScopes.getAllScope(myProject)
-            );
+                Collection<VirtualFile> containingFiles = myFileBasedIndex.getContainingFiles(
+                    LocalizeFileIndexExtension.INDEX,
+                    id,
+                    ProjectScopes.getAllScope(myProject)
+                );
 
-            VirtualFile otherLocalizeFile = containingFiles.stream().filter(it -> !Objects.equals(it, file)).findAny().orElse(null);
+                VirtualFile otherLocalizeFile = containingFiles.stream().filter(it -> !Objects.equals(it, file)).findAny().orElse(null);
 
-            if (otherLocalizeFile == null) {
-                Alerts.okError(LocalizeValue.localizeTODO("There not original localization")).showAsync(myProject);
-                return;
-            }
+                if (otherLocalizeFile == null) {
+                    Alerts.okError(LocalizeValue.localizeTODO("There not original localization")).showAsync(myProject);
+                    return;
+                }
 
-            DiffContent currentContent = myDiffContentFactory.create(myProject, file);
-            DiffContent originalContent = myDiffContentFactory.create(myProject, otherLocalizeFile);
+                DiffContent currentContent = myDiffContentFactory.create(myProject, file);
+                DiffContent originalContent = myDiffContentFactory.create(myProject, otherLocalizeFile);
 
-            myDiffManager.showDiff(myProject, new SimpleDiffRequest(id, currentContent, originalContent, "Current Localize", "Original Localize"));
-        });
+                myDiffManager.showDiff(myProject, new SimpleDiffRequest(id, currentContent, originalContent, "Current Localize", "Original Localize"));
+            });
+        }
 
         builder.withAction(LocalizeValue.localizeTODO("Sort"), e -> {
             PsiFile psiFile = myPsiManager.findFile(file);
