@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 01-Oct-16
+ * @since 2016-10-01
  */
 public class LambdaStateResolver extends StateResolver {
     public static final StateResolver INSTANCE = new LambdaStateResolver();
@@ -42,9 +42,7 @@ public class LambdaStateResolver extends StateResolver {
         }
 
         PsiElement maybeParameterListOrVariable = lambdaExpression.getParent();
-        return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType) || isAllowedFunctionCall(
-            lambdaExpression,
-            actionType
-        );
+        return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType)
+            || isAllowedFunctionCall(lambdaExpression, actionType);
     }
 }

@@ -28,10 +28,8 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFix;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.localize.LocalizeValue;
-import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.lang.StringUtil;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
@@ -39,7 +37,7 @@ import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 18.02.2015
+ * @since 2015-02-18
  */
 @ExtensionImpl
 public class RequiredXActionInspection extends InternalInspection {
@@ -53,8 +51,7 @@ public class RequiredXActionInspection extends InternalInspection {
         @Override
         @RequiredReadAction
         public void visitMethodReferenceExpression(PsiMethodReferenceExpression expression) {
-            PsiElement psiElement = expression.resolve();
-            if (psiElement instanceof PsiMethod method) {
+            if (expression.resolve() instanceof PsiMethod method) {
                 reportError(expression, method, MethodReferenceResolver.INSTANCE);
             }
         }
@@ -91,18 +88,12 @@ public class RequiredXActionInspection extends InternalInspection {
         }
 
         private void reportError(@Nonnull PsiExpression expression, @Nonnull CallStateType type) {
-            LocalizeValue text;
-            switch (type) {
-                case READ:
-                case WRITE:
-                    text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRun(StringUtil.capitalize(type.name().toLowerCase()));
-                    break;
-                case UI_ACCESS:
-                    text = DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRunUi();
-                    break;
-                default:
-                    throw new IllegalArgumentException();
-            }
+            LocalizeValue text = switch (type) {
+                case READ, WRITE ->
+                    DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRun(StringUtil.capitalize(type.name().toLowerCase()));
+                case UI_ACCESS -> DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRunUi();
+                default -> throw new IllegalArgumentException();
+            };
             LocalQuickFix[] quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(type.getActionClass())};
             myHolder.registerProblem(expression, text.get(), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, quickFixes);
         }
@@ -111,7 +102,7 @@ public class RequiredXActionInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Invocation state(read, write, dispatch) validate inspection";
+        return DevKitLocalize.invocationStateValidateInspectionDisplayName().get();
     }
 
     @Nonnull
