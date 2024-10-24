@@ -88,7 +88,7 @@ public abstract class StateResolver {
         // Application.get().runReadAction(new Runnable() {});
         else if (maybeParameterListOrVariable instanceof PsiExpressionList expressionList
             && acceptActionTypeFromCall(expressionList, actionType)) {
-          return true;
+            return true;
         }
         return false;
     }
@@ -114,39 +114,25 @@ public abstract class StateResolver {
         @Nonnull CallStateType actionType
     ) {
         PsiElement superParent = functionalExpression.getParent();
-        if (superParent instanceof PsiVariable) {
-            return checkVariableType(actionType, (PsiVariable)superParent, ((PsiVariable)superParent).getType());
+        if (superParent instanceof PsiVariable variable) {
+            return checkVariableType(actionType, variable, variable.getType());
         }
-        else {
-            if (!(superParent instanceof PsiExpressionList)) {
-                return false;
-            }
+        else if (superParent instanceof PsiExpressionList expressionList
+            && superParent.getParent() instanceof PsiMethodCallExpression methodCall) {
 
-            if (!(superParent.getParent() instanceof PsiMethodCallExpression)) {
-                return false;
-            }
+            int i = ArrayUtil.indexOf(expressionList.getExpressions(), functionalExpression);
 
-            PsiExpression[] expressions = ((PsiExpressionList)superParent).getExpressions();
-            int i = ArrayUtil.indexOf(expressions, functionalExpression);
-            if (i == -1) {
-                return false;
-            }
+            if (i >= 0 && methodCall.getMethodExpression().resolve() instanceof PsiParameterListOwner parameterListOwner) {
+                PsiParameter[] parameters = parameterListOwner.getParameterList().getParameters();
+                if (i >= parameters.length) {
+                    return false;
+                }
 
-            PsiElement target = ((PsiMethodCallExpression)superParent.getParent()).getMethodExpression().resolve();
-            if (!(target instanceof PsiParameterListOwner)) {
-                return false;
-            }
+                PsiParameter parameter = parameters[i];
 
-            PsiParameter[] parameters = ((PsiParameterListOwner)target).getParameterList().getParameters();
-            if (i >= parameters.length) {
-                return false;
-            }
-
-            PsiParameter parameter = parameters[i];
-
-            PsiType type = parameter.getType();
-            if (checkVariableType(actionType, parameter, type)) {
-                return true;
+                if (checkVariableType(actionType, parameter, parameter.getType())) {
+                    return true;
+                }
             }
         }
         return false;

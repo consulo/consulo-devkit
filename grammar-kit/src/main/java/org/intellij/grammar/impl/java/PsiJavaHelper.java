@@ -154,11 +154,11 @@ public class PsiJavaHelper extends JavaHelper {
         }
         PsiMethod psiMethod = (PsiMethod)method;
         PsiType returnType = psiMethod.getReturnType();
-        List<String> strings = new ArrayList<String>();
+        List<String> strings = new ArrayList<>();
         strings.add(returnType == null ? "" : returnType.getCanonicalText());
         for (PsiParameter parameter : psiMethod.getParameterList().getParameters()) {
             PsiType type = parameter.getType();
-            boolean generic = type instanceof PsiClassType && ((PsiClassType)type).resolve() instanceof PsiTypeParameter;
+            boolean generic = type instanceof PsiClassType classType && classType.resolve() instanceof PsiTypeParameter;
             strings.add((generic ? "<" : "") + type.getCanonicalText(false) + (generic ? ">" : ""));
             strings.add(parameter.getName());
         }

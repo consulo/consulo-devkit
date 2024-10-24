@@ -38,7 +38,7 @@ import javax.swing.*;
 
 /**
  * @author VISTALL
- * @since 22-Jun-16
+ * @since 2016-06-22
  */
 public enum CallStateType {
     NONE(null, null),

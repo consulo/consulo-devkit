@@ -292,4 +292,5 @@ alternative.consulo.sdk:
   text: 'Alt Consulo SDK:'
 localize.todo.inspection.display.name:
   text: Localize TODO inspection
-
+invocation.state.validate.inspection.display.name:
+  text: Invocation state (read, write, dispatch) validate inspection
