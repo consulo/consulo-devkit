@@ -23,7 +23,7 @@ import consulo.language.psi.PsiElement;
 
 /**
  * @author VISTALL
- * @since 22-Jun-16
+ * @since 2016-06-22
  */
 public class AcceptableMethodCallCheck {
     private final String myParentClass;
