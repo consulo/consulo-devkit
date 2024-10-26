@@ -15,7 +15,6 @@
  */
 package org.intellij.grammar.impl.refactor;
 
-import com.intellij.java.impl.codeInsight.template.impl.TextExpression;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.application.Application;
 import consulo.application.Result;
