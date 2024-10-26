@@ -15,6 +15,8 @@ open module consulo.devkit {
     requires org.yaml.snakeyaml;
     requires dtdparser;
     requires consulo.internal.jdi;
+    requires com.palantir.javapoet;
+    requires java.compiler;
 
     requires xercesImpl;
 

@@ -17,7 +17,6 @@
 package consulo.devkit.action;
 
 import consulo.devkit.util.PluginModuleUtil;
-import consulo.language.editor.CommonDataKeys;
 import consulo.module.Module;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
@@ -52,7 +51,7 @@ public abstract class InternalAction extends AnAction {
     @Override
     public void update(@Nonnull AnActionEvent e) {
         Project project = e.getData(Project.KEY);
-        Module module = e.getData(CommonDataKeys.MODULE);
+        Module module = e.getData(Module.KEY);
         e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, module));
     }
 }

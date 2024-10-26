@@ -3,6 +3,7 @@ package consulo.devkit.action;
 import com.intellij.lang.properties.IProperty;
 import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.lang.properties.psi.PropertiesFile;
+import consulo.annotation.component.ActionImpl;
 import consulo.devkit.localize.LocalizeYamlUtil;
 import consulo.language.editor.CommonDataKeys;
 import consulo.language.psi.PsiFile;
@@ -10,7 +11,6 @@ import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
-import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nonnull;

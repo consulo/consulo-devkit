@@ -214,7 +214,6 @@ public class BnfIntroduceTokenHandler implements RefactoringActionHandler {
         caretMarker.setGreedyToRight(true);
         editor.getCaretModel().moveToOffset(0);
         Template template = builder.buildInlineTemplate();
-        template.setToShortenLongNames(false);
         template.setToReformat(false);
         TemplateManager.getInstance(project).startTemplate(
             editor,
