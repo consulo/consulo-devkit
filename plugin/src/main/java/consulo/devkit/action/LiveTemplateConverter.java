@@ -37,6 +37,8 @@ public class LiveTemplateConverter {
         List<Variable> myVariables = new ArrayList<>();
 
         Map<String, Boolean> myContexts = new LinkedHashMap<>();
+
+        Boolean myToShortenFQNames;
     }
 
     private record Variable(String name, String expression, String defaultValue, boolean alwaysStopAt) {
@@ -124,12 +126,15 @@ public class LiveTemplateConverter {
             String resourceBundleKey = templateElement.getAttributeValue("key");
 
             boolean toReformat = Boolean.parseBoolean(templateElement.getAttributeValue("toReformat", "false"));
-            boolean toShortenFQNames = Boolean.parseBoolean(templateElement.getAttributeValue("toShortenFQNames", "false"));
+            String toShortenFQNamesStr = templateElement.getAttributeValue("toShortenFQNames");
 
             Template template = new Template();
             template.myId = groupId + StringUtil.capitalize(name);
             template.myAbbreviation = name;
             template.myValue = value;
+            if (toShortenFQNamesStr != null) {
+                template.myToShortenFQNames = Boolean.parseBoolean(toShortenFQNamesStr);
+            }
 
             if (!StringUtil.isEmptyOrSpaces(description)) {
                 template.myDescriptionBlock = CodeBlock.of("$T.localizeTODO($S)", TypeName.get(LocalizeValue.class), description);
@@ -216,6 +221,10 @@ public class LiveTemplateConverter {
 
             if (template.myToReformat) {
                 codeBuilder.add("builder.withReformat();\n\n");
+            }
+
+            if (template.myToShortenFQNames != null) {
+                codeBuilder.add("builder.withOption(ShortenFQNamesProcessor.KEY, $L);\n\n", template.myToShortenFQNames);
             }
 
             for (Variable variable : template.myVariables) {
