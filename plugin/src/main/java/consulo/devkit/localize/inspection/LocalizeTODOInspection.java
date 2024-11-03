@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 08/10/2021
+ * @since 2021-10-08
  */
 @ExtensionImpl
 public class LocalizeTODOInspection extends InternalInspection {

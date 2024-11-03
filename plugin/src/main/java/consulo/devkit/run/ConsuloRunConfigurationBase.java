@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 12.04.2015
+ * @since 2015-04-12
  */
 public abstract class ConsuloRunConfigurationBase extends LocatableConfigurationBase implements GenericDebugRunnerConfiguration {
     public static final PredefinedLogFile CONSULO_LOG = new PredefinedLogFile("CONSULO_LOG", true);

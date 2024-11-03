@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 11/02/2023
+ * @since 2023-02-11
  */
 @ExtensionImpl
 public class BnfAnnotatorFactory implements AnnotatorFactory, DumbAware {

@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 /**
  * @author VISTALL
- * @since 29.05.14
+ * @since 2014-05-29
  */
 public class PluginRunXmlConfigurationUtil {
     private static final String NAME = "name";

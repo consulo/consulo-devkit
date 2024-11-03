@@ -4,7 +4,7 @@ import consulo.xml.util.xml.DomElement;
 
 /**
  * @author VISTALL
- * @since 01/11/2021
+ * @since 2021-11-01
  */
 public interface PermissionOption extends DomElement {
     String getValue();

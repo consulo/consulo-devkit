@@ -16,11 +16,10 @@ import consulo.language.psi.PsiFile;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 /**
- * @author <a href="mailto:nikolay@yurchenko.su">Nikolay Yurchenko</a>
+ * @author UNV
  * @since 2024-06-07
  */
 @ExtensionImpl
@@ -141,11 +140,10 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
             });
         }
 
-        @Nls
         @Nonnull
         @Override
         public String getFamilyName() {
-            return "DevKit";
+            return DevKitLocalize.inspectionsGroupName().get();
         }
     }
 

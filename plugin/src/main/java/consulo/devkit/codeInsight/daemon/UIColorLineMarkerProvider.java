@@ -31,10 +31,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
+ * Initial version from {@link com.intellij.codeInsight.daemon.impl.JavaColorProvider}
+ *
  * @author VISTALL
- * @since 12-Oct-17
- * <p>
- * initial version from {@link com.intellij.codeInsight.daemon.impl.JavaColorProvider}
+ * @since 2017-10-12
  */
 @ExtensionImpl
 public class UIColorLineMarkerProvider implements ElementColorProvider {

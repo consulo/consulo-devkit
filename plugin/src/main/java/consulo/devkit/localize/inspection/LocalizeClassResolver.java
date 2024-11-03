@@ -15,8 +15,8 @@ import jakarta.annotation.Nullable;
 /**
  * Resolving xLocalize class by xBundle class using cache.
  *
- * @author <a href="mailto:nikolay@yurchenko.su">Nikolay Yurchenko</a>
- * @since 16.06.2024
+ * @author UNV
+ * @since 2024-06-16
  */
 public class LocalizeClassResolver implements CachedValueProvider<PsiClass> {
     @Nonnull

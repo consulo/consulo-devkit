@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 10.06.2015
+ * @since 2015-06-10
  */
 @ExtensionImpl
 public class XActionOverrideImplementsAnnotationsHandler implements OverrideImplementsAnnotationsHandler {

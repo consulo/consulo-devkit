@@ -4,7 +4,7 @@ import org.intellij.grammar.KnownAttribute;
 
 /**
  * @author VISTALL
- * @since 25-Mar-22
+ * @since 2022-03-25
  */
 public class PlatformClassKnownAttribute extends KnownAttribute<String> {
     private final PlatformClass myPlatformClass;

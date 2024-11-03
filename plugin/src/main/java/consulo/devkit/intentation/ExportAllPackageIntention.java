@@ -31,7 +31,7 @@ import java.util.*;
 
 /**
  * @author VISTALL
- * @since 15/01/2022
+ * @since 2022-01-15
  */
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "consulo.devkit.export.all.packages", fileExtensions = "java", categories = {"Java", "Consulo DevKit"})

@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * @author VISTALL
- * @since 10-Aug-22
+ * @since 2022-08-10
  */
 @ExtensionImpl
 public class WrongInjectBindingInspection extends InternalInspection {

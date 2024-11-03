@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  * @author VISTALL
- * @since 26.05.2024
+ * @since 2024-05-26
  */
 @ExtensionImpl
 public class IconLibraryIconDescriptorUpdater implements IconDescriptorUpdater {
