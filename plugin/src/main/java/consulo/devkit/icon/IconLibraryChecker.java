@@ -14,7 +14,7 @@ import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 24-Jul-24
+ * @since 2024-07-24
  */
 public class IconLibraryChecker {
     @RequiredReadAction

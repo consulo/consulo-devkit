@@ -28,7 +28,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author VISTALL, UNV
+ * @author VISTALL
+ * @author UNV
  * @since 2020-06-01
  */
 @ExtensionImpl

@@ -2,7 +2,7 @@ package consulo.devkit.run;
 
 /**
  * @author VISTALL
- * @since 27/04/2021
+ * @since 2021-04-27
  */
 public enum ConsuloPlatform {
     WEB("consulo.web.bootstrap", "consulo.web.boot.main.Main"),

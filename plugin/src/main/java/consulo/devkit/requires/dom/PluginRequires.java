@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @author VISTALL
- * @since 28-Aug-22
+ * @since 2022-08-28
  */
 @DefinesXml
 public interface PluginRequires extends DomElement {

@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 18/12/2022
+ * @since 2022-12-18
  */
 @ExtensionImpl
 public class IntentionMetaDataMissedInspection extends InternalInspection {

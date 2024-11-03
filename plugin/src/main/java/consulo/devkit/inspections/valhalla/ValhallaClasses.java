@@ -7,7 +7,7 @@ import java.util.Set;
 
 /**
  * @author VISTALL
- * @since 08-Aug-22
+ * @since 2022-08-08
  */
 public interface ValhallaClasses {
     String ExtensionAPI = "consulo.annotation.component.ExtensionAPI";

@@ -9,7 +9,7 @@ import consulo.language.psi.PsiElement;
 
 /**
  * @author VISTALL
- * @since 23-Aug-22
+ * @since 2022-08-23
  */
 @ExtensionImpl
 public class ImplClassImplicitUsageProvider implements ImplicitUsageProvider {

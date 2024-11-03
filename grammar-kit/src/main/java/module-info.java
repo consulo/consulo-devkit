@@ -1,6 +1,6 @@
 /**
  * @author VISTALL
- * @since 10/02/2023
+ * @since 2023-02-10
  */
 module consulo.devkit.grammar.kit {
     requires consulo.devkit.grammar.kit.core;

@@ -5,7 +5,7 @@ import jakarta.inject.Inject;
 
 /**
  * @author VISTALL
- * @since 09-Aug-22
+ * @since 2022-08-09
  */
 @ExtensionImpl
 public class DevKit3MavenImporterFromDependency extends DevKitMavenImporterFromDependency {

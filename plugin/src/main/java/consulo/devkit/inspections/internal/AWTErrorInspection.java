@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 22-Jun-16
+ * @since 2016-06-22
  */
 @ExtensionImpl
 public class AWTErrorInspection extends InternalInspection {

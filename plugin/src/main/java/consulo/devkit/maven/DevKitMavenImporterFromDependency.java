@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * @author VISTALL
- * @since 09-Aug-22
+ * @since 2022-08-09
  */
 @ExtensionImpl
 public class DevKitMavenImporterFromDependency extends MavenImporterFromDependency {

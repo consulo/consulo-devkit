@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @author VISTALL
- * @since 03/11/2021
+ * @since 2021-11-03
  */
 public interface Tags extends DomElement {
     @SubTagList("tag")
