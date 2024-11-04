@@ -18,23 +18,21 @@ package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.language.ast.ASTNode;
 import consulo.document.util.TextRange;
+import consulo.language.ast.ASTNode;
 import consulo.language.editor.inspection.LocalInspectionTool;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.LocalQuickFix;
-import consulo.language.editor.inspection.ProblemDescriptor;
-import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
-import consulo.language.psi.PsiElement;
-import consulo.language.psi.PsiFile;
-import consulo.language.impl.ast.TreeUtil;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.editor.inspection.scheme.InspectionManager;
-import consulo.language.psi.PsiRecursiveElementWalkingVisitor;
+import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
+import consulo.language.impl.ast.TreeUtil;
+import consulo.language.psi.PsiElementVisitor;
 import jakarta.annotation.Nonnull;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfTypes;
+import org.intellij.grammar.psi.BnfVisitor;
 import org.jetbrains.annotations.Nls;
 
 import java.util.HashSet;
@@ -72,29 +70,22 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
         return HighlightDisplayLevel.WARNING;
     }
 
+    @Override
     public boolean isEnabledByDefault() {
         return true;
     }
 
+    @Nonnull
     @Override
-    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-        ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-        checkFile(file, problemsHolder);
-        return problemsHolder.getResultsArray();
-    }
-
-    @RequiredReadAction
-    private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
-        file.accept(new PsiRecursiveElementWalkingVisitor() {
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder problemsHolder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+        return new BnfVisitor<Void>() {
             @Override
-            public void visitElement(PsiElement element) {
-                if (element instanceof BnfChoice choice) {
-                    //noinspection RequiredXAction
-                    checkChoice(choice, problemsHolder);
-                }
-                super.visitElement(element);
+            @RequiredReadAction
+            public Void visitChoice(@Nonnull BnfChoice choice) {
+                checkChoice(choice, problemsHolder);
+                return null;
             }
-        });
+        };
     }
 
     @RequiredReadAction

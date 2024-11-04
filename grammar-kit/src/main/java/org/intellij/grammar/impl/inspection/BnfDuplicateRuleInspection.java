@@ -16,19 +16,20 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.LocalInspectionTool;
-import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.editor.inspection.scheme.InspectionManager;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
+import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 import org.jetbrains.annotations.Nls;
 
-import jakarta.annotation.Nonnull;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -67,16 +68,24 @@ public class BnfDuplicateRuleInspection extends LocalInspectionTool {
         return HighlightDisplayLevel.WARNING;
     }
 
+    @Override
     public boolean isEnabledByDefault() {
         return true;
     }
 
-    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-        ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-        checkFile(file, problemsHolder);
-        return problemsHolder.getResultsArray();
+    @Nonnull
+    @Override
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+        return new PsiElementVisitor() {
+            @Override
+            @RequiredReadAction
+            public void visitFile(PsiFile file) {
+                checkFile(file, holder);
+            }
+        };
     }
 
+    @RequiredReadAction
     private static void checkFile(PsiFile file, ProblemsHolder problemsHolder) {
         if (!(file instanceof BnfFile)) {
             return;

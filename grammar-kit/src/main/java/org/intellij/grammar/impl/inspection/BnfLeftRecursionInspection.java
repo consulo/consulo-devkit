@@ -16,25 +16,21 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.LocalInspectionTool;
-import consulo.language.editor.inspection.LocalQuickFix;
-import consulo.language.editor.inspection.ProblemDescriptor;
-import consulo.language.editor.inspection.ProblemHighlightType;
-import consulo.language.editor.inspection.scheme.InspectionManager;
+import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
-import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiElementVisitor;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.generator.ExpressionGeneratorHelper;
 import org.intellij.grammar.generator.ExpressionHelper;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
+import org.intellij.grammar.psi.BnfVisitor;
 import org.jetbrains.annotations.Nls;
-
-import jakarta.annotation.Nonnull;
-
-import java.util.ArrayList;
 
 /**
  * @author gregsh
@@ -67,37 +63,31 @@ public class BnfLeftRecursionInspection extends LocalInspectionTool {
         return HighlightDisplayLevel.WARNING;
     }
 
+    @Override
     public boolean isEnabledByDefault() {
         return true;
     }
 
-    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-        if (file instanceof BnfFile bnfFile) {
-            ExpressionHelper expressionHelper = ExpressionHelper.getCached(bnfFile);
+    @Nonnull
+    @Override
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
+        return new BnfVisitor<Void>() {
             BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer();
-            ArrayList<ProblemDescriptor> list = new ArrayList<>();
-            for (BnfRule rule : bnfFile.getRules()) {
-                if (ParserGeneratorUtil.Rule.isFake(rule)) {
-                    continue;
-                }
-                String ruleName = rule.getName();
-                boolean exprParsing = ExpressionGeneratorHelper.getInfoForExpressionParsing(expressionHelper, rule) != null;
 
-                if (!exprParsing && analyzer.asStrings(analyzer.calcFirst(rule)).contains(ruleName)) {
-                    list.add(manager.createProblemDescriptor(
-                        rule.getId(),
-                        "'" + ruleName + "' employs left-recursion unsupported by generator",
-                        isOnTheFly,
-                        LocalQuickFix.EMPTY_ARRAY,
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING
-                    ));
-                }
-            }
-            if (!list.isEmpty()) {
-                return list.toArray(new ProblemDescriptor[list.size()]);
-            }
-        }
+            @Override
+            @RequiredReadAction
+            public Void visitRule(@Nonnull BnfRule o) {
+                if (ParserGeneratorUtil.Rule.isFake(o)) return null;
+                BnfFile file = (BnfFile) o.getContainingFile();
+                ExpressionHelper expressionHelper = ExpressionHelper.getCached(file);
+                String ruleName = o.getName();
+                boolean exprParsing = ExpressionGeneratorHelper.getInfoForExpressionParsing(expressionHelper, o) != null;
 
-        return ProblemDescriptor.EMPTY_ARRAY;
+                if (!exprParsing && analyzer.asStrings(analyzer.calcFirst(o)).contains(ruleName)) {
+                    holder.registerProblem(o.getId(), "'" + ruleName + "' employs left-recursion unsupported by generator");
+                }
+                return null;
+            }
+        };
     }
 }

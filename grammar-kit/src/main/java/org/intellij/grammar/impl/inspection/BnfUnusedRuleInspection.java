@@ -16,27 +16,28 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.inspection.LocalInspectionTool;
-import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.inspection.SuppressionUtil;
-import consulo.language.editor.inspection.scheme.InspectionManager;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElement;
+import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiReference;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.JBIterable;
 import consulo.util.lang.function.Condition;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfReferenceImpl;
 import org.jetbrains.annotations.Nls;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -78,22 +79,35 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
         return true;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+        PsiFile file = holder.getFile();
         if (!(file instanceof BnfFile)) {
-            return null;
-        }
-        if (SuppressionUtil.inspectionResultSuppressed(file, this)) {
-            return null;
-        }
-        BnfFile myFile = (BnfFile)file;
-        JBIterable<BnfRule> rules = JBIterable.from(myFile.getRules());
-        if (rules.isEmpty()) {
-            return null;
+            return PsiElementVisitor.EMPTY_VISITOR;
         }
 
-        ProblemsHolder holder = new ProblemsHolder(manager, file, isOnTheFly);
+        return new PsiElementVisitor() {
+            @Override
+            public void visitFile(PsiFile file) {
+                if (file instanceof BnfFile bnfFile) {
+                    checkFile(holder, bnfFile, isOnTheFly);
+
+                }
+            }
+        };
+    }
+
+    @RequiredReadAction
+    private void checkFile(@Nonnull ProblemsHolder holder, @Nonnull BnfFile myFile, boolean isOnTheFly) {
+        if (SuppressionUtil.inspectionResultSuppressed(myFile, this)) {
+            return;
+        }
+
+        JBIterable<BnfRule> rules = JBIterable.from(myFile.getRules());
+        if (rules.isEmpty()) {
+            return;
+        }
 
         //noinspection LimitedScopeInnerClass,EmptyClass
         abstract class Cond<T> extends JBIterable.Stateful<Cond> implements Condition<T> {
@@ -114,14 +128,14 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
                 @Override
                 public boolean value(PsiElement element) {
                     if (element instanceof BnfRule) {
-                        BnfRule rule = (BnfRule)element;
+                        BnfRule rule = (BnfRule) element;
                         // add recovery rules to calculation
                         BnfAttr recoverAttr = findAttribute(myFile.getVersion(), rule, KnownAttribute.RECOVER_WHILE);
                         value(recoverAttr == null ? null : recoverAttr.getExpression());
                         return inParsing.contains(rule) || inSuppressed.contains(rule);
                     }
                     else if (element instanceof BnfReferenceOrToken) {
-                        ContainerUtil.addIfNotNull(inParsing, ((BnfReferenceOrToken)element).resolveRule());
+                        ContainerUtil.addIfNotNull(inParsing, ((BnfReferenceOrToken) element).resolveRule());
                         return false;
                     }
                     return true;
@@ -161,7 +175,6 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
                 holder.registerProblem(r.getId(), message);
             }
         }
-        return holder.getResultsArray();
     }
 
     @Nullable
@@ -171,6 +184,6 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
         }
         PsiReference reference = ContainerUtil.findInstance(o.getReferences(), BnfReferenceImpl.class);
         PsiElement target = reference != null ? reference.resolve() : null;
-        return target instanceof BnfRule ? (BnfRule)target : null;
+        return target instanceof BnfRule ? (BnfRule) target : null;
     }
 }

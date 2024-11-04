@@ -17,20 +17,18 @@
 package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.LocalInspectionTool;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
-import consulo.language.psi.PsiRecursiveElementWalkingVisitor;
-import consulo.language.editor.inspection.LocalInspectionTool;
-import consulo.language.editor.inspection.scheme.InspectionManager;
-import consulo.language.psi.PsiElement;
-import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiElementVisitor;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
+import org.intellij.grammar.psi.BnfVisitor;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 import org.jetbrains.annotations.Nls;
 
-import jakarta.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,34 +73,23 @@ public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
         return true;
     }
 
+    @Nonnull
     @Override
-    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-        ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-        checkFile(file, problemsHolder);
-        return problemsHolder.getResultsArray();
-    }
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+        return new BnfVisitor<Void>() {
+            final HashSet<BnfExpression> set = new HashSet<>();
 
-    private static void checkFile(PsiFile file, final ProblemsHolder problemsHolder) {
-        final Set<BnfExpression> set = new HashSet<>();
-        file.accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
-            public void visitElement(PsiElement element) {
-                if (element instanceof BnfChoice choice) {
-                    checkChoice(choice, set);
-                    for (BnfExpression e : set) {
-                        BnfUnreachableChoiceBranchInspection.registerProblem(
-                            choice,
-                            e,
-                            "Duplicate choice branch",
-                            problemsHolder,
-                            new BnfRemoveExpressionFix()
-                        );
-                    }
-                    set.clear();
+            public Void visitChoice(@Nonnull BnfChoice o) {
+                checkChoice(o, set);
+                for (BnfExpression e : set) {
+                    BnfUnreachableChoiceBranchInspection.registerProblem(
+                        o, e, "Duplicate choice branch", holder, new BnfRemoveExpressionFix());
                 }
-                super.visitElement(element);
+                set.clear();
+                return null;
             }
-        });
+        };
     }
 
     private static void checkChoice(BnfChoice choice, Set<BnfExpression> set) {

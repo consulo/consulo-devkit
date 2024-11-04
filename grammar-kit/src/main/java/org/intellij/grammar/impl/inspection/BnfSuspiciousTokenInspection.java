@@ -16,27 +16,24 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.LocalInspectionTool;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
-import consulo.language.psi.PsiElement;
-import consulo.language.psi.PsiRecursiveElementWalkingVisitor;
-import consulo.language.editor.inspection.LocalInspectionTool;
-import consulo.language.editor.inspection.scheme.InspectionManager;
-import consulo.language.psi.PsiFile;
+import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiReference;
+import consulo.util.collection.JBIterable;
 import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
-import org.intellij.grammar.generator.RuleGraphHelper;
 import org.intellij.grammar.psi.BnfExternalExpression;
-import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
+import org.intellij.grammar.psi.BnfVisitor;
 import org.intellij.grammar.psi.impl.BnfRefOrTokenImpl;
+import org.intellij.grammar.psi.impl.GrammarUtil;
 import org.jetbrains.annotations.Nls;
-
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -78,46 +75,30 @@ public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
         return true;
     }
 
+    @Nonnull
     @Override
-    public ProblemDescriptor[] checkFile(@Nonnull PsiFile file, @Nonnull InspectionManager manager, boolean isOnTheFly) {
-        ProblemsHolder problemsHolder = new ProblemsHolder(manager, file, isOnTheFly);
-        checkFile(file, problemsHolder);
-        return problemsHolder.getResultsArray();
-    }
-
-    private static void checkFile(final PsiFile file, final ProblemsHolder problemsHolder) {
-        if (!(file instanceof BnfFile)) {
-            return;
-        }
-        final Set<String> tokens = RuleGraphHelper.getTokenNameToTextMap((BnfFile)file).keySet();
-        file.accept(new PsiRecursiveElementWalkingVisitor() {
+    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+        return new BnfVisitor<Void>() {
             @Override
-            public void visitElement(PsiElement element) {
-                if (element instanceof BnfRule rule) {
-                    // do not check external rules
-                    if (ParserGeneratorUtil.Rule.isExternal(rule)) {
-                        return;
-                    }
-                }
-                else if (element instanceof BnfExternalExpression) {
-                    // do not check external expressions
-                    return;
-                }
-                else if (element instanceof BnfRefOrTokenImpl) {
-                    PsiReference reference = element.getReference();
+            @RequiredReadAction
+            public Void visitRule(@Nonnull BnfRule o) {
+                if (ParserGeneratorUtil.Rule.isExternal(o)) return null;
+                JBIterable<BnfRefOrTokenImpl> tokens = GrammarUtil.bnfTraverser(o.getExpression())
+                    .expand(s -> !(s instanceof BnfExternalExpression))
+                    .filter(BnfRefOrTokenImpl.class);
+                for (BnfRefOrTokenImpl token : tokens) {
+                    PsiReference reference = token.getReference();
                     Object resolve = reference == null ? null : reference.resolve();
-                    final String text = element.getText();
+                    String text = token.getText();
                     if (resolve == null && !tokens.contains(text) && isTokenTextSuspicious(text)) {
-                        problemsHolder.registerProblem(
-                            element,
+                        holder.registerProblem(token,
                             "'" + text + "' token looks like a reference to a missing rule",
-                            new CreateRuleFromTokenFix(text)
-                        );
+                            new CreateRuleFromTokenFix(text));
                     }
                 }
-                super.visitElement(element);
+                return null;
             }
-        });
+        };
     }
 
     public static boolean isTokenTextSuspicious(String text) {
