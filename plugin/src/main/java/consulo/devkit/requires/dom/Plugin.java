@@ -7,7 +7,7 @@ import consulo.xml.util.xml.GenericDomValue;
 
 /**
  * @author VISTALL
- * @since 28-Aug-22
+ * @since 2022-08-28
  */
 @Convert(PluginDescriptorResolver.class)
 public interface Plugin extends GenericDomValue<PluginDescriptor> {

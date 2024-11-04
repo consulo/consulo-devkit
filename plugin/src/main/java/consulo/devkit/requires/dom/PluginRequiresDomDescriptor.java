@@ -12,7 +12,7 @@ import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 28-Aug-22
+ * @since 2022-08-28
  */
 @ExtensionImpl
 public class PluginRequiresDomDescriptor extends DomFileDescription<PluginRequires> {

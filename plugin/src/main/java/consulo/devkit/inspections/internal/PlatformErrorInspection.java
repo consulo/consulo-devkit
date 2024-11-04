@@ -36,7 +36,7 @@ import java.util.Collection;
 
 /**
  * @author VISTALL
- * @since 23-Aug-17
+ * @since 2017-08-23
  */
 @ExtensionImpl
 public class PlatformErrorInspection extends InternalInspection {

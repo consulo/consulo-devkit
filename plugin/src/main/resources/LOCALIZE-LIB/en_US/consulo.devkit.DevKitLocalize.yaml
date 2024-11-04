@@ -294,3 +294,7 @@ localize.todo.inspection.display.name:
   text: Localize TODO inspection
 invocation.state.validate.inspection.display.name:
   text: Invocation state (read, write, dispatch) validate inspection
+psi.member.modifier.property.stortcuts.inspection.display.name:
+  text: PsiMember.hasModifierProperty() replacement with shortcut methods
+psi.member.replace.with.shortcut.fix:
+  text: "Replace with .{0}()"

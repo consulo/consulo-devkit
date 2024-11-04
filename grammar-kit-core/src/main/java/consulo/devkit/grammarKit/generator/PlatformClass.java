@@ -2,7 +2,7 @@ package consulo.devkit.grammarKit.generator;
 
 /**
  * @author VISTALL
- * @since 25-Mar-22
+ * @since 2022-03-25
  */
 public enum PlatformClass {
     PSI_ELEMENT("com.intellij.psi.PsiElement", "consulo.language.psi.PsiElement"),

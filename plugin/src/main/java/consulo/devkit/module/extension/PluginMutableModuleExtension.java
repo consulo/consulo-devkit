@@ -27,7 +27,7 @@ import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 1:58/23.05.13
+ * @since 2013-05-23
  */
 public class PluginMutableModuleExtension extends PluginModuleExtension implements MutableModuleExtension<PluginModuleExtension> {
     public PluginMutableModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module) {

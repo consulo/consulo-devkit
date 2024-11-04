@@ -23,7 +23,7 @@ import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 12.04.2015
+ * @since 2015-04-12
  */
 @ExtensionImpl
 public class ConsuloRunCoverageEngineExtension extends JavaCoverageEngineExtension {

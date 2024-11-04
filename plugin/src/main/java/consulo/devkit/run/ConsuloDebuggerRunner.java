@@ -41,7 +41,7 @@ import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 29.05.14
+ * @since 2017-05-29
  */
 @ExtensionImpl(order = "before defaultJavaDebugRunner")
 public class ConsuloDebuggerRunner extends GenericDebuggerRunner {

@@ -50,7 +50,7 @@ import java.util.Set;
 
 /**
  * @author VISTALL
- * @since 13:48/23.05.13
+ * @since 2013-05-23
  */
 public class PluginModuleUtil {
     public static final String PLUGIN_XML = "plugin.xml";

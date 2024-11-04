@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
 import com.intellij.java.language.codeInsight.AnnotationUtil;
@@ -40,7 +39,7 @@ import java.util.Map;
 
 /**
  * @author VISTALL
- * @since 01-Oct-16
+ * @since 2016-10-01
  */
 public abstract class StateResolver {
     @Nullable

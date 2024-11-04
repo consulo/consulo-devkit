@@ -12,7 +12,7 @@ import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 11/02/2023
+ * @since 2023-02-11
  */
 @ExtensionImpl
 public class BnfPinMarkerAnnotatorFactory implements AnnotatorFactory, DumbAware {

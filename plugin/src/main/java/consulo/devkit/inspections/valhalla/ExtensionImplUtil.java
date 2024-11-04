@@ -6,7 +6,7 @@ import consulo.annotation.access.RequiredReadAction;
 
 /**
  * @author VISTALL
- * @since 19/12/2022
+ * @since 2022-12-19
  */
 public class ExtensionImplUtil {
     @RequiredReadAction

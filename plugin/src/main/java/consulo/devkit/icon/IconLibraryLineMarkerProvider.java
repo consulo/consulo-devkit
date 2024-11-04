@@ -25,7 +25,7 @@ import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 23/04/2023
+ * @since 2023-04-23
  */
 @ExtensionImpl
 public class IconLibraryLineMarkerProvider implements LineMarkerProvider {

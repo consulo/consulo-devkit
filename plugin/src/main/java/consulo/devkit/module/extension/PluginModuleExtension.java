@@ -23,7 +23,7 @@ import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 1:58/23.05.13
+ * @since 2017-05-23
  */
 public class PluginModuleExtension extends ModuleExtensionBase<PluginModuleExtension> {
     public PluginModuleExtension(@Nonnull String id, @Nonnull ModuleRootLayer module) {

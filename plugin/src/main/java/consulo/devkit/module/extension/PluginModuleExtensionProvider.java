@@ -14,7 +14,7 @@ import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 09/02/2023
+ * @since 2023-02-09
  */
 @ExtensionImpl
 public class PluginModuleExtensionProvider implements ModuleExtensionProvider<PluginModuleExtension> {

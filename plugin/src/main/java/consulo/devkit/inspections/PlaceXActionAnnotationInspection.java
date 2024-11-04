@@ -34,7 +34,7 @@ import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 18.05.2015
+ * @since 2015-05-18
  */
 @ExtensionImpl
 public class PlaceXActionAnnotationInspection extends InternalInspection {

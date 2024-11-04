@@ -8,9 +8,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author VISTALL
  * @see PluginIds from platform
- * @since 28-Aug-22
+ * @author VISTALL
+ * @since 2022-08-28
  */
 public final class Consulo3PluginIds {
     public static final PluginId CONSULO_BASE = PluginId.getId("consulo");

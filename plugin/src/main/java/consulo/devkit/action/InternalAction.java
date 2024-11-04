@@ -29,7 +29,7 @@ import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL
- * @since 28-Jan-17
+ * @since 2017-01-28
  */
 public abstract class InternalAction extends AnAction {
     protected InternalAction() {

@@ -26,7 +26,7 @@ import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 28-Jan-17
+ * @since 2017-01-28
  */
 public class InternalGroup extends DefaultActionGroup {
     @RequiredUIAccess

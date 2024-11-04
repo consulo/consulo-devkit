@@ -1,6 +1,6 @@
 /**
  * @author VISTALL
- * @since 10/02/2023
+ * @since 2023-02-10
  */
 open module consulo.devkit {
     requires consulo.java;
