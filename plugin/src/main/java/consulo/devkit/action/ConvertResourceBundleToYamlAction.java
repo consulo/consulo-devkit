@@ -3,7 +3,6 @@ package consulo.devkit.action;
 import com.intellij.lang.properties.IProperty;
 import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.lang.properties.psi.PropertiesFile;
-import consulo.annotation.component.ActionImpl;
 import consulo.devkit.localize.LocalizeYamlUtil;
 import consulo.language.editor.CommonDataKeys;
 import consulo.language.psi.PsiFile;
@@ -13,7 +12,7 @@ import consulo.virtualFileSystem.LocalFileSystem;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;

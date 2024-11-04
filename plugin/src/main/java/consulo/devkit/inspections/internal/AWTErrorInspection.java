@@ -26,9 +26,8 @@ import consulo.language.psi.PsiElementVisitor;
 import consulo.language.util.ModuleUtilCore;
 import consulo.module.Module;
 import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL

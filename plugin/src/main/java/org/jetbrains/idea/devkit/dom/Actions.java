@@ -21,8 +21,8 @@ package org.jetbrains.idea.devkit.dom;
 
 import consulo.xml.util.xml.DomElement;
 import consulo.xml.util.xml.Stubbed;
+import jakarta.annotation.Nonnull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface Actions extends DomElement {

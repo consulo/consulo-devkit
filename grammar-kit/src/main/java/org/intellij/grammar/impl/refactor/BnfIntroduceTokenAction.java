@@ -20,9 +20,8 @@ import consulo.language.editor.refactoring.action.BasePlatformRefactoringAction;
 import consulo.language.editor.refactoring.action.RefactoringActionHandler;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfFile;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author greg

@@ -22,7 +22,7 @@ package org.jetbrains.idea.devkit.dom;
 import consulo.xml.util.xml.DomElement;
 import consulo.xml.util.xml.GenericAttributeValue;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * plugin.dtd:vendor interface.

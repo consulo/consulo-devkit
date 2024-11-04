@@ -22,9 +22,9 @@ package org.jetbrains.idea.devkit.dom;
 import consulo.xml.util.xml.Convert;
 import consulo.xml.util.xml.DomElement;
 import consulo.xml.util.xml.GenericAttributeValue;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**

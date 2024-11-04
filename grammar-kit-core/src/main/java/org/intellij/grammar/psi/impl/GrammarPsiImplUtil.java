@@ -23,11 +23,11 @@ import consulo.language.util.IncorrectOperationException;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.Comparing;
 import consulo.util.lang.ObjectUtil;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.*;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 import static org.intellij.grammar.generator.ParserGeneratorUtil.*;

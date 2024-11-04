@@ -15,8 +15,8 @@
  */
 package org.jetbrains.idea.devkit.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * @author swr

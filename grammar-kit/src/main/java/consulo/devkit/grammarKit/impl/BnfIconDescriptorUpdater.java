@@ -8,13 +8,12 @@ import consulo.language.icon.IconDescriptorUpdater;
 import consulo.language.psi.PsiElement;
 import consulo.ui.image.Image;
 import consulo.util.lang.Comparing;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.BnfIcons;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrs;
 import org.intellij.grammar.psi.BnfModifier;
 import org.intellij.grammar.psi.BnfRule;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author VISTALL

@@ -27,7 +27,7 @@ import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfVisitor;
 import org.jetbrains.annotations.Nls;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import static org.intellij.grammar.KnownAttribute.getAttribute;
 import static org.intellij.grammar.KnownAttribute.getCompatibleAttribute;

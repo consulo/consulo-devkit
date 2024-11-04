@@ -35,11 +35,10 @@ import consulo.xml.util.xml.DomUtil;
 import consulo.xml.util.xml.ElementPresentationManager;
 import consulo.xml.util.xml.ResolvingConverter;
 import consulo.xml.util.xml.impl.DomImplUtil;
-import org.jetbrains.annotations.NonNls;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.dom.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
 

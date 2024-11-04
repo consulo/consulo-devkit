@@ -8,7 +8,7 @@ import consulo.language.impl.psi.ASTWrapperPsiElement;
 import consulo.util.lang.StringUtil;
 import org.intellij.grammar.psi.*;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Created by IntelliJ IDEA.

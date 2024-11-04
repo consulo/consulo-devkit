@@ -29,8 +29,8 @@ import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
 import consulo.process.ExecutionException;
 import consulo.project.Project;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase implements GenericDebugRunnerConfiguration {
     public ConsuloRunConfiguration(Project project, ConfigurationFactory factory, String name) {

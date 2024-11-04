@@ -33,10 +33,11 @@ import consulo.xml.util.xml.DomFileElement;
 import consulo.xml.util.xml.DomUtil;
 import consulo.xml.util.xml.GenericAttributeValue;
 import consulo.xml.util.xml.converters.PathReferenceConverter;
+import jakarta.annotation.Nullable;
 import org.jetbrains.idea.devkit.util.DescriptorUtil;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+
 import java.util.*;
 
 public class DependencyConfigFileConverter extends PathReferenceConverter {

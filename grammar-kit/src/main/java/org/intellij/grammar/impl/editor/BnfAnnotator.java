@@ -38,7 +38,7 @@ import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfRefOrTokenImpl;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import java.util.StringTokenizer;
 

@@ -25,7 +25,7 @@ import consulo.xml.util.xml.GenericAttributeValue;
 import consulo.xml.util.xml.Required;
 import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * plugin.dtd:add-to-group interface.

@@ -27,7 +27,7 @@ import consulo.xml.util.xml.GenericAttributeValue;
 import consulo.xml.util.xml.GenericDomValue;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.List;
 
 /**

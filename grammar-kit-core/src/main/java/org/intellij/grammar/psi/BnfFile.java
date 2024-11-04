@@ -19,8 +19,8 @@ package org.intellij.grammar.psi;
 import consulo.language.psi.PsiFile;
 import org.intellij.grammar.KnownAttribute;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.List;
 
 /**

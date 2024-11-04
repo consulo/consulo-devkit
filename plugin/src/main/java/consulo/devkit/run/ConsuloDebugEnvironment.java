@@ -21,8 +21,8 @@ import com.intellij.java.execution.configurations.RemoteConnection;
 import consulo.content.bundle.Sdk;
 import consulo.execution.runner.ExecutionEnvironment;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL

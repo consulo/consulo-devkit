@@ -19,9 +19,8 @@ import consulo.language.editor.refactoring.RefactoringBundle;
 import consulo.language.psi.PsiElement;
 import consulo.usage.UsageViewBundle;
 import consulo.usage.UsageViewDescriptor;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfRule;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created by IntelliJ IDEA.

@@ -16,8 +16,7 @@
 package org.jetbrains.idea.devkit.dom;
 
 import consulo.xml.util.xml.*;
-
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @since 15

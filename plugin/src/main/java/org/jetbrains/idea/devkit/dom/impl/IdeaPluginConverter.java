@@ -26,10 +26,11 @@ import consulo.project.content.scope.ProjectScopes;
 import consulo.util.collection.ContainerUtil;
 import consulo.xml.util.xml.DomFileElement;
 import consulo.xml.util.xml.DomService;
+import jakarta.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;

@@ -21,10 +21,9 @@ import consulo.language.ast.TokenType;
 import consulo.language.editor.action.FileQuoteHandler;
 import consulo.language.editor.action.SimpleTokenSetQuoteHandler;
 import consulo.virtualFileSystem.fileType.FileType;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.BnfFileType;
 import org.intellij.grammar.psi.BnfTypes;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author gregsh

@@ -22,7 +22,7 @@ import consulo.language.psi.PsiElement;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.psi.BnfNamedElement;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * Created by IntelliJ IDEA.

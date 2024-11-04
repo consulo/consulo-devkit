@@ -10,7 +10,7 @@ import consulo.language.psi.PsiElementVisitor;
 import consulo.project.ui.wm.IdeFrame;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL

@@ -30,7 +30,7 @@ import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfComposite;
 import org.intellij.grammar.psi.BnfRule;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author gregory

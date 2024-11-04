@@ -16,8 +16,6 @@
 
 package org.intellij.grammar.impl.livePreview;
 
-import javax.annotation.Nonnull;
-
 import consulo.language.ast.ASTNode;
 import consulo.language.parser.ParserDefinition;
 import consulo.language.lexer.Lexer;
@@ -33,6 +31,7 @@ import consulo.language.parser.PsiParser;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.virtualFileSystem.fileType.FileType;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author gregsh

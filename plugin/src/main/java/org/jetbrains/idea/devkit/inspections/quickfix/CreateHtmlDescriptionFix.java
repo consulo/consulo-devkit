@@ -47,7 +47,7 @@ import consulo.virtualFileSystem.util.VirtualFileUtil;
 import org.jetbrains.idea.devkit.inspections.InspectionDescriptionNotFoundInspection;
 import org.jetbrains.idea.devkit.inspections.IntentionDescriptionNotFoundInspection;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;

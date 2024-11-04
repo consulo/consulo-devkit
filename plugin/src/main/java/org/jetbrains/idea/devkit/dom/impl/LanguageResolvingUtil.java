@@ -28,8 +28,8 @@ import consulo.language.psi.scope.GlobalSearchScopesCore;
 import consulo.ui.image.Image;
 import consulo.util.collection.ContainerUtil;
 import consulo.xml.util.xml.ConvertContext;
+import jakarta.annotation.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

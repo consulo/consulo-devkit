@@ -28,9 +28,8 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.project.Project;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.annotations.Nls;
-
-import javax.annotation.Nonnull;
 
 @ExtensionImpl
 public class UsePrimitiveTypesInspection extends InternalInspection {

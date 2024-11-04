@@ -17,9 +17,9 @@ package org.jetbrains.idea.devkit.sdk;
 
 import consulo.logging.Logger;
 import consulo.util.collection.ArrayUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.jar.Attributes;

@@ -19,8 +19,7 @@ package consulo.devkit.run;
 import com.intellij.java.coverage.JavaCoverageEngineExtension;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.execution.configuration.RunConfigurationBase;
-
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * @author VISTALL

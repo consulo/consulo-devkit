@@ -25,8 +25,8 @@ import consulo.language.psi.PsiReferenceProvider;
 import consulo.navigation.NavigationItem;
 import consulo.util.collection.SmartList;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 

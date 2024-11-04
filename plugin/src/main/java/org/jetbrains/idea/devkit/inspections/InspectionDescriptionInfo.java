@@ -26,7 +26,7 @@ import consulo.module.Module;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.idea.devkit.util.PsiUtil;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public class InspectionDescriptionInfo {
 

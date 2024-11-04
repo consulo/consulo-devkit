@@ -23,7 +23,7 @@ import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.parser.BnfLexer;
 import org.intellij.grammar.psi.BnfTypes;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author gregsh

@@ -18,9 +18,8 @@ package org.intellij.grammar.impl.editor;
 import consulo.language.editor.annotation.AnnotationHolder;
 import consulo.language.editor.annotation.Annotator;
 import consulo.language.psi.PsiElement;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfRule;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author gregsh

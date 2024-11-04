@@ -18,11 +18,10 @@ package org.intellij.grammar.generator;
 
 import consulo.language.ast.IElementType;
 import consulo.language.impl.psi.LeafPsiElement;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.BnfVisitor;
-
-import javax.annotation.Nonnull;
 
 /**
  * @author gregsh

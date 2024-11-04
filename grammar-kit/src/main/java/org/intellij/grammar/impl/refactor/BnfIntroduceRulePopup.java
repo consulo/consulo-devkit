@@ -31,10 +31,10 @@ import consulo.language.psi.PsiDocumentManager;
 import consulo.project.Project;
 import consulo.ui.ex.awt.NonFocusableCheckBox;
 import consulo.util.collection.ContainerUtil;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfRule;
 
-import javax.annotation.Nonnull;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collection;

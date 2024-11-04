@@ -22,7 +22,7 @@ import consulo.language.parser.WhitespacesAndCommentsBinder;
 import consulo.language.parser.WhitespacesBinders;
 import consulo.util.lang.ObjectUtil;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;

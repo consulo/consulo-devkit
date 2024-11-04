@@ -19,9 +19,9 @@ package consulo.devkit.run;
 import consulo.component.util.pointer.Named;
 import consulo.component.util.pointer.NamedPointer;
 import consulo.component.util.pointer.NamedPointerManager;
+import jakarta.annotation.Nullable;
 import org.jdom.Element;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 /**

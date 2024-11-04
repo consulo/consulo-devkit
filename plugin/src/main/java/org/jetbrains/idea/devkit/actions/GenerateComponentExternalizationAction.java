@@ -17,7 +17,6 @@ package org.jetbrains.idea.devkit.actions;
 
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import consulo.application.Application;
 import consulo.codeEditor.Editor;
 import consulo.component.persist.PersistentStateComponent;
 import consulo.component.persist.State;
@@ -38,9 +37,8 @@ import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.Presentation;
 import consulo.undoRedo.CommandProcessor;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * @author max

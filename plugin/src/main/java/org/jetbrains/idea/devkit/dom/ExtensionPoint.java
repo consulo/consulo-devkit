@@ -17,10 +17,9 @@ package org.jetbrains.idea.devkit.dom;
 
 import com.intellij.java.language.psi.PsiClass;
 import consulo.xml.util.xml.*;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * @author mike

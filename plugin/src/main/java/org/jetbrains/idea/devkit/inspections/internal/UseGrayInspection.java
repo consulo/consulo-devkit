@@ -27,11 +27,11 @@ import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.project.Project;
 import consulo.ui.ex.Gray;
 import consulo.util.lang.NullUtils;
+import jakarta.annotation.Nullable;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToGrayQuickFix;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author Konstantin Bulenkov

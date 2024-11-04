@@ -6,10 +6,9 @@ import consulo.component.util.Iconable;
 import consulo.ui.image.Image;
 import consulo.xml.util.xml.DomFileDescription;
 import consulo.xml.util.xml.highlighting.DomElementsAnnotator;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
-
-import javax.annotation.Nullable;
 
 /**
  * @author VISTALL

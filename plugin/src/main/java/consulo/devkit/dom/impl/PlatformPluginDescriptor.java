@@ -4,7 +4,7 @@ import consulo.container.plugin.PluginDescriptorStub;
 import consulo.container.plugin.PluginId;
 import consulo.devkit.Consulo3PluginIds;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

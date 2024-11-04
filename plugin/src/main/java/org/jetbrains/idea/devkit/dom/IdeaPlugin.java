@@ -24,8 +24,8 @@ import consulo.devkit.dom.Tags;
 import consulo.util.lang.StringUtil;
 import consulo.xml.util.xml.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.List;
 
 @DefinesXml

@@ -25,7 +25,7 @@ import consulo.xml.psi.xml.XmlFile;
 import org.jetbrains.idea.devkit.actions.NewActionDialog;
 import org.jetbrains.idea.devkit.util.ActionType;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class RegisterActionFix extends AbstractRegisterFix {
     private NewActionDialog myDialog;

@@ -20,13 +20,13 @@ import consulo.language.Language;
 import consulo.language.pattern.PatternCondition;
 import consulo.language.psi.*;
 import consulo.language.util.ProcessingContext;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfAttrPattern;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
 
 import static consulo.language.pattern.PlatformPatterns.or;

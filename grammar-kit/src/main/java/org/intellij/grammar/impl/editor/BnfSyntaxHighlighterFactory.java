@@ -21,9 +21,8 @@ import consulo.language.editor.highlight.SyntaxHighlighter;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.language.editor.highlight.SyntaxHighlighterFactory;
 import consulo.project.Project;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.BnfLanguage;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created by IntelliJ IDEA.

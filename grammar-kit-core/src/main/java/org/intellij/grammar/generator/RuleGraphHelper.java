@@ -28,8 +28,8 @@ import org.intellij.grammar.psi.impl.GrammarUtil;
 import org.intellij.grammar.psi.impl.GrammarUtil.FakeBnfExpression;
 import org.intellij.grammar.psi.impl.GrammarUtil.FakeElementType;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.*;
 
 import static org.intellij.grammar.generator.ParserGeneratorUtil.*;

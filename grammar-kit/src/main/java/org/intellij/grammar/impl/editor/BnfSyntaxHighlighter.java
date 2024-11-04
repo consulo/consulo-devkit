@@ -24,10 +24,9 @@ import consulo.language.ast.IElementType;
 import consulo.language.editor.highlight.SyntaxHighlighterBase;
 import consulo.language.ast.TokenType;
 import consulo.language.lexer.Lexer;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.BnfParserDefinition;
 import org.intellij.grammar.parser.BnfLexer;
-
-import javax.annotation.Nonnull;
 
 import static consulo.colorScheme.TextAttributesKey.createTextAttributesKey;
 import static org.intellij.grammar.psi.BnfTypes.*;

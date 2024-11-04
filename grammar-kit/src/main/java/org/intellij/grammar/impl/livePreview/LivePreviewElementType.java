@@ -23,8 +23,8 @@ import consulo.util.lang.ObjectUtil;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import static org.intellij.grammar.impl.livePreview.LivePreviewParserDefinition.KEYWORD;
 

@@ -27,7 +27,7 @@ import consulo.language.psi.PsiElement;
 import consulo.project.Project;
 import consulo.util.lang.Couple;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author Konstantin Bulenkov

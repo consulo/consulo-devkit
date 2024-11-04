@@ -16,7 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import consulo.application.AccessToken;
 import consulo.codeEditor.ScrollType;

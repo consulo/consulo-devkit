@@ -23,7 +23,7 @@ import consulo.language.psi.PsiComment;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.BnfParserDefinition;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author gregsh

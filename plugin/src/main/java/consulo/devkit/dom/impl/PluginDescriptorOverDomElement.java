@@ -6,7 +6,7 @@ import consulo.container.plugin.PluginId;
 import consulo.util.lang.StringUtil;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL

@@ -31,7 +31,7 @@ import consulo.platform.Platform;
 import consulo.util.collection.MultiMap;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.Collection;
 
 /**

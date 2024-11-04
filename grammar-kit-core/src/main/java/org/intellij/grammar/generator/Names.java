@@ -6,7 +6,7 @@ package org.intellij.grammar.generator;
 
 import consulo.application.Application;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author greg

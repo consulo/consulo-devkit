@@ -17,13 +17,13 @@ import consulo.util.lang.StringUtil;
 import consulo.util.lang.function.Conditions;
 import consulo.util.lang.function.PairProcessor;
 import consulo.util.lang.ref.Ref;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
 import org.jetbrains.annotations.Contract;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 

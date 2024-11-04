@@ -31,10 +31,11 @@ import consulo.util.lang.ObjectUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.pointer.VirtualFilePointer;
 import consulo.virtualFileSystem.pointer.VirtualFilePointerManager;
+import jakarta.annotation.Nullable;
 import org.intellij.grammar.psi.BnfFile;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collections;

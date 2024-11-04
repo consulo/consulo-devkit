@@ -4,9 +4,9 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.localize.LocalizeValue;
 import consulo.project.ui.notification.NotificationGroup;
 import consulo.project.ui.notification.NotificationGroupContributor;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.impl.actions.GenerateAction;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 /**

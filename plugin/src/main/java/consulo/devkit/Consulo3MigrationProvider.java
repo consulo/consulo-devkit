@@ -3,7 +3,7 @@ package consulo.devkit;
 import com.intellij.java.impl.refactoring.migration.PredefinedMigrationProvider;
 import consulo.annotation.component.ExtensionImpl;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.net.URL;
 
 /**
