@@ -476,7 +476,7 @@ public class ParserGenerator {
             KnownAttribute.IMPLEMENTS.getDefaultValue(myVersion).get(0)
         ).second.getStringValue(myVersion);
         Set<String> imports =
-            new LinkedHashSet<>(Arrays.asList("javax.annotation.*", PlatformClass.PSI_ELEMENT_VISITOR.select(myVersion), superIntf));
+            new LinkedHashSet<>(Arrays.asList("jakarta.annotation.*", PlatformClass.PSI_ELEMENT_VISITOR.select(myVersion), superIntf));
         MultiMap<String, String> supers = new MultiMap<>();
         for (BnfRule rule : sortedRules.values()) {
             supers.putValues(rule.getName(), getSuperInterfaceNames(myFile, rule, myIntfClassFormat));
@@ -1925,7 +1925,7 @@ public class ParserGenerator {
         Set<String> imports = new LinkedHashSet<>();
         imports.addAll(Arrays.asList(
             "java.util.List",
-            "javax.annotation.*",
+            "jakarta.annotation.*",
             PlatformClass.PSI_ELEMENT.select(myVersion)
         ));
         imports.addAll(psiSupers);
@@ -1946,7 +1946,7 @@ public class ParserGenerator {
         if (!G.generateFQN) {
             imports.addAll(Arrays.asList(
                 List.class.getName(),
-                "javax.annotation.*",
+                "jakarta.annotation.*",
                 PlatformClass.AST_NODE.select(myVersion),
                 PlatformClass.PSI_ELEMENT.select(myVersion)
             ));
