@@ -1,7 +1,6 @@
 package consulo.devkit.inspections.valhalla;
 
 import com.intellij.java.language.psi.PsiClass;
-import com.intellij.java.language.psi.PsiModifier;
 import consulo.annotation.access.RequiredReadAction;
 
 /**
@@ -10,12 +9,8 @@ import consulo.annotation.access.RequiredReadAction;
  */
 public class ExtensionImplUtil {
     @RequiredReadAction
-    public static boolean isTargetClass(PsiClass psiClass) {
-        if (psiClass.hasModifierProperty(PsiModifier.ABSTRACT) || psiClass.isInterface() || psiClass.isAnnotationType()
-            || psiClass.isEnum() || psiClass.isRecord()) {
-            return false;
-        }
-
-        return psiClass.getContainingClass() == null;
+    public static boolean isTargetClass(PsiClass aClass) {
+        return !(aClass.isAbstract() || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord())
+            && aClass.getContainingClass() == null;
     }
 }

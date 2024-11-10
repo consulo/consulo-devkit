@@ -20,6 +20,7 @@ import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.PsiUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
@@ -43,7 +44,7 @@ public class AWTErrorInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "AWT & Swing implementation error reporting";
+        return DevKitLocalize.awtErrorInspectionDisplayName().get();
     }
 
     @Override
@@ -55,12 +56,12 @@ public class AWTErrorInspection extends InternalInspection {
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitTypeElement(PsiTypeElement type) {
+            public void visitTypeElement(@Nonnull PsiTypeElement type) {
                 checkType(type, type.getType());
             }
 
             @Override
-            public void visitNewExpression(PsiNewExpression expression) {
+            public void visitNewExpression(@Nonnull PsiNewExpression expression) {
                 final PsiJavaCodeReferenceElement classReference = expression.getClassReference();
                 if (classReference == null) {
                     return;
@@ -77,10 +78,9 @@ public class AWTErrorInspection extends InternalInspection {
                     }
                     for (String errorPackage : ourErrorPackages) {
                         if (StringUtil.startsWith(qualifiedName, errorPackage)) {
-                            holder.registerProblem(
-                                owner,
-                                "AWT & Swing implementation can not be used. Please visit guide for writing UI"
-                            );
+                            holder.newProblem(DevKitLocalize.awtErrorInspectionMessage())
+                                .range(owner)
+                                .create();
                         }
                     }
                 }

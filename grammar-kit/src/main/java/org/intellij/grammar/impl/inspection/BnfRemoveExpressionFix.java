@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import jakarta.annotation.Nonnull;
 
 import consulo.language.ast.ASTNode;
@@ -46,22 +47,23 @@ public class BnfRemoveExpressionFix implements LocalQuickFix {
     }
 
     @Override
+    @RequiredReadAction
     public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
         PsiElement element = descriptor.getPsiElement();
         if (!element.isValid()) {
             return;
         }
         PsiElement parent = element.getParent();
-        if (element instanceof BnfExpression && parent instanceof BnfChoice) {
+        if (element instanceof BnfExpression && parent instanceof BnfChoice choice) {
             ASTNode node = element.getNode();
             ASTNode nextOr = TreeUtil.findSibling(node, BnfTypes.BNF_OP_OR);
             ASTNode prevOr = TreeUtil.findSiblingBackward(node, BnfTypes.BNF_OP_OR);
             assert nextOr != null || prevOr != null : "'|' missing in choice";
             if (nextOr != null && prevOr != null) {
-                parent.deleteChildRange(prevOr.getTreeNext().getPsi(), nextOr.getPsi());
+                choice.deleteChildRange(prevOr.getTreeNext().getPsi(), nextOr.getPsi());
             }
             else {
-                parent.deleteChildRange(prevOr == null ? element : prevOr.getPsi(), prevOr == null ? nextOr.getPsi() : element);
+                choice.deleteChildRange(prevOr == null ? element : prevOr.getPsi(), prevOr == null ? nextOr.getPsi() : element);
             }
         }
         else {

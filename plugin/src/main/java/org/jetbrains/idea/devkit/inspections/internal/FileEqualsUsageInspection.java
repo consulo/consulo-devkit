@@ -18,6 +18,7 @@ package org.jetbrains.idea.devkit.inspections.internal;
 import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.java.language.module.util.JavaClassNames;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -26,11 +27,17 @@ import consulo.language.psi.PsiElementVisitor;
 
 import jakarta.annotation.Nonnull;
 
+import java.util.Set;
+
 @ExtensionImpl
 public class FileEqualsUsageInspection extends InternalInspection {
-    private static final String MESSAGE =
-        "Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. " +
-            "Please use FileUtil.filesEquals/fileHashCode/compareFiles instead";
+    private static final Set FILE_METHOD_NAMES = Set.of("equals", "compareTo", "hashCode");
+
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return DevKitLocalize.fileEqualsUsageInspectionDisplayName().get();
+    }
 
     @Override
     @Nonnull
@@ -48,18 +55,15 @@ public class FileEqualsUsageInspection extends InternalInspection {
                     }
 
                     String methodName = method.getName();
-                    if (JavaClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName())
-                        && ("equals".equals(methodName) || "compareTo".equals(methodName) || "hashCode".equals(methodName))) {
-                        holder.registerProblem(methodExpression, MESSAGE, ProblemHighlightType.LIKE_DEPRECATED);
+                    if (JavaClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && FILE_METHOD_NAMES.contains(methodName)) {
+                        holder.registerProblem(
+                            methodExpression,
+                            DevKitLocalize.fileEqualsUsageInspectionMessage().get(),
+                            ProblemHighlightType.LIKE_DEPRECATED
+                        );
                     }
                 }
             }
         };
-    }
-
-    @Nonnull
-    @Override
-    public String getDisplayName() {
-        return "File.equals() usage";
     }
 }

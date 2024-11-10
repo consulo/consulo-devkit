@@ -18,6 +18,7 @@ package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
@@ -30,25 +31,22 @@ import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfVisitor;
-import org.jetbrains.annotations.Nls;
 
 /**
  * @author gregsh
  */
 @ExtensionImpl
 public class BnfLeftRecursionInspection extends LocalInspectionTool {
-    @Nls
     @Nonnull
     @Override
     public String getGroupDisplayName() {
-        return "Grammar/BNF";
+        return BnfLocalize.inspectionsGroupName().get();
     }
 
-    @Nls
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Left recursion";
+        return BnfLocalize.leftRecursionInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -77,14 +75,18 @@ public class BnfLeftRecursionInspection extends LocalInspectionTool {
             @Override
             @RequiredReadAction
             public Void visitRule(@Nonnull BnfRule o) {
-                if (ParserGeneratorUtil.Rule.isFake(o)) return null;
-                BnfFile file = (BnfFile) o.getContainingFile();
+                if (ParserGeneratorUtil.Rule.isFake(o)) {
+                    return null;
+                }
+                BnfFile file = (BnfFile)o.getContainingFile();
                 ExpressionHelper expressionHelper = ExpressionHelper.getCached(file);
                 String ruleName = o.getName();
                 boolean exprParsing = ExpressionGeneratorHelper.getInfoForExpressionParsing(expressionHelper, o) != null;
 
                 if (!exprParsing && analyzer.asStrings(analyzer.calcFirst(o)).contains(ruleName)) {
-                    holder.registerProblem(o.getId(), "'" + ruleName + "' employs left-recursion unsupported by generator");
+                    holder.newProblem(BnfLocalize.leftRecursionInspectionMessage(ruleName))
+                        .range(o.getId())
+                        .create();
                 }
                 return null;
             }

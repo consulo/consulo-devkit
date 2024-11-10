@@ -94,8 +94,10 @@ public class RequiredXActionInspection extends InternalInspection {
                 case UI_ACCESS -> DevKitLocalize.inspectionsAnnotation0IsRequiredAtOwnerOrAppRunUi();
                 default -> throw new IllegalArgumentException();
             };
-            LocalQuickFix[] quickFixes = new LocalQuickFix[]{new AnnotateMethodFix(type.getActionClass())};
-            myHolder.registerProblem(expression, text.get(), ProblemHighlightType.GENERIC_ERROR_OR_WARNING, quickFixes);
+            myHolder.newProblem(text)
+                .range(expression)
+                .withFix(new AnnotateMethodFix(type.getActionClass()))
+                .create();
         }
     }
 

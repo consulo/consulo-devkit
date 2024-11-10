@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright 2013-2017 consulo.io
+  - Copyright 2013-2024 consulo.io
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -16,34 +16,34 @@
   -->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>consulo</groupId>
-    <artifactId>arch.managment</artifactId>
+    <parent>
+        <groupId>consulo</groupId>
+        <artifactId>arch.managment</artifactId>
+        <version>3-SNAPSHOT</version>
+        <relativePath/>
+    </parent>
+
+    <repositories>
+        <repository>
+            <id>consulo</id>
+            <url>https://maven.consulo.io/repository/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>interval:60</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <groupId>consulo.plugin</groupId>
+    <artifactId>consulo.devkit.parent</artifactId>
     <version>3-SNAPSHOT</version>
-    <relativePath/>
-  </parent>
+    <packaging>pom</packaging>
 
-  <repositories>
-    <repository>
-      <id>consulo</id>
-      <url>https://maven.consulo.io/repository/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>interval:60</updatePolicy>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <groupId>consulo.plugin</groupId>
-  <artifactId>consulo.devkit.parent</artifactId>
-  <version>3-SNAPSHOT</version>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>grammar-kit</module>
-    <module>grammar-kit-core</module>
-    <module>plugin</module>
-  </modules>
+    <modules>
+        <module>grammar-kit</module>
+        <module>grammar-kit-core</module>
+        <module>plugin</module>
+    </modules>
 </project>

@@ -24,6 +24,7 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.Couple;
 
@@ -33,8 +34,8 @@ import jakarta.annotation.Nonnull;
  * @author Konstantin Bulenkov
  */
 public class UseCoupleQuickFix extends LocalQuickFixBase {
-    public UseCoupleQuickFix(String text) {
-        super(text);
+    public UseCoupleQuickFix(LocalizeValue text) {
+        super(text.get());
     }
 
     @Override

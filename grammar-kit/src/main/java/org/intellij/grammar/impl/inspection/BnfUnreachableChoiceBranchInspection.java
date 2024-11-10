@@ -18,11 +18,12 @@ package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.document.util.TextRange;
 import consulo.language.ast.ASTNode;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
-import consulo.language.editor.inspection.LocalQuickFix;
+import consulo.language.editor.inspection.ProblemBuilder;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.impl.ast.TreeUtil;
@@ -33,7 +34,6 @@ import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.BnfVisitor;
-import org.jetbrains.annotations.Nls;
 
 import java.util.HashSet;
 import java.util.List;
@@ -44,18 +44,16 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
-    @Nls
     @Nonnull
     @Override
     public String getGroupDisplayName() {
-        return "Grammar/BNF";
+        return BnfLocalize.inspectionsGroupName().get();
     }
 
-    @Nls
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Unreachable choice branch";
+        return BnfLocalize.unreachableChoiceBranchInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -77,7 +75,12 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
 
     @Nonnull
     @Override
-    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder problemsHolder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+    public PsiElementVisitor buildVisitor(
+        @Nonnull ProblemsHolder problemsHolder,
+        boolean isOnTheFly,
+        @Nonnull LocalInspectionToolSession session,
+        @Nonnull Object state
+    ) {
         return new BnfVisitor<Void>() {
             @Override
             @RequiredReadAction
@@ -98,10 +101,16 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
             BnfExpression child = list.get(i);
             Set<BnfExpression> firstSet = analyzer.calcFirstInner(child, first, visited);
             if (firstSet.contains(BnfFirstNextAnalyzer.BNF_MATCHES_NOTHING)) {
-                registerProblem(choice, child, "Branch is unable to match anything due to & or ! conditions", problemsHolder);
+                ProblemBuilder problemBuilder =
+                    problemsHolder.newProblem(BnfLocalize.unreachableChoiceBranchInspectionMessageMatchesNothing());
+                setRange(problemBuilder, choice, child)
+                    .create();
             }
             else if (firstSet.contains(BnfFirstNextAnalyzer.BNF_MATCHES_EOF)) {
-                registerProblem(choice, child, "Branch matches empty input making the rest branches unreachable", problemsHolder);
+                ProblemBuilder problemBuilder =
+                    problemsHolder.newProblem(BnfLocalize.unreachableChoiceBranchInspectionMessageMatchesEof());
+                setRange(problemBuilder, choice, child)
+                    .create();
                 break;
             }
             first.clear();
@@ -110,13 +119,7 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
     }
 
     @RequiredReadAction
-    static void registerProblem(
-        BnfExpression choice,
-        BnfExpression branch,
-        String message,
-        ProblemsHolder problemsHolder,
-        LocalQuickFix... fixes
-    ) {
+    static ProblemBuilder setRange(ProblemBuilder problemBuilder, BnfExpression choice, BnfExpression branch) {
         TextRange textRange = branch.getTextRange();
         if (textRange.isEmpty()) {
             ASTNode nextOr = TreeUtil.findSibling(branch.getNode(), BnfTypes.BNF_OP_OR);
@@ -128,10 +131,10 @@ public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
                 startOffset,
                 nextOr != null ? nextOr.getStartOffset() + 1 - shift : Math.min(startOffset + 2, choice.getTextLength())
             );
-            problemsHolder.registerProblem(choice, range, message, fixes);
+            return problemBuilder.range(choice, range);
         }
         else {
-            problemsHolder.registerProblem(branch, message, fixes);
+            return problemBuilder.range(branch);
         }
     }
 }

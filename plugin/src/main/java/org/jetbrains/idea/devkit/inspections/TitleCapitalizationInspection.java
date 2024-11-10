@@ -23,6 +23,7 @@ import com.intellij.lang.properties.references.PropertyReference;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.access.RequiredWriteAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.fileChooser.FileChooserDescriptor;
 import consulo.language.editor.inspection.*;
 import consulo.language.psi.PsiElement;
@@ -31,6 +32,7 @@ import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiReference;
 import consulo.language.psi.ResolveResult;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.ui.ex.awt.DialogWrapper;
@@ -58,14 +60,13 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
     @Nonnull
     @Override
     public String getGroupDisplayName() {
-        return "Plugin DevKit";
+        return DevKitLocalize.inspectionsGroupName().get();
     }
 
-    @Nls
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Incorrect dialog title capitalization";
+        return DevKitLocalize.titleCapitalizationInspectionInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -101,12 +102,12 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
                     }
                     String titleValue = getTitleValue(args[0]);
                     if (!hasTitleCapitalization(titleValue)) {
-                        holder.registerProblem(
-                            args[0],
-                            "Dialog title '" + titleValue + "' is not properly capitalized. " +
-                                "It should have title capitalization",
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING, new TitleCapitalizationFix(titleValue)
-                        );
+                        holder.newProblem(LocalizeValue.of(
+                                "Dialog title '" + titleValue + "' is not properly capitalized. It should have title capitalization"
+                            ))
+                            .range(args[0])
+                            .withFix(new TitleCapitalizationFix(titleValue))
+                            .create();
                     }
                 }
                 else if (calledName.startsWith("show")
@@ -123,13 +124,10 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
                         if ("title".equals(parameter.getName()) && i < args.length) {
                             String titleValue = getTitleValue(args[i]);
                             if (!hasTitleCapitalization(titleValue)) {
-                                holder.registerProblem(
-                                    args[i],
-                                    "Message title '" + titleValue + "' is not properly capitalized. " +
-                                        "It should have title capitalization",
-                                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                    new TitleCapitalizationFix(titleValue)
-                                );
+                                holder.newProblem(DevKitLocalize.titleCapitalizationInspectionInspectionMessage(titleValue))
+                                    .range(args[i])
+                                    .withFix(new TitleCapitalizationFix(titleValue))
+                                    .create();
                             }
                             break;
                         }
@@ -183,8 +181,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
     private static Property getPropertyArgument(PsiMethodCallExpression arg) {
         PsiExpression[] args = arg.getArgumentList().getExpressions();
         if (args.length > 0) {
-            PsiReference[] references = args[0].getReferences();
-            for (PsiReference reference : references) {
+            for (PsiReference reference : args[0].getReferences()) {
                 if (reference instanceof PropertyReference propertyReference) {
                     ResolveResult[] resolveResults = propertyReference.multiResolve(false);
                     if (resolveResults.length == 1 && resolveResults[0].isValidResult()
@@ -206,7 +203,6 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
     }
 
     private static class TitleCapitalizationFix implements LocalQuickFix {
-
         private final String myTitleValue;
 
         public TitleCapitalizationFix(String titleValue) {
@@ -216,7 +212,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
         @Nonnull
         @Override
         public String getName() {
-            return "Properly capitalize '" + myTitleValue + '\'';
+            return DevKitLocalize.titleCapitalizationInspectionInspectionQuickfixName(myTitleValue).get();
         }
 
         @Override
@@ -233,9 +229,8 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
                 doFix(project, problemElement);
             }
             catch (IncorrectOperationException e) {
-                final Class<? extends TitleCapitalizationFix> aClass = getClass();
-                final String className = aClass.getName();
-                final Logger logger = Logger.getInstance(className);
+                Class<? extends TitleCapitalizationFix> aClass = getClass();
+                Logger logger = Logger.getInstance(aClass.getName());
                 logger.error(e);
             }
         }
@@ -267,10 +262,10 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
                 final String capitalizedString = StringUtil.wordsToBeginFromUpperCase(value);
                 property.setValue(capitalizedString);
             }
-            else if (element instanceof PsiReferenceExpression referenceExpression) {
-                if (referenceExpression.resolve() instanceof PsiVariable variable && variable.hasModifierProperty(PsiModifier.FINAL)) {
-                    doFix(project, variable.getInitializer());
-                }
+            else if (element instanceof PsiReferenceExpression referenceExpression
+                && referenceExpression.resolve() instanceof PsiVariable variable
+                && variable.hasModifierProperty(PsiModifier.FINAL)) {
+                doFix(project, variable.getInitializer());
             }
         }
 
@@ -292,7 +287,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
         @Nonnull
         @Override
         public String getFamilyName() {
-            return "Properly capitalize";
+            return DevKitLocalize.titleCapitalizationInspectionInspectionQuickfixFamilyName().get();
         }
     }
 }

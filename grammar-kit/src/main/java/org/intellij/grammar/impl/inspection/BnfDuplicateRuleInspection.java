@@ -18,6 +18,7 @@ package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -34,11 +35,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Created by IntelliJ IDEA.
- * Date: 8/29/11
- * Time: 1:54 PM
- *
  * @author Vadim Romansky
+ * @since 2011-08-29
  */
 @ExtensionImpl
 public class BnfDuplicateRuleInspection extends LocalInspectionTool {
@@ -46,14 +44,14 @@ public class BnfDuplicateRuleInspection extends LocalInspectionTool {
     @Nonnull
     @Override
     public String getGroupDisplayName() {
-        return "Grammar/BNF";
+        return BnfLocalize.inspectionsGroupName().get();
     }
 
     @Nls
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Duplicate rule";
+        return BnfLocalize.duplicateRuleInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -87,10 +85,9 @@ public class BnfDuplicateRuleInspection extends LocalInspectionTool {
 
     @RequiredReadAction
     private static void checkFile(PsiFile file, ProblemsHolder problemsHolder) {
-        if (!(file instanceof BnfFile)) {
+        if (!(file instanceof BnfFile bnfFile)) {
             return;
         }
-        BnfFile bnfFile = (BnfFile)file;
 
         Set<BnfRule> rules = new LinkedHashSet<>();
         for (BnfRule r : GrammarUtil.bnfTraverser(bnfFile).filter(BnfRule.class)) {
@@ -101,7 +98,9 @@ public class BnfDuplicateRuleInspection extends LocalInspectionTool {
             }
         }
         for (BnfRule rule : rules) {
-            problemsHolder.registerProblem(rule.getId(), "'" + rule.getName() + "' rule is defined more than once");
+            problemsHolder.newProblem(BnfLocalize.duplicateRuleInspectionMessage(rule.getName()))
+                .range(rule.getId())
+                .create();
         }
     }
 }

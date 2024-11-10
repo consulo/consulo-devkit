@@ -4,9 +4,9 @@ import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.WriteAction;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.document.util.TextRange;
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
-import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
@@ -34,7 +34,7 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
         @Nonnull
         @Override
         public String getText() {
-            return "Replace by class constant";
+            return DevKitLocalize.complicatedLoggerInitializationQuickfixName().get();
         }
 
         @Override
@@ -59,18 +59,24 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
         @Nonnull
         @Override
         public String getFamilyName() {
-            return "Consulo Devkit";
+            return DevKitLocalize.inspectionsGroupName().get();
         }
     }
 
     private static final Set<String> ourLoggerClasses = Set.of(Logger.class.getName());
+
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return DevKitLocalize.complicatedLoggerInitializationInspectionDisplayName().get();
+    }
 
     @Override
     public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
             @RequiredReadAction
-            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+            public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
                 PsiReferenceExpression methodExpression = expression.getMethodExpression();
 
                 String referenceName = methodExpression.getReferenceName();
@@ -83,13 +89,10 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
                     if (containingClass != null && ourLoggerClasses.contains(containingClass.getQualifiedName())) {
                         PsiExpression argument = argumentList.getExpressions()[0];
                         if (isComplicatedArgument(argument)) {
-                            holder.registerProblem(
-                                argument,
-                                "Compilated logger initialization",
-                                ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                new TextRange(0, argument.getTextLength()),
-                                new Fix(argument)
-                            );
+                            holder.newProblem(DevKitLocalize.complicatedLoggerInitializationInspectionMessage())
+                                .range(argument, new TextRange(0, argument.getTextLength()))
+                                .withFix(new Fix(argument))
+                                .create();
                         }
                     }
                 }
@@ -114,9 +117,9 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
             }
         }
         else if (expression instanceof PsiBinaryExpression binaryExpression) {
-            PsiExpression lOperand = binaryExpression.getLOperand();
-            PsiExpression rOperand = binaryExpression.getROperand();
-            if (lOperand instanceof PsiLiteralExpression literalExpression && "#".equals(literalExpression.getValue())) {
+            if (binaryExpression.getLOperand() instanceof PsiLiteralExpression literalExpression
+                && "#".equals(literalExpression.getValue())) {
+                PsiExpression rOperand = binaryExpression.getROperand();
                 if (rOperand instanceof PsiClassObjectAccessExpression classObjectAccessExpression) {
                     if (classObjectAccessExpression.getOperand().getType() instanceof PsiClassType classType) {
                         PsiClass className = classType.resolve();
@@ -128,31 +131,11 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
                 }
                 else if (rOperand instanceof PsiMethodCallExpression methodCallExpression) {
                     PsiReferenceExpression methodExpression = methodCallExpression.getMethodExpression();
+                    if ("getName".equals(methodExpression.getReferenceName())
+                        && methodExpression.getQualifierExpression() instanceof PsiClassObjectAccessExpression classObjectAccessExpression
+                        && classObjectAccessExpression.getOperand().getType() instanceof PsiClassType classType) {
 
-                    if ("getName".equals(methodExpression.getReferenceName())) {
-                        PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
-                        if (qualifierExpression instanceof PsiClassObjectAccessExpression classObjectAccessExpression
-                            && classObjectAccessExpression.getOperand().getType() instanceof PsiClassType classType) {
-                            PsiClass className = classType.resolve();
-
-                            if (className != null && qualifiedName.equals(className.getQualifiedName())) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else if (expression instanceof PsiMethodCallExpression methodCallExpression) {
-            PsiReferenceExpression methodExpression = methodCallExpression.getMethodExpression();
-
-            if ("getName".equals(methodExpression.getReferenceName())) {
-                PsiExpression qualifierExpression = methodExpression.getQualifierExpression();
-                if (qualifierExpression instanceof PsiClassObjectAccessExpression classObjectAccessExpression) {
-                    PsiType type = classObjectAccessExpression.getOperand().getType();
-                    if (type instanceof PsiClassType classType) {
                         PsiClass className = classType.resolve();
-
                         if (className != null && qualifiedName.equals(className.getQualifiedName())) {
                             return true;
                         }
@@ -160,13 +143,19 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
                 }
             }
         }
+        else if (expression instanceof PsiMethodCallExpression methodCallExpression) {
+            PsiReferenceExpression methodExpression = methodCallExpression.getMethodExpression();
+            if ("getName".equals(methodExpression.getReferenceName())
+                && methodExpression.getQualifierExpression() instanceof PsiClassObjectAccessExpression classObjectAccessExpression
+                && classObjectAccessExpression.getOperand().getType() instanceof PsiClassType classType) {
+
+                PsiClass className = classType.resolve();
+                if (className != null && qualifiedName.equals(className.getQualifiedName())) {
+                    return true;
+                }
+            }
+        }
 
         return false;
-    }
-
-    @Nonnull
-    @Override
-    public String getDisplayName() {
-        return "Complicated Logger Initialization";
     }
 }

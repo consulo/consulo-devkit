@@ -22,16 +22,16 @@ import com.intellij.java.language.psi.PsiMethod;
 import com.intellij.java.language.psi.PsiMethodCallExpression;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.util.PluginModuleUtil;
-import consulo.document.util.TextRange;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.platform.Platform;
 import consulo.util.collection.MultiMap;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
-import jakarta.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -59,7 +59,7 @@ public class PlatformErrorInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Platform method specific restriction";
+        return DevKitLocalize.platformErrorInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -73,20 +73,17 @@ public class PlatformErrorInspection extends InternalInspection {
         return new JavaElementVisitor() {
             @Override
             @RequiredReadAction
-            public void visitMethodCallExpression(PsiMethodCallExpression expression) {
+            public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
                 PsiMethod method = expression.resolveMethod();
                 if (method != null && myRestrictedMethodList.containsScalarValue(method.getName())) {
                     PsiClass containingClass = method.getContainingClass();
                     if (containingClass != null) {
                         Collection<String> strings = myRestrictedMethodList.get(containingClass.getQualifiedName());
                         if (strings.contains(method.getName())) {
-                            TextRange range = expression.getMethodExpression().getRangeInElement();
-                            holder.registerProblem(
-                                expression,
-                                "Platform call restricted. Use 'consulo.platform.Platform.current()'",
-                                ProblemHighlightType.GENERIC_ERROR,
-                                range
-                            );
+                            holder.newProblem(DevKitLocalize.platformErrorInspectionMessage())
+                                .range(expression, expression.getMethodExpression().getRangeInElement())
+                                .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                                .create();
                         }
                     }
                 }

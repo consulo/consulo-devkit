@@ -16,7 +16,9 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -27,33 +29,27 @@ import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfVisitor;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.Nls;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Created by IntelliJ IDEA.
- * Date: 9/2/11
- * Time: 7:20 PM
- *
  * @author Vadim Romansky
+ * @since 2011-09-02
  */
 @ExtensionImpl
 public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
-    @Nls
     @Nonnull
     @Override
     public String getGroupDisplayName() {
-        return "Grammar/BNF";
+        return BnfLocalize.inspectionsGroupName().get();
     }
 
-    @Nls
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Identical choice branches";
+        return BnfLocalize.identicalChoiceBranchesInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -75,16 +71,23 @@ public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
 
     @Nonnull
     @Override
-    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+    public PsiElementVisitor buildVisitor(
+        @Nonnull ProblemsHolder holder,
+        boolean isOnTheFly,
+        @Nonnull LocalInspectionToolSession session,
+        @Nonnull Object state
+    ) {
         return new BnfVisitor<Void>() {
-            final HashSet<BnfExpression> set = new HashSet<>();
+            final Set<BnfExpression> set = new HashSet<>();
 
             @Override
+            @RequiredReadAction
             public Void visitChoice(@Nonnull BnfChoice o) {
                 checkChoice(o, set);
                 for (BnfExpression e : set) {
-                    BnfUnreachableChoiceBranchInspection.registerProblem(
-                        o, e, "Duplicate choice branch", holder, new BnfRemoveExpressionFix());
+                    BnfUnreachableChoiceBranchInspection.setRange(holder.newProblem(BnfLocalize.identicalChoiceBranchesInspectionMessage()), o, e)
+                        .withFix(new BnfRemoveExpressionFix())
+                        .create();
                 }
                 set.clear();
                 return null;
@@ -94,8 +97,10 @@ public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
 
     private static void checkChoice(BnfChoice choice, Set<BnfExpression> set) {
         List<BnfExpression> list = choice.getExpressionList();
-        for (BnfExpression e1 : list) {
-            for (BnfExpression e2 : list) {
+        for (int i = 0, n = list.size(); i < n; i++) {
+            BnfExpression e1 = list.get(i);
+            for (int j = i + 1; j < n; j++) {
+                BnfExpression e2 = list.get(j);
                 if (e1 != e2 && GrammarUtil.equalsElement(e1, e2)) {
                     set.add(e1);
                     set.add(e2);

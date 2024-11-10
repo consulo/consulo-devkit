@@ -1,5 +1,6 @@
 package consulo.devkit.inspections.valhalla;
 
+import consulo.util.lang.Couple;
 import consulo.util.lang.Pair;
 
 import java.util.List;
@@ -26,10 +27,10 @@ public interface ValhallaClasses {
 
     Set<String> Impl = Set.of(ExtensionImpl, ServiceImpl, ActionImpl, TopicImpl);
 
-    List<Pair<String, String>> ApiToImpl = List.of(
-        Pair.create(ActionAPI, ActionImpl),
-        Pair.create(ServiceAPI, ServiceImpl),
-        Pair.create(ExtensionAPI, ExtensionImpl),
-        Pair.create(TopicAPI, TopicImpl)
+    List<Couple<String>> ApiToImpl = List.of(
+        Couple.of(ActionAPI, ActionImpl),
+        Couple.of(ServiceAPI, ServiceImpl),
+        Couple.of(ExtensionAPI, ExtensionImpl),
+        Couple.of(TopicAPI, TopicImpl)
     );
 }

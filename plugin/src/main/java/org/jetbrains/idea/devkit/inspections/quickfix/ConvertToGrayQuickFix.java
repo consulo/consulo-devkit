@@ -20,6 +20,7 @@ import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
@@ -34,7 +35,7 @@ public class ConvertToGrayQuickFix extends LocalQuickFixBase {
     private final int myNum;
 
     public ConvertToGrayQuickFix(int num) {
-        super("Convert to Gray._" + num, "Convert to Gray");
+        super(DevKitLocalize.useGrayInspectionMessage(num).get(), DevKitLocalize.useGrayInspectionQuickfixFamilyName().get());
         myNum = num;
     }
 

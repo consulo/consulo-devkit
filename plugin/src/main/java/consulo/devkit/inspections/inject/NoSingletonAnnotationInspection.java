@@ -8,12 +8,13 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.inspections.util.service.ServiceInfo;
 import consulo.devkit.inspections.util.service.ServiceLocator;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
-import jakarta.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -33,27 +34,26 @@ public class NoSingletonAnnotationInspection extends InternalInspection {
 
         @Override
         @RequiredReadAction
-        public void visitClass(PsiClass aClass) {
+        public void visitClass(@Nonnull PsiClass aClass) {
             if (isSingleton(aClass) && !AnnotationUtil.isAnnotated(aClass, SINGLETON_ANNOTATIONS, 0)) {
-                myHolder.registerProblem(
-                    aClass.getNameIdentifier(),
-                    "Missed @Singleton annotation",
-                    new AddAnnotationFix(SINGLETON_ANNOTATIONS.get(0), aClass)
-                );
+                myHolder.newProblem(DevKitLocalize.noSingletonAnnotationInspectionMessage())
+                    .range(aClass.getNameIdentifier())
+                    .withFix(new AddAnnotationFix(SINGLETON_ANNOTATIONS.get(0), aClass))
+                    .create();
             }
         }
     }
 
     @Nonnull
     @Override
-    public HighlightDisplayLevel getDefaultLevel() {
-        return HighlightDisplayLevel.ERROR;
+    public String getDisplayName() {
+        return DevKitLocalize.noSingletonAnnotationInspectionDisplayName().get();
     }
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return "Missed @Singleton annotation for services";
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.ERROR;
     }
 
     @Override

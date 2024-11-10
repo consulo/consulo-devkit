@@ -1,0 +1,46 @@
+inspections.group.name:
+  text: "Grammar/BNF"
+duplicate.rule.inspection.display.name:
+  text: "Duplicate rule"
+duplicate.rule.inspection.message:
+  text: "''{0}'' rule is defined more than once"
+identical.choice.branches.inspection.display.name:
+  text: "Identical choice branches"
+identical.choice.branches.inspection.message:
+  text: "Duplicate choice branch"
+left.recursion.inspection.display.name:
+  text: "Left recursion"
+left.recursion.inspection.message:
+  text: "''{0}'' employs left-recursion unsupported by generator"
+suspicious.token.inspection.display.name:
+  text: "Suspicious token"
+suspicious.token.inspection.message:
+  text: "''{0}'' token looks like a reference to a missing rule"
+unreachable.choice.branch.inspection.display.name:
+  text: "Unreachable choice branch"
+unreachable.choice.branch.inspection.message.matches.nothing:
+  text: "Branch is unable to match anything due to & or ! conditions"
+unreachable.choice.branch.inspection.message.matches.eof:
+  text: "Branch matches empty input making the rest branches unreachable"
+unused.attribute.inspection.display.name:
+  text: "Unused attribute"
+unused.attribute.inspection.message.unused:
+  text: "Unused attribute"
+unused.attribute.inspection.message.deprecated:
+  text: "Deprecated attribute, use ''{0}'' instead"
+unused.rule.inspection.display.name:
+  text: "Unused rule"
+unused.rule.inspection.message.non.private.recovery.rule:
+  text: "Non-private recovery rule"
+unused.rule.inspection.message.unreachable.rule:
+  text: "Unreachable rule"
+unused.rule.inspection.message.unused.rule:
+  text: "Unused rule"
+unused.rule.inspection.message.reachable.fake.rule:
+  text: "Reachable fake rule"
+unused.rule.inspection.message.unused.fake.rule:
+  text: "Unused fake rule"
+create.rule.from.token.quickfix.name:
+  text: "Create ''{0}'' rule"
+create.rule.from.token.quickfix.family.name:
+  text: "Create rule from usage"

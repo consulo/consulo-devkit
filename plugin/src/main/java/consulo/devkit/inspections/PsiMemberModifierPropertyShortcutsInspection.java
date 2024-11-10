@@ -11,6 +11,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
@@ -23,8 +24,10 @@ import java.util.Map;
  */
 @ExtensionImpl
 public class PsiMemberModifierPropertyShortcutsInspection extends InternalInspection {
+    private static final String PSI_PSI_MODIFIER_LIST_OWNER_CLASS_NAME = PsiModifierListOwner.class.getName();
     private static final String PSI_MEMBER_CLASS_NAME = PsiMember.class.getName();
     private static final Map<String, String> MODIFIER_TO_SHORTCUT_METHOD_NAME = Map.of(
+        "ABSTRACT", "isAbstract",
         "FINAL", "isFinal",
         "PRIVATE", "isPrivate",
         "PROTECTED", "isProtected",
@@ -54,25 +57,25 @@ public class PsiMemberModifierPropertyShortcutsInspection extends InternalInspec
                     return;
                 }
 
-                PsiElement method = methodExpression.resolve();
-                PsiElement parent = (method == null) ? null : method.getParent();
-                PsiClass ownerClass = parent instanceof PsiClass psiClass ? psiClass : null;
-                if (ownerClass == null || !InheritanceUtil.isInheritor(ownerClass, PSI_MEMBER_CLASS_NAME)) {
+                PsiClass declaringClass = methodExpression.resolve() instanceof PsiMethod method ? method.getContainingClass() : null;
+                if (declaringClass == null || !PSI_PSI_MODIFIER_LIST_OWNER_CLASS_NAME.equals(declaringClass.getQualifiedName())) {
                     return;
                 }
 
-                if (argumentList.getExpressions()[0] instanceof PsiReferenceExpression nameRefExpr
+                if (methodExpression.getQualifierExpression() instanceof PsiExpression qualifier
+                    && qualifier.getType() instanceof PsiClassType classType
+                    && classType.resolve() instanceof PsiClass ownerClass
+                    && InheritanceUtil.isInheritor(ownerClass, PSI_MEMBER_CLASS_NAME)
+                    && argumentList.getExpressions()[0] instanceof PsiReferenceExpression nameRefExpr
                     && nameRefExpr.resolve() instanceof PsiField field
                     && MODIFIER_TO_SHORTCUT_METHOD_NAME.keySet().contains(field.getName())
                 ) {
                     String replacementMethodName = MODIFIER_TO_SHORTCUT_METHOD_NAME.get(field.getName());
-                    PsiExpression qualifier = methodExpression.getQualifierExpression();
-                    String replacementCodeBlock = (qualifier != null ? qualifier.getText() : "") + "." + replacementMethodName + "()";
-                    holder.registerProblem(
-                        expression,
-                        getDisplayName(),
-                        new MyQuickFix(expression, replacementMethodName, replacementCodeBlock)
-                    );
+                    String replacementCodeBlock = qualifier.getText() + "." + replacementMethodName + "()";
+                    holder.newProblem(LocalizeValue.of(getDisplayName()))
+                        .range(expression)
+                        .withFix(new MyQuickFix(expression, replacementMethodName, replacementCodeBlock))
+                        .create();
                 }
             }
         };

@@ -22,9 +22,9 @@ import com.intellij.java.language.psi.PsiNewExpression;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.query.QueryExecutor;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.project.util.query.QueryExecutorBase;
 import consulo.ui.ex.awt.JBList;
@@ -54,7 +54,7 @@ public class UndesirableClassUsageInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Undesirable class usage";
+        return DevKitLocalize.undesirableClassUsageInspectionDisplayName().get();
     }
 
     @Override
@@ -69,12 +69,11 @@ public class UndesirableClassUsageInspection extends InternalInspection {
                     return;
                 }
 
-                PsiElement res = ref.resolve();
-                if (res == null) {
+                if (!(ref.resolve() instanceof PsiClass psiClass)) {
                     return;
                 }
 
-                String name = ((PsiClass)res).getQualifiedName();
+                String name = psiClass.getQualifiedName();
                 if (name == null) {
                     return;
                 }
@@ -84,11 +83,10 @@ public class UndesirableClassUsageInspection extends InternalInspection {
                     return;
                 }
 
-                holder.registerProblem(
-                    expression,
-                    "Please use '" + replacement + "' instead",
-                    ProblemHighlightType.LIKE_DEPRECATED
-                );
+                holder.newProblem(DevKitLocalize.undesirableClassUsageInspectionMessage(replacement))
+                    .range(expression)
+                    .highlightType(ProblemHighlightType.LIKE_DEPRECATED)
+                    .create();
             }
         };
     }

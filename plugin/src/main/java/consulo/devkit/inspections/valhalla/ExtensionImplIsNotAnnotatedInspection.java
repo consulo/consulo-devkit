@@ -8,6 +8,7 @@ import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiIdentifier;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
@@ -23,7 +24,7 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Extension implementation is not annotated by @ExtensionImpl";
+        return DevKitLocalize.extensionImplIsNotAnnotatedInspectionDisplayName().get();
     }
 
     @Override
@@ -31,20 +32,16 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection {
         return new JavaElementVisitor() {
             @Override
             @RequiredReadAction
-            public void visitClass(PsiClass aClass) {
+            public void visitClass(@Nonnull PsiClass aClass) {
                 PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
-                if (nameIdentifier == null) {
-                    return;
-                }
-
-                if (!ExtensionImplUtil.isTargetClass(aClass)) {
+                if (nameIdentifier == null || !ExtensionImplUtil.isTargetClass(aClass)) {
                     return;
                 }
 
                 // not annotated by @ExtensionAPI, and not annotated by @ExtensionImpl, but has @ExtensionAPI in class hierarchy
-                if (!AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, 0) &&
-                    !AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionImpl, 0) &&
-                    AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, AnnotationUtil.CHECK_HIERARCHY)) {
+                if (!AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, 0)
+                    && !AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionImpl, 0)
+                    && AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, AnnotationUtil.CHECK_HIERARCHY)) {
                     PsiClass syntheticAction = JavaPsiFacade.getInstance(aClass.getProject())
                         .findClass(ValhallaClasses.SyntheticIntentionAction, aClass.getResolveScope());
                     if (syntheticAction != null && aClass.isInheritor(syntheticAction, true)) {
@@ -52,12 +49,11 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection {
                     }
 
                     AddAnnotationFix addAnnotationFix = new AddAnnotationFix(ValhallaClasses.ExtensionImpl, aClass);
-                    holder.registerProblem(
-                        nameIdentifier,
-                        "Extension implementation not annotated by @ExtensionImpl",
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        addAnnotationFix
-                    );
+                    holder.newProblem(DevKitLocalize.extensionImplIsNotAnnotatedInspectionMessage())
+                        .range(nameIdentifier)
+                        .withFix(addAnnotationFix)
+                        .highlightType(ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+                        .create();
                 }
             }
         };

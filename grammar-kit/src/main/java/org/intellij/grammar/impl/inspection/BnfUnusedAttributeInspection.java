@@ -17,15 +17,16 @@
 package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.psi.BnfAttr;
 import org.intellij.grammar.psi.BnfVisitor;
-import org.jetbrains.annotations.Nls;
 
 import jakarta.annotation.Nonnull;
 
@@ -39,8 +40,14 @@ import static org.intellij.grammar.KnownAttribute.getCompatibleAttribute;
 public class BnfUnusedAttributeInspection extends LocalInspectionTool {
     @Nonnull
     @Override
+    public String getGroupDisplayName() {
+        return BnfLocalize.inspectionsGroupName().get();
+    }
+
+    @Nonnull
+    @Override
     public String getDisplayName() {
-        return "Unused attribute";
+        return BnfLocalize.unusedAttributeInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -49,20 +56,13 @@ public class BnfUnusedAttributeInspection extends LocalInspectionTool {
         return HighlightDisplayLevel.WARNING;
     }
 
-    @Nls
-    @Nonnull
-    @Override
-    public String getGroupDisplayName() {
-        return "Grammar/BNF";
-    }
-
     @Nonnull
     @Override
     public PsiElementVisitor buildVisitor(
         @Nonnull ProblemsHolder holder,
         boolean isOnTheFly,
         @Nonnull LocalInspectionToolSession session,
-        Object state
+        @Nonnull Object state
     ) {
         return new BnfVisitor<Void>() {
             @Override
@@ -70,8 +70,12 @@ public class BnfUnusedAttributeInspection extends LocalInspectionTool {
                 final String name = o.getName();
                 if (!name.toUpperCase().equals(name) && getAttribute(name) == null) {
                     KnownAttribute newAttr = getCompatibleAttribute(name);
-                    String text = newAttr == null ? "Unused attribute" : "Deprecated attribute, use '" + newAttr.getName() + "' instead";
-                    holder.registerProblem(o.getId(), text);
+                    LocalizeValue text = newAttr == null
+                        ? BnfLocalize.unusedAttributeInspectionMessageUnused()
+                        : BnfLocalize.unusedAttributeInspectionMessageDeprecated(newAttr.getName());
+                    holder.newProblem(text)
+                        .range(o.getId())
+                        .create();
                 }
                 return null;
             }

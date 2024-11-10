@@ -19,16 +19,16 @@ import com.intellij.java.language.codeInsight.AnnotationUtil;
 import com.intellij.java.language.psi.JavaElementVisitor;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiField;
-import com.intellij.java.language.psi.PsiModifier;
 import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.inspections.valhalla.ValhallaClasses;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFix;
-import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiReference;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
@@ -39,7 +39,7 @@ public class StatefulEpInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Stateful Extension";
+        return DevKitLocalize.statefulEpInspectionDisplayName().get();
     }
 
     @Override
@@ -63,20 +63,21 @@ public class StatefulEpInspection extends InternalInspection {
             final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
 
             for (Class c : new Class[]{PsiElement.class, PsiReference.class, Project.class}) {
-                if (c == Project.class && (field.hasModifierProperty(PsiModifier.FINAL) || isProjectComponent)) {
+                if (c == Project.class && (field.isFinal() || isProjectComponent)) {
                     continue;
                 }
-                String message;
+                LocalizeValue message;
                 if (c != PsiElement.class) {
-                    message = "Don't use " + c.getSimpleName() + " as a field in extension";
+                    message = DevKitLocalize.statefulEpInspectionMessage(c.getSimpleName());
                 }
                 else {
-                    message = "Potential memory leak: don't hold PsiElement, use SmartPsiElementPointer instead" +
-                        (isQuickFix ? "; also see LocalQuickFixOnPsiElement" : "");
+                    message = DevKitLocalize.statefulEpInspectionMessageDontHoldPsiElement(isQuickFix ? 1 : 0);
                 }
 
                 if (InheritanceUtil.isInheritor(field.getType(), c.getCanonicalName())) {
-                    holder.registerProblem(field, message, ProblemHighlightType.GENERIC_ERROR_OR_WARNING);
+                    holder.newProblem(message)
+                        .range(field)
+                        .create();
                 }
             }
         }
