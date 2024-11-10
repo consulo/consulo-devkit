@@ -9,7 +9,6 @@ import consulo.language.psi.PsiReferenceProvider;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.IncorrectOperationException;
 import consulo.navigation.NavigationItem;
-import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -80,7 +79,7 @@ public class PsiJavaHelper extends JavaHelper {
         if (aClass == null) {
             return super.findClassMethods(version, className, methodType, methodName, paramCount, paramTypes);
         }
-        List<NavigatablePsiElement> result = ContainerUtil.newArrayList();
+        List<NavigatablePsiElement> result = new ArrayList<>();
         PsiMethod[] methods = methodType == MethodType.CONSTRUCTOR ? aClass.getConstructors() : aClass.getMethods();
         for (PsiMethod method : methods) {
             if (!acceptsName(methodName, method.getName())) {
@@ -137,22 +136,16 @@ public class PsiJavaHelper extends JavaHelper {
     }
 
     private static boolean acceptsMethod(PsiMethod method, boolean staticMethods) {
-        PsiModifierList modifierList = method.getModifierList();
-        return staticMethods == modifierList.hasModifierProperty(PsiModifier.STATIC)
-            && !modifierList.hasModifierProperty(PsiModifier.ABSTRACT)
-            && (
-                modifierList.hasModifierProperty(PsiModifier.PUBLIC)
-                    || !(modifierList.hasModifierProperty(PsiModifier.PROTECTED) || modifierList.hasModifierProperty(PsiModifier.PRIVATE))
-            );
+        return staticMethods == method.isStatic() && !method.isAbstract()
+            && (method.isPublic() || !(method.isProtected() || method.isPrivate()));
     }
 
     @Nonnull
     @Override
     public List<String> getMethodTypes(String version, NavigatablePsiElement method) {
-        if (!(method instanceof PsiMethod)) {
+        if (!(method instanceof PsiMethod psiMethod)) {
             return super.getMethodTypes(version, method);
         }
-        PsiMethod psiMethod = (PsiMethod)method;
         PsiType returnType = psiMethod.getReturnType();
         List<String> strings = new ArrayList<>();
         strings.add(returnType == null ? "" : returnType.getCanonicalText());
@@ -168,10 +161,9 @@ public class PsiJavaHelper extends JavaHelper {
     @Nonnull
     @Override
     public String getDeclaringClass(@Nullable NavigatablePsiElement method) {
-        if (!(method instanceof PsiMethod)) {
+        if (!(method instanceof PsiMethod psiMethod)) {
             return super.getDeclaringClass(method);
         }
-        PsiMethod psiMethod = (PsiMethod)method;
         PsiClass aClass = psiMethod.getContainingClass();
         return aClass == null ? "" : StringUtil.notNullize(aClass.getQualifiedName());
     }
@@ -179,10 +171,10 @@ public class PsiJavaHelper extends JavaHelper {
     @Nonnull
     @Override
     public List<String> getAnnotations(NavigatablePsiElement element) {
-        if (!(element instanceof PsiModifierListOwner)) {
+        if (!(element instanceof PsiModifierListOwner modifierListOwner)) {
             return super.getAnnotations(element);
         }
-        PsiModifierList modifierList = ((PsiModifierListOwner)element).getModifierList();
+        PsiModifierList modifierList = modifierListOwner.getModifierList();
         if (modifierList == null) {
             return List.of();
         }
