@@ -17,6 +17,7 @@
 package org.jetbrains.idea.devkit.util;
 
 import com.intellij.java.language.psi.*;
+import consulo.annotation.access.RequiredReadAction;
 import jakarta.annotation.Nonnull;
 
 import jakarta.annotation.Nullable;
@@ -29,10 +30,7 @@ public class PsiUtil {
     }
 
     public static boolean isInstantiable(@Nonnull PsiClass aClass) {
-        if (aClass.hasModifierProperty(PsiModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord()) {
-            return false;
-        }
-        return true;
+        return !aClass.isAbstract() && !aClass.isInterface() && !aClass.isAnnotationType() && !aClass.isEnum() && !aClass.isRecord();
     }
 
     public static boolean isOneStatementMethod(@Nonnull PsiMethod method) {
@@ -41,6 +39,7 @@ public class PsiUtil {
     }
 
     @Nullable
+    @RequiredReadAction
     public static String getReturnedLiteral(PsiMethod method, PsiClass cls) {
         if (isOneStatementMethod(method)) {
             final PsiExpression value = ((PsiReturnStatement)method.getBody().getStatements()[0]).getReturnValue();
@@ -48,21 +47,23 @@ public class PsiUtil {
                 final Object str = literalExpression.getValue();
                 return str == null ? null : str.toString();
             }
-            else if (value instanceof PsiMethodCallExpression methodCallExpression) {
-                if (isSimpleClassNameExpression(methodCallExpression)) {
-                    return cls.getName();
-                }
+            else if (value instanceof PsiMethodCallExpression methodCallExpression && isSimpleClassNameExpression(methodCallExpression)) {
+                return cls.getName();
             }
         }
         return null;
     }
 
+    @RequiredReadAction
     private static boolean isSimpleClassNameExpression(PsiMethodCallExpression expr) {
         String text = expr.getText();
         if (text == null) {
             return false;
         }
-        text = text.replaceAll(" ", "").replaceAll("\n", "").replaceAll("\t", "").replaceAll("\r", "");
+        text = text.replaceAll(" ", "")
+            .replaceAll("\n", "")
+            .replaceAll("\t", "")
+            .replaceAll("\r", "");
         return "getClass().getSimpleName()".equals(text) || "this.getClass().getSimpleName()".equals(text);
     }
 

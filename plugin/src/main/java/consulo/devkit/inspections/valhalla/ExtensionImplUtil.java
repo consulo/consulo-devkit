@@ -9,8 +9,12 @@ import consulo.annotation.access.RequiredReadAction;
  */
 public class ExtensionImplUtil {
     @RequiredReadAction
-    public static boolean isTargetClass(PsiClass aClass) {
-        return !(aClass.isAbstract() || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord())
-            && aClass.getContainingClass() == null;
+    public static boolean isTargetClass(PsiClass psiClass) {
+        return !psiClass.isAbstract()
+            && !psiClass.isInterface()
+            && !psiClass.isAnnotationType()
+            && !psiClass.isEnum()
+            && !psiClass.isRecord()
+            && psiClass.getContainingClass() == null;
     }
 }
