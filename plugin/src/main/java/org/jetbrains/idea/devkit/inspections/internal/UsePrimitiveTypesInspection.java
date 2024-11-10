@@ -19,8 +19,10 @@ import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.PsiUtil;
 import com.siyeh.IntentionPowerPackBundle;
 import com.siyeh.ig.PsiReplacementUtil;
+import com.siyeh.localize.IntentionPowerPackLocalize;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.ast.IElementType;
 import consulo.language.editor.inspection.LocalQuickFix;
 import consulo.language.editor.inspection.ProblemDescriptor;
@@ -33,10 +35,17 @@ import org.jetbrains.annotations.Nls;
 
 @ExtensionImpl
 public class UsePrimitiveTypesInspection extends InternalInspection {
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return DevKitLocalize.usePrimitiveTypesInspectionDisplayName().get();
+    }
+
     @Override
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
+            @RequiredReadAction
             public void visitBinaryExpression(@Nonnull PsiBinaryExpression expression) {
                 super.visitBinaryExpression(expression);
                 final IElementType tokenType = expression.getOperationTokenType();
@@ -49,13 +58,12 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
                             name = IntentionPowerPackBundle.message("replace.equality.with.not.equals.intention.name");
                         }
                         else {
-                            name = IntentionPowerPackBundle.message("replace.equality.with.equals.intention.name");
+                            name = IntentionPowerPackLocalize.replaceEqualityWithEqualsIntentionName().get();
                         }
-                        holder.registerProblem(
-                            expression.getOperationSign(),
-                            "Primitive types should be compared with .equals",
-                            new ReplaceEqualityWithEqualsFix(name)
-                        );
+                        holder.newProblem(DevKitLocalize.usePrimitiveTypesInspectionMessage())
+                            .range(expression.getOperationSign())
+                            .withFix(new ReplaceEqualityWithEqualsFix(name))
+                            .create();
                     }
                 }
             }
@@ -73,12 +81,6 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
         return false;
     }
 
-    @Nonnull
-    @Override
-    public String getDisplayName() {
-        return "Use .equals with primitive types";
-    }
-
     private static class ReplaceEqualityWithEqualsFix implements LocalQuickFix {
         private final String myName;
 
@@ -86,7 +88,6 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
             myName = name;
         }
 
-        @Nls
         @Nonnull
         @Override
         public String getName() {

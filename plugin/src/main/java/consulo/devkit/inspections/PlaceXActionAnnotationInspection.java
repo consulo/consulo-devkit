@@ -25,6 +25,7 @@ import com.intellij.java.language.psi.PsiMethod;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.query.Query;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.util.lang.StringUtil;
@@ -62,10 +63,16 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
 
     @Nonnull
     @Override
+    public String getDisplayName() {
+        return DevKitLocalize.placeXactionAnnotationInspectionDisplayName().get();
+    }
+
+    @Nonnull
+    @Override
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitMethod(PsiMethod method) {
+            public void visitMethod(@Nonnull PsiMethod method) {
                 if (method.isConstructor()) {
                     return;
                 }
@@ -81,11 +88,12 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
                     for (PsiMethod itMethod : query) {
                         if (CallStateType.findSelfActionType(itMethod) == CallStateType.NONE) {
                             String actionClass = selfActionType.getActionClass();
-                            holder.registerProblem(
-                                nameIdentifier,
-                                "Overriden methods are not annotated by @" + StringUtil.getShortName(actionClass),
-                                new MyAnnotateMethodFix(actionClass)
-                            );
+                            holder.newProblem(DevKitLocalize.placeXactionAnnotationInspectionMessageForOverridden(
+                                    StringUtil.getShortName(actionClass)
+                                ))
+                                .range(nameIdentifier)
+                                .withFix(new MyAnnotateMethodFix(actionClass))
+                                .create();
                             break;
                         }
                     }
@@ -96,21 +104,14 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
                         CallStateType superActionType = CallStateType.findSelfActionType(superMethod);
                         if (superActionType != CallStateType.NONE) {
                             String actionClass = superActionType.getActionClass();
-                            holder.registerProblem(
-                                nameIdentifier,
-                                "Missed annotation @" + StringUtil.getShortName(actionClass) + ", provided by super method",
-                                new AddAnnotationFix(actionClass, method)
-                            );
+                            holder.newProblem(DevKitLocalize.placeXactionAnnotationInspectionMessage(StringUtil.getShortName(actionClass)))
+                                .range(nameIdentifier)
+                                .withFix(new AddAnnotationFix(actionClass, method))
+                                .create();
                         }
                     }
                 }
             }
         };
-    }
-
-    @Nonnull
-    @Override
-    public String getDisplayName() {
-        return "Invocation state(read, write, dispatch) annotation place inspection";
     }
 }

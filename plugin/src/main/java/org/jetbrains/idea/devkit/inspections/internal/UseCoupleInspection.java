@@ -18,15 +18,16 @@ package org.jetbrains.idea.devkit.inspections.internal;
 import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.language.editor.inspection.ProblemHighlightType;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiReference;
+import consulo.localize.LocalizeValue;
 import consulo.util.lang.Pair;
 import consulo.util.lang.StringUtil;
+import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.quickfix.UseCoupleQuickFix;
 
-import jakarta.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,7 +41,13 @@ public class UseCoupleInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "org.jetbrains.idea.devkit.inspections.internal.UseCoupleInspection";
+        return DevKitLocalize.useCoupleInspectionDisplayName().get();
+    }
+
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "UseCouple";
     }
 
     @Override
@@ -49,19 +56,19 @@ public class UseCoupleInspection extends InternalInspection {
             @Override
             public void visitTypeElement(@Nonnull PsiTypeElement type) {
                 final String canonicalText = type.getType().getCanonicalText();
-                if (canonicalText.startsWith(PAIR_FQN)) {
-                    if (canonicalText.contains("<") && canonicalText.endsWith(">")) {
-                        String genericTypes =
-                            canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.length() - 1);
-                        final List<String> types = StringUtil.split(genericTypes, ",");
-                        if (types.size() == 2 && StringUtil.equals(types.get(0), types.get(1))) {
-                            final List<String> parts = StringUtil.split(types.get(0), ".");
-                            String typeName = parts.get(parts.size() - 1);
-                            final String name = "Change to Couple<" + typeName + ">";
-                            holder.registerProblem(type, name, ProblemHighlightType.GENERIC_ERROR_OR_WARNING, new UseCoupleQuickFix(name));
-                        }
+                if (canonicalText.startsWith(PAIR_FQN) && canonicalText.contains("<") && canonicalText.endsWith(">")) {
+                    String genericTypes =
+                        canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.length() - 1);
+                    final List<String> types = StringUtil.split(genericTypes, ",");
+                    if (types.size() == 2 && StringUtil.equals(types.get(0), types.get(1))) {
+                        final List<String> parts = StringUtil.split(types.get(0), ".");
+                        String typeName = parts.get(parts.size() - 1);
+                        LocalizeValue name = DevKitLocalize.useCoupleInspectionMessageType(typeName);
+                        holder.newProblem(name)
+                            .range(type)
+                            .withFix(new UseCoupleQuickFix(name))
+                            .create();
                     }
-
                 }
                 super.visitTypeElement(type);
             }
@@ -70,19 +77,17 @@ public class UseCoupleInspection extends InternalInspection {
             @RequiredReadAction
             public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
                 if (expression.getText().startsWith("Pair.create")) {
-                    final PsiReference reference = expression.getMethodExpression().getReference();
+                    PsiReference reference = expression.getMethodExpression().getReference();
                     if (reference != null && reference.resolve() instanceof PsiMethod method) {
-                        final PsiClass psiClass = method.getContainingClass();
+                        PsiClass psiClass = method.getContainingClass();
                         if (psiClass != null && PAIR_FQN.equals(psiClass.getQualifiedName())) {
-                            final PsiType[] types = expression.getArgumentList().getExpressionTypes();
+                            PsiType[] types = expression.getArgumentList().getExpressionTypes();
                             if (types.length == 2 && Objects.equals(types[0], types[1])) {
-                                final String name = "Change to Couple.of";
-                                holder.registerProblem(
-                                    expression,
-                                    name,
-                                    ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                                    new UseCoupleQuickFix(name)
-                                );
+                                LocalizeValue name = DevKitLocalize.useCoupleInspectionMessageConstructor();
+                                holder.newProblem(name)
+                                    .range(expression)
+                                    .withFix(new UseCoupleQuickFix(name))
+                                    .create();
                             }
                         }
                     }

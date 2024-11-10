@@ -6,17 +6,15 @@ import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.WriteAction;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFixOnPsiElement;
-import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.project.Project;
-import org.jetbrains.annotations.Nls;
-import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
-
 import jakarta.annotation.Nonnull;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 /**
  * @author VISTALL
@@ -27,7 +25,6 @@ public class MigratedExtensionsToInspection extends InternalInspection {
     private static final String annotationFq = "consulo.annotation.internal.MigratedExtensionsTo";
 
     private static class DelegateMethodsFix extends LocalQuickFixOnPsiElement {
-
         protected DelegateMethodsFix(@Nonnull PsiMethod element) {
             super(element);
         }
@@ -35,7 +32,7 @@ public class MigratedExtensionsToInspection extends InternalInspection {
         @Nonnull
         @Override
         public String getText() {
-            return "Delegate to new class";
+            return DevKitLocalize.migratedExtensionsToInspectionQuickfixName().get();
         }
 
         @Override
@@ -48,8 +45,7 @@ public class MigratedExtensionsToInspection extends InternalInspection {
             PsiMethod method = (PsiMethod)psiElement;
 
             PsiClass containingClass = method.getContainingClass();
-            if (containingClass == null || !method.hasModifierProperty(PsiModifier.STATIC)
-                || !method.hasModifierProperty(PsiModifier.PUBLIC)) {
+            if (containingClass == null || !method.isStatic() || !method.isPublic()) {
                 return;
             }
 
@@ -83,10 +79,10 @@ public class MigratedExtensionsToInspection extends InternalInspection {
                 codeBlock.append("return ");
             }
 
-            codeBlock.append(operand.getType().getCanonicalText());
-            codeBlock.append(".");
-            codeBlock.append(method.getName());
-            codeBlock.append("(");
+            codeBlock.append(operand.getType().getCanonicalText())
+                .append(".")
+                .append(method.getName())
+                .append("(");
             for (int i = 0; i < parameters.length; i++) {
                 if (i != 0) {
                     codeBlock.append(", ");
@@ -104,22 +100,22 @@ public class MigratedExtensionsToInspection extends InternalInspection {
             WriteAction.run(() -> {
                 PsiCodeBlock body = method.getBody();
 
+                assert body != null;
                 body.replace(newBlock);
             });
         }
 
-        @Nls
         @Nonnull
         @Override
         public String getFamilyName() {
-            return "DevKit";
+            return DevKitLocalize.inspectionsGroupName().get();
         }
     }
 
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "@MigratedExtensionsTo helper";
+        return DevKitLocalize.migratedExtensionsToInspectionDisplayName().get();
     }
 
     @Override
@@ -127,7 +123,7 @@ public class MigratedExtensionsToInspection extends InternalInspection {
         return new JavaElementVisitor() {
             @Override
             @RequiredReadAction
-            public void visitMethod(PsiMethod method) {
+            public void visitMethod(@Nonnull PsiMethod method) {
                 PsiClass containingClass = method.getContainingClass();
 
                 if (containingClass != null && AnnotationUtil.isAnnotated(containingClass, annotationFq, 0)) {
@@ -136,12 +132,10 @@ public class MigratedExtensionsToInspection extends InternalInspection {
                         return;
                     }
 
-                    holder.registerProblem(
-                        nameIdentifier,
-                        "Delegate method calls",
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                        new DelegateMethodsFix(method)
-                    );
+                    holder.newProblem(DevKitLocalize.migratedExtensionsToInspectionMessage())
+                        .range(nameIdentifier)
+                        .withFix(new DelegateMethodsFix(method))
+                        .create();
                 }
             }
         };

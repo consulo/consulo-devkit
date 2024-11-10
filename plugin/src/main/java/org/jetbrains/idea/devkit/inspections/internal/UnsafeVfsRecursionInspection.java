@@ -19,15 +19,14 @@ import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.project.Project;
-import consulo.util.lang.ref.Ref;
+import consulo.util.lang.ref.SimpleReference;
 import consulo.virtualFileSystem.VirtualFile;
-
 import jakarta.annotation.Nonnull;
 
 @ExtensionImpl
@@ -35,14 +34,10 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
     private static final String VIRTUAL_FILE_CLASS_NAME = VirtualFile.class.getName();
     private static final String GET_CHILDREN_METHOD_NAME = "getChildren";
 
-    private static final String MESSAGE = "VirtualFile.getChildren() is called from a recursive method. " +
-        "This may cause an endless loop on cyclic symlinks. " +
-        "Please use VfsUtilCore.visitChildrenRecursively() instead.";
-
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Unsafe VFS recursion";
+        return DevKitLocalize.unsafeVfsRecursionInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -52,17 +47,15 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
             @Override
             @RequiredReadAction
             public void visitMethodCallExpression(@Nonnull final PsiMethodCallExpression expression) {
-                final Project project = expression.getProject();
-                final JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
-
                 final PsiReferenceExpression methodRef = expression.getMethodExpression();
-                if (!GET_CHILDREN_METHOD_NAME.equals(methodRef.getReferenceName())) {
-                    return;
-                }
-                final PsiElement methodElement = methodRef.resolve();
-                if (methodElement instanceof PsiMethod method) {
-                    final PsiClass aClass = method.getContainingClass();
-                    final PsiClass virtualFileClass = facade.findClass(VIRTUAL_FILE_CLASS_NAME, GlobalSearchScope.allScope(project));
+                if (GET_CHILDREN_METHOD_NAME.equals(methodRef.getReferenceName())
+                    && methodRef.resolve() instanceof PsiMethod method) {
+
+                    PsiClass aClass = method.getContainingClass();
+                    Project project = expression.getProject();
+                    JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
+                    PsiClass virtualFileClass = facade.findClass(VIRTUAL_FILE_CLASS_NAME, GlobalSearchScope.allScope(project));
+
                     if (!InheritanceUtil.isInheritorOrSelf(aClass, virtualFileClass, true)) {
                         return;
                     }
@@ -72,20 +65,22 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
                         return;
                     }
                     final String containingMethodName = containingMethod.getName();
-                    final Ref<Boolean> result = Ref.create();
+                    final SimpleReference<Boolean> result = SimpleReference.create();
                     containingMethod.accept(new JavaRecursiveElementVisitor() {
                         @Override
                         public void visitMethodCallExpression(@Nonnull final PsiMethodCallExpression expression2) {
                             if (expression2 != expression
                                 && containingMethodName.equals(expression2.getMethodExpression().getReferenceName())
                                 && expression2.resolveMethod() == containingMethod) {
-                                result.set(Boolean.TRUE);
+                                result.set(true);
                             }
                         }
                     });
 
                     if (!result.isNull()) {
-                        holder.registerProblem(expression, MESSAGE);
+                        holder.newProblem(DevKitLocalize.unsafeVfsRecursionInspectionMessage())
+                            .range(expression)
+                            .create();
                     }
                 }
             }

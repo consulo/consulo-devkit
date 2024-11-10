@@ -21,6 +21,7 @@ import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiIdentifier;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.content.LanguageContentFolderScopes;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -34,13 +35,12 @@ import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.Nls;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +52,18 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
     private static final String INTENTION = IntentionAction.class.getName();
     private static final String SYNTHETIC_INTENTION = SyntheticIntentionAction.class.getName();
     private static final String INSPECTION_DESCRIPTIONS = "intentionDescriptions";
+
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return DevKitLocalize.intentionDescriptionNotFoundInspectionDisplayName().get();
+    }
+
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "IntentionDescriptionNotFoundInspection";
+    }
 
     @Override
     public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
@@ -99,11 +111,10 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
             if (descr != null) {
                 if (!hasBeforeAndAfterTemplate(dir.getVirtualFile())) {
                     PsiElement problem = psiClass.getNameIdentifier();
-                    holder.registerProblem(
-                        problem == null ? nameIdentifier : problem,
-                        "Intention must have 'before.*.template' and 'after.*.template' beside 'description.html'",
-                        ProblemHighlightType.GENERIC_ERROR_OR_WARNING
-                    );
+                    holder.newProblem(DevKitLocalize.intentionDescriptionNotFoundInspectionMessageBeforeAfterTemplate())
+                        .range(problem == null ? nameIdentifier : problem)
+                        .onTheFly(isOnTheFly)
+                        .create();
                 }
 
                 return;
@@ -111,12 +122,12 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
         }
 
         final PsiElement problem = psiClass.getNameIdentifier();
-        holder.registerProblem(
-            problem == null ? nameIdentifier : problem,
-            "Intention does not have a description",
-            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-            new CreateHtmlDescriptionFix(descriptionDir, module, true)
-        );
+        holder.newProblem(DevKitLocalize.intentionDescriptionNotFoundInspectionMessage())
+            .range(problem == null ? nameIdentifier : problem)
+            .withFix(new CreateHtmlDescriptionFix(descriptionDir, module, true))
+            .highlightType(ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+            .onTheFly(isOnTheFly)
+            .create();
     }
 
     @Nullable
@@ -182,18 +193,5 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
         else {
             return PsiDirectory.EMPTY_ARRAY;
         }
-    }
-
-    @Nls
-    @Nonnull
-    @Override
-    public String getDisplayName() {
-        return "Intention Description Checker";
-    }
-
-    @Nonnull
-    @Override
-    public String getShortName() {
-        return "IntentionDescriptionNotFoundInspection";
     }
 }

@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.intention;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.codeEditor.Editor;
 import consulo.language.editor.intention.IntentionAction;
@@ -25,13 +26,12 @@ import consulo.language.psi.PsiFile;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
 import consulo.project.Project;
-import consulo.util.lang.Pair;
+import consulo.util.lang.Couple;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
-
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 /**
  * @author Vadim Romansky
@@ -47,16 +47,18 @@ public class BnfFlipChoiceIntention implements IntentionAction {
     }
 
     @Override
+    @RequiredReadAction
     public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile file) {
         return getArguments(file, editor.getCaretModel().getOffset()) != null;
     }
 
     @Override
+    @RequiredReadAction
     public void invoke(@Nonnull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        final Pair<PsiElement, PsiElement> arguments = getArguments(file, editor.getCaretModel().getOffset());
-      if (arguments == null) {
-        return;
-      }
+        final Couple<PsiElement> arguments = getArguments(file, editor.getCaretModel().getOffset());
+        if (arguments == null) {
+            return;
+        }
         PsiElement newFirst = BnfElementFactory.createRuleFromText(project, "a ::=" + arguments.second.getText()).getExpression();
         PsiElement newSecond = BnfElementFactory.createRuleFromText(project, "a ::=" + arguments.first.getText()).getExpression();
         arguments.second.replace(newSecond);
@@ -64,7 +66,8 @@ public class BnfFlipChoiceIntention implements IntentionAction {
     }
 
     @Nullable
-    private static Pair<PsiElement, PsiElement> getArguments(PsiFile file, int offset) {
+    @RequiredReadAction
+    private static Couple<PsiElement> getArguments(PsiFile file, int offset) {
         PsiElement element = file.getViewProvider().findElementAt(offset);
         final BnfChoice choice = PsiTreeUtil.getParentOfType(element, BnfChoice.class);
         if (choice == null) {
@@ -77,7 +80,7 @@ public class BnfFlipChoiceIntention implements IntentionAction {
             int start = prev == null ? choice.getTextRange().getStartOffset() : prev.getTextRange().getEndOffset();
             int end = cur.getTextRange().getStartOffset();
             if (start <= offset && offset <= end) {
-                return prev == null ? null : Pair.create(cur, prev);
+                return prev == null ? null : Couple.of(cur, prev);
             }
             prev = cur;
         }

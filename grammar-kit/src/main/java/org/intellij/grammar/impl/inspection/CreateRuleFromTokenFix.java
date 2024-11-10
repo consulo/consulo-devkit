@@ -16,6 +16,8 @@
 
 package org.intellij.grammar.impl.inspection;
 
+import consulo.annotation.access.RequiredReadAction;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import jakarta.annotation.Nonnull;
 
 import consulo.application.AccessToken;
@@ -34,11 +36,8 @@ import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.impl.refactor.BnfIntroduceRuleHandler;
 
 /**
- * Created by IntelliJ IDEA.
- * Date: 8/25/11
- * Time: 7:45 PM
- *
  * @author Vadim Romansky
+ * @since 2011-08-25
  */
 public class CreateRuleFromTokenFix implements LocalQuickFix {
     private final String myName;
@@ -50,16 +49,17 @@ public class CreateRuleFromTokenFix implements LocalQuickFix {
     @Nonnull
     @Override
     public String getName() {
-        return "Create '" + myName + "' rule";
+        return BnfLocalize.createRuleFromTokenQuickfixName(myName).get();
     }
 
     @Nonnull
     @Override
     public String getFamilyName() {
-        return "Create rule from usage";
+        return BnfLocalize.createRuleFromTokenQuickfixFamilyName().get();
     }
 
     @Override
+    @RequiredReadAction
     public void applyFix(final @Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
         final AccessToken token = WriteAction.start();
         try {

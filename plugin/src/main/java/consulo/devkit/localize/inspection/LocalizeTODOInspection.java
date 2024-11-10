@@ -62,11 +62,9 @@ public class LocalizeTODOInspection extends InternalInspection {
 
                 // unquote string. if expression is reference - it's invalid, and must be fixed anyway
                 String text = StringUtil.unquoteString(stringLiteral.getText());
-                holder.registerProblem(
-                    stringLiteral,
-                    new TextRange(0, stringLiteral.getTextLength()),
-                    LocalizeValue.localizeTODO("'" + text + "' not localized").get()
-                );
+                holder.newProblem(DevKitLocalize.localizeTodoInspectionMessage(text))
+                    .range(stringLiteral, new TextRange(0, stringLiteral.getTextLength()))
+                    .create();
             }
         };
     }

@@ -74,7 +74,7 @@ public class PsiMemberModifierPropertyShortcutsInspection extends InternalInspec
                     String replacementCodeBlock = qualifier.getText() + "." + replacementMethodName + "()";
                     holder.newProblem(LocalizeValue.of(getDisplayName()))
                         .range(expression)
-                        .withFixes(new MyQuickFix(expression, replacementMethodName, replacementCodeBlock))
+                        .withFix(new MyQuickFix(expression, replacementMethodName, replacementCodeBlock))
                         .create();
                 }
             }

@@ -3,14 +3,14 @@ package consulo.devkit.inspections.internal;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.TypeConversionUtil;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.project.ui.wm.IdeFrame;
-import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
-
 import jakarta.annotation.Nonnull;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 /**
  * @author VISTALL
@@ -43,7 +43,7 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Wrong cast - require explicit conversion";
+        return DevKitLocalize.wrongInjectBindingInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -56,7 +56,7 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
     public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
-            public void visitTypeCastExpression(PsiTypeCastExpression expression) {
+            public void visitTypeCastExpression(@Nonnull PsiTypeCastExpression expression) {
                 super.visitTypeCastExpression(expression);
 
                 PsiTypeElement castTypeElement = expression.getCastType();
@@ -72,7 +72,7 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
             }
 
             @Override
-            public void visitInstanceOfExpression(PsiInstanceOfExpression expression) {
+            public void visitInstanceOfExpression(@Nonnull PsiInstanceOfExpression expression) {
                 super.visitInstanceOfExpression(expression);
 
                 PsiTypeElement checkTypeElement = expression.getCheckType();
@@ -105,11 +105,10 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
                         continue;
                     }
 
-                    holder.registerProblem(
-                        castTypeElement,
-                        "Wrong cast - require explicit conversion",
-                        ProblemHighlightType.GENERIC_ERROR
-                    );
+                    holder.newProblem(DevKitLocalize.wrongCastRequireExplicitConversionInspectionMessage())
+                        .range(castTypeElement)
+                        .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                        .create();
                 }
             }
         };

@@ -291,10 +291,142 @@ label.java.sdk:
 alternative.consulo.sdk:
   text: 'Alt Consulo SDK:'
 localize.todo.inspection.display.name:
-  text: Localize TODO inspection
+  text: "Localize TODO inspection"
+localize.todo.inspection.message:
+  text: "''{0}'' is not localized"
 invocation.state.validate.inspection.display.name:
-  text: Invocation state (read, write, dispatch) validate inspection
+  text: "Invocation state (read, write, dispatch) validate inspection"
 psi.member.modifier.property.stortcuts.inspection.display.name:
-  text: PsiMember.hasModifierProperty() replacement with shortcut methods
+  text: "PsiMember.hasModifierProperty() replacement with shortcut methods"
 psi.member.replace.with.shortcut.fix:
   text: "Replace with .{0}()"
+intention.metadata.missed.inspection.display.name:
+  text: "Missing @IntentionMetaData annotation"
+intention.metadata.missed.inspection.fix:
+  text: "Missed @IntentionMetaData annotation"
+complicated.logger.initialization.inspection.display.name:
+  text: "Complicated Logger Initialization"
+complicated.logger.initialization.inspection.message:
+  text: "Complicated logger initialization"
+complicated.logger.initialization.quickfix.name:
+  text: "Replace by class constant"
+dont.use.new.pair.inspection.display.name:
+  text: "Don't use constructor of Pair class"
+dont.use.new.pair.inspection.message:
+  text: "Replace with Pair.create()"
+extension.impl.is.not.annotated.inspection.display.name:
+  text: "Extension implementation is not annotated by @ExtensionImpl"
+extension.impl.is.not.annotated.inspection.message:
+  text: "Extension implementation is not annotated by @ExtensionImpl"
+file.equals.usage.inspection.display.name:
+  text: "File.equals() usage"
+file.equals.usage.inspection.message:
+  text: "Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. Please use FileUtil.filesEquals/fileHashCode/compareFiles instead"
+inspection.description.not.found.inspection.display.name:
+  text: "Inspection Description Checker"
+inspection.description.not.found.inspection.message:
+  text: "Inspection does not have a description"
+intention.description.not.found.inspection.display.name:
+  text: "Intention Description Checker"
+intention.description.not.found.inspection.message:
+  text: "Intention does not have a description"
+intention.description.not.found.inspection.message.before.after.template:
+  text: "Intention must have 'before.*.template' and 'after.*.template' beside 'description.html'"
+intention.meta.data.missed.inspection.display.name:
+  text: "Missing @IntentionMetaData annotation"
+intention.meta.data.missed.inspection.message:
+  text: "Missing @IntentionMetaData annotation"
+migrated.extensions.to.inspection.display.name:
+  text: "@MigratedExtensionsTo helper"
+migrated.extensions.to.inspection.message:
+  text: "Delegate method calls"
+migrated.extensions.to.inspection.quickfix.name:
+  text: "Delegate to new class"
+no.inject.annotation.inspection.display.name:
+  text: "Missing @Inject annotation for services & extensions"
+no.inject.annotation.inspection.message:
+  text: "Missing @Inject annotation"
+no.singleton.annotation.inspection.display.name:
+  text: "Missing @Singleton annotation for services"
+no.singleton.annotation.inspection.message:
+  text: "Missing @Singleton annotation"
+place.xaction.annotation.inspection.display.name:
+  text: "Invocation state(read, write, dispatch) annotation place inspection"
+place.xaction.annotation.inspection.message:
+  text: "Missed annotation @{0}, provided by super method"
+place.xaction.annotation.inspection.message.for.overridden:
+  text: "Overriden methods are not annotated by @{0}"
+#  types:
+#    - string
+#  names:
+#    - annotationName
+platform.error.inspection.display.name:
+  text: "Platform method specific restriction"
+platform.error.inspection.message:
+  text: "Platform call restricted. Use 'consulo.platform.Platform.current()'"
+stateful.ep.inspection.display.name:
+  text: "Stateful Extension"
+stateful.ep.inspection.message:
+  text: "Don''t use {0} as a field in extension"
+stateful.ep.inspection.message.dont.hold.psi.element:
+  text: "Potential memory leak: don''t hold PsiElement, use SmartPsiElementPointer instead {0, choice, 0#|1#; also see LocalQuickFixOnPsiElement}"
+undesirable.class.usage.inspection.display.name:
+  text: "Undesirable class usage"
+undesirable.class.usage.inspection.message:
+  text: "Please use ''{0}'' instead"
+#  types:
+#    - string
+#  names:
+#    - replacement
+unsafe.vfs.recursion.inspection.display.name:
+  text: "Unsafe VFS recursion"
+unsafe.vfs.recursion.inspection.message:
+  text: "VirtualFile.getChildren() is called from a recursive method. This may cause an endless loop on cyclic symlinks. Please use VfsUtilCore.visitChildrenRecursively() instead."
+use.couple.inspection.display.name:
+  text: "Use Couple<T> instead of Pair<T, T>"
+use.couple.inspection.message.type:
+  text: "Change to Couple<{0}>"
+use.couple.inspection.message.constructor:
+  text: "Change to Couple.of"
+use.dpi.aware.insets.inspection.display.name:
+  text: "Use DPI-aware insets"
+use.dpi.aware.insets.inspection.message:
+  text: "Replace with JBUI.insets(...)"
+use.gray.inspection.display.name:
+  text: "Using new Color(a,a,a)"
+use.gray.inspection.message:
+  text: "Convert to Gray._{0}"
+use.gray.inspection.quickfix.family.name:
+  text: "Convert to Gray"
+use.jbcolor.inspection.display.name:
+  text: "Use Darcula aware JBColor"
+use.jbcolor.inspection.message:
+  text: "Replace with JBColor"
+use.jbcolor.inspection.message.change:
+  text: "Change to JBColor.{0}"
+use.primitive.types.inspection.display.name:
+  text: "Use .equals with primitive types"
+use.primitive.types.inspection.message:
+  text: "Primitive types should be compared with .equals"
+wrong.inject.binding.inspection.display.name:
+  text: "Wrong inject binding inside constructor"
+wrong.inject.binding.inspection.message.unknown:
+  text: "Unknown inject binding {0}"
+wrong.inject.binding.inspection.message.too.high:
+  text: "Target injecting scope too high. Current: {0}, target: {1}"
+wrong.cast.require.explicit.conversion.inspection.display.name:
+  text: "Wrong cast — require explicit conversion"
+wrong.cast.require.explicit.conversion.inspection.message:
+  text: "Wrong cast — require explicit conversion"
+title.capitalization.inspection.inspection.display.name:
+  text: "Incorrect dialog title capitalization"
+title.capitalization.inspection.inspection.message:
+  text: "Dialog title ''{0}'' is not properly capitalized. It should have title capitalization"
+title.capitalization.inspection.inspection.quickfix.name:
+  text: "Properly capitalize ''{0}''"
+title.capitalization.inspection.inspection.quickfix.family.name:
+  text: "Properly capitalize"
+awt.error.inspection.display.name:
+  text: "AWT & Swing implementation error reporting"
+awt.error.inspection.message:
+  text: "AWT & Swing implementation cannot be used. Please visit guide for writing UI"

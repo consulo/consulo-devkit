@@ -8,19 +8,21 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.CachedValueProvider;
 import consulo.devkit.DevKitComponentScope;
 import consulo.devkit.inspections.valhalla.ValhallaClasses;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiModificationTracker;
 import consulo.language.psi.util.LanguageCachedValueUtil;
+import consulo.localize.LocalizeValue;
 import consulo.util.collection.ContainerUtil;
-import consulo.util.lang.Pair;
+import consulo.util.lang.Couple;
 import consulo.util.lang.StringUtil;
-import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
+
 import java.util.Set;
 
 /**
@@ -46,43 +48,57 @@ public class WrongInjectBindingInspection extends InternalInspection {
         CONTAINER_PATH_MANAGER
     );
 
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return DevKitLocalize.wrongInjectBindingInspectionDisplayName().get();
+    }
+
+    @Nonnull
+    @Override
+    public HighlightDisplayLevel getDefaultLevel() {
+        return HighlightDisplayLevel.ERROR;
+    }
+
     @Override
     public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
             @RequiredReadAction
-            public void visitParameter(PsiParameter parameter) {
-                PsiElement declarationScope = parameter.getDeclarationScope();
-                if (!(declarationScope instanceof PsiMethod)) {
+            public void visitParameter(@Nonnull PsiParameter parameter) {
+                if (!(parameter.getDeclarationScope() instanceof PsiMethod declarationScope)) {
                     return;
                 }
 
-                DevKitComponentScope thisScope = resolveComponentScope((PsiMethod)declarationScope);
+                DevKitComponentScope thisScope = resolveComponentScope(declarationScope);
 
                 if (thisScope != null) {
                     DevKitComponentScope injectScope = resolveServiceScope(parameter.getType(), thisScope, true);
                     if (injectScope == null || injectScope.ordinal() > thisScope.ordinal()) {
-                        holder.registerProblem(parameter.getTypeElement(), getDescription(thisScope, injectScope, parameter.getType()));
+                        holder.newProblem(getDescription(thisScope, injectScope, parameter.getType()))
+                            .range(parameter.getTypeElement())
+                            .create();
                     }
                 }
             }
         };
     }
 
-    private String getDescription(
+    @Nonnull
+    private LocalizeValue getDescription(
         @Nonnull DevKitComponentScope scope,
         @Nullable DevKitComponentScope targetScope,
         @Nonnull PsiType targetType
     ) {
         if (targetScope == null) {
-            return "Unknown inject binding " + StringUtil.SINGLE_QUOTER.apply(PsiFormatUtil.formatType(
+            return DevKitLocalize.wrongInjectBindingInspectionMessageUnknown(StringUtil.SINGLE_QUOTER.apply(PsiFormatUtil.formatType(
                 targetType,
                 0,
                 PsiSubstitutor.EMPTY
-            ));
+            )));
         }
 
-        return "Target injecting scope too high. Current: " + scope + ", target: " + targetScope;
+        return DevKitLocalize.wrongInjectBindingInspectionMessageTooHigh(scope, targetScope);
     }
 
     @Nullable
@@ -92,11 +108,11 @@ public class WrongInjectBindingInspection extends InternalInspection {
         @Nonnull DevKitComponentScope targetScope,
         boolean providerCheck
     ) {
-        if (!(type instanceof PsiClassType)) {
+        if (!(type instanceof PsiClassType classType)) {
             return null;
         }
 
-        PsiClassType.ClassResolveResult classResolveResult = ((PsiClassType)type).resolveGenerics();
+        PsiClassType.ClassResolveResult classResolveResult = classType.resolveGenerics();
 
         PsiClass element = classResolveResult.getElement();
         if (element == null) {
@@ -129,16 +145,12 @@ public class WrongInjectBindingInspection extends InternalInspection {
 
     @Nonnull
     private static Set<String> getImplicitBindings(DevKitComponentScope scope) {
-        switch (scope) {
-            case APPLICATION:
-                return APPLICATION_IMPLICIT;
-            case PROJECT:
-                return PROJECT_IMPLICIT;
-            case MODULE:
-                return MODULE_IMPLICIT;
-            default:
-                throw new UnsupportedOperationException();
-        }
+        return switch (scope) {
+            case APPLICATION -> APPLICATION_IMPLICIT;
+            case PROJECT -> PROJECT_IMPLICIT;
+            case MODULE -> MODULE_IMPLICIT;
+            default -> throw new UnsupportedOperationException();
+        };
     }
 
     @Nullable
@@ -152,8 +164,8 @@ public class WrongInjectBindingInspection extends InternalInspection {
         );
     }
 
-    @RequiredReadAction
     @Nullable
+    @RequiredReadAction
     private static DevKitComponentScope resolveComponentScopeImpl(PsiMethod method) {
         if (!method.isConstructor()) {
             return null;
@@ -166,7 +178,7 @@ public class WrongInjectBindingInspection extends InternalInspection {
 
         // owner contains inject annotation
         if (AnnotationUtil.isAnnotated(method, NoInjectAnnotationInspection.INJECT_ANNOTATIONS, 0)) {
-            for (Pair<String, String> apiAndImpl : ValhallaClasses.ApiToImpl) {
+            for (Couple<String> apiAndImpl : ValhallaClasses.ApiToImpl) {
                 PsiAnnotation implAnno = AnnotationUtil.findAnnotation(containingClass, apiAndImpl.getSecond());
                 if (implAnno != null) {
                     PsiAnnotationMemberValue value = implAnno.findDeclaredAttributeValue(PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
@@ -210,17 +222,5 @@ public class WrongInjectBindingInspection extends InternalInspection {
         }
 
         return null;
-    }
-
-    @Nonnull
-    @Override
-    public HighlightDisplayLevel getDefaultLevel() {
-        return HighlightDisplayLevel.ERROR;
-    }
-
-    @Nonnull
-    @Override
-    public String getDisplayName() {
-        return "Wrong inject binding inside constructor";
     }
 }

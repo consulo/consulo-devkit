@@ -8,6 +8,7 @@ module consulo.devkit.grammar.kit.core {
 
     exports consulo.devkit.grammarKit.generator;
     exports consulo.devkit.grammarKit.icon;
+    exports consulo.devkit.grammarKit.localize;
     exports org.intellij.grammar;
     exports org.intellij.grammar.analysis;
     exports org.intellij.grammar.config;

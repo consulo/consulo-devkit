@@ -19,9 +19,9 @@ package org.jetbrains.idea.devkit.inspections;
 import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.content.LanguageContentFolderScopes;
 import consulo.language.editor.inspection.InspectionTool;
-import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiElement;
@@ -33,13 +33,12 @@ import consulo.module.content.ModuleRootManager;
 import consulo.project.Project;
 import consulo.util.collection.ContainerUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.Nls;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 import org.jetbrains.idea.devkit.inspections.quickfix.CreateHtmlDescriptionFix;
 import org.jetbrains.idea.devkit.util.PsiUtil;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +48,18 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class InspectionDescriptionNotFoundInspection extends InternalInspection {
+    @Nonnull
+    @Override
+    public String getDisplayName() {
+        return DevKitLocalize.inspectionDescriptionNotFoundInspectionDisplayName().get();
+    }
+
+    @Nonnull
+    @Override
+    public String getShortName() {
+        return "InspectionDescriptionNotFoundInspection";
+    }
+
     @Override
     public PsiElementVisitor buildInternalVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
@@ -62,9 +73,9 @@ public class InspectionDescriptionNotFoundInspection extends InternalInspection 
 
     @RequiredReadAction
     private void checkClass(PsiClass psiClass, ProblemsHolder holder) {
-        final Project project = psiClass.getProject();
-        final PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
-        final Module module = psiClass.getModule();
+        Project project = psiClass.getProject();
+        PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
+        Module module = psiClass.getModule();
 
         if (nameIdentifier == null || module == null || !PsiUtil.isInstantiable(psiClass)) {
             return;
@@ -101,13 +112,11 @@ public class InspectionDescriptionNotFoundInspection extends InternalInspection 
             }
         }
 
-        final PsiElement problem = getProblemElement(psiClass, method);
-        holder.registerProblem(
-            problem == null ? nameIdentifier : problem,
-            "Inspection does not have a description",
-            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-            new CreateHtmlDescriptionFix(filename, module, false)
-        );
+        PsiElement problem = getProblemElement(psiClass, method);
+        holder.newProblem(DevKitLocalize.inspectionDescriptionNotFoundInspectionMessage())
+            .range(problem == null ? nameIdentifier : problem)
+            .withFix(new CreateHtmlDescriptionFix(filename, module, false))
+            .create();
     }
 
     @Nullable
@@ -173,22 +182,9 @@ public class InspectionDescriptionNotFoundInspection extends InternalInspection 
         }
         for (PsiMethod method : cls.getMethods()) {
             if (method.getParameterList().getParametersCount() == 0 && method.getName().equals(name)) {
-                return method.getModifierList().hasModifierProperty(PsiModifier.ABSTRACT) ? null : method;
+                return method.isAbstract() ? null : method;
             }
         }
         return findNearestMethod(name, cls.getSuperClass());
-    }
-
-    @Nls
-    @Nonnull
-    @Override
-    public String getDisplayName() {
-        return "Inspection Description Checker";
-    }
-
-    @Nonnull
-    @Override
-    public String getShortName() {
-        return "InspectionDescriptionNotFoundInspection";
     }
 }

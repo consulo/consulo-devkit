@@ -18,15 +18,14 @@ package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.language.editor.inspection.LocalInspectionTool;
-import consulo.language.editor.inspection.LocalInspectionToolSession;
-import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.editor.inspection.SuppressionUtil;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
+import consulo.language.editor.inspection.*;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiReference;
+import consulo.localize.LocalizeValue;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.JBIterable;
 import consulo.util.lang.function.Condition;
@@ -58,7 +57,7 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Unused rule";
+        return BnfLocalize.unusedRuleInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -71,7 +70,7 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
     @Nonnull
     @Override
     public String getGroupDisplayName() {
-        return "Grammar/BNF";
+        return BnfLocalize.inspectionsGroupName().get();
     }
 
     @Override
@@ -89,10 +88,10 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
 
         return new PsiElementVisitor() {
             @Override
+            @RequiredReadAction
             public void visitFile(PsiFile file) {
                 if (file instanceof BnfFile bnfFile) {
                     checkFile(holder, bnfFile, isOnTheFly);
-
                 }
             }
         };
@@ -124,18 +123,17 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
 
         inParsing.add(rules.first()); // add root rule
         for (int size = 0, prev = -1; size != prev; prev = size, size = inParsing.size()) {
-            bnfTraverserNoAttrs(myFile).expand(new Cond<PsiElement>() {
+            bnfTraverserNoAttrs(myFile).expand(new Cond<>() {
                 @Override
                 public boolean value(PsiElement element) {
-                    if (element instanceof BnfRule) {
-                        BnfRule rule = (BnfRule) element;
+                    if (element instanceof BnfRule rule) {
                         // add recovery rules to calculation
                         BnfAttr recoverAttr = findAttribute(myFile.getVersion(), rule, KnownAttribute.RECOVER_WHILE);
                         value(recoverAttr == null ? null : recoverAttr.getExpression());
                         return inParsing.contains(rule) || inSuppressed.contains(rule);
                     }
-                    else if (element instanceof BnfReferenceOrToken) {
-                        ContainerUtil.addIfNotNull(inParsing, ((BnfReferenceOrToken) element).resolveRule());
+                    else if (element instanceof BnfReferenceOrToken referenceOrToken) {
+                        ContainerUtil.addIfNotNull(inParsing, referenceOrToken.resolveRule());
                         return false;
                     }
                     return true;
@@ -151,39 +149,42 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
         }
 
         for (BnfRule r : rules.skip(1).filter(o -> !inSuppressed.contains(o))) {
-            String message = null;
+            LocalizeValue message = null;
             if (ParserGeneratorUtil.Rule.isFake(r)) {
                 if (inExpr.contains(r)) {
-                    message = "Reachable fake rule";
+                    message = BnfLocalize.unusedRuleInspectionMessageReachableFakeRule();
                 }
                 else if (!inAttrs.containsKey(r)) {
-                    message = "Unused fake rule";
+                    message = BnfLocalize.unusedRuleInspectionMessageUnusedFakeRule();
                 }
             }
             else if (getCompatibleAttribute(inAttrs.get(r)) == RECOVER_WHILE) {
                 if (!ParserGeneratorUtil.Rule.isPrivate(r)) {
-                    message = "Non-private recovery rule";
+                    message = BnfLocalize.unusedRuleInspectionMessageNonPrivateRecoveryRule();
                 }
             }
             else if (!inExpr.contains(r)) {
-                message = "Unused rule";
+                message = BnfLocalize.unusedRuleInspectionMessageUnusedRule();
             }
             else if (!inParsing.contains(r)) {
-                message = "Unreachable rule";
+                message = BnfLocalize.unusedRuleInspectionMessageUnreachableRule();
             }
             if (message != null) {
-                holder.registerProblem(r.getId(), message);
+                holder.newProblem(message)
+                    .range(r.getId())
+                    .create();
             }
         }
     }
 
     @Nullable
+    @RequiredReadAction
     private static BnfRule resolveRule(@Nullable PsiElement o) {
         if (!(o instanceof BnfReferenceOrToken || o instanceof BnfStringLiteralExpression)) {
             return null;
         }
         PsiReference reference = ContainerUtil.findInstance(o.getReferences(), BnfReferenceImpl.class);
         PsiElement target = reference != null ? reference.resolve() : null;
-        return target instanceof BnfRule ? (BnfRule) target : null;
+        return target instanceof BnfRule rule ? rule : null;
     }
 }

@@ -17,10 +17,10 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import com.intellij.java.language.psi.*;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
-import consulo.localize.LocalizeValue;
 import consulo.util.lang.Pair;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.quickfix.ChangeToPairCreateQuickFix;
@@ -37,7 +37,7 @@ public class DontUseNewPairInspection extends InternalInspection {
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Don't use constructor of Pair class";
+        return DevKitLocalize.dontUseNewPairInspectionDisplayName().get();
     }
 
     @Override
@@ -54,12 +54,11 @@ public class DontUseNewPairInspection extends InternalInspection {
                 ) {
                     final PsiType[] types = ((PsiClassType)type).getParameters();
                     if (Arrays.equals(types, params.getExpressionTypes())) {
-                        holder.registerProblem(
-                            expression,
-                            LocalizeValue.localizeTODO("Replace with Pair.create()").get(),
-                            ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
-                            new ChangeToPairCreateQuickFix()
-                        );
+                        holder.newProblem(DevKitLocalize.dontUseNewPairInspectionMessage())
+                            .range(expression)
+                            .withFix(new ChangeToPairCreateQuickFix())
+                            .highlightType(ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+                            .create();
                     }
                 }
                 super.visitNewExpression(expression);

@@ -18,6 +18,7 @@ package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -33,29 +34,23 @@ import org.intellij.grammar.psi.BnfRule;
 import org.intellij.grammar.psi.BnfVisitor;
 import org.intellij.grammar.psi.impl.BnfRefOrTokenImpl;
 import org.intellij.grammar.psi.impl.GrammarUtil;
-import org.jetbrains.annotations.Nls;
 
 /**
- * Created by IntelliJ IDEA.
- * Date: 8/25/11
- * Time: 7:06 PM
- *
  * @author Vadim Romansky
+ * @since 2011-08-25
  */
 @ExtensionImpl
 public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
-    @Nls
     @Nonnull
     @Override
     public String getGroupDisplayName() {
-        return "Grammar/BNF";
+        return BnfLocalize.inspectionsGroupName().get();
     }
 
-    @Nls
     @Nonnull
     @Override
     public String getDisplayName() {
-        return "Suspicious token";
+        return BnfLocalize.suspiciousTokenInspectionDisplayName().get();
     }
 
     @Nonnull
@@ -91,9 +86,10 @@ public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
                     Object resolve = reference == null ? null : reference.resolve();
                     String text = token.getText();
                     if (resolve == null && !tokens.contains(text) && isTokenTextSuspicious(text)) {
-                        holder.registerProblem(token,
-                            "'" + text + "' token looks like a reference to a missing rule",
-                            new CreateRuleFromTokenFix(text));
+                        holder.newProblem(BnfLocalize.suspiciousTokenInspectionMessage(text))
+                            .range(token)
+                            .withFix(new CreateRuleFromTokenFix(text))
+                            .create();
                     }
                 }
                 return null;
