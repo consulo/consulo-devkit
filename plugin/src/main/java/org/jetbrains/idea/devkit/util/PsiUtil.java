@@ -25,67 +25,67 @@ import jakarta.annotation.Nullable;
  * @author Konstantin Bulenkov
  */
 public class PsiUtil {
-  private PsiUtil() {
-  }
-
-  public static boolean isInstantiable(@Nonnull PsiClass aClass) {
-    if (aClass.hasModifierProperty(PsiModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord()) {
-      return false;
+    private PsiUtil() {
     }
-    return true;
-  }
 
-  public static boolean isOneStatementMethod(@Nonnull PsiMethod method) {
-    final PsiCodeBlock body = method.getBody();
-    return body != null && body.getStatements().length == 1 && body.getStatements()[0] instanceof PsiReturnStatement;
-  }
-
-  @Nullable
-  public static String getReturnedLiteral(PsiMethod method, PsiClass cls) {
-    if (isOneStatementMethod(method)) {
-      final PsiExpression value = ((PsiReturnStatement)method.getBody().getStatements()[0]).getReturnValue();
-      if (value instanceof PsiLiteralExpression literalExpression) {
-        final Object str = literalExpression.getValue();
-        return str == null ? null : str.toString();
-      }
-      else if (value instanceof PsiMethodCallExpression methodCallExpression) {
-        if (isSimpleClassNameExpression(methodCallExpression)) {
-          return cls.getName();
+    public static boolean isInstantiable(@Nonnull PsiClass aClass) {
+        if (aClass.hasModifierProperty(PsiModifier.ABSTRACT) || aClass.isInterface() || aClass.isAnnotationType() || aClass.isEnum() || aClass.isRecord()) {
+            return false;
         }
-      }
+        return true;
     }
-    return null;
-  }
 
-  private static boolean isSimpleClassNameExpression(PsiMethodCallExpression expr) {
-    String text = expr.getText();
-    if (text == null) {
-      return false;
+    public static boolean isOneStatementMethod(@Nonnull PsiMethod method) {
+        final PsiCodeBlock body = method.getBody();
+        return body != null && body.getStatements().length == 1 && body.getStatements()[0] instanceof PsiReturnStatement;
     }
-    text = text.replaceAll(" ", "").replaceAll("\n", "").replaceAll("\t", "").replaceAll("\r", "");
-    return "getClass().getSimpleName()".equals(text) || "this.getClass().getSimpleName()".equals(text);
-  }
 
-  @Nullable
-  public static PsiMethod findNearestMethod(String name, @Nullable PsiClass cls) {
-    if (cls == null) {
-      return null;
+    @Nullable
+    public static String getReturnedLiteral(PsiMethod method, PsiClass cls) {
+        if (isOneStatementMethod(method)) {
+            final PsiExpression value = ((PsiReturnStatement)method.getBody().getStatements()[0]).getReturnValue();
+            if (value instanceof PsiLiteralExpression literalExpression) {
+                final Object str = literalExpression.getValue();
+                return str == null ? null : str.toString();
+            }
+            else if (value instanceof PsiMethodCallExpression methodCallExpression) {
+                if (isSimpleClassNameExpression(methodCallExpression)) {
+                    return cls.getName();
+                }
+            }
+        }
+        return null;
     }
-    for (PsiMethod method : cls.getMethods()) {
-      if (method.getParameterList().getParametersCount() == 0 && method.getName().equals(name)) {
-        return method.getModifierList().hasModifierProperty(PsiModifier.ABSTRACT) ? null : method;
-      }
-    }
-    return findNearestMethod(name, cls.getSuperClass());
-  }
 
-  @Nullable
-  public static PsiExpression getReturnedExpression(PsiMethod method) {
-    if (isOneStatementMethod(method)) {
-      return ((PsiReturnStatement)method.getBody().getStatements()[0]).getReturnValue();
+    private static boolean isSimpleClassNameExpression(PsiMethodCallExpression expr) {
+        String text = expr.getText();
+        if (text == null) {
+            return false;
+        }
+        text = text.replaceAll(" ", "").replaceAll("\n", "").replaceAll("\t", "").replaceAll("\r", "");
+        return "getClass().getSimpleName()".equals(text) || "this.getClass().getSimpleName()".equals(text);
     }
-    else {
-      return null;
+
+    @Nullable
+    public static PsiMethod findNearestMethod(String name, @Nullable PsiClass cls) {
+        if (cls == null) {
+            return null;
+        }
+        for (PsiMethod method : cls.getMethods()) {
+            if (method.getParameterList().getParametersCount() == 0 && method.getName().equals(name)) {
+                return method.getModifierList().hasModifierProperty(PsiModifier.ABSTRACT) ? null : method;
+            }
+        }
+        return findNearestMethod(name, cls.getSuperClass());
     }
-  }
+
+    @Nullable
+    public static PsiExpression getReturnedExpression(PsiMethod method) {
+        if (isOneStatementMethod(method)) {
+            return ((PsiReturnStatement)method.getBody().getStatements()[0]).getReturnValue();
+        }
+        else {
+            return null;
+        }
+    }
 }
