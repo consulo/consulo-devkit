@@ -111,8 +111,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         if ("getValue".equals(methodExpr.getReferenceName())
             && methodExpr.getQualifierExpression() instanceof PsiReferenceExpression qualRefExpr
             && qualRefExpr.resolve() instanceof PsiField field
-            && field.hasModifierProperty(PsiModifier.STATIC)
-            && field.hasModifierProperty(PsiModifier.FINAL)) {
+            && field.isStatic() && field.isFinal()) {
             PsiClass psiClass = field.getContainingClass();
             String className = psiClass == null ? null : psiClass.getName();
             if (className != null && className.endsWith("Localize")) {

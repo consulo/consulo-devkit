@@ -101,11 +101,7 @@ class LanguageResolvingUtil {
             @Nullable
             @Override
             public LanguageDefinition apply(final PsiClass language) {
-                if (language.hasModifierProperty(PsiModifier.ABSTRACT)) {
-                    return null;
-                }
-
-                if (ContainerUtil.exists(libraryLanguages, definition -> definition.clazz.equals(language))) {
+                if (language.isAbstract() || ContainerUtil.exists(libraryLanguages, definition -> definition.clazz.equals(language))) {
                     return null;
                 }
 
