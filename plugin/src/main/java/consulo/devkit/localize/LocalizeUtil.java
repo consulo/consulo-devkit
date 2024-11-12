@@ -28,6 +28,8 @@ public class LocalizeUtil {
     private static final String ONE_PREFIX = "one";
     private static final String TWO_PREFIX = "two";
 
+    public static final String TEXT_KEY = "text";
+
     @RequiredReadAction
     @Nullable
     public static PsiMethod findMethodByYAMLKey(YAMLKeyValue element) {

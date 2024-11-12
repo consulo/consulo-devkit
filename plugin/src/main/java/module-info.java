@@ -18,6 +18,8 @@ open module consulo.devkit {
     requires com.palantir.javapoet;
     requires java.compiler;
 
+    requires com.ibm.icu;
+    
     requires xercesImpl;
 
     // TODO remove in future
