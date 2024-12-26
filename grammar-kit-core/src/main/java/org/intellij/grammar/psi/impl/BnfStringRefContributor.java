@@ -86,7 +86,8 @@ public class BnfStringRefContributor extends PsiReferenceContributor {
         return new PatternCondition<>("oneOf") {
             @Override
             public boolean accepts(@Nonnull String s, ProcessingContext context) {
-                return attributes.contains(KnownAttribute.getCompatibleAttribute(s));
+                KnownAttribute compatibleAttribute = getCompatibleAttribute(s);
+                return compatibleAttribute != null && attributes.contains(compatibleAttribute);
             }
         };
     }
