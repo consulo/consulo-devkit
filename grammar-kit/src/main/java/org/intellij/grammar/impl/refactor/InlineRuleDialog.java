@@ -15,10 +15,10 @@
  */
 package org.intellij.grammar.impl.refactor;
 
-import consulo.component.util.localize.BundleBase;
-import consulo.ide.impl.idea.refactoring.inline.InlineOptionsDialog;
+import consulo.language.editor.refactoring.inline.InlineOptionsDialog;
 import consulo.language.psi.ElementDescriptionUtil;
 import consulo.language.psi.PsiReference;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.usage.UsageViewNodeTextLocation;
 import org.intellij.grammar.psi.BnfRule;
@@ -46,30 +46,33 @@ public class InlineRuleDialog extends InlineOptionsDialog {
         init();
     }
 
-    protected String getNameLabelText() {
-        return ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE);
+    @Override
+    protected LocalizeValue getNameLabelText() {
+        return LocalizeValue.localizeTODO(ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE));
     }
 
-    protected String getBorderTitle() {
-        return "Inline";
+    @Override
+    protected LocalizeValue getBorderTitle() {
+        return LocalizeValue.localizeTODO("Inline");
     }
 
-    protected String getInlineThisText() {
-        return BundleBase.replaceMnemonicAmpersand("&This reference only and keep the rule");
+    @Override
+    protected LocalizeValue getInlineThisText() {
+        return LocalizeValue.localizeTODO("&This reference only and keep the rule");
     }
 
-    protected String getInlineAllText() {
-        return BundleBase.replaceMnemonicAmpersand("&All references and remove the rule");
+    @Override
+    protected LocalizeValue getInlineAllText() {
+        return LocalizeValue.localizeTODO("&All references and remove the rule");
     }
 
+    @Override
     protected boolean isInlineThis() {
         return false;
     }
 
+    @Override
     protected void doAction() {
         invokeRefactoring(new BnfInlineRuleProcessor(myRule, getProject(), myReference, isInlineThisOnly()));
-    }
-
-    protected void doHelpAction() {
     }
 }

@@ -26,6 +26,7 @@ import consulo.document.event.DocumentAdapter;
 import consulo.document.event.DocumentEvent;
 import consulo.fileEditor.FileEditorManager;
 import consulo.fileEditor.FileEditorWindow;
+import consulo.fileEditor.util.FileContentUtil;
 import consulo.language.Language;
 import consulo.language.ast.TokenType;
 import consulo.language.file.light.LightVirtualFile;
@@ -45,12 +46,12 @@ import consulo.ui.ex.awt.util.SingleAlarm;
 import consulo.util.dataholder.NotNullLazyKey;
 import consulo.util.lang.function.PairProcessor;
 import consulo.virtualFileSystem.VirtualFile;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.intellij.grammar.psi.BnfExpression;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import javax.swing.*;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -177,7 +178,7 @@ public class LivePreviewHelper {
             }
             files.add(file);
         }
-        consulo.ide.impl.idea.util.FileContentUtil.reparseFiles(project, files, false);
+        FileContentUtil.reparseFiles(project, files, false);
     }
 
     @RequiredReadAction
