@@ -11,6 +11,7 @@ public class LocalizeYamlUtil {
     public static Yaml create() {
         DumperOptions dumperOptions = new DumperOptions();
         dumperOptions.setPrettyFlow(true);
+        dumperOptions.setIndent(4);
         dumperOptions.setAllowUnicode(true);
         dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
         dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
