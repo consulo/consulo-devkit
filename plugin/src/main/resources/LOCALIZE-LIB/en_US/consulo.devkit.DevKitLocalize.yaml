@@ -294,6 +294,22 @@ localize.todo.inspection.display.name:
   text: "Localize TODO inspection"
 localize.todo.inspection.message:
   text: "''{0}'' is not localized"
+localize.editor.notification.compare.action:
+  text: "Compare"
+localize.editor.notification.compare.diff.current.title:
+  text: "Current Localize"
+localize.editor.notification.compare.diff.original.title:
+  text: "Original Localize"
+localize.editor.notification.compare.original.localization.not.found:
+  text: "Original localization not found"
+localize.editor.notification.locale.0.text:
+  text: "Locale: {0}"
+localize.editor.notification.sort.action:
+  text: "Sort"
+localize.editor.notification.sort.in.progress:
+  text: "Reordering..."
+localize.editor.notification.sort.process.name:
+  text: "Sorting Keys"
 invocation.state.validate.inspection.display.name:
   text: "Invocation state (read, write, dispatch) validate inspection"
 psi.member.modifier.property.stortcuts.inspection.display.name:

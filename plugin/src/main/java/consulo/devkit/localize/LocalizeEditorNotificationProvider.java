@@ -88,40 +88,52 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
         }
 
         EditorNotificationBuilder builder = supplier.get();
-        builder.withText(LocalizeValue.localizeTODO("Locale: " + locale.getDisplayName()));
+        builder.withText(DevKitLocalize.localizeEditorNotificationLocale0Text(locale.getDisplayName()));
 
         // disable sorting for default locale
         if (!LocalizeUtil.DEFAULT_LOCALE.equals(locale)) {
-            builder.withAction(LocalizeValue.localizeTODO("Compare"), e -> {
-                String fileName = file.getNameWithoutExtension();
-                String packageName = StringUtil.getPackageName(fileName);
-                String id = packageName + ".localize." + StringUtil.getShortName(fileName);
+            builder.withAction(
+                DevKitLocalize.localizeEditorNotificationCompareAction(),
+                e -> {
+                    String fileName = file.getNameWithoutExtension();
+                    String packageName = StringUtil.getPackageName(fileName);
+                    String id = packageName + ".localize." + StringUtil.getShortName(fileName);
 
-                Collection<VirtualFile> containingFiles = myFileBasedIndex.getContainingFiles(
-                    LocalizeFileIndexExtension.INDEX,
-                    id,
-                    ProjectScopes.getAllScope(myProject)
-                );
+                    Collection<VirtualFile> containingFiles = myFileBasedIndex.getContainingFiles(
+                        LocalizeFileIndexExtension.INDEX,
+                        id,
+                        ProjectScopes.getAllScope(myProject)
+                    );
 
-                VirtualFile otherLocalizeFile = containingFiles.stream().filter(it -> !Objects.equals(it, file)).findAny().orElse(null);
+                    VirtualFile otherLocalizeFile = containingFiles.stream()
+                        .filter(it -> !Objects.equals(it, file))
+                        .findAny()
+                        .orElse(null);
 
-                if (otherLocalizeFile == null) {
-                    Alerts.okError(LocalizeValue.localizeTODO("There not original localization")).showAsync(myProject);
-                    return;
+                    if (otherLocalizeFile == null) {
+                        Alerts.okError(DevKitLocalize.localizeEditorNotificationCompareOriginalLocalizationNotFound()).showAsync(myProject);
+                        return;
+                    }
+
+                    DiffContent currentContent = myDiffContentFactory.create(myProject, file);
+                    DiffContent originalContent = myDiffContentFactory.create(myProject, otherLocalizeFile);
+
+                    myDiffManager.showDiff(
+                        myProject,
+                        new SimpleDiffRequest(
+                            id,
+                            originalContent,
+                            currentContent,
+                            DevKitLocalize.localizeEditorNotificationCompareDiffOriginalTitle().get(),
+                            DevKitLocalize.localizeEditorNotificationCompareDiffCurrentTitle().get()
+                        )
+                    );
                 }
-
-                DiffContent currentContent = myDiffContentFactory.create(myProject, file);
-                DiffContent originalContent = myDiffContentFactory.create(myProject, otherLocalizeFile);
-
-                myDiffManager.showDiff(
-                    myProject,
-                    new SimpleDiffRequest(id, currentContent, originalContent, "Current Localize", "Original Localize")
-                );
-            });
+            );
         }
 
         builder.withAction(
-            LocalizeValue.localizeTODO("Sort"),
+            DevKitLocalize.localizeEditorNotificationSortAction(),
             e -> {
                 PsiFile psiFile = myPsiManager.findFile(file);
                 if (!(psiFile instanceof YAMLFile yamlFile)) {
@@ -133,12 +145,12 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
                     return;
                 }
 
-                // since we use document text - there no sense, but all data must be in file before rewrite
+                // Since we use document text - there no sense, but all data must be in file before rewrite
                 myDocumentManager.commitDocument(document);
 
                 UIAccess uiAccess = UIAccess.current();
 
-                Task.Backgroundable.queue(myProject, "Reordering...", indicator -> reorder(document, uiAccess));
+                Task.Backgroundable.queue(myProject, DevKitLocalize.localizeEditorNotificationSortInProgress(), indicator -> reorder(document, uiAccess));
             }
         );
 
@@ -165,8 +177,11 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
             return;
         }
 
-        WriteAction.runAndWait(() -> {
-            myCommandProcessor.executeCommand(myProject, () -> document.setText(newText), "Sorting Keys", null);
-        });
+        WriteAction.runAndWait(
+            () -> myCommandProcessor.newCommand()
+                .project(myProject)
+                .name(DevKitLocalize.localizeEditorNotificationSortProcessName())
+                .run(() -> document.setText(newText))
+        );
     }
 }
