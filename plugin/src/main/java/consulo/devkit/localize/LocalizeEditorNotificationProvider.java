@@ -50,13 +50,15 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
     private final DiffManager myDiffManager;
 
     @Inject
-    public LocalizeEditorNotificationProvider(Project project,
-                                              PsiDocumentManager documentManager,
-                                              PsiManager psiManager,
-                                              CommandProcessor commandProcessor,
-                                              FileBasedIndex fileBasedIndex,
-                                              DiffContentFactory diffContentFactory,
-                                              DiffManager diffManager) {
+    public LocalizeEditorNotificationProvider(
+        Project project,
+        PsiDocumentManager documentManager,
+        PsiManager psiManager,
+        CommandProcessor commandProcessor,
+        FileBasedIndex fileBasedIndex,
+        DiffContentFactory diffContentFactory,
+        DiffManager diffManager
+    ) {
         myProject = project;
         myDocumentManager = documentManager;
         myPsiManager = psiManager;
@@ -75,9 +77,11 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
     @RequiredReadAction
     @Nullable
     @Override
-    public EditorNotificationBuilder buildNotification(@Nonnull VirtualFile file,
-                                                       @Nonnull FileEditor fileEditor,
-                                                       @Nonnull Supplier<EditorNotificationBuilder> supplier) {
+    public EditorNotificationBuilder buildNotification(
+        @Nonnull VirtualFile file,
+        @Nonnull FileEditor fileEditor,
+        @Nonnull Supplier<EditorNotificationBuilder> supplier
+    ) {
         Locale locale = LocalizeUtil.extractLocaleFromFile(file);
         if (locale == null) {
             return null;
@@ -109,28 +113,34 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
                 DiffContent currentContent = myDiffContentFactory.create(myProject, file);
                 DiffContent originalContent = myDiffContentFactory.create(myProject, otherLocalizeFile);
 
-                myDiffManager.showDiff(myProject, new SimpleDiffRequest(id, currentContent, originalContent, "Current Localize", "Original Localize"));
+                myDiffManager.showDiff(
+                    myProject,
+                    new SimpleDiffRequest(id, currentContent, originalContent, "Current Localize", "Original Localize")
+                );
             });
         }
 
-        builder.withAction(LocalizeValue.localizeTODO("Sort"), e -> {
-            PsiFile psiFile = myPsiManager.findFile(file);
-            if (!(psiFile instanceof YAMLFile yamlFile)) {
-                return;
+        builder.withAction(
+            LocalizeValue.localizeTODO("Sort"),
+            e -> {
+                PsiFile psiFile = myPsiManager.findFile(file);
+                if (!(psiFile instanceof YAMLFile yamlFile)) {
+                    return;
+                }
+
+                Document document = myDocumentManager.getDocument(yamlFile);
+                if (document == null) {
+                    return;
+                }
+
+                // since we use document text - there no sense, but all data must be in file before rewrite
+                myDocumentManager.commitDocument(document);
+
+                UIAccess uiAccess = UIAccess.current();
+
+                Task.Backgroundable.queue(myProject, "Reordering...", indicator -> reorder(document, uiAccess));
             }
-
-            Document document = myDocumentManager.getDocument(yamlFile);
-            if (document == null) {
-                return;
-            }
-
-            // since we use document text - there no sense, but all data must be in file before rewrite
-            myDocumentManager.commitDocument(document);
-
-            UIAccess uiAccess = UIAccess.current();
-
-            Task.Backgroundable.queue(myProject, "Reordering...", indicator -> reorder(document, uiAccess));
-        });
+        );
 
         return builder;
     }
@@ -156,9 +166,7 @@ public class LocalizeEditorNotificationProvider implements EditorNotificationPro
         }
 
         WriteAction.runAndWait(() -> {
-            myCommandProcessor.executeCommand(myProject, () -> {
-                document.setText(newText);
-            }, "Sorting Keys", null);
+            myCommandProcessor.executeCommand(myProject, () -> document.setText(newText), "Sorting Keys", null);
         });
     }
 }
