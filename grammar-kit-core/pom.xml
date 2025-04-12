@@ -54,7 +54,8 @@
             <plugin>
                 <groupId>consulo.maven</groupId>
                 <artifactId>maven-consulo-plugin</artifactId>
-                <extensions>true</extensions>
+                <version>3.6-20250305.111448-8</version>
+                <extension>true</extension>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
