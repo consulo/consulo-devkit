@@ -17,7 +17,6 @@
 package org.intellij.grammar.psi;
 
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.util.function.Processor;
 import consulo.content.scope.SearchScope;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
@@ -26,9 +25,10 @@ import consulo.language.psi.scope.LocalSearchScope;
 import consulo.language.psi.search.ReferencesSearch;
 import consulo.language.psi.search.ReferencesSearchQueryExecutor;
 import consulo.project.util.query.QueryExecutorBase;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.impl.BnfStringImpl;
 
-import jakarta.annotation.Nonnull;
+import java.util.function.Predicate;
 
 /**
  * @author gregsh
@@ -43,7 +43,7 @@ public class BnfAttrPatternRefSearcher extends QueryExecutorBase<PsiReference, R
     @Override
     public void processQuery(
         @Nonnull ReferencesSearch.SearchParameters queryParameters,
-        @Nonnull final Processor<? super PsiReference> consumer
+        @Nonnull final Predicate<? super PsiReference> consumer
     ) {
         final PsiElement target = queryParameters.getElementToSearch();
         if (!(target instanceof BnfRule)) {
@@ -69,7 +69,7 @@ public class BnfAttrPatternRefSearcher extends QueryExecutorBase<PsiReference, R
                 BnfStringLiteralExpression patternExpression = pattern.getLiteralExpression();
 
                 PsiReference ref = BnfStringImpl.matchesElement(patternExpression, target) ? patternExpression.getReference() : null;
-                if (ref != null && ref.isReferenceTo(target) && !consumer.process(ref)) {
+                if (ref != null && ref.isReferenceTo(target) && !consumer.test(ref)) {
                     return;
                 }
             }
