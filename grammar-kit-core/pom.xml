@@ -73,7 +73,7 @@
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-application-api</artifactId>
-            <version>3-20250410.152338-910</version>
+            <version>3-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-document-api</artifactId>
-            <version>3-20250410.152558-908</version>
+            <version>3-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -99,7 +99,7 @@
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-project-api</artifactId>
-            <version>3-20250410.152859-908</version>
+            <version>3-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-language-api</artifactId>
-            <version>3-20250410.152728-908</version>
+            <version>3-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-language-impl</artifactId>
-            <version>3-20250410.152752-697</version>
+            <version>3-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>consulo</groupId>
@@ -134,19 +134,5 @@
             </exclusions>
             <scope>provided</scope>
         </dependency>
-        <!---->
-        <!--<dependency>-->
-            <!--<groupId>consulo</groupId>-->
-            <!--<artifactId>consulo-language-api</artifactId>-->
-            <!--<version>${project.version}</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>consulo</groupId>-->
-            <!--<artifactId>consulo-language-impl</artifactId>-->
-            <!--<version>${project.version}</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
     </dependencies>
 </project>
