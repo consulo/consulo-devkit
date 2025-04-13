@@ -73,7 +73,7 @@
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-application-api</artifactId>
-            <version>${project.version}</version>
+            <version>3-20250410.152338-910</version>
             <scope>provided</scope>
         </dependency>
 
@@ -94,15 +94,35 @@
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-language-api</artifactId>
-            <version>${project.version}</version>
+            <version>3-20250410.152728-908</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>consulo</groupId>
             <artifactId>consulo-language-impl</artifactId>
-            <version>${project.version}</version>
+            <version>3-20250410.152752-697</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>consulo</groupId>
+                    <artifactId>consulo-language-api</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>provided</scope>
         </dependency>
+        <!---->
+        <!--<dependency>-->
+            <!--<groupId>consulo</groupId>-->
+            <!--<artifactId>consulo-language-api</artifactId>-->
+            <!--<version>${project.version}</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>consulo</groupId>-->
+            <!--<artifactId>consulo-language-impl</artifactId>-->
+            <!--<version>${project.version}</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
     </dependencies>
 </project>
