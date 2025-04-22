@@ -17,7 +17,6 @@ package org.intellij.grammar.impl;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.AllIcons;
 import consulo.codeEditor.Editor;
 import consulo.fileEditor.structureView.StructureViewBuilder;
 import consulo.fileEditor.structureView.StructureViewModel;
@@ -31,14 +30,15 @@ import consulo.language.editor.structureView.StructureViewModelBase;
 import consulo.language.icon.IconDescriptorUpdaters;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.ui.image.Image;
 import consulo.util.collection.ContainerUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfFileImpl;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,9 +49,11 @@ import java.util.List;
  */
 @ExtensionImpl
 public class BnfStructureViewFactory implements PsiStructureViewFactory {
+    @Override
     public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
         return new TreeBasedStructureViewBuilder() {
             @Nonnull
+            @Override
             public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
                 return new MyModel(psiFile);
             }
@@ -148,9 +150,9 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
             else if (element instanceof BnfAttrs attrs) {
                 List<BnfAttr> attrList = attrs.getAttrList();
                 final BnfAttr firstAttr = ContainerUtil.getFirstItem(attrList);
-              if (firstAttr == null) {
-                return "Attributes { <empty> }";
-              }
+                if (firstAttr == null) {
+                    return "Attributes { <empty> }";
+                }
                 String suffix = attrList.size() > 1 ? " & " + attrList.size() + " more..." : " ";
                 return "Attributes { " + getAttrDisplayName(firstAttr) + suffix + "}";
             }
@@ -170,12 +172,12 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
 
         @Override
         @RequiredReadAction
-        public Image getIcon(boolean open) {
+        public Image getIcon() {
             PsiElement element = getElement();
             if (element == null) {
                 return null;
             }
-            return element instanceof BnfAttrs ? AllIcons.Nodes.Package : IconDescriptorUpdaters.getIcon(element, 0);
+            return element instanceof BnfAttrs ? PlatformIconGroup.nodesPackage() : IconDescriptorUpdaters.getIcon(element, 0);
         }
     }
 }

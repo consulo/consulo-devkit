@@ -19,7 +19,6 @@ import com.intellij.java.language.JavaLanguage;
 import com.intellij.java.language.psi.PsiClass;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.application.AllIcons;
 import consulo.codeEditor.markup.GutterIconRenderer;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.Language;
@@ -32,7 +31,9 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.ModuleUtilCore;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.Lists;
 import consulo.util.lang.StringUtil;
@@ -63,15 +64,14 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
     }
 
     @Override
-    protected void collectNavigationMarkers(
-        @Nonnull PsiElement element,
-        Collection<? super RelatedItemLineMarkerInfo> result
-    ) {
-        if (element instanceof PsiClass) {
-            process((PsiClass)element, result);
+    @RequiredReadAction
+    protected void collectNavigationMarkers(@Nonnull PsiElement element, Collection<? super RelatedItemLineMarkerInfo> result) {
+        if (element instanceof PsiClass psiClass) {
+            process(psiClass, result);
         }
     }
 
+    @RequiredReadAction
     private static void process(PsiClass psiClass, Collection<? super RelatedItemLineMarkerInfo> result) {
         if (!PsiUtil.isInstantiable(psiClass)) {
             return;
@@ -82,8 +82,8 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
             return;
         }
 
-        final GlobalSearchScope scope = GlobalSearchScope.moduleRuntimeScope(module, false);
-        final PsiClass actionClass = DescriptionType.INSPECTION.findClass(psiClass.getProject(), scope);
+        GlobalSearchScope scope = GlobalSearchScope.moduleRuntimeScope(module, false);
+        PsiClass actionClass = DescriptionType.INSPECTION.findClass(psiClass.getProject(), scope);
         if (actionClass == null) {
             return;
         }
@@ -104,7 +104,7 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
             }
 
             if (type == DescriptionType.INSPECTION) {
-                final InspectionDescriptionInfo info = InspectionDescriptionInfo.create(module, psiClass);
+                InspectionDescriptionInfo info = InspectionDescriptionInfo.create(module, psiClass);
                 if (info.hasDescriptionFile()) {
                     addDescriptionFileGutterIcon(highlightingElement, info.getDescriptionFile(), result);
                 }
@@ -116,7 +116,7 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
                 if (dir == null) {
                     continue;
                 }
-                final PsiFile descriptionFile = dir.findFile("description.html");
+                PsiFile descriptionFile = dir.findFile("description.html");
                 if (descriptionFile != null) {
                     addDescriptionFileGutterIcon(highlightingElement, descriptionFile, result);
 
@@ -128,49 +128,50 @@ public class DescriptionTypeRelatedItemLineMarkerProvider extends RelatedItemLin
         }
     }
 
+    @RequiredReadAction
     private static void addDescriptionFileGutterIcon(
         PsiElement highlightingElement,
         PsiFile descriptionFile,
         Collection<? super RelatedItemLineMarkerInfo> result
     ) {
-        final RelatedItemLineMarkerInfo<PsiElement> info = NavigationGutterIconBuilder.create(
-                AllIcons.FileTypes.Html,
+        RelatedItemLineMarkerInfo<PsiElement> info = NavigationGutterIconBuilder.create(
+                PlatformIconGroup.filetypesHtml(),
                 CONVERTER,
                 RELATED_ITEM_PROVIDER
             )
             .setTarget(descriptionFile)
-            .setTooltipText("Description")
+            .setTooltipText(LocalizeValue.localizeTODO("Description"))
             .setAlignment(GutterIconRenderer.Alignment.RIGHT)
             .createLineMarkerInfo(highlightingElement);
         result.add(info);
     }
 
+    @RequiredReadAction
     private static void addBeforeAfterTemplateFilesGutterIcon(
         PsiElement highlightingElement,
         PsiDirectory descriptionDirectory,
         Collection<? super RelatedItemLineMarkerInfo> result
     ) {
-        final List<PsiFile> templateFiles =
+        List<PsiFile> templateFiles =
             Lists.newSortedList((Comparator<PsiFile>)(o1, o2) -> o1.getName().compareTo(o2.getName()));
         for (PsiFile file : descriptionDirectory.getFiles()) {
-            final String fileName = file.getName();
-            if (fileName.endsWith(".template")) {
-                if (fileName.startsWith("after.") || fileName.startsWith("before.")) {
-                    templateFiles.add(file);
-                }
+            String fileName = file.getName();
+            if (fileName.endsWith(".template") && (fileName.startsWith("after.") || fileName.startsWith("before."))) {
+                templateFiles.add(file);
             }
         }
         if (templateFiles.isEmpty()) {
             return;
         }
 
-        final RelatedItemLineMarkerInfo<PsiElement>
-            info = NavigationGutterIconBuilder.create(AllIcons.Actions.Diff, CONVERTER,
+        RelatedItemLineMarkerInfo<PsiElement> info = NavigationGutterIconBuilder.create(
+                PlatformIconGroup.actionsDiff(),
+                CONVERTER,
                 RELATED_ITEM_PROVIDER
             )
             .setTargets(templateFiles)
             .setPopupTitle("Select Template")
-            .setTooltipText("Before/After Templates")
+            .setTooltipText(LocalizeValue.localizeTODO("Before/After Templates"))
             .setAlignment(GutterIconRenderer.Alignment.RIGHT)
             .createLineMarkerInfo(highlightingElement);
         result.add(info);

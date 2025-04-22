@@ -46,6 +46,7 @@ import org.intellij.grammar.psi.impl.GrammarUtil;
 import org.jetbrains.annotations.Contract;
 
 import jakarta.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.Set;
 
@@ -120,6 +121,7 @@ public class BnfCompletionContributor extends CompletionContributor {
     }
 
     @Override
+    @RequiredReadAction
     public void beforeCompletion(@Nonnull CompletionInitializationContext context) {
         BnfFile file = ObjectUtil.tryCast(context.getFile(), BnfFile.class);
         if (file == null) {
@@ -133,14 +135,16 @@ public class BnfCompletionContributor extends CompletionContributor {
     }
 
     @Contract("null -> false")
+    @RequiredReadAction
     private static boolean isPossibleEmptyAttrs(PsiElement attrs) {
-        if (!(attrs instanceof BnfParenExpression)) {
+        if (!(attrs instanceof BnfParenExpression parenExpr)) {
             return false;
         }
         if (attrs.getFirstChild().getNode().getElementType() != BnfTypes.BNF_LEFT_BRACE) {
             return false;
         }
-        if (!(((BnfParenExpression)attrs).getExpression() instanceof BnfReferenceOrToken)) {
+        //noinspection SimplifiableIfStatement
+        if (!(parenExpr.getExpression() instanceof BnfReferenceOrToken)) {
             return false;
         }
         return isLastInRuleOrFree(attrs);

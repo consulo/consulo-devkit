@@ -177,7 +177,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
             params.getVMParametersList().addParametersString(additionalVMParameter);
         }
 
-        for (RunConfigurationExtension ext : RunConfigurationExtension.EP_NAME.getExtensionList()) {
+        for (RunConfigurationExtension ext : env.getProject().getApplication().getExtensionList(RunConfigurationExtension.class)) {
             ext.updateJavaParameters(profile, params, getRunnerSettings());
         }
         return params;
@@ -193,8 +193,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
 
         File bootDirectory = new File(consuloHomePath + "/boot");
         if (bootDirectory.exists()) {
-            File[] files = bootDirectory.listFiles();
-            for (File file : files) {
+            for (File file : bootDirectory.listFiles()) {
                 if (FileUtil.isJarOrZip(file)) {
                     boolean modular = false;
                     if (enableModules) {
@@ -213,13 +212,14 @@ public class ConsuloSandboxRunState extends CommandLineState {
                         classpath.add(file);
                     }
 
-                    if (file.getName().contains("-web-")) {
+                    String fileName = file.getName();
+                    if (fileName.contains("-web-")) {
                         platform = ConsuloPlatform.WEB;
                     }
-                    else if (file.getName().contains("desktop-awt")) {
+                    else if (fileName.contains("desktop-awt")) {
                         platform = ConsuloPlatform.DESKTOP_AWT;
                     }
-                    else if (file.getName().contains("desktop-swt")) {
+                    else if (fileName.contains("desktop-swt")) {
                         platform = ConsuloPlatform.DESKTOP_SWT;
                     }
                 }

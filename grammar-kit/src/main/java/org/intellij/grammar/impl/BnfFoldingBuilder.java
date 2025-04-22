@@ -15,6 +15,7 @@
  */
 package org.intellij.grammar.impl;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.dumb.DumbAware;
 import consulo.document.Document;
@@ -31,6 +32,7 @@ import org.intellij.grammar.psi.*;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import java.util.ArrayList;
 
 /**
@@ -40,11 +42,11 @@ import java.util.ArrayList;
 public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
     @Nonnull
     @Override
+    @RequiredReadAction
     public FoldingDescriptor[] buildFoldRegions(@Nonnull PsiElement root, @Nonnull Document document, boolean quick) {
-        if (!(root instanceof BnfFile)) {
+        if (!(root instanceof BnfFile file)) {
             return FoldingDescriptor.EMPTY;
         }
-        BnfFile file = (BnfFile)root;
 
         final ArrayList<FoldingDescriptor> result = new ArrayList<>();
         for (BnfAttrs attrs : file.getAttributes()) {
@@ -68,12 +70,15 @@ public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
             }
         }
         if (!quick) {
-            PsiTreeUtil.processElements(file, element -> {
-                if (element.getNode().getElementType() == BnfParserDefinition.BNF_BLOCK_COMMENT) {
-                    result.add(new FoldingDescriptor(element, element.getTextRange()));
+            PsiTreeUtil.processElements(
+                file,
+                element -> {
+                    if (element.getNode().getElementType() == BnfParserDefinition.BNF_BLOCK_COMMENT) {
+                        result.add(new FoldingDescriptor(element, element.getTextRange()));
+                    }
+                    return true;
                 }
-                return true;
-            });
+            );
         }
 
         return result.toArray(new FoldingDescriptor[result.size()]);
@@ -81,6 +86,7 @@ public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
 
     @Nullable
     @Override
+    @RequiredReadAction
     public String getPlaceholderText(@Nonnull ASTNode node) {
         PsiElement psi = node.getPsi();
         if (psi instanceof BnfAttrs) {
@@ -99,6 +105,7 @@ public class BnfFoldingBuilder extends FoldingBuilderEx implements DumbAware {
     }
 
     @Override
+    @RequiredReadAction
     public boolean isCollapsedByDefault(@Nonnull ASTNode node) {
         PsiElement psi = node.getPsi();
         return psi instanceof BnfValueList

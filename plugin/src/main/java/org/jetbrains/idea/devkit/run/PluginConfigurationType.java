@@ -16,10 +16,12 @@
 package org.jetbrains.idea.devkit.run;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.application.Application;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.run.ConsuloRunConfiguration;
 import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.ConfigurationType;
 import consulo.execution.configuration.ConfigurationTypeBase;
 import consulo.execution.configuration.RunConfiguration;
 import consulo.module.extension.ModuleExtensionHelper;
@@ -32,7 +34,7 @@ import jakarta.annotation.Nonnull;
 public class PluginConfigurationType extends ConfigurationTypeBase {
     @Nonnull
     public static PluginConfigurationType getInstance() {
-        return EP_NAME.findExtensionOrFail(PluginConfigurationType.class);
+        return Application.get().getExtensionPoint(ConfigurationType.class).findExtensionOrFail(PluginConfigurationType.class);
     }
 
     private String myVmParameters;
