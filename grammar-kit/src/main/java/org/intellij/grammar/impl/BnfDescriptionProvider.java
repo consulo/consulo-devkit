@@ -15,6 +15,7 @@
  */
 package org.intellij.grammar.impl;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.psi.PsiElement;
 import consulo.application.util.matcher.NameUtil;
@@ -34,11 +35,12 @@ import jakarta.annotation.Nonnull;
 
 /**
  * @author gregory
- * Date: 17.07.11 18:46
+ * Date: 2011-07-17
  */
 @ExtensionImpl
 public class BnfDescriptionProvider implements ElementDescriptionProvider {
     @Override
+    @RequiredReadAction
     public String getElementDescription(@Nonnull PsiElement psiElement, @Nonnull ElementDescriptionLocation location) {
         if (location == UsageViewNodeTextLocation.INSTANCE && psiElement instanceof BnfComposite) {
             return getElementDescription(psiElement, UsageViewTypeLocation.INSTANCE) + " " +

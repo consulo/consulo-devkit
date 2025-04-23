@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.Language;
 import consulo.language.editor.documentation.LanguageDocumentationProvider;
@@ -50,7 +51,6 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class BnfDocumentationProvider implements LanguageDocumentationProvider {
-
     @Nonnull
     @Override
     public Language getLanguage() {
@@ -58,6 +58,8 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
     }
 
     @Nullable
+    @Override
+    @RequiredReadAction
     public String generateDoc(final PsiElement element, final PsiElement originalElement) {
         if (element instanceof BnfRule rule) {
             BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer();
@@ -113,6 +115,7 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
         return null;
     }
 
+    @RequiredReadAction
     private static void dumpContents(StringBuilder docBuilder, BnfRule rule, BnfFile file) {
         Map<PsiElement, RuleGraphHelper.Cardinality> map = RuleGraphHelper.getCached(file).getFor(rule);
         Collection<BnfRule> sortedPublicRules = ParserGeneratorUtil.getSortedPublicRules(map.keySet());
@@ -169,6 +172,7 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
         sb.append("</font>");
     }
 
+    @RequiredReadAction
     public static void printElements(
         Map<PsiElement, RuleGraphHelper.Cardinality> map,
         Collection<? extends PsiElement> collection,

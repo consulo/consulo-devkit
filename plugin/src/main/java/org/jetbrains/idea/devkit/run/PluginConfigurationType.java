@@ -16,10 +16,12 @@
 package org.jetbrains.idea.devkit.run;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.application.Application;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.run.ConsuloRunConfiguration;
 import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.ConfigurationType;
 import consulo.execution.configuration.ConfigurationTypeBase;
 import consulo.execution.configuration.RunConfiguration;
 import consulo.module.extension.ModuleExtensionHelper;
@@ -30,60 +32,62 @@ import jakarta.annotation.Nonnull;
 
 @ExtensionImpl
 public class PluginConfigurationType extends ConfigurationTypeBase {
-  @Nonnull
-  public static PluginConfigurationType getInstance() {
-    return EP_NAME.findExtensionOrFail(PluginConfigurationType.class);
-  }
-
-  private String myVmParameters;
-
-  public PluginConfigurationType() {
-    super("#org.jetbrains.idea.devkit.run.PluginConfigurationType",
-          DevKitLocalize.runConfigurationTitle(),
-          DevKitLocalize.runConfigurationTypeDescription(),
-          PlatformIconGroup.icon16_sandbox());
-    addFactory(new ConfigurationFactory(this) {
-      @Nonnull
-      @Override
-      public String getId() {
-        return "Consulo In Sandbox";
-      }
-
-      @Override
-      public RunConfiguration createTemplateConfiguration(Project project) {
-        final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName().get());
-
-        if (runConfiguration.VM_PARAMETERS == null) {
-          runConfiguration.VM_PARAMETERS = getVmParameters();
-        }
-        else {
-          runConfiguration.VM_PARAMETERS += getVmParameters();
-        }
-        return runConfiguration;
-      }
-
-      @Override
-      public boolean isApplicable(@Nonnull Project project) {
-        return ModuleExtensionHelper.getInstance(project).hasModuleExtension(PluginModuleExtension.class);
-      }
-
-      @Override
-      public void onNewConfigurationCreated(@Nonnull RunConfiguration configuration) {
-        ConsuloRunConfiguration runConfiguration = (ConsuloRunConfiguration)configuration;
-
-        runConfiguration.addPredefinedLogFile(ConsuloRunConfiguration.CONSULO_LOG);
-      }
-    });
-  }
-
-  @Nonnull
-  private String getVmParameters() {
-    if (myVmParameters == null) {
-//      String vmOptions = VMOptions.read();
-//      myVmParameters = vmOptions != null ? vmOptions.trim() : "";
-      myVmParameters = "";
+    @Nonnull
+    public static PluginConfigurationType getInstance() {
+        return Application.get().getExtensionPoint(ConfigurationType.class).findExtensionOrFail(PluginConfigurationType.class);
     }
 
-    return myVmParameters;
-  }
+    private String myVmParameters;
+
+    public PluginConfigurationType() {
+        super(
+            "#org.jetbrains.idea.devkit.run.PluginConfigurationType",
+            DevKitLocalize.runConfigurationTitle(),
+            DevKitLocalize.runConfigurationTypeDescription(),
+            PlatformIconGroup.icon16_sandbox()
+        );
+        addFactory(new ConfigurationFactory(this) {
+            @Nonnull
+            @Override
+            public String getId() {
+                return "Consulo In Sandbox";
+            }
+
+            @Override
+            public RunConfiguration createTemplateConfiguration(Project project) {
+                final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName().get());
+
+                if (runConfiguration.VM_PARAMETERS == null) {
+                    runConfiguration.VM_PARAMETERS = getVmParameters();
+                }
+                else {
+                    runConfiguration.VM_PARAMETERS += getVmParameters();
+                }
+                return runConfiguration;
+            }
+
+            @Override
+            public boolean isApplicable(@Nonnull Project project) {
+                return ModuleExtensionHelper.getInstance(project).hasModuleExtension(PluginModuleExtension.class);
+            }
+
+            @Override
+            public void onNewConfigurationCreated(@Nonnull RunConfiguration configuration) {
+                ConsuloRunConfiguration runConfiguration = (ConsuloRunConfiguration)configuration;
+
+                runConfiguration.addPredefinedLogFile(ConsuloRunConfiguration.CONSULO_LOG);
+            }
+        });
+    }
+
+    @Nonnull
+    private String getVmParameters() {
+        if (myVmParameters == null) {
+//          String vmOptions = VMOptions.read();
+//          myVmParameters = vmOptions != null ? vmOptions.trim() : "";
+            myVmParameters = "";
+        }
+
+        return myVmParameters;
+    }
 }

@@ -7,11 +7,11 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.CachedValueProvider;
 import consulo.devkit.DevKitComponentScope;
+import consulo.devkit.inspections.valhalla.ExtensionImplUtil;
 import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiModificationTracker;
 import consulo.language.psi.util.LanguageCachedValueUtil;
@@ -126,11 +126,11 @@ public class WrongInjectBindingInspection extends InternalInspection {
         }
 
         // it's service api
-        PsiAnnotation serviceApiAnno = AnnotationUtil.findAnnotationInHierarchy(element, Set.of(ValhallaClasses.ServiceAPI));
+        PsiAnnotation serviceApiAnno = AnnotationUtil.findAnnotationInHierarchy(element, Set.of(ValhallaClasses.SERVICE_API));
         if (serviceApiAnno != null) {
             PsiAnnotationMemberValue value = serviceApiAnno.findDeclaredAttributeValue(PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
             if (value != null) {
-                return resolveScope(value);
+                return ExtensionImplUtil.resolveScope(value);
             }
         }
 
@@ -178,49 +178,24 @@ public class WrongInjectBindingInspection extends InternalInspection {
 
         // owner contains inject annotation
         if (AnnotationUtil.isAnnotated(method, NoInjectAnnotationInspection.INJECT_ANNOTATIONS, 0)) {
-            for (Couple<String> apiAndImpl : ValhallaClasses.ApiToImpl) {
+            for (Couple<String> apiAndImpl : ValhallaClasses.API_TO_IMPL) {
                 PsiAnnotation implAnno = AnnotationUtil.findAnnotation(containingClass, apiAndImpl.getSecond());
                 if (implAnno != null) {
                     PsiAnnotationMemberValue value = implAnno.findDeclaredAttributeValue(PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
                     if (value != null) {
-                        return resolveScope(value);
+                        return ExtensionImplUtil.resolveScope(value);
                     }
 
                     PsiAnnotation apiAnno = AnnotationUtil.findAnnotationInHierarchy(containingClass, Set.of(apiAndImpl.getFirst()));
                     if (apiAnno != null) {
                         value = apiAnno.findDeclaredAttributeValue(PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
                         if (value != null) {
-                            return resolveScope(value);
+                            return ExtensionImplUtil.resolveScope(value);
                         }
                     }
                 }
             }
         }
-        return null;
-    }
-
-    @Nullable
-    @RequiredReadAction
-    private static DevKitComponentScope resolveScope(PsiAnnotationMemberValue value) {
-        if (!(value instanceof PsiReferenceExpression)) {
-            return null;
-        }
-
-        PsiElement resolveTarget = ((PsiReferenceExpression)value).resolve();
-        if (resolveTarget instanceof PsiEnumConstant enumConstant) {
-            String name = enumConstant.getName();
-
-            PsiClass containingClass = enumConstant.getContainingClass();
-
-            if (containingClass != null && "consulo.annotation.component.ComponentScope".equals(containingClass.getQualifiedName())) {
-                try {
-                    return DevKitComponentScope.valueOf(name);
-                }
-                catch (IllegalArgumentException ignored) {
-                }
-            }
-        }
-
         return null;
     }
 }

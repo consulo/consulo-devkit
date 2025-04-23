@@ -67,15 +67,15 @@ public class ImplToAPILineMarkerProvider implements LineMarkerProvider {
 
     @Nullable
     private Pair<PsiElement, String> findAPIElement(PsiClass psiClass) {
-        for (Pair<String, String> apiPair : ValhallaClasses.ApiToImpl) {
+        for (Pair<String, String> apiPair : ValhallaClasses.API_TO_IMPL) {
             if (AnnotationUtil.isAnnotated(psiClass, apiPair.getSecond(), 0)) {
                 PsiAnnotation annotationInHierarchy = AnnotationUtil.findAnnotationInHierarchy(psiClass, Set.of(apiPair.getFirst()));
                 if (annotationInHierarchy != null) {
-                    //					PsiClass apiType = PsiTreeUtil.getParentOfType(annotationInHierarchy, PsiClass.class);
-                    //					if(apiType != null)
-                    //					{
-                    //						return apiType;
-                    //					}
+                    //PsiClass apiType = PsiTreeUtil.getParentOfType(annotationInHierarchy, PsiClass.class);
+                    //if (apiType != null)
+                    //{
+                    //    return apiType;
+                    //}
                     return Pair.create(annotationInHierarchy, apiPair.getFirst());
                 }
             }
