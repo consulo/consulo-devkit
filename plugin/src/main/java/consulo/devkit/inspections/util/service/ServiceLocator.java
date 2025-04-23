@@ -47,8 +47,8 @@ public class ServiceLocator {
             return null;
         }
 
-        if (AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.ServiceImpl, 0)) {
-            PsiAnnotation apiAnnotation = AnnotationUtil.findAnnotationInHierarchy(psiClass, Set.of(ValhallaClasses.ServiceAPI));
+        if (AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.SERVICE_IMPL, 0)) {
+            PsiAnnotation apiAnnotation = AnnotationUtil.findAnnotationInHierarchy(psiClass, Set.of(ValhallaClasses.SERVICE_API));
             if (apiAnnotation != null) {
                 PsiClass apiClass = PsiTreeUtil.getParentOfType(apiAnnotation, PsiClass.class);
                 if (apiClass != null) {

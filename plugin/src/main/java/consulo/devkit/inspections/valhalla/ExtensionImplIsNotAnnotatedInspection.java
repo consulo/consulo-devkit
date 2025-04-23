@@ -39,16 +39,16 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection {
                 }
 
                 // not annotated by @ExtensionAPI, and not annotated by @ExtensionImpl, but has @ExtensionAPI in class hierarchy
-                if (!AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, 0)
-                    && !AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionImpl, 0)
-                    && AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionAPI, AnnotationUtil.CHECK_HIERARCHY)) {
+                if (!AnnotationUtil.isAnnotated(aClass, ValhallaClasses.EXTENSION_API, 0)
+                    && !AnnotationUtil.isAnnotated(aClass, ValhallaClasses.EXTENSION_IMPL, 0)
+                    && AnnotationUtil.isAnnotated(aClass, ValhallaClasses.EXTENSION_API, AnnotationUtil.CHECK_HIERARCHY)) {
                     PsiClass syntheticAction = JavaPsiFacade.getInstance(aClass.getProject())
-                        .findClass(ValhallaClasses.SyntheticIntentionAction, aClass.getResolveScope());
+                        .findClass(ValhallaClasses.SYNTHETIC_INTENTION_ACTION, aClass.getResolveScope());
                     if (syntheticAction != null && aClass.isInheritor(syntheticAction, true)) {
                         return;
                     }
 
-                    AddAnnotationFix addAnnotationFix = new AddAnnotationFix(ValhallaClasses.ExtensionImpl, aClass);
+                    AddAnnotationFix addAnnotationFix = new AddAnnotationFix(ValhallaClasses.EXTENSION_IMPL, aClass);
                     holder.newProblem(DevKitLocalize.extensionImplIsNotAnnotatedInspectionMessage())
                         .range(nameIdentifier)
                         .withFix(addAnnotationFix)

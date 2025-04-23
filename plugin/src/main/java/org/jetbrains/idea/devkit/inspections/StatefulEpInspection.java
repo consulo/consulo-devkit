@@ -59,7 +59,7 @@ public class StatefulEpInspection extends InternalInspection {
         }
 
         final boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
-        if (isQuickFix || AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.Impl, 0)) {
+        if (isQuickFix || AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.IMPL, 0)) {
             final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
 
             for (Class c : new Class[]{PsiElement.class, PsiReference.class, Project.class}) {

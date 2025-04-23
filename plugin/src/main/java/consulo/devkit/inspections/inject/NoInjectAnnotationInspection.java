@@ -95,7 +95,7 @@ public class NoInjectAnnotationInspection extends InternalInspection {
             return true;
         }
 
-        for (String annotation : ValhallaClasses.Impl) {
+        for (String annotation : ValhallaClasses.IMPL) {
             if (AnnotationUtil.isAnnotated(psiClass, annotation, 0)) {
                 return true;
             }

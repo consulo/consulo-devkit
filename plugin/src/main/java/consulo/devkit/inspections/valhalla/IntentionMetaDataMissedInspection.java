@@ -43,25 +43,25 @@ public class IntentionMetaDataMissedInspection extends InternalInspection {
                 PsiIdentifier nameIdentifier = aClass.getNameIdentifier();
 
                 if (nameIdentifier == null || !ExtensionImplUtil.isTargetClass(aClass)
-                    || !AnnotationUtil.isAnnotated(aClass, ValhallaClasses.ExtensionImpl, 0)
-                    || AnnotationUtil.isAnnotated(aClass, ValhallaClasses.IntentionMetaData, 0)) {
+                    || !AnnotationUtil.isAnnotated(aClass, ValhallaClasses.EXTENSION_IMPL, 0)
+                    || AnnotationUtil.isAnnotated(aClass, ValhallaClasses.INTENTION_META_DATA, 0)) {
                     return;
                 }
 
                 JavaPsiFacade javaPsiFacade = JavaPsiFacade.getInstance(aClass.getProject());
-                PsiClass intentionAction = javaPsiFacade.findClass(ValhallaClasses.IntentionAction, aClass.getResolveScope());
+                PsiClass intentionAction = javaPsiFacade.findClass(ValhallaClasses.INTENTION_ACTION, aClass.getResolveScope());
                 if (intentionAction == null || !aClass.isInheritor(intentionAction, true)) {
                     return;
                 }
 
-                PsiClass syntheticAction = javaPsiFacade.findClass(ValhallaClasses.SyntheticIntentionAction, aClass.getResolveScope());
+                PsiClass syntheticAction = javaPsiFacade.findClass(ValhallaClasses.SYNTHETIC_INTENTION_ACTION, aClass.getResolveScope());
                 if (syntheticAction == null || aClass.isInheritor(syntheticAction, true)) {
                     return;
                 }
 
                 holder.newProblem(DevKitLocalize.intentionMetaDataMissedInspectionMessage())
                     .range(nameIdentifier)
-                    .withFix(new AddAnnotationFix(ValhallaClasses.IntentionMetaData, aClass))
+                    .withFix(new AddAnnotationFix(ValhallaClasses.INTENTION_META_DATA, aClass))
                     .create();
             }
         };

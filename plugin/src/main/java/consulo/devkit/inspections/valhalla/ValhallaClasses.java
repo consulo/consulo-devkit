@@ -1,7 +1,6 @@
 package consulo.devkit.inspections.valhalla;
 
 import consulo.util.lang.Couple;
-import consulo.util.lang.Pair;
 
 import java.util.List;
 import java.util.Set;
@@ -11,26 +10,26 @@ import java.util.Set;
  * @since 2022-08-08
  */
 public interface ValhallaClasses {
-    String ExtensionAPI = "consulo.annotation.component.ExtensionAPI";
-    String ServiceAPI = "consulo.annotation.component.ServiceAPI";
-    String ActionAPI = "consulo.annotation.component.ActionAPI";
-    String TopicAPI = "consulo.annotation.component.TopicAPI";
+    String EXTENSION_API = "consulo.annotation.component.ExtensionAPI";
+    String SERVICE_API = "consulo.annotation.component.ServiceAPI";
+    String ACTION_API = "consulo.annotation.component.ActionAPI";
+    String TOPIC_API = "consulo.annotation.component.TopicAPI";
 
-    String ExtensionImpl = "consulo.annotation.component.ExtensionImpl";
-    String ServiceImpl = "consulo.annotation.component.ServiceImpl";
-    String ActionImpl = "consulo.annotation.component.ActionImpl";
-    String TopicImpl = "consulo.annotation.component.TopicImpl";
+    String EXTENSION_IMPL = "consulo.annotation.component.ExtensionImpl";
+    String SERVICE_IMPL = "consulo.annotation.component.ServiceImpl";
+    String ACTION_IMPL = "consulo.annotation.component.ActionImpl";
+    String TOPIC_IMPL = "consulo.annotation.component.TopicImpl";
 
-    String SyntheticIntentionAction = "consulo.language.editor.intention.SyntheticIntentionAction";
-    String IntentionAction = "consulo.language.editor.intention.IntentionAction";
-    String IntentionMetaData = "consulo.language.editor.intention.IntentionMetaData";
+    String SYNTHETIC_INTENTION_ACTION = "consulo.language.editor.intention.SyntheticIntentionAction";
+    String INTENTION_ACTION = "consulo.language.editor.intention.IntentionAction";
+    String INTENTION_META_DATA = "consulo.language.editor.intention.IntentionMetaData";
 
-    Set<String> Impl = Set.of(ExtensionImpl, ServiceImpl, ActionImpl, TopicImpl);
+    Set<String> IMPL = Set.of(EXTENSION_IMPL, SERVICE_IMPL, ACTION_IMPL, TOPIC_IMPL);
 
-    List<Couple<String>> ApiToImpl = List.of(
-        Couple.of(ActionAPI, ActionImpl),
-        Couple.of(ServiceAPI, ServiceImpl),
-        Couple.of(ExtensionAPI, ExtensionImpl),
-        Couple.of(TopicAPI, TopicImpl)
+    List<Couple<String>> API_TO_IMPL = List.of(
+        Couple.of(ACTION_API, ACTION_IMPL),
+        Couple.of(SERVICE_API, SERVICE_IMPL),
+        Couple.of(EXTENSION_API, EXTENSION_IMPL),
+        Couple.of(TOPIC_API, TOPIC_IMPL)
     );
 }

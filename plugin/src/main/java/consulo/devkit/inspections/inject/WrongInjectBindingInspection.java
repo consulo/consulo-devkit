@@ -126,7 +126,7 @@ public class WrongInjectBindingInspection extends InternalInspection {
         }
 
         // it's service api
-        PsiAnnotation serviceApiAnno = AnnotationUtil.findAnnotationInHierarchy(element, Set.of(ValhallaClasses.ServiceAPI));
+        PsiAnnotation serviceApiAnno = AnnotationUtil.findAnnotationInHierarchy(element, Set.of(ValhallaClasses.SERVICE_API));
         if (serviceApiAnno != null) {
             PsiAnnotationMemberValue value = serviceApiAnno.findDeclaredAttributeValue(PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);
             if (value != null) {
@@ -178,7 +178,7 @@ public class WrongInjectBindingInspection extends InternalInspection {
 
         // owner contains inject annotation
         if (AnnotationUtil.isAnnotated(method, NoInjectAnnotationInspection.INJECT_ANNOTATIONS, 0)) {
-            for (Couple<String> apiAndImpl : ValhallaClasses.ApiToImpl) {
+            for (Couple<String> apiAndImpl : ValhallaClasses.API_TO_IMPL) {
                 PsiAnnotation implAnno = AnnotationUtil.findAnnotation(containingClass, apiAndImpl.getSecond());
                 if (implAnno != null) {
                     PsiAnnotationMemberValue value = implAnno.findDeclaredAttributeValue(PsiAnnotation.DEFAULT_REFERENCED_METHOD_NAME);

@@ -18,7 +18,7 @@ public class ImplClassImplicitUsageProvider implements ImplicitUsageProvider {
     public boolean isImplicitUsage(PsiElement psiElement) {
         return psiElement instanceof PsiClass psiClass
             && ExtensionImplUtil.isTargetClass(psiClass)
-            && AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.Impl, 0);
+            && AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.IMPL, 0);
     }
 
     @Override
