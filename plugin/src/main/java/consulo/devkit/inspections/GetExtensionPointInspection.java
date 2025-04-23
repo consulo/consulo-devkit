@@ -6,6 +6,9 @@ import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.Application;
+import consulo.devkit.DevKitComponentScope;
+import consulo.devkit.inspections.valhalla.ExtensionImplUtil;
+import consulo.devkit.inspections.valhalla.ValhallaClasses;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
@@ -24,7 +27,6 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class GetExtensionPointInspection extends InternalInspection {
-    private static final String COMPONENT_MANAGER_CLASS_NAME = "consulo.component.ComponentManager";
     private static final Set<String> EXTENSION_POINT_METHOD_NAMES = Set.of("getExtensionPoint", "getExtensionList");
 
     @Nonnull
@@ -90,26 +92,23 @@ public class GetExtensionPointInspection extends InternalInspection {
                     return;
                 }
 
-                PsiAnnotationMemberValue value = annotation.findAttributeValue("value");
-                if (value instanceof PsiReferenceExpression annoValueRefExpr) {
-                    String enumValue = annoValueRefExpr.getCanonicalText();
+                DevKitComponentScope enumValue = ExtensionImplUtil.resolveScope(annotation.findAttributeValue("value"));
 
-                    boolean validScope = switch (enumValue) {
-                        case "consulo.annotation.component.ComponentScope.APPLICATION" ->
-                            InheritanceUtil.isInheritor(callerType, Application.class.getName());
-                        case "consulo.annotation.component.ComponentScope.PROJECT" ->
-                            InheritanceUtil.isInheritor(callerType, Project.class.getName());
-                        case "consulo.annotation.component.ComponentScope.MODULE" ->
-                            InheritanceUtil.isInheritor(callerType, Module.class.getName());
+                boolean validScope = false;
+                if (enumValue != null) {
+                    validScope = switch (enumValue) {
+                        case DevKitComponentScope.APPLICATION -> InheritanceUtil.isInheritor(callerType, Application.class.getName());
+                        case DevKitComponentScope.PROJECT -> InheritanceUtil.isInheritor(callerType, Project.class.getName());
+                        case DevKitComponentScope.MODULE -> InheritanceUtil.isInheritor(callerType, Module.class.getName());
                         default -> false;
                     };
+                }
 
-                    if (!validScope) {
-                        myHolder.newProblem(DevKitLocalize.inspectionsGetExtensionPointValidationIncorrectScope())
-                            .range(myExpression)
-                            .highlightType(ProblemHighlightType.GENERIC_ERROR)
-                            .create();
-                    }
+                if (!validScope) {
+                    myHolder.newProblem(DevKitLocalize.inspectionsGetExtensionPointValidationIncorrectScope())
+                        .range(myExpression)
+                        .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                        .create();
                 }
             }
 
@@ -122,7 +121,7 @@ public class GetExtensionPointInspection extends InternalInspection {
                 PsiElement method = myMethodExpression.resolve();
                 PsiElement parent = (method == null) ? null : method.getParent();
                 PsiClass declaringClass = (parent instanceof PsiClass psiClass) ? psiClass : null;
-                if (declaringClass == null || !InheritanceUtil.isInheritor(declaringClass, COMPONENT_MANAGER_CLASS_NAME)) {
+                if (declaringClass == null || !InheritanceUtil.isInheritor(declaringClass, ValhallaClasses.COMPONENT_MANAGER)) {
                     return false;
                 }
 

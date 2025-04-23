@@ -24,6 +24,9 @@ public interface ValhallaClasses {
     String INTENTION_ACTION = "consulo.language.editor.intention.IntentionAction";
     String INTENTION_META_DATA = "consulo.language.editor.intention.IntentionMetaData";
 
+    String COMPONENT_MANAGER = "consulo.component.ComponentManager";
+    String COMPONENT_SCOPE = "consulo.annotation.component.ComponentScope";
+
     Set<String> IMPL = Set.of(EXTENSION_IMPL, SERVICE_IMPL, ACTION_IMPL, TOPIC_IMPL);
 
     List<Couple<String>> API_TO_IMPL = List.of(
