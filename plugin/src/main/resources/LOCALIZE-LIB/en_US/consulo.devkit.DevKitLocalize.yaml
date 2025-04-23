@@ -250,6 +250,12 @@ inspections.replace.with.xxxlocalize.title:
   text: xBundle.message() to xLocalize inspection
 inspections.replace.with.xxxlocalize:
   text: Replace with {0}.{1}(...)
+inspections.get.extension.point.validation.title:
+  text: Validation of ConfigurationType.getExtensionPoint() call
+inspections.get.extension.point.validation.no.annotation:
+  text: "{0} is not annotated with @ExtensionAPI"
+inspections.get.extension.point.validation.incorrect.scope:
+  text: "Incorrect extension scope"
 InspectionUseGrayColor:
   text: Use Gray
 ant.build.jar.comment:
