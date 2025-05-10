@@ -31,9 +31,9 @@ import jakarta.annotation.Nullable;
 public class AnonymousClassStateResolver extends StateResolver {
     public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
 
-    @RequiredReadAction
-    @Override
     @Nullable
+    @Override
+    @RequiredReadAction
     public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
         PsiMethod callMethod = PsiTreeUtil.getParentOfType(expression, PsiMethod.class);
         if (callMethod == null) {
@@ -71,9 +71,8 @@ public class AnonymousClassStateResolver extends StateResolver {
                     return false;
                 }
 
-                PsiElement parent = containingClass.getParent();
-                if (parent instanceof PsiNewExpression) {
-                    PsiElement maybeParameterListOrVariable = parent.getParent();
+                if (containingClass.getParent() instanceof PsiNewExpression newExpr) {
+                    PsiElement maybeParameterListOrVariable = newExpr.getParent();
                     return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
                 }
             }
