@@ -19,12 +19,10 @@ import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
-import consulo.java.language.module.util.JavaClassNames;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
-
 import jakarta.annotation.Nonnull;
 
 import java.util.Set;
@@ -55,7 +53,7 @@ public class FileEqualsUsageInspection extends InternalInspection {
                     }
 
                     String methodName = method.getName();
-                    if (JavaClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && FILE_METHOD_NAMES.contains(methodName)) {
+                    if (CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && FILE_METHOD_NAMES.contains(methodName)) {
                         holder.registerProblem(
                             methodExpression,
                             DevKitLocalize.fileEqualsUsageInspectionMessage().get(),
