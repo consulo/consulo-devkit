@@ -18,44 +18,35 @@ package consulo.devkit.inspections.requiredXAction;
 
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiMethod;
-import com.intellij.java.language.psi.PsiMethodCallExpression;
-import consulo.language.psi.PsiElement;
+import jakarta.annotation.Nonnull;
+
+import java.util.Set;
 
 /**
  * @author VISTALL
  * @since 2016-06-22
  */
 public class AcceptableMethodCallCheck {
+    @Nonnull
     private final String myParentClass;
-    private final String myMethodName;
+    @Nonnull
+    private final Set<String> myMethodNames;
 
-    public AcceptableMethodCallCheck(String parentClass, String methodName) {
+    public AcceptableMethodCallCheck(@Nonnull String parentClass, @Nonnull Set<String> methodNames) {
         myParentClass = parentClass;
-        myMethodName = methodName;
+        myMethodNames = methodNames;
     }
 
-    public AcceptableMethodCallCheck(Class<?> parentClass, String methodName) {
-        this(parentClass.getName(), methodName);
+    public AcceptableMethodCallCheck(@Nonnull Class<?> parentClass, @Nonnull Set<String> methodNames) {
+        this(parentClass.getName(), methodNames);
     }
 
-    public boolean accept(PsiElement parent) {
-        if (parent instanceof PsiMethodCallExpression methodCallExpression) {
-            PsiMethod psiMethod = methodCallExpression.resolveMethod();
-            if (psiMethod == null) {
-                return false;
-            }
-
-            if (myMethodName.equals(psiMethod.getName())) {
-                PsiClass containingClass = psiMethod.getContainingClass();
-                if (containingClass == null) {
-                    return false;
-                }
-
-                if (myParentClass.equals(containingClass.getQualifiedName())) {
-                    return true;
-                }
-            }
+    public boolean accept(PsiMethod method) {
+        if (!myMethodNames.contains(method.getName())) {
+            return false;
         }
-        return false;
+
+        PsiClass containingClass = method.getContainingClass();
+        return containingClass != null && myParentClass.equals(containingClass.getQualifiedName());
     }
 }

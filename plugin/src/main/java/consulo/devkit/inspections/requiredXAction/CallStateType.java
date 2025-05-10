@@ -35,6 +35,7 @@ import consulo.ui.ex.awt.UIUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import javax.swing.*;
+import java.util.Set;
 
 /**
  * @author VISTALL
@@ -45,9 +46,8 @@ public enum CallStateType {
     @SuppressWarnings("deprecation")
     READ(
         RequiredReadAction.class.getName(),
-        new AcceptableMethodCallCheck(Application.class, "runReadAction"),
-        new AcceptableMethodCallCheck(ReadAction.class, "run"),
-        new AcceptableMethodCallCheck(ReadAction.class, "compute")
+        new AcceptableMethodCallCheck(Application.class, Set.of("runReadAction")),
+        new AcceptableMethodCallCheck(ReadAction.class, Set.of("run", "compute"))
     ) {
         @Override
         @RequiredReadAction
@@ -73,25 +73,19 @@ public enum CallStateType {
                 .findClass("consulo.application.concurrent.DataLock", GlobalSearchScope.moduleWithDependenciesScope(module)) != null;
         }
     },
+    @SuppressWarnings("deprecation")
     WRITE(
         RequiredWriteAction.class.getName(),
-        new AcceptableMethodCallCheck(Application.class, "runWriteAction"),
-        new AcceptableMethodCallCheck(WriteAction.class, "run"),
-        new AcceptableMethodCallCheck(WriteAction.class, "compute"),
-        new AcceptableMethodCallCheck(WriteCommandAction.class, "runWriteCommandAction")
+        new AcceptableMethodCallCheck(Application.class, Set.of("runWriteAction")),
+        new AcceptableMethodCallCheck(WriteAction.class, Set.of("run", "compute")),
+        new AcceptableMethodCallCheck(WriteCommandAction.class, Set.of("runWriteCommandAction"))
     ),
     UI_ACCESS(
         RequiredUIAccess.class.getName(),
-        new AcceptableMethodCallCheck(UIAccess.class, "give"),
-        new AcceptableMethodCallCheck(UIAccess.class, "giveIfNeed"),
-        new AcceptableMethodCallCheck(UIAccess.class, "giveAndWait"),
-        new AcceptableMethodCallCheck(UIAccess.class, "giveAndWaitIfNeed"),
-        new AcceptableMethodCallCheck(Application.class, "invokeLater"),
-        new AcceptableMethodCallCheck(Application.class, "invokeAndWait"),
-        new AcceptableMethodCallCheck(UIUtil.class, "invokeAndWaitIfNeeded"),
-        new AcceptableMethodCallCheck(UIUtil.class, "invokeLaterIfNeeded"),
-        new AcceptableMethodCallCheck(SwingUtilities.class, "invokeAndWait"),
-        new AcceptableMethodCallCheck(SwingUtilities.class, "invokeLater")
+        new AcceptableMethodCallCheck(UIAccess.class, Set.of("give", "giveIfNeed", "giveAndWait", "giveAndWaitIfNeed")),
+        new AcceptableMethodCallCheck(Application.class, Set.of("invokeLater", "invokeAndWait")),
+        new AcceptableMethodCallCheck(UIUtil.class, Set.of("invokeAndWaitIfNeeded", "invokeLaterIfNeeded")),
+        new AcceptableMethodCallCheck(SwingUtilities.class, Set.of("invokeAndWait", "invokeLater"))
     ) {
         @Override
         public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {

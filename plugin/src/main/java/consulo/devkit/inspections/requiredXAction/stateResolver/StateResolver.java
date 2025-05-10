@@ -95,11 +95,11 @@ public abstract class StateResolver {
 
     protected static boolean acceptActionTypeFromCall(@Nonnull PsiExpressionList expressionList, @Nonnull CallStateType actionType) {
         for (CallStateType type : CallStateType.values()) {
-            if (actionType.isAcceptableActionType(type, expressionList)) {
-                PsiElement parent = expressionList.getParent();
-
+            if (actionType.isAcceptableActionType(type, expressionList)
+                && expressionList.getParent() instanceof PsiMethodCallExpression methodCall
+                && methodCall.resolveMethod() instanceof PsiMethod method) {
                 for (AcceptableMethodCallCheck acceptableMethodCallCheck : type.getAcceptableMethodCallChecks()) {
-                    if (acceptableMethodCallCheck.accept(parent)) {
+                    if (acceptableMethodCallCheck.accept(method)) {
                         return true;
                     }
                 }
