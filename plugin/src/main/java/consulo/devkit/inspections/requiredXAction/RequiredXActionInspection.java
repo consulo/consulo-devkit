@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.devkit.inspections.requiredXAction;
 
 import com.intellij.java.analysis.impl.codeInspection.AnnotateMethodFix;
 import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
-import consulo.devkit.inspections.requiredXAction.stateResolver.AnonymousClassStateResolver;
-import consulo.devkit.inspections.requiredXAction.stateResolver.LambdaStateResolver;
-import consulo.devkit.inspections.requiredXAction.stateResolver.MethodReferenceResolver;
-import consulo.devkit.inspections.requiredXAction.stateResolver.StateResolver;
+import consulo.devkit.inspections.requiredXAction.stateResolver.*;
 import consulo.devkit.localize.DevKitLocalize;
-import consulo.language.editor.inspection.LocalQuickFix;
-import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.localize.LocalizeValue;
@@ -42,6 +36,9 @@ import jakarta.annotation.Nonnull;
 @ExtensionImpl
 public class RequiredXActionInspection extends InternalInspection {
     public static class RequiredXActionVisitor extends JavaElementVisitor {
+        private static final CompositeStateResolver CALL_EXPRESSION_STATE_RESOLVER =
+            new CompositeStateResolver(LambdaStateResolver.INSTANCE, AnonymousClassStateResolver.INSTANCE);
+
         private final ProblemsHolder myHolder;
 
         public RequiredXActionVisitor(ProblemsHolder holder) {
@@ -52,38 +49,24 @@ public class RequiredXActionInspection extends InternalInspection {
         @RequiredReadAction
         public void visitMethodReferenceExpression(PsiMethodReferenceExpression expression) {
             if (expression.resolve() instanceof PsiMethod method) {
-                reportError(expression, method, MethodReferenceResolver.INSTANCE);
+                validate(expression, method, MethodReferenceResolver.INSTANCE);
             }
         }
 
         @Override
         @RequiredReadAction
         public void visitCallExpression(PsiCallExpression expression) {
-            PsiMethod psiMethod = expression.resolveMethod();
-            if (psiMethod != null) {
-                reportError(expression, psiMethod, LambdaStateResolver.INSTANCE, AnonymousClassStateResolver.INSTANCE);
+            PsiMethod method = expression.resolveMethod();
+            if (method != null) {
+                validate(expression, method, CALL_EXPRESSION_STATE_RESOLVER);
             }
         }
 
         @RequiredReadAction
-        private void reportError(PsiExpression expression, PsiMethod psiMethod, StateResolver... stateResolvers) {
-            CallStateType actionType = CallStateType.findActionType(psiMethod);
-            if (actionType == CallStateType.NONE) {
-                return;
-            }
-
-            for (StateResolver stateResolver : stateResolvers) {
-                Boolean state = stateResolver.resolveState(actionType, expression);
-                if (state == null) {
-                    continue;
-                }
-
-                if (state) {
-                    break;
-                }
-
+        private void validate(PsiExpression expression, PsiMethod method, StateResolver stateResolver) {
+            CallStateType actionType = CallStateType.findActionType(method);
+            if (actionType != CallStateType.NONE && stateResolver.resolveState(actionType, expression) == Boolean.FALSE) {
                 reportError(expression, actionType);
-                break;
             }
         }
 

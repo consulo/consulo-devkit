@@ -19,23 +19,17 @@ import com.intellij.java.language.codeInsight.AnnotationUtil;
 import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.application.util.function.CommonProcessors;
-import consulo.application.util.function.Computable;
-import consulo.application.util.function.ThrowableComputable;
 import consulo.devkit.inspections.requiredXAction.AcceptableMethodCallCheck;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiReference;
 import consulo.language.psi.search.ReferencesSearch;
 import consulo.util.collection.ArrayUtil;
-import consulo.util.lang.function.ThrowableRunnable;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author VISTALL
@@ -45,19 +39,6 @@ public abstract class StateResolver {
     @Nullable
     @RequiredReadAction
     public abstract Boolean resolveState(CallStateType actionType, PsiExpression expression);
-
-    protected static Map<String, Class[]> ourInterfaces = new HashMap<>() {
-        {
-            put("compute", new Class[]{
-                Computable.class,
-                ThrowableComputable.class
-            });
-            put("run", new Class[]{
-                Runnable.class,
-                ThrowableRunnable.class
-            });
-        }
-    };
 
     protected static boolean resolveByMaybeParameterListOrVariable(PsiElement maybeParameterListOrVariable, CallStateType actionType) {
         // Runnable run = new Runnable() {};
@@ -150,8 +131,9 @@ public abstract class StateResolver {
                     for (CallStateType callStateType : CallStateType.values()) {
                         if (actionType.isAcceptableActionType(callStateType, variable)) {
                             // if parameter of method is annotated - or annotated lambda abstract method
-                            if (AnnotationUtil.isAnnotated(variable, callStateType.getActionClass(), 0)
-                                || AnnotationUtil.isAnnotated(signature.getMethod(), callStateType.getActionClass(), 0)) {
+                            String annotationClassName = callStateType.getActionClass();
+                            if (AnnotationUtil.isAnnotated(variable, annotationClassName, 0)
+                                || AnnotationUtil.isAnnotated(signature.getMethod(), annotationClassName, 0)) {
                                 return true;
                             }
                         }

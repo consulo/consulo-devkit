@@ -30,9 +30,9 @@ import jakarta.annotation.Nullable;
 public class MethodReferenceResolver extends StateResolver {
     public static final StateResolver INSTANCE = new MethodReferenceResolver();
 
-    @RequiredReadAction
     @Nullable
     @Override
+    @RequiredReadAction
     public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
         PsiMethodReferenceExpression methodReferenceExpression = (PsiMethodReferenceExpression)expression;
         return resolveByMaybeParameterListOrVariable(methodReferenceExpression.getParent(), actionType)

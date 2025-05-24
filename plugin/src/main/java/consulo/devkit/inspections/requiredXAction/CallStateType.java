@@ -94,6 +94,8 @@ public enum CallStateType {
         }
     };
 
+    private static final CallStateType[] VARIANTS = {READ, WRITE, UI_ACCESS};
+
     @Nullable
     private final String myActionClass;
     @Nonnull
@@ -107,13 +109,8 @@ public enum CallStateType {
 
     @Nonnull
     public static CallStateType findSelfActionType(@Nonnull PsiMethod method) {
-        for (CallStateType actionType : values()) {
-            String actionClass = actionType.myActionClass;
-            if (actionClass == null) {
-                continue;
-            }
-
-            if (AnnotationUtil.isAnnotated(method, actionClass, 0)) {
+        for (CallStateType actionType : VARIANTS) {
+            if (AnnotationUtil.isAnnotated(method, actionType.getActionClass(), 0)) {
                 return actionType;
             }
         }
@@ -133,13 +130,8 @@ public enum CallStateType {
 
     @Nonnull
     public static CallStateType findActionType(@Nonnull PsiMethod method) {
-        for (CallStateType actionType : values()) {
-            String actionClass = actionType.myActionClass;
-            if (actionClass == null) {
-                continue;
-            }
-
-            if (AnnotationUtil.isAnnotated(method, actionClass, 0)) {
+        for (CallStateType actionType : VARIANTS) {
+            if (AnnotationUtil.isAnnotated(method, actionType.getActionClass(), 0)) {
                 return actionType;
             }
         }
