@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.devkit.inspections.requiredXAction.stateResolver;
 
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.InheritanceUtil;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.application.util.function.Computable;
+import consulo.application.util.function.ThrowableComputable;
 import consulo.devkit.inspections.requiredXAction.CallStateType;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.util.PsiTreeUtil;
+import consulo.util.lang.function.ThrowableRunnable;
+import consulo.util.lang.function.ThrowableSupplier;
 import jakarta.annotation.Nullable;
+
+import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * @author VISTALL
@@ -30,6 +36,25 @@ import jakarta.annotation.Nullable;
  */
 public class AnonymousClassStateResolver extends StateResolver {
     public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
+
+    @SuppressWarnings("deprecation")
+    private static final Map<String, Class[]> OUR_INTERFACES = Map.of(
+        "compute",
+        new Class[]{
+            Computable.class,
+            ThrowableComputable.class
+        },
+        "get",
+        new Class[]{
+            Supplier.class,
+            ThrowableSupplier.class
+        },
+        "run",
+        new Class[]{
+            Runnable.class,
+            ThrowableRunnable.class
+        }
+    );
 
     @Nullable
     @Override
@@ -47,7 +72,7 @@ public class AnonymousClassStateResolver extends StateResolver {
         }
 
         if (callMethod.getParameterList().getParametersCount() == 0) {
-            Class[] qualifiedNames = ourInterfaces.get(callMethod.getName());
+            Class[] qualifiedNames = OUR_INTERFACES.get(callMethod.getName());
             if (qualifiedNames == null) {
                 return false;
             }
@@ -57,24 +82,19 @@ public class AnonymousClassStateResolver extends StateResolver {
                 return false;
             }
 
-            boolean inherit = false;
+            boolean inherits = false;
             for (Class clazz : qualifiedNames) {
                 if (InheritanceUtil.isInheritor(containingClass, clazz.getName())) {
-                    inherit = true;
+                    inherits = true;
                     break;
                 }
             }
 
-            if (inherit) {
-                // non anonym class - cant handle
-                if (!(containingClass instanceof PsiAnonymousClass)) {
-                    return false;
-                }
-
-                if (containingClass.getParent() instanceof PsiNewExpression newExpr) {
-                    PsiElement maybeParameterListOrVariable = newExpr.getParent();
-                    return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
-                }
+            if (inherits
+                && containingClass instanceof PsiAnonymousClass
+                && containingClass.getParent() instanceof PsiNewExpression newExpr) {
+                PsiElement maybeParameterListOrVariable = newExpr.getParent();
+                return resolveByMaybeParameterListOrVariable(maybeParameterListOrVariable, actionType);
             }
         }
 

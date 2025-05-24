@@ -32,9 +32,9 @@ import jakarta.annotation.Nullable;
 public class LambdaStateResolver extends StateResolver {
     public static final StateResolver INSTANCE = new LambdaStateResolver();
 
-    @RequiredReadAction
     @Nullable
     @Override
+    @RequiredReadAction
     public Boolean resolveState(CallStateType actionType, PsiExpression expression) {
         PsiLambdaExpression lambdaExpression = PsiTreeUtil.getParentOfType(expression, PsiLambdaExpression.class);
         if (lambdaExpression == null) {
