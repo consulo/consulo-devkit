@@ -16,12 +16,14 @@
 
 package consulo.devkit.codeInsight.daemon;
 
+import com.intellij.java.language.JavaLanguage;
 import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.PsiTypesUtil;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.access.RequiredWriteAction;
 import consulo.annotation.component.ExtensionImpl;
+import consulo.language.Language;
 import consulo.language.psi.ElementColorProvider;
 import consulo.language.psi.PsiElement;
 import consulo.ui.color.ColorValue;
@@ -31,13 +33,19 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 /**
- * Initial version from {@link com.intellij.codeInsight.daemon.impl.JavaColorProvider}
+ * Initial version from {@link com.intellij.java.impl.codeInsight.daemon.impl.JavaColorProvider}
  *
  * @author VISTALL
  * @since 2017-10-12
  */
 @ExtensionImpl
 public class UIColorLineMarkerProvider implements ElementColorProvider {
+    @Nonnull
+    //@Override
+    public Language getLanguage() {
+        return JavaLanguage.INSTANCE;
+    }
+
     @RequiredReadAction
     @Override
     public ColorValue getColorFrom(@Nonnull PsiElement element) {
