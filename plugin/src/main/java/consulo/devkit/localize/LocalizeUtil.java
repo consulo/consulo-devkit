@@ -5,15 +5,21 @@ import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiMethod;
 import com.intellij.java.language.psi.PsiNameHelper;
 import consulo.annotation.access.RequiredReadAction;
+import consulo.devkit.localize.index.LocalizeFileIndexExtension;
+import consulo.language.psi.stub.FileBasedIndex;
 import consulo.localize.LocalizeManager;
 import consulo.project.Project;
+import consulo.project.content.scope.ProjectScopes;
+import consulo.util.lang.Pair;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nullable;
 import org.jetbrains.yaml.YAMLFileType;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 
+import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @author VISTALL
@@ -98,6 +104,29 @@ public class LocalizeUtil {
             }
         }
         return false;
+    }
+
+    @Nullable
+    public static Pair<VirtualFile, String> findOtherLocaleFile(Project project, VirtualFile file, FileBasedIndex fileBasedIndex) {
+        String fileName = file.getNameWithoutExtension();
+        String packageName = StringUtil.getPackageName(fileName);
+        String id = packageName + ".localize." + StringUtil.getShortName(fileName);
+
+        Collection<VirtualFile> containingFiles = fileBasedIndex.getContainingFiles(
+            LocalizeFileIndexExtension.INDEX,
+            id,
+            ProjectScopes.getAllScope(project)
+        );
+
+        VirtualFile otherLocalizeFile = containingFiles.stream()
+            .filter(it -> !Objects.equals(it, file))
+            .findAny()
+            .orElse(null);
+        if (otherLocalizeFile == null) {
+            return null;
+        }
+
+        return Pair.create(otherLocalizeFile, id);
     }
 
     public static String formatMethodName(Project project, String key) {

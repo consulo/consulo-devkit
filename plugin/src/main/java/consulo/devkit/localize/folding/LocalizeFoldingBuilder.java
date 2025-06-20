@@ -202,7 +202,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
         return file instanceof YAMLFile yamlFile ? yamlFile : null;
     }
 
-    private static Map<String, String> buildLocalizeCache(YAMLFile yamlFile) {
+    public static Map<String, String> buildLocalizeCache(YAMLFile yamlFile) {
         return LanguageCachedValueUtil.getCachedValue(
             yamlFile,
             () -> {
