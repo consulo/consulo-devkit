@@ -9,7 +9,6 @@ import consulo.language.Language;
 import consulo.language.editor.inlay.*;
 import consulo.language.pattern.PsiElementPattern;
 import consulo.language.pattern.StandardPatterns;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
 import consulo.language.psi.stub.FileBasedIndex;
@@ -62,24 +61,21 @@ public class LocalizeInlayProvider implements DeclarativeInlayHintsProvider {
 
         Document document = editor.getDocument();
 
-        return new DeclarativeInlayHintsCollector.SharedBypassCollector() {
-            @Override
-            public void collectFromElement(PsiElement element, DeclarativeInlayTreeSink sink) {
-                if (KEY_PATTERN.accepts(element)) {
-                    YAMLKeyValue yamlKeyValue = (YAMLKeyValue) element;
+        return (DeclarativeInlayHintsCollector.SharedBypassCollector) (element, sink) -> {
+            if (KEY_PATTERN.accepts(element)) {
+                YAMLKeyValue yamlKeyValue = (YAMLKeyValue) element;
 
-                    String otherTextVariant = data.get(yamlKeyValue.getKeyText());
-                    if (otherTextVariant != null) {
-                        int lineNumber = document.getLineNumber(element.getTextOffset());
+                String otherTextVariant = data.get(yamlKeyValue.getKeyText());
+                if (otherTextVariant != null) {
+                    int lineNumber = document.getLineNumber(element.getTextOffset());
 
-                        sink.addPresentation(
-                            new DeclarativeInlayPosition.EndOfLinePosition(lineNumber),
-                            FORMAT,
-                            builder -> {
-                                builder.text(otherTextVariant);
-                            }
-                        );
-                    }
+                    sink.addPresentation(
+                        new DeclarativeInlayPosition.EndOfLinePosition(lineNumber),
+                        FORMAT,
+                        builder -> {
+                            builder.text(otherTextVariant);
+                        }
+                    );
                 }
             }
         };
@@ -113,7 +109,7 @@ public class LocalizeInlayProvider implements DeclarativeInlayHintsProvider {
     @Override
     public LocalizeValue getPreviewFileText() {
         return LocalizeValue.localizeTODO("whatsnew.platform.text:\n" +
-            "    text: Платформа");
+            "    text: Platform");
     }
 
     @Nonnull

@@ -19,6 +19,8 @@ import consulo.language.psi.PsiManager;
 import consulo.language.psi.stub.FileBasedIndex;
 import consulo.language.psi.util.LanguageCachedValueUtil;
 import consulo.util.collection.ContainerUtil;
+import consulo.util.collection.HashingStrategy;
+import consulo.util.collection.Maps;
 import consulo.virtualFileSystem.VirtualFile;
 import org.jetbrains.yaml.psi.*;
 
@@ -208,7 +210,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
             () -> {
                 List<YAMLDocument> documents = yamlFile.getDocuments();
 
-                Map<String, String> map = new HashMap<>();
+                Map<String, String> map = Maps.newHashMap(HashingStrategy.caseInsensitive());
 
                 for (YAMLDocument document : documents) {
                     if (document.getTopLevelValue() instanceof YAMLMapping topLevelMapping) {
@@ -217,7 +219,7 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
                                 YAMLKeyValue text = valueMapping.getKeyValueByKey("text");
                                 if (text != null) {
                                     String key = value.getKeyText();
-                                    map.put(key.toLowerCase(Locale.ROOT), text.getValueText());
+                                    map.put(key, text.getValueText());
                                 }
                             }
                         }
