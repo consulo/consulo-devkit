@@ -15,6 +15,7 @@ import consulo.language.psi.stub.FileBasedIndex;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.Pair;
+import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -66,7 +67,7 @@ public class LocalizeInlayProvider implements DeclarativeInlayHintsProvider {
                 YAMLKeyValue yamlKeyValue = (YAMLKeyValue) element;
 
                 String otherTextVariant = data.get(yamlKeyValue.getKeyText());
-                if (otherTextVariant != null) {
+                if (!StringUtil.isEmptyOrSpaces(otherTextVariant)) {
                     int lineNumber = document.getLineNumber(element.getTextOffset());
 
                     sink.addPresentation(
