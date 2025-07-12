@@ -17,7 +17,9 @@
 package consulo.devkit.inspections.requiredXAction;
 
 import com.intellij.java.language.psi.PsiClass;
+import com.intellij.java.language.psi.PsiExpressionList;
 import com.intellij.java.language.psi.PsiMethod;
+import consulo.annotation.access.RequiredReadAction;
 import jakarta.annotation.Nonnull;
 
 import java.util.Set;
@@ -41,7 +43,8 @@ public class AcceptableMethodCallCheck {
         this(parentClass.getName(), methodNames);
     }
 
-    public boolean accept(PsiMethod method) {
+    @RequiredReadAction
+    public boolean accept(PsiMethod method, PsiExpressionList expressionList) {
         if (!myMethodNames.contains(method.getName())) {
             return false;
         }

@@ -31,9 +31,9 @@ import consulo.module.Module;
 import consulo.ui.UIAccess;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.awt.UIUtil;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import javax.swing.*;
 import java.util.Set;
 
@@ -82,7 +82,8 @@ public enum CallStateType {
     ),
     UI_ACCESS(
         RequiredUIAccess.class.getName(),
-        new AcceptableMethodCallCheck(UIAccess.class, Set.of("give", "giveIfNeed", "giveAndWait", "giveAndWaitIfNeed")),
+        new CompletableFutureCallCheck(UIAccess.class.getName()),
+        new AcceptableMethodCallCheck(UIAccess.class, Set.of("give", "giveIfNeed", "giveAndWait", "giveAndWaitIfNeed", "execute")),
         new AcceptableMethodCallCheck(Application.class, Set.of("invokeLater", "invokeAndWait")),
         new AcceptableMethodCallCheck(UIUtil.class, Set.of("invokeAndWaitIfNeeded", "invokeLaterIfNeeded")),
         new AcceptableMethodCallCheck(SwingUtilities.class, Set.of("invokeAndWait", "invokeLater"))

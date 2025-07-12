@@ -80,7 +80,7 @@ public abstract class StateResolver {
                 && expressionList.getParent() instanceof PsiMethodCallExpression methodCall
                 && methodCall.resolveMethod() instanceof PsiMethod method) {
                 for (AcceptableMethodCallCheck acceptableMethodCallCheck : type.getAcceptableMethodCallChecks()) {
-                    if (acceptableMethodCallCheck.accept(method)) {
+                    if (acceptableMethodCallCheck.accept(method, expressionList)) {
                         return true;
                     }
                 }
