@@ -15,7 +15,9 @@
  */
 package org.intellij.grammar;
 
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.language.Language;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 
 /**
@@ -33,7 +35,7 @@ public class BnfLanguage extends Language {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return "Grammar-Kit BNF";
+    public LocalizeValue getDisplayName() {
+        return BnfLocalize.bnfLanguageDisplayName();
     }
 }

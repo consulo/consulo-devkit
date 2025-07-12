@@ -19,6 +19,7 @@ package org.intellij.grammar.impl.livePreview;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.application.Application;
 import consulo.codeEditor.Editor;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.fileEditor.FileEditor;
 import consulo.fileEditor.FileEditorManager;
 import consulo.fileEditor.TextEditor;
@@ -26,6 +27,7 @@ import consulo.internal.org.objectweb.asm.*;
 import consulo.language.Language;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.ObjectUtil;
 import consulo.virtualFileSystem.VirtualFile;
@@ -52,8 +54,8 @@ public class LivePreviewLanguage extends Language {
     private final SoftReference<BnfFile> myBnfFile;
     public static final Language BASE_INSTANCE = new Language("BNF_LP") {
         @Override
-        public String getDisplayName() {
-            return "Grammar Live Preview";
+        public LocalizeValue getDisplayName() {
+            return BnfLocalize.bnfPreviewLanguageDisplayName();
         }
     };
 
@@ -74,9 +76,9 @@ public class LivePreviewLanguage extends Language {
     }
 
     @Override
-    public String getDisplayName() {
+    public LocalizeValue getDisplayName() {
         VirtualFile file = getGrammarFile();
-        return file == null ? getID() : "'" + file.getName() + "' grammar";
+        return LocalizeValue.localizeTODO(file == null ? getID() : "'" + file.getName() + "' grammar");
     }
 
     @Nullable
