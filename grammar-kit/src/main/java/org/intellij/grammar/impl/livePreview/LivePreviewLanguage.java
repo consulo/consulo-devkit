@@ -75,6 +75,7 @@ public class LivePreviewLanguage extends Language {
         }
     }
 
+    @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
         VirtualFile file = getGrammarFile();
