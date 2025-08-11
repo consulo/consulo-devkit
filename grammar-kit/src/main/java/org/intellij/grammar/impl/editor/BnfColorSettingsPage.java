@@ -19,11 +19,11 @@ package org.intellij.grammar.impl.editor;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.colorScheme.TextAttributesKey;
 import consulo.colorScheme.setting.AttributesDescriptor;
-import consulo.colorScheme.setting.ColorDescriptor;
 import consulo.language.editor.colorScheme.setting.ColorSettingsPage;
 import consulo.language.editor.highlight.SyntaxHighlighter;
-
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,18 +61,13 @@ public class BnfColorSettingsPage implements ColorSettingsPage {
     }
 
     @Nonnull
-    public String getDisplayName() {
-        return "Grammar";
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.localizeTODO("IntelliJ Grammar");
     }
 
     @Nonnull
     public AttributesDescriptor[] getAttributeDescriptors() {
         return ATTRS;
-    }
-
-    @Nonnull
-    public ColorDescriptor[] getColorDescriptors() {
-        return ColorDescriptor.EMPTY_ARRAY;
     }
 
     @Nonnull
