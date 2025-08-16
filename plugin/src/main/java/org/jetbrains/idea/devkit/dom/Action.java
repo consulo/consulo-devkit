@@ -19,13 +19,9 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.java.impl.util.xml.ExtendClass;
-import com.intellij.java.language.psi.PsiClass;
 import consulo.xml.util.xml.*;
-import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
-import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
-
 import jakarta.annotation.Nonnull;
+
 import java.util.List;
 
 /**
@@ -71,15 +67,7 @@ public interface Action extends ActionOrGroup {
     @Nonnull
     @Attribute("class")
     @Required
-    @ExtendClass(
-        value = "com.intellij.openapi.actionSystem.AnAction",
-        instantiatable = false,
-        allowNonPublic = true,
-        allowAbstract = false,
-        allowInterface = false
-    )
-    @Convert(PluginPsiClassConverter.class)
-    GenericAttributeValue<PsiClass> getClazz();
+    GenericAttributeValue<String> getClazz();
 
 
     /**
@@ -166,7 +154,6 @@ public interface Action extends ActionOrGroup {
     AddToGroup addAddToGroup();
 
     @Nonnull
-    @Convert(ActionOrGroupResolveConverter.OnlyActions.class)
     GenericAttributeValue<ActionOrGroup> getUseShortcutOf();
 
     @Nonnull

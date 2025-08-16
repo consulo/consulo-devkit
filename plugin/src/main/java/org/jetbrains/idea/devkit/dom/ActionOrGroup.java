@@ -24,7 +24,6 @@ import jakarta.annotation.Nonnull;
 public interface ActionOrGroup extends DomElement {
     @Nonnull
     @NameValue
-    @Stubbed
     @Required(value = false, nonEmpty = true)
     GenericAttributeValue<String> getId();
 }

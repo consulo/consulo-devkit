@@ -19,12 +19,9 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import consulo.xml.util.xml.Convert;
 import consulo.xml.util.xml.DomElement;
 import consulo.xml.util.xml.GenericAttributeValue;
 import consulo.xml.util.xml.Required;
-import org.jetbrains.idea.devkit.dom.impl.ActionOrGroupResolveConverter;
-
 import jakarta.annotation.Nonnull;
 
 /**
@@ -47,8 +44,7 @@ public interface AddToGroup extends DomElement {
      * @return the value of the relative-to-action child.
      */
     @Nonnull
-    @Convert(ActionOrGroupResolveConverter.class)
-    GenericAttributeValue<ActionOrGroup> getRelativeToAction();
+    GenericAttributeValue<String> getRelativeToAction();
 
     /**
      * Returns the value of the group-id child.
@@ -58,6 +54,5 @@ public interface AddToGroup extends DomElement {
      */
     @Nonnull
     @Required
-    @Convert(ActionOrGroupResolveConverter.OnlyGroups.class)
-    GenericAttributeValue<ActionOrGroup> getGroupId();
+    GenericAttributeValue<String> getGroupId();
 }

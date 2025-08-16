@@ -19,15 +19,11 @@
 
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.java.impl.util.xml.ExtendClass;
-import com.intellij.java.language.psi.PsiClass;
 import consulo.xml.util.xml.Attribute;
-import consulo.xml.util.xml.Convert;
 import consulo.xml.util.xml.GenericAttributeValue;
 import consulo.xml.util.xml.GenericDomValue;
-import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
-
 import jakarta.annotation.Nonnull;
+
 import java.util.List;
 
 /**
@@ -78,15 +74,7 @@ public interface Group extends Actions, ActionOrGroup {
      */
     @Nonnull
     @Attribute("class")
-    @ExtendClass(
-        value = "com.intellij.openapi.actionSystem.AnAction",
-        instantiatable = false,
-        allowNonPublic = true,
-        allowAbstract = false,
-        allowInterface = false
-    )
-    @Convert(PluginPsiClassConverter.class)
-    GenericAttributeValue<PsiClass> getClazz();
+    GenericAttributeValue<String> getClazz();
 
     /**
      * Returns the value of the text child.

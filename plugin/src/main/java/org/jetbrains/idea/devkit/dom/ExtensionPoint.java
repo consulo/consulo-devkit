@@ -15,11 +15,12 @@
  */
 package org.jetbrains.idea.devkit.dom;
 
-import com.intellij.java.language.psi.PsiClass;
-import consulo.xml.util.xml.*;
+import consulo.xml.util.xml.Attribute;
+import consulo.xml.util.xml.DomElement;
+import consulo.xml.util.xml.GenericAttributeValue;
+import consulo.xml.util.xml.NameValue;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jetbrains.idea.devkit.dom.impl.PluginPsiClassConverter;
 
 /**
  * @author mike
@@ -35,13 +36,11 @@ public interface ExtensionPoint extends DomElement {
     GenericAttributeValue<String> getName();
 
     @Nonnull
-    @Convert(PluginPsiClassConverter.class)
-    GenericAttributeValue<PsiClass> getInterface();
+    GenericAttributeValue<String> getInterface();
 
     @Nonnull
     @Attribute("beanClass")
-    @Convert(PluginPsiClassConverter.class)
-    GenericAttributeValue<PsiClass> getBeanClass();
+    GenericAttributeValue<String> getBeanClass();
 
     @Nonnull
     GenericAttributeValue<Boolean> getInternal();
