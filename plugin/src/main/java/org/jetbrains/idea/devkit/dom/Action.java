@@ -154,7 +154,7 @@ public interface Action extends ActionOrGroup {
     AddToGroup addAddToGroup();
 
     @Nonnull
-    GenericAttributeValue<ActionOrGroup> getUseShortcutOf();
+    GenericAttributeValue<String> getUseShortcutOf();
 
     @Nonnull
     GenericAttributeValue<String> getKeymap();
