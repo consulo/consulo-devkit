@@ -85,12 +85,6 @@ public interface IdeaPlugin extends DomElement {
   Dependency addDependency();
 
   @Nonnull
-  @SubTagList("actions")
-  List<Actions> getActions();
-
-  Actions addActions();
-
-  @Nonnull
   GenericDomValue<Boolean> getExperimental();
 
   @Nullable

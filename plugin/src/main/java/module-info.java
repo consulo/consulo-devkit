@@ -50,7 +50,6 @@ open module consulo.devkit {
     exports consulo.devkit.run;
     exports consulo.devkit.util;
     exports org.jetbrains.idea.devkit;
-    exports org.jetbrains.idea.devkit.actions;
     exports org.jetbrains.idea.devkit.build;
     exports org.jetbrains.idea.devkit.dom;
     exports org.jetbrains.idea.devkit.dom.generator;
