@@ -7,12 +7,15 @@ import consulo.devkit.localize.folding.LocalizeFoldingBuilder;
 import consulo.devkit.localize.folding.LocalizeResolveInfo;
 import consulo.language.editor.TargetElementUtilExtender;
 import consulo.language.psi.PsiElement;
+import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jetbrains.yaml.psi.*;
+import org.jetbrains.yaml.psi.YAMLDocument;
+import org.jetbrains.yaml.psi.YAMLFile;
+import org.jetbrains.yaml.psi.YAMLKeyValue;
+import org.jetbrains.yaml.psi.YAMLMapping;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -37,7 +40,7 @@ public class LocalizeTargetElementUtilExtender implements TargetElementUtilExten
                         for (YAMLKeyValue value : topLevelMapping.getKeyValues()) {
                             String key = value.getKeyText();
 
-                            if (Objects.equals(key, resolveInfo.key())) {
+                            if (StringUtil.equalsIgnoreCase(key, resolveInfo.key())) {
                                 return value;
                             }
                         }
