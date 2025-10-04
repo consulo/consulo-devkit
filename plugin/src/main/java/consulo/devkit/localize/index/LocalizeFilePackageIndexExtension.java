@@ -8,23 +8,22 @@ import jakarta.annotation.Nonnull;
 
 /**
  * @author VISTALL
- * @since 2020-06-01
+ * @since 2025-10-04
  */
 @ExtensionImpl
-public class LocalizeFileIndexExtension extends BaseLocalizeFileIndexExtension {
-    public static final ID<String, Void> INDEX = ID.create("consulo.localize.file.index");
-
-    @Nonnull
-    @Override
-    public ID<String, Void> getName() {
-        return INDEX;
-    }
+public class LocalizeFilePackageIndexExtension extends BaseLocalizeFileIndexExtension {
+    public static final ID<String, Void> INDEX = ID.create("consulo.localize.file.package.index");
 
     @Override
     protected String getFileId(VirtualFile file) {
         String fileName = file.getNameWithoutExtension();
         String packageName = StringUtil.getPackageName(fileName);
-        String id = packageName + ".localize." + StringUtil.getShortName(fileName);
-        return id;
+        return packageName;
+    }
+
+    @Nonnull
+    @Override
+    public ID<String, Void> getName() {
+        return INDEX;
     }
 }

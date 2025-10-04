@@ -13,19 +13,27 @@ import consulo.localize.LocalizeValue;
  * @since 2025-10-02
  */
 public class LocalizeMethodBuilder extends LightMethodBuilder {
+    private final String myLocalizeText;
+
     public LocalizeMethodBuilder(PsiClass constructedClass,
                                  PsiElement context,
-                                 String methodName) {
+                                 String methodName,
+                                 String localizeText) {
         super(
             PsiManager.getInstance(constructedClass.getProject()),
             JavaLanguage.INSTANCE,
             methodName
         );
+        myLocalizeText = localizeText;
 
         setNavigationElement(context);
 
         setMethodReturnType(LocalizeValue.class.getName());
 
         addModifiers(PsiModifier.PUBLIC, PsiModifier.STATIC);
+    }
+
+    public String getLocalizeText() {
+        return myLocalizeText;
     }
 }

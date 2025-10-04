@@ -7,6 +7,7 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.application.util.CachedValueProvider;
 import consulo.application.util.matcher.NameUtil;
 import consulo.devkit.localize.index.LocalizeFileIndexExtension;
+import consulo.devkit.localize.java.LocalizeMethodBuilder;
 import consulo.document.Document;
 import consulo.language.Language;
 import consulo.language.ast.ASTNode;
@@ -135,6 +136,11 @@ public class LocalizeFoldingBuilder implements FoldingBuilder {
     @RequiredReadAction
     private String matchLocalizeClassMethodCall(@Nonnull PsiMethodCallExpression methodCall) {
         PsiReferenceExpression methodExpr = methodCall.getMethodExpression();
+
+        PsiElement resolvedMethod = methodExpr.resolve();
+        if (resolvedMethod instanceof LocalizeMethodBuilder localizeMethodBuilder) {
+            return localizeMethodBuilder.getLocalizeText();
+        }
 
         if (methodExpr.getQualifierExpression() instanceof PsiReferenceExpression qualRefExpr) {
             String className = qualRefExpr.getReferenceName();

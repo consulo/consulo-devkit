@@ -15,4 +15,9 @@ public class GeneratedPackageImpl extends PsiPackageImpl {
                                 String qualifiedName) {
         super(manager, packageManager, JavaModuleExtension.class, qualifiedName);
     }
+
+    @Override
+    public boolean isValid() {
+        return true;
+    }
 }
