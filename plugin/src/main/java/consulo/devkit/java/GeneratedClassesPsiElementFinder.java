@@ -105,6 +105,26 @@ public class GeneratedClassesPsiElementFinder extends PsiElementFinder {
         return null;
     }
 
+    @RequiredReadAction
+    @Nonnull
+    @Override
+    public PsiClass[] getClasses(@Nullable String className, @Nonnull PsiJavaPackage psiPackage, @Nonnull GlobalSearchScope scope) {
+        String qualifiedName = psiPackage.getQualifiedName();
+
+        if (StringUtil.isEmpty(qualifiedName)) {
+            return PsiClass.EMPTY_ARRAY;
+        }
+
+        String fullLocalizeClassName = qualifiedName + "." + className;
+
+        PsiClass aClass = findClass(fullLocalizeClassName, scope);
+        if (aClass != null) {
+            return new PsiClass[]{aClass};
+        }
+
+        return PsiClass.EMPTY_ARRAY;
+    }
+
     @Nonnull
     @Override
     public PsiJavaPackage[] getSubPackages(@Nonnull PsiJavaPackage psiPackage, @Nonnull GlobalSearchScope scope) {
