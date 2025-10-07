@@ -2,7 +2,6 @@ package consulo.devkit.dom.impl;
 
 import consulo.container.plugin.PluginDescriptor;
 import consulo.container.plugin.PluginId;
-import consulo.devkit.Consulo2PluginIds;
 import consulo.devkit.Consulo3PluginIds;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.util.PluginModuleUtil;
@@ -16,10 +15,10 @@ import consulo.xml.util.xml.ConvertContext;
 import consulo.xml.util.xml.GenericDomValue;
 import consulo.xml.util.xml.ResolvingConverter;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 import org.jetbrains.idea.devkit.dom.impl.IdeaPluginConverter;
 
-import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -87,9 +86,8 @@ public class PluginDescriptorResolver extends ResolvingConverter<PluginDescripto
 
   private List<PluginDescriptor> getAllPlugins(ConvertContext context) {
     Collection<IdeaPlugin> allPlugins = IdeaPluginConverter.getAllPlugins(context.getProject());
-    boolean consuloV3 = PluginModuleUtil.isConsuloV3(context.getInvocationElement());
 
-    PluginId basePluginId = consuloV3 ? Consulo3PluginIds.CONSULO_BASE : Consulo2PluginIds.COM_INTELLIJ;
+    PluginId basePluginId = Consulo3PluginIds.CONSULO_BASE;
 
     List<PluginDescriptor> pluginDescriptors = new ArrayList<>(allPlugins.size() + 3);
     for (IdeaPlugin plugin : allPlugins) {
@@ -117,9 +115,7 @@ public class PluginDescriptorResolver extends ResolvingConverter<PluginDescripto
       pluginDescriptors.add(new PluginDescriptorOverDomElement(pluginId, plugin));
     }
 
-    if (consuloV3) {
-      pluginDescriptors.addAll(PlatformPluginDescriptor.getPluginsV3());
-    }
+    pluginDescriptors.addAll(PlatformPluginDescriptor.getPluginsV3());
 
     return pluginDescriptors;
   }

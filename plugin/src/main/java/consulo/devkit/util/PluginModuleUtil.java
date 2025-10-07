@@ -37,11 +37,9 @@ import consulo.module.extension.ModuleExtension;
 import consulo.project.Project;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.xml.psi.xml.XmlFile;
-import consulo.xml.util.xml.DomElement;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.jetbrains.idea.devkit.build.PluginBuildUtil;
-
-import jakarta.annotation.Nonnull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,24 +52,6 @@ import java.util.Set;
  */
 public class PluginModuleUtil {
     public static final String PLUGIN_XML = "plugin.xml";
-
-    public static boolean isConsuloV3(@Nonnull DomElement element) {
-        Module module = element.getModule();
-        return module != null && JavaPsiFacade.getInstance(module.getProject())
-            .findClass("consulo.application.Application", GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(module)) != null;
-    }
-
-    @RequiredReadAction
-    public static Module[] getAllPluginModules(final Project project) {
-        List<Module> modules = new ArrayList<>();
-        Module[] allModules = ModuleManager.getInstance(project).getModules();
-        for (Module module : allModules) {
-            if (ModuleUtilCore.getExtension(module, PluginModuleExtension.class) != null) {
-                modules.add(module);
-            }
-        }
-        return modules.toArray(new Module[modules.size()]);
-    }
 
     @Nullable
     @RequiredReadAction
