@@ -23,6 +23,7 @@ import consulo.language.editor.inspection.LocalInspectionTool;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.generator.ExpressionGeneratorHelper;
@@ -39,14 +40,14 @@ import org.intellij.grammar.psi.BnfVisitor;
 public class BnfLeftRecursionInspection extends LocalInspectionTool {
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return BnfLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return BnfLocalize.inspectionsGroupName();
     }
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return BnfLocalize.leftRecursionInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return BnfLocalize.leftRecursionInspectionDisplayName();
     }
 
     @Nonnull

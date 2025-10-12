@@ -3,9 +3,8 @@ package consulo.devkit.inspections.valhalla;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.requires.dom.PluginRequires;
+import consulo.localize.LocalizeValue;
 import consulo.xml.util.xml.highlighting.BasicDomElementsInspection;
-import org.jetbrains.annotations.Nls;
-
 import jakarta.annotation.Nonnull;
 
 /**
@@ -18,18 +17,19 @@ public class PluginRequiresXmlDomElementsInspection extends BasicDomElementsInsp
         super(PluginRequires.class);
     }
 
-    @Nls
+    @Override
     @Nonnull
-    public String getGroupDisplayName() {
-        return DevKitLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName();
     }
 
-    @Nls
+    @Override
     @Nonnull
-    public String getDisplayName() {
-        return "Plugin Requires.xml Validity";
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.localizeTODO("Plugin Requires.xml Validity");
     }
 
+    @Override
     @Nonnull
     public String getShortName() {
         return "PluginRequiresXmlValidity";

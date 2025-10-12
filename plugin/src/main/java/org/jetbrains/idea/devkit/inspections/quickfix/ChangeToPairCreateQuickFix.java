@@ -23,6 +23,7 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.Pair;
 
@@ -33,7 +34,7 @@ import jakarta.annotation.Nonnull;
  */
 public class ChangeToPairCreateQuickFix extends LocalQuickFixBase {
     public ChangeToPairCreateQuickFix() {
-        super("Change to Pair.create(..., ...)");
+        super(LocalizeValue.localizeTODO("Change to Pair.create(..., ...)"));
     }
 
     @Override

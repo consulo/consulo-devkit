@@ -29,6 +29,7 @@ import consulo.language.editor.intention.IntentionAction;
 import consulo.language.editor.intention.SyntheticIntentionAction;
 import consulo.language.psi.*;
 import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.module.content.ModuleRootManager;
 import consulo.project.Project;
@@ -55,8 +56,8 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.intentionDescriptionNotFoundInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.intentionDescriptionNotFoundInspectionDisplayName();
     }
 
     @Nonnull

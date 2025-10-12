@@ -35,7 +35,7 @@ public class ConvertToGrayQuickFix extends LocalQuickFixBase {
     private final int myNum;
 
     public ConvertToGrayQuickFix(int num) {
-        super(DevKitLocalize.useGrayInspectionMessage(num).get(), DevKitLocalize.useGrayInspectionQuickfixFamilyName().get());
+        super(DevKitLocalize.useGrayInspectionMessage(num));
         myNum = num;
     }
 

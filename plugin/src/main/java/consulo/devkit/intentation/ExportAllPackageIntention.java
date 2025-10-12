@@ -16,6 +16,7 @@ import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
 import consulo.language.util.ModuleUtilCore;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.module.content.ModuleRootManager;
 import consulo.module.content.layer.ContentFolder;
@@ -36,11 +37,10 @@ import java.util.*;
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "consulo.devkit.export.all.packages", fileExtensions = "java", categories = {"Java", "Consulo DevKit"})
 public class ExportAllPackageIntention implements IntentionAction {
-    @Nls
     @Nonnull
     @Override
-    public String getText() {
-        return "Export all packages";
+    public LocalizeValue getText() {
+        return LocalizeValue.localizeTODO("Export all packages");
     }
 
     @Override

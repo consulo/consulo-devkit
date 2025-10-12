@@ -16,6 +16,7 @@ import consulo.language.pattern.StandardPatterns;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.util.dataholder.Key;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -46,8 +47,8 @@ public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
 
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return DevKitLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName();
     }
 
     @Nullable
@@ -63,8 +64,8 @@ public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return "Duplicate localization";
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.localizeTODO("Duplicate localization");
     }
 
     @Nonnull

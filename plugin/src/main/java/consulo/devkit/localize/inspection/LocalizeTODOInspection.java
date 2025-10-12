@@ -24,8 +24,8 @@ public class LocalizeTODOInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.localizeTodoInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.localizeTodoInspectionDisplayName();
     }
 
     @Nonnull

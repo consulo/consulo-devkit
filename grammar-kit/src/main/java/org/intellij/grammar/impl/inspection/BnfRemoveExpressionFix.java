@@ -17,6 +17,7 @@
 package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.access.RequiredReadAction;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 
 import consulo.language.ast.ASTNode;
@@ -36,14 +37,8 @@ import org.intellij.grammar.impl.refactor.BnfExpressionOptimizer;
 public class BnfRemoveExpressionFix implements LocalQuickFix {
     @Nonnull
     @Override
-    public String getName() {
-        return getFamilyName();
-    }
-
-    @Nonnull
-    @Override
-    public String getFamilyName() {
-        return "Remove expression";
+    public LocalizeValue getName() {
+        return LocalizeValue.localizeTODO("Remove expression");
     }
 
     @Override

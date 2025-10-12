@@ -23,6 +23,7 @@ import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.util.PsiUtilBase;
 import consulo.language.psi.PsiElement;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.awt.JBUI;
 import jakarta.annotation.Nonnull;
@@ -32,7 +33,7 @@ import jakarta.annotation.Nonnull;
  */
 public class ConvertToJBInsetsQuickFix extends LocalQuickFixBase {
     public ConvertToJBInsetsQuickFix() {
-        super("Convert to JBUI.insets(...)");
+        super(LocalizeValue.localizeTODO("Convert to JBUI.insets(...)"));
     }
 
     @Override

@@ -24,6 +24,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.psi.util.PsiTreeUtil;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.ref.SimpleReference;
 import consulo.virtualFileSystem.VirtualFile;
@@ -36,8 +37,8 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.unsafeVfsRecursionInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.unsafeVfsRecursionInspectionDisplayName();
     }
 
     @Nonnull

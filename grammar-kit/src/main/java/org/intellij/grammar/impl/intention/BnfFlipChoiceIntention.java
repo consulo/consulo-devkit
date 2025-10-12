@@ -25,6 +25,7 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.Couple;
 import jakarta.annotation.Nonnull;
@@ -42,8 +43,8 @@ import org.intellij.grammar.psi.impl.BnfElementFactory;
 public class BnfFlipChoiceIntention implements IntentionAction {
     @Nonnull
     @Override
-    public String getText() {
-        return "Flip arguments";
+    public LocalizeValue getText() {
+        return LocalizeValue.localizeTODO("Flip arguments");
     }
 
     @Override

@@ -19,7 +19,10 @@ package org.intellij.grammar.impl.inspection;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.grammarKit.localize.BnfLocalize;
-import consulo.language.editor.inspection.*;
+import consulo.language.editor.inspection.LocalInspectionTool;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.inspection.SuppressionUtil;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
@@ -35,7 +38,6 @@ import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfReferenceImpl;
-import org.jetbrains.annotations.Nls;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,8 +58,8 @@ import static org.intellij.grammar.psi.impl.GrammarUtil.bnfTraverserNoAttrs;
 public class BnfUnusedRuleInspection extends LocalInspectionTool {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return BnfLocalize.unusedRuleInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return BnfLocalize.unusedRuleInspectionDisplayName();
     }
 
     @Nonnull
@@ -66,11 +68,10 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
         return HighlightDisplayLevel.WARNING;
     }
 
-    @Nls
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return BnfLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return BnfLocalize.inspectionsGroupName();
     }
 
     @Override

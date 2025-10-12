@@ -8,6 +8,7 @@ import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.project.ui.wm.IdeFrame;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
@@ -42,8 +43,8 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.wrongInjectBindingInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.wrongInjectBindingInspectionDisplayName();
     }
 
     @Nonnull

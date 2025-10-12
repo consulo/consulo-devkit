@@ -40,8 +40,8 @@ public class UseCoupleInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.useCoupleInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.useCoupleInspectionDisplayName();
     }
 
     @Nonnull

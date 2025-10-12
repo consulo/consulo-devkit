@@ -38,8 +38,8 @@ import jakarta.annotation.Nonnull;
 public class StatefulEpInspection extends InternalInspection {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.statefulEpInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.statefulEpInspectionDisplayName();
     }
 
     @Override

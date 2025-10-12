@@ -26,6 +26,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.project.util.query.QueryExecutorBase;
 import consulo.ui.ex.awt.JBList;
 import consulo.ui.ex.awt.JBScrollPane;
@@ -53,8 +54,8 @@ public class UndesirableClassUsageInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.undesirableClassUsageInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.undesirableClassUsageInspectionDisplayName();
     }
 
     @Override

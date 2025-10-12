@@ -25,6 +25,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
@@ -40,18 +41,17 @@ import java.util.Set;
  */
 @ExtensionImpl
 public class BnfDuplicateRuleInspection extends LocalInspectionTool {
-    @Nls
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return BnfLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return BnfLocalize.inspectionsGroupName();
     }
 
     @Nls
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return BnfLocalize.duplicateRuleInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return BnfLocalize.duplicateRuleInspectionDisplayName();
     }
 
     @Nonnull

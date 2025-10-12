@@ -25,6 +25,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiReference;
+import consulo.localize.LocalizeValue;
 import consulo.util.collection.JBIterable;
 import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
@@ -43,14 +44,14 @@ import org.intellij.grammar.psi.impl.GrammarUtil;
 public class BnfSuspiciousTokenInspection extends LocalInspectionTool {
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return BnfLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return BnfLocalize.inspectionsGroupName();
     }
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return BnfLocalize.suspiciousTokenInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return BnfLocalize.suspiciousTokenInspectionDisplayName();
     }
 
     @Nonnull

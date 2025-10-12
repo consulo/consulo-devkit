@@ -40,14 +40,14 @@ import static org.intellij.grammar.KnownAttribute.getCompatibleAttribute;
 public class BnfUnusedAttributeInspection extends LocalInspectionTool {
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return BnfLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return BnfLocalize.inspectionsGroupName();
     }
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return BnfLocalize.unusedAttributeInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return BnfLocalize.unusedAttributeInspectionDisplayName();
     }
 
     @Nonnull

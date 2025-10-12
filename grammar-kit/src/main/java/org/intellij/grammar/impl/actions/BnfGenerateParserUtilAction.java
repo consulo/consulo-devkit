@@ -32,6 +32,7 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
@@ -79,7 +80,8 @@ public class BnfGenerateParserUtilAction extends AnAction {
         Project project = file.getProject();
         BnfFile bnfFile = (BnfFile)file;
         final String qualifiedName = createClass(
-            bnfFile, "Create Parser Util Class", PlatformClass.GENERATED_PARSER_UTIL_BASE.select(bnfFile.getVersion()),
+            bnfFile, LocalizeValue.localizeTODO("Create Parser Util Class"),
+            PlatformClass.GENERATED_PARSER_UTIL_BASE.select(bnfFile.getVersion()),
             getGrammarName(bnfFile) + "ParserUtil",
             getGrammarPackage(bnfFile)
         );
@@ -144,7 +146,7 @@ public class BnfGenerateParserUtilAction extends AnAction {
     @RequiredUIAccess
     public static String createClass(
         @Nonnull PsiFile origin,
-        @Nonnull final String title,
+        @Nonnull final LocalizeValue title,
         @Nullable final String baseClass,
         @Nonnull String suggestedName,
         @Nonnull String suggestedPackage
@@ -173,13 +175,13 @@ public class BnfGenerateParserUtilAction extends AnAction {
         final String className,
         final PsiDirectory targetDirectory,
         final String baseClass,
-        final String title,
+        final LocalizeValue title,
         final Consumer<PsiClass> consumer
     ) {
         final Project project = targetDirectory.getProject();
         final Ref<PsiClass> resultRef = Ref.create();
 
-        new WriteCommandAction(project, title) {
+        new WriteCommandAction(project, title.get()) {
             @Override
             protected void run(Result result) throws Throwable {
                 IdeDocumentHistory.getInstance(project).includeCurrentPlaceAsChangePlace();
@@ -207,7 +209,7 @@ public class BnfGenerateParserUtilAction extends AnAction {
                     Application.get().invokeLater(() -> Messages.showErrorDialog(
                         project,
                         "Unable to create class " + className + "\n" + e.getLocalizedMessage(),
-                        title
+                        title.get()
                     ));
                 }
             }

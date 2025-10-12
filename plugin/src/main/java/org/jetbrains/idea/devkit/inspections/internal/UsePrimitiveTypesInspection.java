@@ -17,7 +17,6 @@ package org.jetbrains.idea.devkit.inspections.internal;
 
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.PsiUtil;
-import com.siyeh.IntentionPowerPackBundle;
 import com.siyeh.ig.PsiReplacementUtil;
 import com.siyeh.localize.IntentionPowerPackLocalize;
 import consulo.annotation.access.RequiredReadAction;
@@ -29,16 +28,16 @@ import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
-import org.jetbrains.annotations.Nls;
 
 @ExtensionImpl
 public class UsePrimitiveTypesInspection extends InternalInspection {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.usePrimitiveTypesInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.usePrimitiveTypesInspectionDisplayName();
     }
 
     @Override
@@ -53,12 +52,12 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
                     final PsiExpression lOperand = expression.getLOperand();
                     final PsiExpression rOperand = expression.getROperand();
                     if (rOperand != null && (isPrimitiveTypeRef(lOperand) || isPrimitiveTypeRef(rOperand))) {
-                        final String name;
+                        final LocalizeValue name;
                         if (JavaTokenType.NE.equals(tokenType)) {
-                            name = IntentionPowerPackBundle.message("replace.equality.with.not.equals.intention.name");
+                            name = LocalizeValue.localizeTODO("Replace '!=' with '!equals()'");
                         }
                         else {
-                            name = IntentionPowerPackLocalize.replaceEqualityWithEqualsIntentionName().get();
+                            name = IntentionPowerPackLocalize.replaceEqualityWithEqualsIntentionName();
                         }
                         holder.newProblem(DevKitLocalize.usePrimitiveTypesInspectionMessage())
                             .range(expression.getOperationSign())
@@ -82,23 +81,21 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
     }
 
     private static class ReplaceEqualityWithEqualsFix implements LocalQuickFix {
-        private final String myName;
+        private final LocalizeValue myName;
 
-        public ReplaceEqualityWithEqualsFix(String name) {
+        public ReplaceEqualityWithEqualsFix(LocalizeValue name) {
             myName = name;
         }
 
         @Nonnull
         @Override
-        public String getName() {
+        public LocalizeValue getName() {
             return myName;
         }
 
-        @Nls
         @Nonnull
-        @Override
-        public String getFamilyName() {
-            return "Replace equality with .equals";
+        public LocalizeValue getFamilyName() {
+            return LocalizeValue.localizeTODO("Replace equality with .equals");
         }
 
         @Override

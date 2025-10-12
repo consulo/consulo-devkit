@@ -28,6 +28,7 @@ import consulo.devkit.inspections.requiredXAction.CallStateType;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.util.lang.StringUtil;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
@@ -63,8 +64,8 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.placeXactionAnnotationInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.placeXactionAnnotationInspectionDisplayName();
     }
 
     @Nonnull

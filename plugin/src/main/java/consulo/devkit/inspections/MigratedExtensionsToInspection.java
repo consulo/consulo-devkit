@@ -12,6 +12,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
@@ -31,8 +32,8 @@ public class MigratedExtensionsToInspection extends InternalInspection {
 
         @Nonnull
         @Override
-        public String getText() {
-            return DevKitLocalize.migratedExtensionsToInspectionQuickfixName().get();
+        public LocalizeValue getText() {
+            return DevKitLocalize.migratedExtensionsToInspectionQuickfixName();
         }
 
         @Override
@@ -104,18 +105,12 @@ public class MigratedExtensionsToInspection extends InternalInspection {
                 body.replace(newBlock);
             });
         }
-
-        @Nonnull
-        @Override
-        public String getFamilyName() {
-            return DevKitLocalize.inspectionsGroupName().get();
-        }
     }
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.migratedExtensionsToInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.migratedExtensionsToInspectionDisplayName();
     }
 
     @Override

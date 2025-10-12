@@ -28,6 +28,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.impl.ast.TreeUtil;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 import org.intellij.grammar.analysis.BnfFirstNextAnalyzer;
 import org.intellij.grammar.psi.BnfChoice;
@@ -46,14 +47,14 @@ import java.util.Set;
 public class BnfUnreachableChoiceBranchInspection extends LocalInspectionTool {
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return BnfLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return BnfLocalize.inspectionsGroupName();
     }
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return BnfLocalize.unreachableChoiceBranchInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return BnfLocalize.unreachableChoiceBranchInspectionDisplayName();
     }
 
     @Nonnull

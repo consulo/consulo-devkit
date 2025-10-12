@@ -28,6 +28,7 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.module.content.ModuleRootManager;
 import consulo.project.Project;
@@ -50,8 +51,8 @@ import java.util.Set;
 public class InspectionDescriptionNotFoundInspection extends InternalInspection {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.inspectionDescriptionNotFoundInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.inspectionDescriptionNotFoundInspectionDisplayName();
     }
 
     @Nonnull

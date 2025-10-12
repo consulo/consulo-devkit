@@ -14,6 +14,7 @@ import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
@@ -31,8 +32,8 @@ public class GetExtensionPointInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.inspectionsGetExtensionPointValidationTitle().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.inspectionsGetExtensionPointValidationTitle();
     }
 
     @Override

@@ -31,8 +31,8 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.inspectionsReplaceWithXxxlocalizeTitle().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.inspectionsReplaceWithXxxlocalizeTitle();
     }
 
     @Nonnull
@@ -118,8 +118,8 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
         @Nonnull
         @Override
-        public String getText() {
-            return myInspectionName.get();
+        public LocalizeValue getText() {
+            return myInspectionName;
         }
 
         @Override
@@ -137,12 +137,6 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
 
                 JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
             });
-        }
-
-        @Nonnull
-        @Override
-        public String getFamilyName() {
-            return DevKitLocalize.inspectionsGroupName().get();
         }
     }
 

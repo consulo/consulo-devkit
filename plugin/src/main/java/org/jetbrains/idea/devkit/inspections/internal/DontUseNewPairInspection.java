@@ -21,6 +21,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.util.lang.Pair;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.quickfix.ChangeToPairCreateQuickFix;
@@ -36,8 +37,8 @@ public class DontUseNewPairInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.dontUseNewPairInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.dontUseNewPairInspectionDisplayName();
     }
 
     @Override

@@ -17,6 +17,7 @@ package org.jetbrains.idea.devkit.inspections;
 
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
+import consulo.localize.LocalizeValue;
 import consulo.xml.util.xml.highlighting.BasicDomElementsInspection;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
@@ -32,18 +33,16 @@ public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugi
         super(IdeaPlugin.class);
     }
 
-    @Nls
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return DevKitLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName();
     }
 
-    @Nls
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return "Plugin.xml Validity";
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.localizeTODO("Plugin.xml Validity");
     }
 
     @Nonnull

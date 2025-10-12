@@ -12,6 +12,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import jakarta.annotation.Nonnull;
@@ -24,8 +25,8 @@ import jakarta.annotation.Nonnull;
 public class IntentionMetaDataMissedInspection extends InternalInspection {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.intentionMetaDataMissedInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.intentionMetaDataMissedInspectionDisplayName();
     }
 
     @Nonnull

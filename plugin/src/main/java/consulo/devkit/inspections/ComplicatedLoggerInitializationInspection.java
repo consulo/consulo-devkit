@@ -12,6 +12,7 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.util.PsiTreeUtil;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
@@ -33,8 +34,8 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
 
         @Nonnull
         @Override
-        public String getText() {
-            return DevKitLocalize.complicatedLoggerInitializationQuickfixName().get();
+        public LocalizeValue getText() {
+            return DevKitLocalize.complicatedLoggerInitializationQuickfixName();
         }
 
         @Override
@@ -54,21 +55,14 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
 
             WriteAction.run(() -> psiElement.replace(expression));
         }
-
-        @Nls
-        @Nonnull
-        @Override
-        public String getFamilyName() {
-            return DevKitLocalize.inspectionsGroupName().get();
-        }
     }
 
     private static final Set<String> ourLoggerClasses = Set.of(Logger.class.getName());
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.complicatedLoggerInitializationInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.complicatedLoggerInitializationInspectionDisplayName();
     }
 
     @Override

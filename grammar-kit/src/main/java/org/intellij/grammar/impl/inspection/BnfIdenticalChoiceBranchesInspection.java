@@ -24,6 +24,7 @@ import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfChoice;
 import org.intellij.grammar.psi.BnfExpression;
@@ -42,14 +43,14 @@ import java.util.Set;
 public class BnfIdenticalChoiceBranchesInspection extends LocalInspectionTool {
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return BnfLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return BnfLocalize.inspectionsGroupName();
     }
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return BnfLocalize.identicalChoiceBranchesInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return BnfLocalize.identicalChoiceBranchesInspectionDisplayName();
     }
 
     @Nonnull

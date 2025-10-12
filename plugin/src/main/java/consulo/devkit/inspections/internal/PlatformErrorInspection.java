@@ -27,6 +27,7 @@ import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import consulo.platform.Platform;
 import consulo.util.collection.MultiMap;
 import jakarta.annotation.Nonnull;
@@ -58,8 +59,8 @@ public class PlatformErrorInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.platformErrorInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.platformErrorInspectionDisplayName();
     }
 
     @Nonnull

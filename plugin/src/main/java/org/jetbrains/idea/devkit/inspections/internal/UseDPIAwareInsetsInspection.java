@@ -21,6 +21,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.awt.JBInsets;
 import consulo.ui.ex.awt.JBUI;
@@ -34,8 +35,8 @@ import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToJBInsetsQuickFix;
 public class UseDPIAwareInsetsInspection extends InternalInspection {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return "Use DPI-aware insets";
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.localizeTODO("Use DPI-aware insets");
     }
 
     @Override

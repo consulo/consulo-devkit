@@ -16,6 +16,7 @@
 package org.jetbrains.idea.devkit.inspections;
 
 import com.intellij.java.analysis.impl.codeInspection.BaseJavaLocalInspectionTool;
+import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.util.PropertyUtil;
 import com.intellij.lang.properties.psi.Property;
@@ -25,12 +26,11 @@ import consulo.annotation.access.RequiredWriteAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.fileChooser.FileChooserDescriptor;
-import consulo.language.editor.inspection.*;
-import consulo.language.psi.PsiElement;
-import consulo.language.psi.PsiElementVisitor;
-import consulo.language.psi.PsiFile;
-import consulo.language.psi.PsiReference;
-import consulo.language.psi.ResolveResult;
+import consulo.language.editor.inspection.LocalInspectionToolSession;
+import consulo.language.editor.inspection.LocalQuickFix;
+import consulo.language.editor.inspection.ProblemDescriptor;
+import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.psi.*;
 import consulo.language.util.IncorrectOperationException;
 import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
@@ -41,8 +41,6 @@ import consulo.util.collection.ArrayUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.ReadonlyStatusHandler;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.annotations.Nls;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -56,17 +54,16 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
         return true;
     }
 
-    @Nls
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return DevKitLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName();
     }
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.titleCapitalizationInspectionInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.titleCapitalizationInspectionInspectionDisplayName();
     }
 
     @Nonnull
@@ -211,8 +208,8 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
 
         @Nonnull
         @Override
-        public String getName() {
-            return DevKitLocalize.titleCapitalizationInspectionInspectionQuickfixName(myTitleValue).get();
+        public LocalizeValue getName() {
+            return DevKitLocalize.titleCapitalizationInspectionInspectionQuickfixName(myTitleValue);
         }
 
         @Override
@@ -285,9 +282,8 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
         }
 
         @Nonnull
-        @Override
-        public String getFamilyName() {
-            return DevKitLocalize.titleCapitalizationInspectionInspectionQuickfixFamilyName().get();
+        public LocalizeValue getFamilyName() {
+            return DevKitLocalize.titleCapitalizationInspectionInspectionQuickfixFamilyName();
         }
     }
 }

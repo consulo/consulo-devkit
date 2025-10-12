@@ -13,6 +13,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
@@ -72,8 +73,8 @@ public class NoInjectAnnotationInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.noInjectAnnotationInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.noInjectAnnotationInspectionDisplayName();
     }
 
     @Nonnull

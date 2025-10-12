@@ -35,7 +35,7 @@ import jakarta.annotation.Nonnull;
  */
 public class UseCoupleQuickFix extends LocalQuickFixBase {
     public UseCoupleQuickFix(LocalizeValue text) {
-        super(text.get());
+        super(text);
     }
 
     @Override

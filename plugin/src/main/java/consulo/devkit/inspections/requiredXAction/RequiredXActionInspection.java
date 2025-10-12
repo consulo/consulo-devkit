@@ -86,8 +86,8 @@ public class RequiredXActionInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.invocationStateValidateInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.invocationStateValidateInspectionDisplayName();
     }
 
     @Nonnull

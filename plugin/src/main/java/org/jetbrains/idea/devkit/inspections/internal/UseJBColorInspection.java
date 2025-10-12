@@ -23,6 +23,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.JBColor;
 import jakarta.annotation.Nonnull;
@@ -38,8 +39,8 @@ import java.awt.*;
 public class UseJBColorInspection extends InternalInspection {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return "Use Darcula aware JBColor";
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.localizeTODO("Use Darcula aware JBColor");
     }
 
     @Nonnull

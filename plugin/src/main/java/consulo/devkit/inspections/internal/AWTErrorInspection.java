@@ -25,6 +25,7 @@ import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.util.ModuleUtilCore;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
@@ -43,8 +44,8 @@ public class AWTErrorInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.awtErrorInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.awtErrorInspectionDisplayName();
     }
 
     @Override

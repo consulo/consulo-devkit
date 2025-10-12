@@ -50,8 +50,8 @@ public class WrongInjectBindingInspection extends InternalInspection {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.wrongInjectBindingInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.wrongInjectBindingInspectionDisplayName();
     }
 
     @Nonnull

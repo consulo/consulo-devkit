@@ -23,6 +23,7 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.JBColor;
 
@@ -35,7 +36,7 @@ public class ConvertToJBColorConstantQuickFix extends LocalQuickFixBase {
     private final String myConstantName;
 
     public ConvertToJBColorConstantQuickFix(String constantName) {
-        super("Convert to JBColor." + constantName, "Convert to JBColor");
+        super(LocalizeValue.localizeTODO("Convert to JBColor." + constantName));
         myConstantName = constantName;
     }
 

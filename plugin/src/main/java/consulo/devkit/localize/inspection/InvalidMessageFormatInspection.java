@@ -14,6 +14,7 @@ import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.jetbrains.yaml.YAMLLanguage;
@@ -30,8 +31,8 @@ import java.util.Locale;
 public class InvalidMessageFormatInspection extends LocalInspectionTool {
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return DevKitLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName();
     }
 
     @Nullable
@@ -47,8 +48,8 @@ public class InvalidMessageFormatInspection extends LocalInspectionTool {
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return "Invalid icu.MessageFormat text";
+    public LocalizeValue getDisplayName() {
+        return LocalizeValue.localizeTODO("Invalid icu.MessageFormat text");
     }
 
     @Nonnull

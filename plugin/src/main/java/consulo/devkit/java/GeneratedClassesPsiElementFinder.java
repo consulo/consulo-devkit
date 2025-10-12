@@ -1,5 +1,6 @@
 package consulo.devkit.java;
 
+import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiElementFinder;
 import com.intellij.java.language.psi.PsiJavaPackage;
@@ -36,16 +37,22 @@ public class GeneratedClassesPsiElementFinder extends PsiElementFinder {
     private final FileBasedIndex myFileBasedIndex;
     private final PsiManager myPsiManager;
     private final GeneratedCachingService myGeneratedCachingService;
+    private final JavaPsiFacade myJavaPsiFacade;
+    private final PsiPackageManager myPsiPackageManager;
 
     @Inject
     public GeneratedClassesPsiElementFinder(Project project,
                                             FileBasedIndex fileBasedIndex,
                                             PsiManager psiManager,
-                                            GeneratedCachingService generatedCachingService) {
+                                            GeneratedCachingService generatedCachingService,
+                                            JavaPsiFacade javaPsiFacade,
+                                            PsiPackageManager psiPackageManager) {
         myProject = project;
         myFileBasedIndex = fileBasedIndex;
         myPsiManager = psiManager;
         myGeneratedCachingService = generatedCachingService;
+        myJavaPsiFacade = javaPsiFacade;
+        myPsiPackageManager = psiPackageManager;
     }
 
     @Nullable
@@ -97,7 +104,7 @@ public class GeneratedClassesPsiElementFinder extends PsiElementFinder {
             return myGeneratedCachingService.getPackage(qualifiedName, GlobalSearchScope.projectScope(myProject), () -> {
                 Collection<String> keys = myFileBasedIndex.getAllKeys(LocalizeFilePackageIndexExtension.INDEX, myProject);
                 if (keys.contains(localizePackage)) {
-                    return new GeneratedPackageImpl(myPsiManager, PsiPackageManager.getInstance(myProject), qualifiedName);
+                    return new GeneratedPackageImpl(myPsiManager, myPsiPackageManager, myJavaPsiFacade, qualifiedName);
                 }
                 return null;
             });
@@ -137,7 +144,7 @@ public class GeneratedClassesPsiElementFinder extends PsiElementFinder {
             Collection<VirtualFile> files = myFileBasedIndex.getContainingFiles(LocalizeFilePackageIndexExtension.INDEX, qName, scope);
             if (!files.isEmpty()) {
                 String childPackage = qName + SUFFIX;
-                return new GeneratedPackageImpl(myPsiManager, PsiPackageManager.getInstance(myProject), childPackage);
+                return new GeneratedPackageImpl(myPsiManager, myPsiPackageManager, myJavaPsiFacade, childPackage);
             }
             return null;
         });

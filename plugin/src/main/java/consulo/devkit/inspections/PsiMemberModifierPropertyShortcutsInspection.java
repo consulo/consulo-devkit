@@ -37,8 +37,8 @@ public class PsiMemberModifierPropertyShortcutsInspection extends InternalInspec
 
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.psiMemberModifierPropertyStortcutsInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.psiMemberModifierPropertyStortcutsInspectionDisplayName();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class PsiMemberModifierPropertyShortcutsInspection extends InternalInspec
                 ) {
                     String replacementMethodName = MODIFIER_TO_SHORTCUT_METHOD_NAME.get(field.getName());
                     String replacementCodeBlock = qualifier.getText() + "." + replacementMethodName + "()";
-                    holder.newProblem(LocalizeValue.of(getDisplayName()))
+                    holder.newProblem(getDisplayName())
                         .range(expression)
                         .withFix(new MyQuickFix(expression, replacementMethodName, replacementCodeBlock))
                         .create();
@@ -91,14 +91,8 @@ public class PsiMemberModifierPropertyShortcutsInspection extends InternalInspec
 
         @Nonnull
         @Override
-        public String getFamilyName() {
-            return DevKitLocalize.inspectionsGroupName().get();
-        }
-
-        @Nonnull
-        @Override
-        public String getText() {
-            return DevKitLocalize.psiMemberReplaceWithShortcutFix(myReplacementMethodName).get();
+        public LocalizeValue getText() {
+            return DevKitLocalize.psiMemberReplaceWithShortcutFix(myReplacementMethodName);
         }
 
         @Override

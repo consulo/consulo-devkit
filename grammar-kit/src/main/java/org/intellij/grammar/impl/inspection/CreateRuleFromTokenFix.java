@@ -18,6 +18,7 @@ package org.intellij.grammar.impl.inspection;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.grammarKit.localize.BnfLocalize;
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 
 import consulo.application.AccessToken;
@@ -48,14 +49,13 @@ public class CreateRuleFromTokenFix implements LocalQuickFix {
 
     @Nonnull
     @Override
-    public String getName() {
-        return BnfLocalize.createRuleFromTokenQuickfixName(myName).get();
+    public LocalizeValue getName() {
+        return BnfLocalize.createRuleFromTokenQuickfixName(myName);
     }
 
     @Nonnull
-    @Override
-    public String getFamilyName() {
-        return BnfLocalize.createRuleFromTokenQuickfixFamilyName().get();
+    public LocalizeValue getFamilyName() {
+        return BnfLocalize.createRuleFromTokenQuickfixFamilyName();
     }
 
     @Override

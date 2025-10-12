@@ -23,13 +23,14 @@ import consulo.language.editor.inspection.LocalInspectionToolSession;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 
+import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 
 public abstract class InternalInspection extends BaseJavaLocalInspectionTool<Object> {
     @Nonnull
     @Override
-    public String getGroupDisplayName() {
-        return DevKitLocalize.inspectionsGroupName().get();
+    public LocalizeValue getGroupDisplayName() {
+        return DevKitLocalize.inspectionsGroupName();
     }
 
     @Override

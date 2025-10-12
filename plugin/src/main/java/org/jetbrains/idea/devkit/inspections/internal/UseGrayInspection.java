@@ -22,6 +22,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.Gray;
 import consulo.util.lang.NullUtils;
@@ -35,8 +36,8 @@ import org.jetbrains.idea.devkit.inspections.quickfix.ConvertToGrayQuickFix;
 public class UseGrayInspection extends InternalInspection {
     @Nonnull
     @Override
-    public String getDisplayName() {
-        return DevKitLocalize.useGrayInspectionDisplayName().get();
+    public LocalizeValue getDisplayName() {
+        return DevKitLocalize.useGrayInspectionDisplayName();
     }
 
     @Nonnull

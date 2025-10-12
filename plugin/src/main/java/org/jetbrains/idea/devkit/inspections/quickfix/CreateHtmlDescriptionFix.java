@@ -33,6 +33,7 @@ import consulo.language.psi.PsiDirectory;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
+import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
@@ -71,14 +72,8 @@ public class CreateHtmlDescriptionFix implements LocalQuickFix, Iconable {
 
     @Override
     @Nonnull
-    public String getName() {
-        return DevKitLocalize.createDescriptionFile().get();
-    }
-
-    @Override
-    @Nonnull
-    public String getFamilyName() {
-        return "DevKit";
+    public LocalizeValue getName() {
+        return DevKitLocalize.createDescriptionFile();
     }
 
     @Override
