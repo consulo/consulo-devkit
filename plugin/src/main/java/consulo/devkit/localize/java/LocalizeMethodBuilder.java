@@ -4,9 +4,9 @@ import com.intellij.java.language.JavaLanguage;
 import com.intellij.java.language.impl.psi.impl.light.LightMethodBuilder;
 import com.intellij.java.language.psi.PsiClass;
 import com.intellij.java.language.psi.PsiModifier;
+import com.intellij.java.language.psi.PsiType;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiManager;
-import consulo.localize.LocalizeValue;
 
 /**
  * @author VISTALL
@@ -18,7 +18,8 @@ public class LocalizeMethodBuilder extends LightMethodBuilder {
     public LocalizeMethodBuilder(PsiClass constructedClass,
                                  PsiElement context,
                                  String methodName,
-                                 String localizeText) {
+                                 String localizeText,
+                                 PsiType returnType) {
         super(
             PsiManager.getInstance(constructedClass.getProject()),
             JavaLanguage.INSTANCE,
@@ -28,7 +29,7 @@ public class LocalizeMethodBuilder extends LightMethodBuilder {
 
         setNavigationElement(context);
 
-        setMethodReturnType(LocalizeValue.class.getName());
+        setMethodReturnType(returnType);
 
         addModifiers(PsiModifier.PUBLIC, PsiModifier.STATIC);
     }

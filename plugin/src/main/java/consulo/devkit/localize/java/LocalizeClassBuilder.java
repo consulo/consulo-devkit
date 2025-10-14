@@ -1,17 +1,14 @@
 package consulo.devkit.localize.java;
 
 import com.ibm.icu.text.MessageFormat;
+import com.intellij.java.language.impl.psi.impl.light.LightMethodBuilder;
 import com.intellij.java.language.impl.psi.impl.light.LightPsiClassBuilder;
-import com.intellij.java.language.psi.PsiMethod;
-import com.intellij.java.language.psi.PsiModifier;
-import com.intellij.java.language.psi.PsiType;
+import com.intellij.java.language.psi.*;
 import consulo.devkit.localize.LocalizeUtil;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
-import consulo.language.psi.resolve.PsiScopeProcessor;
-import consulo.language.psi.resolve.ResolveState;
 import consulo.language.psi.scope.GlobalSearchScope;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
@@ -22,6 +19,7 @@ import org.jetbrains.yaml.psi.YAMLKeyValue;
 import org.jetbrains.yaml.psi.YAMLMapping;
 
 import java.text.Format;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,9 +35,12 @@ public class LocalizeClassBuilder extends LightPsiClassBuilder {
 
     private boolean myInitialized;
 
+    private List<PsiMethod> myMethods = List.of();
+
     public LocalizeClassBuilder(@Nonnull YAMLFile yamlFile,
                                 @Nonnull String qualifiedName) {
         super(yamlFile, StringUtil.getShortName(qualifiedName));
+        
         myYamlFile = yamlFile;
 
         getModifierList().addModifier(PsiModifier.PUBLIC);
@@ -54,7 +55,19 @@ public class LocalizeClassBuilder extends LightPsiClassBuilder {
             return;
         }
 
+        myMethods = collectMethods();
+
+        for (PsiMethod method : myMethods) {
+            if (method instanceof LightMethodBuilder) {
+                ((LightMethodBuilder) method).setContainingClass(this);
+            }
+        }
+
         myInitialized = true;
+    }
+
+    private List<PsiMethod> collectMethods() {
+        List<PsiMethod> methods = new ArrayList<>();
 
         List<YAMLDocument> documents = myYamlFile.getDocuments();
 
@@ -63,6 +76,10 @@ public class LocalizeClassBuilder extends LightPsiClassBuilder {
         GlobalSearchScope resolveScope = myYamlFile.getResolveScope();
 
         Project project = myYamlFile.getProject();
+
+        PsiClassType type = PsiElementFactory.getInstance(project).createTypeByFQClassName(LocalizeValue.class.getName(), resolveScope);
+
+        PsiClassType javaLangObject = PsiType.getJavaLangObject(manager, resolveScope);
 
         for (YAMLDocument document : documents) {
             if (document.getTopLevelValue() instanceof YAMLMapping topLevelMapping) {
@@ -81,33 +98,30 @@ public class LocalizeClassBuilder extends LightPsiClassBuilder {
 
                             String methodName = LocalizeUtil.formatMethodName(project, key);
 
-                            LocalizeMethodBuilder builder = new LocalizeMethodBuilder(this, value, methodName, localizeText);
+                            LocalizeMethodBuilder builder = new LocalizeMethodBuilder(this, value, methodName, localizeText, type);
 
                             if (formatsByArgumentIndex.length > 0) {
                                 for (int i = 0; i < formatsByArgumentIndex.length; i++) {
-                                    builder.addParameter("p" + i, PsiType.getJavaLangObject(manager, resolveScope));
+                                    builder.addParameter("p" + i, javaLangObject);
                                 }
                             }
 
-                            addMethod(builder);
+                            methods.add(builder);
                         }
                     }
                 }
             }
         }
-    }
-
-    @Override
-    public boolean processDeclarations(@Nonnull PsiScopeProcessor processor, @Nonnull ResolveState state, PsiElement lastParent, @Nonnull PsiElement place) {
-        buildMethods();
-        return super.processDeclarations(processor, state, lastParent, place);
+        
+        return methods;
     }
 
     @Nonnull
     @Override
     public PsiMethod[] getMethods() {
         buildMethods();
-        return super.getMethods();
+
+        return myMethods.toArray(PsiMethod.EMPTY_ARRAY);
     }
 
     @Override
