@@ -1,6 +1,7 @@
 package consulo.devkit.localize.java;
 
 import com.ibm.icu.text.MessageFormat;
+import com.intellij.java.language.impl.psi.impl.light.LightFieldBuilder;
 import com.intellij.java.language.impl.psi.impl.light.LightMethodBuilder;
 import com.intellij.java.language.impl.psi.impl.light.LightPsiClassBuilder;
 import com.intellij.java.language.psi.*;
@@ -37,11 +38,21 @@ public class LocalizeClassBuilder extends LightPsiClassBuilder {
 
     private List<PsiMethod> myMethods = List.of();
 
+    private PsiField myIdField;
+
     public LocalizeClassBuilder(@Nonnull YAMLFile yamlFile,
                                 @Nonnull String qualifiedName) {
         super(yamlFile, StringUtil.getShortName(qualifiedName));
         
         myYamlFile = yamlFile;
+
+        PsiClassType stringType = PsiType.getJavaLangString(yamlFile.getManager(), yamlFile.getResolveScope());
+
+        LightFieldBuilder idBuilder = new LightFieldBuilder("ID", stringType, yamlFile);
+        idBuilder.setContainingClass(this);
+        idBuilder.setModifiers(PsiModifier.PUBLIC, PsiModifier.STATIC, PsiModifier.FINAL);
+
+        myIdField = idBuilder;
 
         getModifierList().addModifier(PsiModifier.PUBLIC);
 
@@ -114,6 +125,12 @@ public class LocalizeClassBuilder extends LightPsiClassBuilder {
         }
         
         return methods;
+    }
+
+    @Nonnull
+    @Override
+    public PsiField[] getFields() {
+        return new PsiField[]{myIdField};
     }
 
     @Nonnull
