@@ -1,454 +1,446 @@
-plugin.descriptor:
-  text: Consulo Plugin Descriptor
-deployment.title:
-  text: Plugin Deployment
-deployment.cleanup:
-  text: Clean up {0} directory
-deployment.directory.location:
-  text: Select {0} Directory Location
-deployment.view.select:
-  text: Select {0}
-manifest.settings:
-  text: Manifest Settings
-manifest.selection:
-  text: Selected {0} will be included in resulting distribution
-manifest.use.user.defined:
-  text: 'Use user manifest:'
-deployment.view.delete:
-  text: Delete {0}?
-deployment.view.meta.inf.label:
-  text: Path to {0}
-suggest.to.delete:
-  text: Do you want to delete ''{0}''?
-vm.parameters:
-  text: '&VM Options'
-program.parameters:
-  text: '&Program Arguments'
-select.plugin.modules.title:
-  text: Select modules
-select.plugin.modules.description:
-  text: Select modules to be prepared for deployment
-prepare.for.deployment.common:
-  text: Preparing For Deployment
-prepare.for.deployment:
-  text: Prepare Plugin Module ''{0}'' For Deployment
-prepare.for.deployment.all:
-  text: Prepare All Plugin Modules For Deployment
-saved.message.common:
-  text: '{0} will be saved in selected directory'
-saved.message:
-  text: '{0, choice, 1#Zip|2#Jar} for module ''''{1}'''' was saved to {2}'
-success.deployment.message:
-  text: Plugin Module ''{0}'' Successfully Prepared For Deployment
-success.deployment.message.all:
-  text: All Plugins Successfully Prepared For Deployment
-sdk.title:
-  text: Consulo Plugin SDK
-sandbox.specification:
-  text: Please configure the sandbox
-sandbox.home:
-  text: Sandbox Home
-sandbox.home.label:
-  text: 'Sandbox Home:'
-sandbox.no.configured:
-  text: No sandbox specified for idea jdk
-sandbox.purpose:
-  text: Browse folder to put config, system and plugins for target IDEA
-error.occurred:
-  text: Error Occurred
-jdk.no.specified:
-  text: No jdk specified for plugin module ''{0}''
-jdk.type.incorrect:
-  text: Wrong jdk type for plugin module ''{0}''.
-jdk.type.incorrect.common:
-  text: Wrong jdk type for plugin module
-incorrect.dependency.non.plugin.module:
-  text: The non-plugin module ''{0}'' cannot depend on plugin module ''{1}''.
-incorrect.dependency.not.declared:
-  text: The plugin module ''{0}'' doesn''t declare the dependency on ''{1}'' in its plugin.xml.
-error.file.not.found:
-  text: File not found
-error.file.not.found.message:
-  text: File ''{0}'' not found
-error.no.plugin.xml:
-  text: No plugin.xml file found
-error.plugin.xml.readonly:
-  text: The plugin.xml file is read-only
-run.configuration.classpath.from.module.choose:
-  text: 'Use Classpath and JDK from Module:'
-run.configuration.no.java.sdk:
-  text: No Java Sdk
-run.configuration.no.consulo.sdk:
-  text: No Consulo Sdk
-run.configuration.no.plugin.artifact:
-  text: No Plugin Artifact
-run.configuration.title:
-  text: Consulo In Sandbox
-test.run.configuration.title:
-  text: Consulo In Sandbox (Test)
-run.configuration.type.description:
-  text: Plugin Sandbox Environment
-idea.log.tab.title:
-  text: Consulo LOG
-info.message:
-  text: Info
-create.smth:
-  text: Create {0}
-show.idea.log:
-  text: '&Show consulo.log'
-presentable.plugin.module.name:
-  text: Plugin Module ''{0}''
-action.MakeJarAction.text:
-  text: Prepare To Deploy
-action.MakeAllJarsAction.text:
-  text: Prepare All Plugins To Deploy
-dont.add.idea.libs.to.classpath:
-  text: IDEA-related libraries ({0}) must not be added to the module classpath. Please add them to the IDEA-JDK instead.
-new.action.id:
-  text: '&Action ID:'
-new.action.description:
-  text: '&Description:'
-new.action.class.name:
-  text: '&Class Name:'
-new.action.text:
-  text: '&Name:'
-new.action.add.to.group:
-  text: Add to Group
-new.action.group.actions:
-  text: 'Act&ions:'
-new.action.group.anchor:
-  text: 'Anchor:'
-new.action.group.anchor.first:
-  text: '&First'
-new.action.group.anchor.last:
-  text: '&Last'
-new.action.group.anchor.before:
-  text: '&Before'
-new.action.group.anchor.after:
-  text: Af&ter
-new.action.group.groups:
-  text: '&Groups:'
-new.action.keyboard.shortcuts:
-  text: Keyboard Shortcuts
-new.action.keyboard.first:
-  text: 'First:'
-new.action.keyboard.second:
-  text: 'Second:'
-new.action.keyboard.clear:
-  text: X
-new.action.keyboard.clear.tooltip:
-  text: Clear shortcut
-command.implement.externalizable:
-  text: Implement Externalizable
-new.menu.action.text:
-  text: Action
-new.menu.action.description:
-  text: Create New Action
-new.action.error:
-  text: Cannot create action
-new.action.command:
-  text: Create Action
-new.action.action.name:
-  text: 'Creating new action: {0}.{1}'
-new.action.dialog.title:
-  text: New Action
-new.menu.application.component.text:
-  text: Application Component
-new.menu.application.component.description:
-  text: Create New Application Component
-new.application.component.error:
-  text: Cannot create application component
-new.application.component.command:
-  text: Create Application Component
-new.application.component.prompt.title:
-  text: New Application Component
-new.application.component.prompt:
-  text: 'Enter new application component name:'
-new.application.component.action.name:
-  text: 'Creating new application component: {0}.{1}'
-new.menu.project.component.text:
-  text: Project Component
-new.menu.project.component.description:
-  text: Create New Project Component
-new.project.component.error:
-  text: Cannot create project component
-new.project.component.command:
-  text: Create Project Component
-new.project.component.prompt.title:
-  text: New Project Component
-new.project.component.prompt:
-  text: 'Enter new project component name:'
-new.project.component.action.name:
-  text: 'Creating new project component: {0}.{1}'
-select.plugin.modules.to.patch:
-  text: Select Plugin Modules to Patch
-keyword.extend:
-  text: extend
-keyword.implement:
-  text: implement
-class.action:
-  text: action
-class.interface:
-  text: interface
-class.implementation:
-  text: implementation
-inspections.group.name:
-  text: Consulo Plugin DevKit
-inspections.registration.problems.name:
-  text: Component type mismatch
-inspections.registration.problems.option.check.plugin.xml:
-  text: Check Plugin Descriptor (plugin.xml)
-inspections.registration.problems.option.check.java.actions:
-  text: Check Java Actions
-inspections.registration.problems.option.check.java.code:
-  text: Check Java Code
-inspections.registration.problems.quickfix.read.only:
-  text: Class ''{0}'' is read-only
-inspections.registration.problems.quickfix.make.public:
-  text: Make {0} public
-inspections.registration.problems.quickfix.create.constructor:
-  text: Create no-argument constructor
-inspections.registration.problems.incompatible.message:
-  text: According to its registration in plugin.xml, the class should {0} ''{1}''
-inspections.registration.problems.abstract:
-  text: Plugin component class must not be abstract
-inspections.registration.problems.missing.noarg.ctor:
-  text: Action class must have a no-argument constructor
-inspections.registration.problems.missing.implementation.class:
-  text: Missing implementation-class
-inspections.registration.problems.cannot.resolve.class:
-  text: Cannot resolve {0} class
-inspections.registration.problems.component.should.implement:
-  text: Component class must implement ''{0}''
-inspections.registration.problems.component.incompatible.interface:
-  text: Component class is not assignable to its interface-class ''{0}''
-inspections.registration.problems.component.duplicate.interface:
-  text: Multiple components with the same interface-class are not allowed
-inspections.registration.problems.action.incompatible.class:
-  text: Action class must extend ''{0}''
-inspections.component.not.registered.name:
-  text: Component/Action not registered
-inspections.component.not.registered.message:
-  text: '{0} is not registered in plugin.xml'
-inspections.component.not.registered.option.check.actions:
-  text: Check Actions
-inspections.component.not.registered.option.ignore.non.public:
-  text: Ignore non-public classes
-inspections.component.not.registered.quickfix.family:
-  text: Register Component
-inspections.component.not.registered.quickfix.name:
-  text: Register {0}
-inspections.component.not.registered.quickfix.error:
-  text: Cannot Register {0}
-inspections.annotation.0.is.required.at.owner.or.app.run:
-  text: Annotation @Required{0}Action is required at owner or run code inside Application#run{0}Action(...)
-inspections.annotation.0.is.required.at.owner.or.app.run.dispath:
-  text: Annotation @RequiredRequiredDispatchThread is required at owner or run code inside UIUtil.invokeLaterIfNeeded(...)
-inspections.annotation.0.is.required.at.owner.or.app.run.ui:
-  text: Annotation @RequiredUIAcess is required at owner or run code inside UIAccess.give(...)
-inspections.replace.with.xxxlocalize.title:
-  text: xBundle.message() to xLocalize inspection
-inspections.replace.with.xxxlocalize:
-  text: Replace with {0}.{1}(...)
-inspections.get.extension.point.validation.title:
-  text: Validation of ConfigurationType.getExtensionPoint() call
-inspections.get.extension.point.validation.no.annotation:
-  text: "{0} is not annotated with @ExtensionAPI"
-inspections.get.extension.point.validation.incorrect.scope:
-  text: "Incorrect extension scope"
 InspectionUseGrayColor:
-  text: Use Gray
-ant.build.jar.comment:
-  text: Build archive for plugin ''{0}''
-ant.build.jar.description:
-  text: Build plugin archive for module ''{0}''
-project.title:
-  text: Plugin Project
-no.java.sdk.for.idea.sdk.found:
-  text: No Java SDK of appropriate version found. In addition to the IDEA Plugin SDK, you need to define a JDK with the same Java version ({0}).
-no.idea.sdk.version.found:
-  text: Failed to detect JDK version required for IDEA Plugin SDK.
-group.PluginDeployActions.text:
-  text: Plugin Deployment Actions
-error.cannot.resolve.plugin:
-  text: Cannot resolve plugin {0}
-create.description.file:
-  text: Create Description File
-select.target.location.of.description:
-  text: Select target location of {0}
-copy.artifacts.before.run.description.empty:
-  text: Copy Artifacts
-copy.artifacts.before.run.description.single:
-  text: Copy ''{0}'' artifact
-copy.artifacts.before.run.description.multiple:
-  text: Copy {0} artifacts
+    text: Use Gray
 action.DownloadDependencies.text:
-  text: Download/Update Dependencies...
-label.program.parameters:
-  text: 'Program Parameters:'
-label.vm.parameters:
-  text: 'VM Parameters:'
-label.plugin.artifact:
-  text: 'Plugin Artifact:'
-label.consulo.sdk:
-  text: 'Consulo SDK:'
-label.java.sdk:
-  text: 'Java SDK:'
+    text: Download/Update Dependencies...
+action.MakeAllJarsAction.text:
+    text: Prepare All Plugins To Deploy
+action.MakeJarAction.text:
+    text: Prepare To Deploy
 alternative.consulo.sdk:
-  text: 'Alt Consulo SDK:'
-localize.todo.inspection.display.name:
-  text: "Localize TODO inspection"
-localize.todo.inspection.message:
-  text: "''{0}'' is not localized"
-localize.editor.notification.compare.action:
-  text: "Compare"
-localize.editor.notification.compare.diff.current.title:
-  text: "Current Localize"
-localize.editor.notification.compare.diff.original.title:
-  text: "Original Localize"
-localize.editor.notification.compare.original.localization.not.found:
-  text: "Original localization not found"
-localize.editor.notification.locale.0.text:
-  text: "Locale: {0}"
-localize.editor.notification.sort.action:
-  text: "Sort"
-localize.editor.notification.sort.in.progress:
-  text: "Reordering..."
-localize.editor.notification.sort.process.name:
-  text: "Sorting Keys"
-invocation.state.validate.inspection.display.name:
-  text: "Invocation state (read, write, dispatch) validate inspection"
-psi.member.modifier.property.stortcuts.inspection.display.name:
-  text: "PsiMember.hasModifierProperty() replacement with shortcut methods"
-psi.member.replace.with.shortcut.fix:
-  text: "Replace with .{0}()"
-intention.metadata.missed.inspection.display.name:
-  text: "Missing @IntentionMetaData annotation"
-intention.metadata.missed.inspection.fix:
-  text: "Missed @IntentionMetaData annotation"
-complicated.logger.initialization.inspection.display.name:
-  text: "Complicated Logger Initialization"
-complicated.logger.initialization.inspection.message:
-  text: "Complicated logger initialization"
-complicated.logger.initialization.quickfix.name:
-  text: "Replace by class constant"
-dont.use.new.pair.inspection.display.name:
-  text: "Don't use constructor of Pair class"
-dont.use.new.pair.inspection.message:
-  text: "Replace with Pair.create()"
-extension.impl.is.not.annotated.inspection.display.name:
-  text: "Extension implementation is not annotated by @ExtensionImpl"
-extension.impl.is.not.annotated.inspection.message:
-  text: "Extension implementation is not annotated by @ExtensionImpl"
-file.equals.usage.inspection.display.name:
-  text: "File.equals() usage"
-file.equals.usage.inspection.message:
-  text: "Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. Please use FileUtil.filesEquals/fileHashCode/compareFiles instead"
-inspection.description.not.found.inspection.display.name:
-  text: "Inspection Description Checker"
-inspection.description.not.found.inspection.message:
-  text: "Inspection does not have a description"
-intention.description.not.found.inspection.display.name:
-  text: "Intention Description Checker"
-intention.description.not.found.inspection.message:
-  text: "Intention does not have a description"
-intention.description.not.found.inspection.message.before.after.template:
-  text: "Intention must have 'before.*.template' and 'after.*.template' beside 'description.html'"
-intention.meta.data.missed.inspection.display.name:
-  text: "Missing @IntentionMetaData annotation"
-intention.meta.data.missed.inspection.message:
-  text: "Missing @IntentionMetaData annotation"
-migrated.extensions.to.inspection.display.name:
-  text: "@MigratedExtensionsTo helper"
-migrated.extensions.to.inspection.message:
-  text: "Delegate method calls"
-migrated.extensions.to.inspection.quickfix.name:
-  text: "Delegate to new class"
-no.inject.annotation.inspection.display.name:
-  text: "Missing @Inject annotation for services & extensions"
-no.inject.annotation.inspection.message:
-  text: "Missing @Inject annotation"
-no.singleton.annotation.inspection.display.name:
-  text: "Missing @Singleton annotation for services"
-no.singleton.annotation.inspection.message:
-  text: "Missing @Singleton annotation"
-place.xaction.annotation.inspection.display.name:
-  text: "Invocation state(read, write, dispatch) annotation place inspection"
-place.xaction.annotation.inspection.message:
-  text: "Missed annotation @{0}, provided by super method"
-place.xaction.annotation.inspection.message.for.overridden:
-  text: "Overriden methods are not annotated by @{0}"
-#  types:
-#    - string
-#  names:
-#    - annotationName
-platform.error.inspection.display.name:
-  text: "Platform method specific restriction"
-platform.error.inspection.message:
-  text: "Platform call restricted. Use 'consulo.platform.Platform.current()'"
-stateful.ep.inspection.display.name:
-  text: "Stateful Extension"
-stateful.ep.inspection.message:
-  text: "Don''t use {0} as a field in extension"
-stateful.ep.inspection.message.dont.hold.psi.element:
-  text: "Potential memory leak: don''t hold PsiElement, use SmartPsiElementPointer instead {0, choice, 0#|1#; also see LocalQuickFixOnPsiElement}"
-undesirable.class.usage.inspection.display.name:
-  text: "Undesirable class usage"
-undesirable.class.usage.inspection.message:
-  text: "Please use ''{0}'' instead"
-#  types:
-#    - string
-#  names:
-#    - replacement
-unsafe.vfs.recursion.inspection.display.name:
-  text: "Unsafe VFS recursion"
-unsafe.vfs.recursion.inspection.message:
-  text: "VirtualFile.getChildren() is called from a recursive method. This may cause an endless loop on cyclic symlinks. Please use VfsUtilCore.visitChildrenRecursively() instead."
-use.couple.inspection.display.name:
-  text: "Use Couple<T> instead of Pair<T, T>"
-use.couple.inspection.message.type:
-  text: "Change to Couple<{0}>"
-use.couple.inspection.message.constructor:
-  text: "Change to Couple.of"
-use.dpi.aware.insets.inspection.display.name:
-  text: "Use DPI-aware insets"
-use.dpi.aware.insets.inspection.message:
-  text: "Replace with JBUI.insets(...)"
-use.gray.inspection.display.name:
-  text: "Using new Color(a,a,a)"
-use.gray.inspection.message:
-  text: "Convert to Gray._{0}"
-use.gray.inspection.quickfix.family.name:
-  text: "Convert to Gray"
-use.jbcolor.inspection.display.name:
-  text: "Use Darcula aware JBColor"
-use.jbcolor.inspection.message:
-  text: "Replace with JBColor"
-use.jbcolor.inspection.message.change:
-  text: "Change to JBColor.{0}"
-use.primitive.types.inspection.display.name:
-  text: "Use .equals with primitive types"
-use.primitive.types.inspection.message:
-  text: "Primitive types should be compared with .equals"
-wrong.inject.binding.inspection.display.name:
-  text: "Wrong inject binding inside constructor"
-wrong.inject.binding.inspection.message.unknown:
-  text: "Unknown inject binding {0}"
-wrong.inject.binding.inspection.message.too.high:
-  text: "Target injecting scope too high. Current: {0}, target: {1}"
-wrong.cast.require.explicit.conversion.inspection.display.name:
-  text: "Wrong cast — require explicit conversion"
-wrong.cast.require.explicit.conversion.inspection.message:
-  text: "Wrong cast — require explicit conversion"
-title.capitalization.inspection.inspection.display.name:
-  text: "Incorrect dialog title capitalization"
-title.capitalization.inspection.inspection.message:
-  text: "Dialog title ''{0}'' is not properly capitalized. It should have title capitalization"
-title.capitalization.inspection.inspection.quickfix.name:
-  text: "Properly capitalize ''{0}''"
-title.capitalization.inspection.inspection.quickfix.family.name:
-  text: "Properly capitalize"
+    text: 'Alt Consulo SDK:'
+ant.build.jar.comment:
+    text: Build archive for plugin ''{0}''
+ant.build.jar.description:
+    text: Build plugin archive for module ''{0}''
 awt.error.inspection.display.name:
-  text: "AWT & Swing implementation error reporting"
+    text: AWT & Swing implementation error reporting
 awt.error.inspection.message:
-  text: "AWT & Swing implementation cannot be used. Please visit guide for writing UI"
+    text: AWT & Swing implementation cannot be used. Please visit guide for writing UI
+class.action:
+    text: action
+class.implementation:
+    text: implementation
+class.interface:
+    text: interface
+command.implement.externalizable:
+    text: Implement Externalizable
+complicated.logger.initialization.inspection.display.name:
+    text: Complicated Logger Initialization
+complicated.logger.initialization.inspection.message:
+    text: Complicated logger initialization
+complicated.logger.initialization.quickfix.name:
+    text: Replace by class constant
+copy.artifacts.before.run.description.empty:
+    text: Copy Artifacts
+copy.artifacts.before.run.description.multiple:
+    text: Copy {0} artifacts
+copy.artifacts.before.run.description.single:
+    text: Copy ''{0}'' artifact
+create.description.file:
+    text: Create Description File
+create.smth:
+    text: Create {0}
+deployment.cleanup:
+    text: Clean up {0} directory
+deployment.directory.location:
+    text: Select {0} Directory Location
+deployment.title:
+    text: Plugin Deployment
+deployment.view.delete:
+    text: Delete {0}?
+deployment.view.meta.inf.label:
+    text: Path to {0}
+deployment.view.select:
+    text: Select {0}
+dont.add.idea.libs.to.classpath:
+    text: IDEA-related libraries ({0}) must not be added to the module classpath. Please add them to the IDEA-JDK instead.
+dont.use.new.pair.inspection.display.name:
+    text: Don't use constructor of Pair class
+dont.use.new.pair.inspection.message:
+    text: Replace with Pair.create()
+error.cannot.resolve.plugin:
+    text: Cannot resolve plugin {0}
+error.file.not.found:
+    text: File not found
+error.file.not.found.message:
+    text: File ''{0}'' not found
+error.no.plugin.xml:
+    text: No plugin.xml file found
+error.occurred:
+    text: Error Occurred
+error.plugin.xml.readonly:
+    text: The plugin.xml file is read-only
+extension.impl.is.not.annotated.inspection.display.name:
+    text: Extension implementation is not annotated by @ExtensionImpl
+extension.impl.is.not.annotated.inspection.message:
+    text: Extension implementation is not annotated by @ExtensionImpl
+file.equals.usage.inspection.display.name:
+    text: File.equals() usage
+file.equals.usage.inspection.message:
+    text: Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. Please use FileUtil.filesEquals/fileHashCode/compareFiles instead
+group.PluginDeployActions.text:
+    text: Plugin Deployment Actions
+idea.log.tab.title:
+    text: Consulo LOG
+incorrect.dependency.non.plugin.module:
+    text: The non-plugin module ''{0}'' cannot depend on plugin module ''{1}''.
+incorrect.dependency.not.declared:
+    text: The plugin module ''{0}'' doesn''t declare the dependency on ''{1}'' in its plugin.xml.
+info.message:
+    text: Info
+inspection.description.not.found.inspection.display.name:
+    text: Inspection Description Checker
+inspection.description.not.found.inspection.message:
+    text: Inspection does not have a description
+inspections.annotation.0.is.required.at.owner.or.app.run:
+    text: Annotation @Required{0}Action is required at owner or run code inside Application#run{0}Action(...)
+inspections.annotation.0.is.required.at.owner.or.app.run.dispath:
+    text: Annotation @RequiredRequiredDispatchThread is required at owner or run code inside UIUtil.invokeLaterIfNeeded(...)
+inspections.annotation.0.is.required.at.owner.or.app.run.ui:
+    text: Annotation @RequiredUIAcess is required at owner or run code inside UIAccess.give(...)
+inspections.component.not.registered.message:
+    text: '{0} is not registered in plugin.xml'
+inspections.component.not.registered.name:
+    text: Component/Action not registered
+inspections.component.not.registered.option.check.actions:
+    text: Check Actions
+inspections.component.not.registered.option.ignore.non.public:
+    text: Ignore non-public classes
+inspections.component.not.registered.quickfix.error:
+    text: Cannot Register {0}
+inspections.component.not.registered.quickfix.family:
+    text: Register Component
+inspections.component.not.registered.quickfix.name:
+    text: Register {0}
+inspections.get.extension.point.validation.incorrect.scope:
+    text: Incorrect extension scope
+inspections.get.extension.point.validation.no.annotation:
+    text: '{0} is not annotated with @ExtensionAPI'
+inspections.get.extension.point.validation.title:
+    text: Validation of ConfigurationType.getExtensionPoint() call
+inspections.group.name:
+    text: Consulo Plugin DevKit
+inspections.registration.problems.abstract:
+    text: Plugin component class must not be abstract
+inspections.registration.problems.action.incompatible.class:
+    text: Action class must extend ''{0}''
+inspections.registration.problems.cannot.resolve.class:
+    text: Cannot resolve {0} class
+inspections.registration.problems.component.duplicate.interface:
+    text: Multiple components with the same interface-class are not allowed
+inspections.registration.problems.component.incompatible.interface:
+    text: Component class is not assignable to its interface-class ''{0}''
+inspections.registration.problems.component.should.implement:
+    text: Component class must implement ''{0}''
+inspections.registration.problems.incompatible.message:
+    text: According to its registration in plugin.xml, the class should {0} ''{1}''
+inspections.registration.problems.missing.implementation.class:
+    text: Missing implementation-class
+inspections.registration.problems.missing.noarg.ctor:
+    text: Action class must have a no-argument constructor
+inspections.registration.problems.name:
+    text: Component type mismatch
+inspections.registration.problems.option.check.java.actions:
+    text: Check Java Actions
+inspections.registration.problems.option.check.java.code:
+    text: Check Java Code
+inspections.registration.problems.option.check.plugin.xml:
+    text: Check Plugin Descriptor (plugin.xml)
+inspections.registration.problems.quickfix.create.constructor:
+    text: Create no-argument constructor
+inspections.registration.problems.quickfix.make.public:
+    text: Make {0} public
+inspections.registration.problems.quickfix.read.only:
+    text: Class ''{0}'' is read-only
+inspections.replace.with.xxxlocalize:
+    text: Replace with {0}.{1}(...)
+inspections.replace.with.xxxlocalize.title:
+    text: xBundle.message() to xLocalize inspection
+intention.description.not.found.inspection.display.name:
+    text: Intention Description Checker
+intention.description.not.found.inspection.message:
+    text: Intention does not have a description
+intention.description.not.found.inspection.message.before.after.template:
+    text: Intention must have 'before.*.template' and 'after.*.template' beside 'description.html'
+intention.meta.data.missed.inspection.display.name:
+    text: Missing @IntentionMetaData annotation
+intention.meta.data.missed.inspection.message:
+    text: Missing @IntentionMetaData annotation
+intention.metadata.missed.inspection.display.name:
+    text: Missing @IntentionMetaData annotation
+intention.metadata.missed.inspection.fix:
+    text: Missed @IntentionMetaData annotation
+invocation.state.validate.inspection.display.name:
+    text: Invocation state (read, write, dispatch) validate inspection
+jdk.no.specified:
+    text: No jdk specified for plugin module ''{0}''
+jdk.type.incorrect:
+    text: Wrong jdk type for plugin module ''{0}''.
+jdk.type.incorrect.common:
+    text: Wrong jdk type for plugin module
+keyword.extend:
+    text: extend
+keyword.implement:
+    text: implement
+label.consulo.sdk:
+    text: 'Consulo SDK:'
+label.java.sdk:
+    text: 'Java SDK:'
+label.plugin.artifact:
+    text: 'Plugin Artifact:'
+label.program.parameters:
+    text: 'Program Parameters:'
+label.vm.parameters:
+    text: 'VM Parameters:'
+localize.editor.notification.compare.action:
+    text: Compare
+localize.editor.notification.compare.diff.current.title:
+    text: Current Localize
+localize.editor.notification.compare.diff.original.title:
+    text: Original Localize
+localize.editor.notification.compare.original.localization.not.found:
+    text: Original localization not found
+localize.editor.notification.locale.0.text:
+    text: 'Locale: {0}'
+localize.editor.notification.sort.action:
+    text: Sort
+localize.editor.notification.sort.in.progress:
+    text: Reordering...
+localize.editor.notification.sort.process.name:
+    text: Sorting Keys
+localize.todo.inspection.display.name:
+    text: Localize TODO inspection
+localize.todo.inspection.message:
+    text: '''''{0}'''' is not localized'
+manifest.selection:
+    text: Selected {0} will be included in resulting distribution
+manifest.settings:
+    text: Manifest Settings
+manifest.use.user.defined:
+    text: 'Use user manifest:'
+migrated.extensions.to.inspection.display.name:
+    text: '@MigratedExtensionsTo helper'
+migrated.extensions.to.inspection.message:
+    text: Delegate method calls
+migrated.extensions.to.inspection.quickfix.name:
+    text: Delegate to new class
+new.action.action.name:
+    text: 'Creating new action: {0}.{1}'
+new.action.add.to.group:
+    text: Add to Group
+new.action.class.name:
+    text: '&Class Name:'
+new.action.command:
+    text: Create Action
+new.action.description:
+    text: '&Description:'
+new.action.dialog.title:
+    text: New Action
+new.action.error:
+    text: Cannot create action
+new.action.group.actions:
+    text: 'Act&ions:'
+new.action.group.anchor:
+    text: 'Anchor:'
+new.action.group.anchor.after:
+    text: Af&ter
+new.action.group.anchor.before:
+    text: '&Before'
+new.action.group.anchor.first:
+    text: '&First'
+new.action.group.anchor.last:
+    text: '&Last'
+new.action.group.groups:
+    text: '&Groups:'
+new.action.id:
+    text: '&Action ID:'
+new.action.keyboard.clear:
+    text: X
+new.action.keyboard.clear.tooltip:
+    text: Clear shortcut
+new.action.keyboard.first:
+    text: 'First:'
+new.action.keyboard.second:
+    text: 'Second:'
+new.action.keyboard.shortcuts:
+    text: Keyboard Shortcuts
+new.action.text:
+    text: '&Name:'
+new.application.component.action.name:
+    text: 'Creating new application component: {0}.{1}'
+new.application.component.command:
+    text: Create Application Component
+new.application.component.error:
+    text: Cannot create application component
+new.application.component.prompt:
+    text: 'Enter new application component name:'
+new.application.component.prompt.title:
+    text: New Application Component
+new.menu.action.description:
+    text: Create New Action
+new.menu.action.text:
+    text: Action
+new.menu.application.component.description:
+    text: Create New Application Component
+new.menu.application.component.text:
+    text: Application Component
+new.menu.project.component.description:
+    text: Create New Project Component
+new.menu.project.component.text:
+    text: Project Component
+new.project.component.action.name:
+    text: 'Creating new project component: {0}.{1}'
+new.project.component.command:
+    text: Create Project Component
+new.project.component.error:
+    text: Cannot create project component
+new.project.component.prompt:
+    text: 'Enter new project component name:'
+new.project.component.prompt.title:
+    text: New Project Component
+no.idea.sdk.version.found:
+    text: Failed to detect JDK version required for IDEA Plugin SDK.
+no.inject.annotation.inspection.display.name:
+    text: Missing @Inject annotation for services & extensions
+no.inject.annotation.inspection.message:
+    text: Missing @Inject annotation
+no.java.sdk.for.idea.sdk.found:
+    text: No Java SDK of appropriate version found. In addition to the IDEA Plugin SDK, you need to define a JDK with the same Java version ({0}).
+no.singleton.annotation.inspection.display.name:
+    text: Missing @Singleton annotation for services
+no.singleton.annotation.inspection.message:
+    text: Missing @Singleton annotation
+place.xaction.annotation.inspection.display.name:
+    text: Invocation state(read, write, dispatch) annotation place inspection
+place.xaction.annotation.inspection.message:
+    text: Missed annotation @{0}, provided by super method
+place.xaction.annotation.inspection.message.for.overridden:
+    text: Overriden methods are not annotated by @{0}
+platform.error.inspection.display.name:
+    text: Platform method specific restriction
+platform.error.inspection.message:
+    text: Platform call restricted. Use 'consulo.platform.Platform.current()'
+plugin.descriptor:
+    text: Consulo Plugin Descriptor
+prepare.for.deployment:
+    text: Prepare Plugin Module ''{0}'' For Deployment
+prepare.for.deployment.all:
+    text: Prepare All Plugin Modules For Deployment
+prepare.for.deployment.common:
+    text: Preparing For Deployment
+presentable.plugin.module.name:
+    text: Plugin Module ''{0}''
+program.parameters:
+    text: '&Program Arguments'
+project.title:
+    text: Plugin Project
+psi.member.modifier.property.stortcuts.inspection.display.name:
+    text: PsiMember.hasModifierProperty() replacement with shortcut methods
+psi.member.replace.with.shortcut.fix:
+    text: Replace with .{0}()
+run.configuration.classpath.from.module.choose:
+    text: 'Use Classpath and JDK from Module:'
+run.configuration.no.consulo.sdk:
+    text: No Consulo Sdk
+run.configuration.no.java.sdk:
+    text: No Java Sdk
+run.configuration.no.plugin.artifact:
+    text: No Plugin Artifact
+run.configuration.title:
+    text: Consulo In Sandbox
+run.configuration.type.description:
+    text: Plugin Sandbox Environment
+sandbox.home:
+    text: Sandbox Home
+sandbox.home.label:
+    text: 'Sandbox Home:'
+sandbox.no.configured:
+    text: No sandbox specified for idea jdk
+sandbox.purpose:
+    text: Browse folder to put config, system and plugins for target IDEA
+sandbox.specification:
+    text: Please configure the sandbox
+saved.message:
+    text: '{0, choice, 1#Zip|2#Jar} for module ''''{1}'''' was saved to {2}'
+saved.message.common:
+    text: '{0} will be saved in selected directory'
+sdk.title:
+    text: Consulo Plugin SDK
+select.plugin.modules.description:
+    text: Select modules to be prepared for deployment
+select.plugin.modules.title:
+    text: Select modules
+select.plugin.modules.to.patch:
+    text: Select Plugin Modules to Patch
+select.target.location.of.description:
+    text: Select target location of {0}
+show.idea.log:
+    text: '&Show consulo.log'
+stateful.ep.inspection.display.name:
+    text: Stateful Extension
+stateful.ep.inspection.message:
+    text: Don''t use {0} as a field in extension
+stateful.ep.inspection.message.dont.hold.psi.element:
+    text: 'Potential memory leak: don''''t hold PsiElement, use SmartPsiElementPointer instead {0, choice, 0#|1#; also see LocalQuickFixOnPsiElement}'
+success.deployment.message:
+    text: Plugin Module ''{0}'' Successfully Prepared For Deployment
+success.deployment.message.all:
+    text: All Plugins Successfully Prepared For Deployment
+suggest.to.delete:
+    text: Do you want to delete ''{0}''?
+test.run.configuration.title:
+    text: Consulo In Sandbox (Test)
+title.capitalization.inspection.inspection.display.name:
+    text: Incorrect dialog title capitalization
+title.capitalization.inspection.inspection.message:
+    text: Dialog title ''{0}'' is not properly capitalized. It should have title capitalization
+title.capitalization.inspection.inspection.quickfix.family.name:
+    text: Properly capitalize
+title.capitalization.inspection.inspection.quickfix.name:
+    text: Properly capitalize ''{0}''
+undesirable.class.usage.inspection.display.name:
+    text: Undesirable class usage
+undesirable.class.usage.inspection.message:
+    text: Please use ''{0}'' instead
+unsafe.vfs.recursion.inspection.display.name:
+    text: Unsafe VFS recursion
+unsafe.vfs.recursion.inspection.message:
+    text: VirtualFile.getChildren() is called from a recursive method. This may cause an endless loop on cyclic symlinks. Please use VfsUtilCore.visitChildrenRecursively() instead.
+use.couple.inspection.display.name:
+    text: Use Couple<T> instead of Pair<T, T>
+use.couple.inspection.message.constructor:
+    text: Change to Couple.of
+use.couple.inspection.message.type:
+    text: Change to Couple<{0}>
+use.dpi.aware.insets.inspection.display.name:
+    text: Use DPI-aware insets
+use.dpi.aware.insets.inspection.message:
+    text: Replace with JBUI.insets(...)
+use.gray.inspection.display.name:
+    text: Using new Color(a,a,a)
+use.gray.inspection.message:
+    text: Convert to Gray._{0}
+use.gray.inspection.quickfix.family.name:
+    text: Convert to Gray
+use.jbcolor.inspection.display.name:
+    text: Use Darcula aware JBColor
+use.jbcolor.inspection.message:
+    text: Replace with JBColor
+use.jbcolor.inspection.message.change:
+    text: Change to JBColor.{0}
+use.primitive.types.inspection.display.name:
+    text: Use .equals with primitive types
+use.primitive.types.inspection.message:
+    text: Primitive types should be compared with .equals
+vm.parameters:
+    text: '&VM Options'
+wrong.cast.require.explicit.conversion.inspection.display.name:
+    text: Wrong cast — require explicit conversion
+wrong.cast.require.explicit.conversion.inspection.message:
+    text: Wrong cast — require explicit conversion
+wrong.inject.binding.inspection.display.name:
+    text: Wrong inject binding inside constructor
+wrong.inject.binding.inspection.message.too.high:
+    text: 'Target injecting scope too high. Current: {0}, target: {1}'
+wrong.inject.binding.inspection.message.unknown:
+    text: Unknown inject binding {0}
