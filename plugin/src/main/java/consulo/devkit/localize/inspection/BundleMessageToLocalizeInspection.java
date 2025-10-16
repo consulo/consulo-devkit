@@ -15,6 +15,7 @@ import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
+import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
@@ -230,7 +231,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
             myArgExpressions = myExpression.getArgumentList().getExpressions();
 
             String key = getString(myArgExpressions[0]);
-            if (key == null) {
+            if (StringUtil.isEmpty(key)) {
                 return false;
             }
 
