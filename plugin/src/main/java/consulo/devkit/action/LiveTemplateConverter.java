@@ -42,7 +42,6 @@ public class LiveTemplateConverter {
     }
 
     private record Variable(String name, String expression, String defaultValue, boolean alwaysStopAt) {
-
     }
 
     private final Project myProject;
@@ -138,7 +137,8 @@ public class LiveTemplateConverter {
 
             if (!StringUtil.isEmptyOrSpaces(description)) {
                 template.myDescriptionBlock = CodeBlock.of("$T.localizeTODO($S)", TypeName.get(LocalizeValue.class), description);
-            } else if (resourceBundle != null && resourceBundleKey != null){
+            }
+            else if (resourceBundle != null && resourceBundleKey != null) {
                 String bundleName = StringUtil.getShortName(resourceBundle);
                 bundleName = bundleName.replace("Bundle", "Localize");
 
@@ -151,14 +151,16 @@ public class LiveTemplateConverter {
 
                     if (i != 0) {
                         body.append(StringUtil.capitalize(part));
-                    } else {
+                    }
+                    else {
                         body.append(part);
                     }
                 }
                 body.append("()");
 
                 template.myDescriptionBlock = CodeBlock.of(body.toString());
-            }  else {
+            }
+            else {
                 template.myDescriptionBlock = CodeBlock.of("$T.localizeTODO($S)", TypeName.get(LocalizeValue.class), name);
             }
 
@@ -201,7 +203,7 @@ public class LiveTemplateConverter {
             .addAnnotation(Nonnull.class)
             .addCode(CodeBlock.of("return $S;", groupId))
             .build());
-        
+
         builder.addMethod(MethodSpec.methodBuilder("groupName")
             .addModifiers(Modifier.PUBLIC)
             .returns(LocalizeValue.class)
@@ -213,11 +215,19 @@ public class LiveTemplateConverter {
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("contribute");
         methodBuilder.addModifiers(Modifier.PUBLIC);
         methodBuilder.addAnnotation(Override.class);
-        methodBuilder.addParameter(ParameterSpec.builder(LiveTemplateContributor.Factory.class, "factory").addAnnotation(Nonnull.class).build());
-        
+        methodBuilder.addParameter(ParameterSpec.builder(LiveTemplateContributor.Factory.class, "factory")
+            .addAnnotation(Nonnull.class)
+            .build());
+
         for (Template template : templates) {
             CodeBlock.Builder codeBuilder = CodeBlock.builder();
-            codeBuilder.beginControlFlow("try(Builder builder = factory.newBuilder($S, $S, $S, $L))", template.myId, template.myAbbreviation, template.myValue, template.myDescriptionBlock);
+            codeBuilder.beginControlFlow(
+                "try(Builder builder = factory.newBuilder($S, $S, $S, $L))",
+                template.myId,
+                template.myAbbreviation,
+                template.myValue,
+                template.myDescriptionBlock
+            );
 
             if (template.myToReformat) {
                 codeBuilder.add("builder.withReformat();\n\n");
@@ -228,7 +238,13 @@ public class LiveTemplateConverter {
             }
 
             for (Variable variable : template.myVariables) {
-                codeBuilder.add("builder.withVariable($S, $S, $S, $L);\n", variable.name(), variable.expression(), variable.defaultValue(), variable.alwaysStopAt());
+                codeBuilder.add(
+                    "builder.withVariable($S, $S, $S, $L);\n",
+                    variable.name(),
+                    variable.expression(),
+                    variable.defaultValue(),
+                    variable.alwaysStopAt()
+                );
             }
 
             codeBuilder.add("\n");
