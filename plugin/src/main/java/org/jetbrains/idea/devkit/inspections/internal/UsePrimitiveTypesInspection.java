@@ -37,31 +37,31 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.usePrimitiveTypesInspectionDisplayName();
+        return DevKitLocalize.inspectionUsePrimitiveTypesDisplayName();
     }
 
     @Override
-    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
             @RequiredReadAction
             public void visitBinaryExpression(@Nonnull PsiBinaryExpression expression) {
                 super.visitBinaryExpression(expression);
-                final IElementType tokenType = expression.getOperationTokenType();
+                IElementType tokenType = expression.getOperationTokenType();
                 if (JavaTokenType.EQEQ.equals(tokenType) || JavaTokenType.NE.equals(tokenType)) {
-                    final PsiExpression lOperand = expression.getLOperand();
-                    final PsiExpression rOperand = expression.getROperand();
+                    PsiExpression lOperand = expression.getLOperand();
+                    PsiExpression rOperand = expression.getROperand();
                     if (rOperand != null && (isPrimitiveTypeRef(lOperand) || isPrimitiveTypeRef(rOperand))) {
-                        final LocalizeValue name;
+                        LocalizeValue fixName;
                         if (JavaTokenType.NE.equals(tokenType)) {
-                            name = LocalizeValue.localizeTODO("Replace '!=' with '!equals()'");
+                            fixName = DevKitLocalize.inspectionUsePrimitiveTypesQuickfixNameNe();
                         }
                         else {
-                            name = IntentionPowerPackLocalize.replaceEqualityWithEqualsIntentionName();
+                            fixName = DevKitLocalize.inspectionUsePrimitiveTypesQuickfixNameEq();
                         }
-                        holder.newProblem(DevKitLocalize.usePrimitiveTypesInspectionMessage())
+                        holder.newProblem(DevKitLocalize.inspectionUsePrimitiveTypesMessage())
                             .range(expression.getOperationSign())
-                            .withFix(new ReplaceEqualityWithEqualsFix(name))
+                            .withFix(new ReplaceEqualityWithEqualsFix(fixName))
                             .create();
                     }
                 }
@@ -72,7 +72,7 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
     @RequiredReadAction
     private static boolean isPrimitiveTypeRef(PsiExpression expression) {
         if (expression instanceof PsiReferenceExpression referenceExpression && referenceExpression.resolve() instanceof PsiField field) {
-            final PsiClass containingClass = field.getContainingClass();
+            PsiClass containingClass = field.getContainingClass();
             return containingClass != null
                 && PsiType.class.getName().equals(containingClass.getQualifiedName())
                 && !"NULL".equals(field.getName());
@@ -93,18 +93,13 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
             return myName;
         }
 
-        @Nonnull
-        public LocalizeValue getFamilyName() {
-            return LocalizeValue.localizeTODO("Replace equality with .equals");
-        }
-
         @Override
         @RequiredReadAction
         public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-            final PsiElement psiElement = descriptor.getPsiElement();
+            PsiElement psiElement = descriptor.getPsiElement();
             if (psiElement instanceof PsiJavaToken javaToken) {
-                final IElementType tokenType = javaToken.getTokenType();
-                final String prefix;
+                IElementType tokenType = javaToken.getTokenType();
+                String prefix;
                 if (JavaTokenType.EQEQ.equals(tokenType)) {
                     prefix = "";
                 }
@@ -116,18 +111,18 @@ public class UsePrimitiveTypesInspection extends InternalInspection {
                 }
 
                 if (psiElement.getParent() instanceof PsiBinaryExpression binaryExpression) {
-                    final PsiExpression rOperand = binaryExpression.getROperand();
-                    final PsiExpression lOperand = binaryExpression.getLOperand();
+                    PsiExpression rOperand = binaryExpression.getROperand();
+                    PsiExpression lOperand = binaryExpression.getLOperand();
                     if (rOperand != null) {
-                        final boolean flip = isPrimitiveTypeRef(rOperand);
+                        boolean flip = isPrimitiveTypeRef(rOperand);
                         if (flip || isPrimitiveTypeRef(lOperand)) {
-                            final String rText = PsiUtil.skipParenthesizedExprUp(rOperand).getText();
-                            final String lText = PsiUtil.skipParenthesizedExprUp(lOperand).getText();
+                            String rText = PsiUtil.skipParenthesizedExprUp(rOperand).getText();
+                            String lText = PsiUtil.skipParenthesizedExprUp(lOperand).getText();
 
-                            final String lhText = flip ? rText : lText;
-                            final String rhText = flip ? lText : rText;
+                            String lhText = flip ? rText : lText;
+                            String rhText = flip ? lText : rText;
 
-                            final String expString = prefix + lhText + ".equals(" + rhText + ')';
+                            String expString = prefix + lhText + ".equals(" + rhText + ')';
                             PsiReplacementUtil.replaceExpression(binaryExpression, expString);
                         }
                     }

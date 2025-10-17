@@ -16,7 +16,6 @@ import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import jakarta.annotation.Nonnull;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
 import java.util.Set;
@@ -35,7 +34,7 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
         @Nonnull
         @Override
         public LocalizeValue getText() {
-            return DevKitLocalize.complicatedLoggerInitializationQuickfixName();
+            return DevKitLocalize.inspectionComplicatedLoggerInitializationQuickfixName();
         }
 
         @Override
@@ -62,7 +61,7 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.complicatedLoggerInitializationInspectionDisplayName();
+        return DevKitLocalize.inspectionComplicatedLoggerInitializationDisplayName();
     }
 
     @Override
@@ -83,7 +82,7 @@ public class ComplicatedLoggerInitializationInspection extends InternalInspectio
                     if (containingClass != null && ourLoggerClasses.contains(containingClass.getQualifiedName())) {
                         PsiExpression argument = argumentList.getExpressions()[0];
                         if (isComplicatedArgument(argument)) {
-                            holder.newProblem(DevKitLocalize.complicatedLoggerInitializationInspectionMessage())
+                            holder.newProblem(DevKitLocalize.inspectionComplicatedLoggerInitializationMessage())
                                 .range(argument, new TextRange(0, argument.getTextLength()))
                                 .withFix(new Fix(argument))
                                 .create();

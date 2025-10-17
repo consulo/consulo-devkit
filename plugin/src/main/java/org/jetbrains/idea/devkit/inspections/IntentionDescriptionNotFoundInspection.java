@@ -23,7 +23,6 @@ import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.content.LanguageContentFolderScopes;
-import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.editor.intention.IntentionAction;
 import consulo.language.editor.intention.SyntheticIntentionAction;
@@ -79,21 +78,21 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
 
     @RequiredReadAction
     private void checkClass(PsiClass psiClass, ProblemsHolder holder, boolean isOnTheFly) {
-        final Project project = psiClass.getProject();
-        final PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
-        final Module module = psiClass.getModule();
+        Project project = psiClass.getProject();
+        PsiIdentifier nameIdentifier = psiClass.getNameIdentifier();
+        Module module = psiClass.getModule();
 
         if (nameIdentifier == null || module == null || !PsiUtil.isInstantiable(psiClass)) {
             return;
         }
 
-        final PsiClass base = JavaPsiFacade.getInstance(project).findClass(INTENTION, GlobalSearchScope.allScope(project));
+        PsiClass base = JavaPsiFacade.getInstance(project).findClass(INTENTION, GlobalSearchScope.allScope(project));
 
         if (base == null || !psiClass.isInheritor(base, true)) {
             return;
         }
 
-        final PsiClass ignoredBase = JavaPsiFacade.getInstance(project).findClass(SYNTHETIC_INTENTION, GlobalSearchScope.allScope(project));
+        PsiClass ignoredBase = JavaPsiFacade.getInstance(project).findClass(SYNTHETIC_INTENTION, GlobalSearchScope.allScope(project));
         if (ignoredBase != null && psiClass.isInheritor(ignoredBase, true)) {
             return;
         }
@@ -108,7 +107,7 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
             if (dir == null) {
                 continue;
             }
-            final PsiFile descr = dir.findFile("description.html");
+            PsiFile descr = dir.findFile("description.html");
             if (descr != null) {
                 if (!hasBeforeAndAfterTemplate(dir.getVirtualFile())) {
                     PsiElement problem = psiClass.getNameIdentifier();
@@ -122,11 +121,10 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
             }
         }
 
-        final PsiElement problem = psiClass.getNameIdentifier();
+        PsiElement problem = psiClass.getNameIdentifier();
         holder.newProblem(DevKitLocalize.intentionDescriptionNotFoundInspectionMessage())
             .range(problem == null ? nameIdentifier : problem)
             .withFix(new CreateHtmlDescriptionFix(descriptionDir, module, true))
-            .highlightType(ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
             .onTheFly(isOnTheFly)
             .create();
     }
@@ -167,11 +165,11 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
     }
 
     public static List<VirtualFile> getPotentialRoots(Module module) {
-        final PsiDirectory[] dirs = getIntentionDescriptionsDirs(module);
-        final List<VirtualFile> result = new ArrayList<>();
+        PsiDirectory[] dirs = getIntentionDescriptionsDirs(module);
+        List<VirtualFile> result = new ArrayList<>();
         if (dirs.length != 0) {
             for (PsiDirectory dir : dirs) {
-                final PsiDirectory parent = dir.getParentDirectory();
+                PsiDirectory parent = dir.getParentDirectory();
                 if (parent != null) {
                     result.add(parent.getVirtualFile());
                 }
@@ -187,7 +185,7 @@ public class IntentionDescriptionNotFoundInspection extends InternalInspection {
     }
 
     public static PsiDirectory[] getIntentionDescriptionsDirs(Module module) {
-        final PsiPackage aPackage = JavaPsiFacade.getInstance(module.getProject()).findPackage(INSPECTION_DESCRIPTIONS);
+        PsiPackage aPackage = JavaPsiFacade.getInstance(module.getProject()).findPackage(INSPECTION_DESCRIPTIONS);
         if (aPackage != null) {
             return aPackage.getDirectories(GlobalSearchScope.moduleWithDependenciesScope(module));
         }

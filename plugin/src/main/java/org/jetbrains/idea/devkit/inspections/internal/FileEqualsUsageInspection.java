@@ -21,8 +21,8 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
-import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
+import consulo.language.psi.PsiReference;
 import consulo.localize.LocalizeValue;
 import jakarta.annotation.Nonnull;
 
@@ -35,7 +35,7 @@ public class FileEqualsUsageInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.fileEqualsUsageInspectionDisplayName();
+        return DevKitLocalize.inspectionFileEqualsUsageDisplayName();
     }
 
     @Override
@@ -45,21 +45,17 @@ public class FileEqualsUsageInspection extends InternalInspection {
             @Override
             @RequiredReadAction
             public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression) {
-                PsiReferenceExpression methodExpression = expression.getMethodExpression();
-                PsiElement resolved = methodExpression.resolve();
-                if (resolved instanceof PsiMethod method) {
+                if (expression.getMethodExpression().resolve() instanceof PsiMethod method) {
                     PsiClass clazz = method.getContainingClass();
                     if (clazz == null) {
                         return;
                     }
 
-                    String methodName = method.getName();
-                    if (CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && FILE_METHOD_NAMES.contains(methodName)) {
-                        holder.registerProblem(
-                            methodExpression,
-                            DevKitLocalize.fileEqualsUsageInspectionMessage().get(),
-                            ProblemHighlightType.LIKE_DEPRECATED
-                        );
+                    if (CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && FILE_METHOD_NAMES.contains(method.getName())) {
+                        holder.newProblem(DevKitLocalize.inspectionFileEqualsUsageMessage())
+                            .range((PsiReference) method)
+                            .highlightType(ProblemHighlightType.LIKE_DEPRECATED)
+                            .create();
                     }
                 }
             }

@@ -6,10 +6,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.localize.LocalizeUtil;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.language.Language;
-import consulo.language.editor.inspection.LocalInspectionTool;
-import consulo.language.editor.inspection.LocalInspectionToolSession;
-import consulo.language.editor.inspection.ProblemHighlightType;
-import consulo.language.editor.inspection.ProblemsHolder;
+import consulo.language.editor.inspection.*;
 import consulo.language.editor.rawHighlight.HighlightDisplayLevel;
 import consulo.language.pattern.PsiElementPattern;
 import consulo.language.pattern.StandardPatterns;
@@ -36,14 +33,14 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 @ExtensionImpl
 public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
-    private static final PsiElementPattern.Capture<PsiElement> ourScalarPattern = StandardPatterns.psiElement()
+    private static final PsiElementPattern.Capture<PsiElement> SCALAR_PATTERN = StandardPatterns.psiElement()
         .withElementType(YAMLTokenTypes.SCALAR_KEY)
         .withParent(YAMLKeyValue.class)
         .withSuperParent(2, YAMLMapping.class)
         .withSuperParent(3, YAMLDocument.class)
         .withSuperParent(4, YAMLFile.class);
 
-    private static final Key<Set<String>> ourAlreadyDefinedKeys = Key.create("DuplicateLocalizationKeyInspection.ourAlreadyDefinedKeys");
+    private static final Key<Set<String>> ALREADY_DEFINED_KEYS = Key.create("DuplicateLocalizationKeyInspection.ourAlreadyDefinedKeys");
 
     @Nonnull
     @Override
@@ -65,7 +62,7 @@ public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return LocalizeValue.localizeTODO("Duplicate localization");
+        return DevKitLocalize.inspectionDuplicateLocalizationKeyDisplayName();
     }
 
     @Nonnull
@@ -77,7 +74,12 @@ public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
     @Nonnull
     @Override
     @RequiredReadAction
-    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+    public PsiElementVisitor buildVisitor(
+        @Nonnull ProblemsHolder holder,
+        boolean isOnTheFly,
+        @Nonnull LocalInspectionToolSession session,
+        @Nonnull Object state
+    ) {
         PsiFile file = holder.getFile();
         if (!PluginModuleUtil.isConsuloOrPluginProject(file.getProject(), file.getModule())) {
             return PsiElementVisitor.EMPTY_VISITOR;
@@ -90,20 +92,22 @@ public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
         return new PsiElementVisitor() {
             @Override
             public void visitElement(PsiElement element) {
-                if (!ourScalarPattern.accepts(element)) {
+                if (!SCALAR_PATTERN.accepts(element)) {
                     return;
                 }
 
-                Set<String> data = session.getUserData(ourAlreadyDefinedKeys);
+                Set<String> data = session.getUserData(ALREADY_DEFINED_KEYS);
                 if (data == null) {
-                    session.putUserDataIfAbsent(ourAlreadyDefinedKeys, data = new CopyOnWriteArraySet<>());
+                    session.putUserDataIfAbsent(ALREADY_DEFINED_KEYS, data = new CopyOnWriteArraySet<>());
                 }
-
 
                 YAMLKeyValue keyValue = (YAMLKeyValue) element.getParent();
 
                 if (!data.add(keyValue.getKeyText())) {
-                    holder.registerProblem(element, "Duplicate key", ProblemHighlightType.GENERIC_ERROR);
+                    holder.newProblem(DevKitLocalize.inspectionDuplicateLocalizationKeyMessage())
+                        .range(element)
+                        .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                        .create();
                 }
             }
         };

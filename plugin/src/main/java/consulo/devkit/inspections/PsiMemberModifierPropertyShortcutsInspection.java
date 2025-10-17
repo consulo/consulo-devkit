@@ -38,7 +38,7 @@ public class PsiMemberModifierPropertyShortcutsInspection extends InternalInspec
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.psiMemberModifierPropertyStortcutsInspectionDisplayName();
+        return DevKitLocalize.inspectionHasModifierPropertyStortcutsDisplayName();
     }
 
     @Override
@@ -92,7 +92,7 @@ public class PsiMemberModifierPropertyShortcutsInspection extends InternalInspec
         @Nonnull
         @Override
         public LocalizeValue getText() {
-            return DevKitLocalize.psiMemberReplaceWithShortcutFix(myReplacementMethodName);
+            return DevKitLocalize.inspectionHasModifierPropertyStortcutsQuickfixName(myReplacementMethodName);
         }
 
         @Override

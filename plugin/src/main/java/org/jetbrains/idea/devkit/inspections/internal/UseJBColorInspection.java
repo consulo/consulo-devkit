@@ -40,7 +40,7 @@ public class UseJBColorInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return LocalizeValue.localizeTODO("Use Darcula aware JBColor");
+        return DevKitLocalize.inspectionUseJBColorDisplayName();
     }
 
     @Nonnull
@@ -64,7 +64,7 @@ public class UseJBColorInspection extends InternalInspection {
             public void visitReferenceExpression(@Nonnull PsiReferenceExpression expression) {
                 super.visitReferenceExpression(expression);
                 if (expression.resolve() instanceof PsiField colorField && colorField.isStatic()) {
-                    final PsiClass colorClass = colorField.getContainingClass();
+                    PsiClass colorClass = colorField.getContainingClass();
                     if (colorClass != null && Color.class.getName().equals(colorClass.getQualifiedName())) {
                         String text = expression.getText();
                         if (text.contains(".")) {
@@ -79,7 +79,7 @@ public class UseJBColorInspection extends InternalInspection {
                         else if (text.equalsIgnoreCase("darkGray")) {
                             text = "DARK_GRAY";
                         }
-                        holder.newProblem(DevKitLocalize.useJbcolorInspectionMessageChange(text.toUpperCase()))
+                        holder.newProblem(DevKitLocalize.inspectionUseJBColorMessageConst(text.toUpperCase()))
                             .range((PsiElement)expression)
                             .onTheFly(isOnTheFly)
                             .withFix(new ConvertToJBColorConstantQuickFix(text.toUpperCase()))
@@ -100,16 +100,16 @@ public class UseJBColorInspection extends InternalInspection {
             return;
         }
 
-        final PsiExpressionList arguments = expression.getArgumentList();
+        PsiExpressionList arguments = expression.getArgumentList();
         if (arguments != null && "java.awt.Color".equals(type.getCanonicalText())) {
             if (expression.getParent() instanceof PsiExpressionList expressionList
                 && expressionList.getParent() instanceof PsiNewExpression newExpression) {
-                final PsiType parentType = newExpression.getType();
+                PsiType parentType = newExpression.getType();
                 if (parentType == null || JBColor.class.getName().equals(parentType.getCanonicalText())) {
                     return;
                 }
             }
-            holder.newProblem(DevKitLocalize.useJbcolorInspectionMessage())
+            holder.newProblem(DevKitLocalize.inspectionUseJBColorMessageNew())
                 .range(expression)
                 .onTheFly(isOnTheFly)
                 .withFix(new ConvertToJBColorQuickFix())

@@ -51,7 +51,7 @@ public class WrongInjectBindingInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.wrongInjectBindingInspectionDisplayName();
+        return DevKitLocalize.inspectionWrongInjectBindingDisplayName();
     }
 
     @Nonnull
@@ -91,14 +91,14 @@ public class WrongInjectBindingInspection extends InternalInspection {
         @Nonnull PsiType targetType
     ) {
         if (targetScope == null) {
-            return DevKitLocalize.wrongInjectBindingInspectionMessageUnknown(StringUtil.SINGLE_QUOTER.apply(PsiFormatUtil.formatType(
+            return DevKitLocalize.inspectionWrongInjectBindingMessageUnknown(StringUtil.SINGLE_QUOTER.apply(PsiFormatUtil.formatType(
                 targetType,
                 0,
                 PsiSubstitutor.EMPTY
             )));
         }
 
-        return DevKitLocalize.wrongInjectBindingInspectionMessageTooHigh(scope, targetScope);
+        return DevKitLocalize.inspectionWrongInjectBindingMessageTooHigh(scope, targetScope);
     }
 
     @Nullable

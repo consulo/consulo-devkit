@@ -38,17 +38,17 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.unsafeVfsRecursionInspectionDisplayName();
+        return DevKitLocalize.inspectionUnsafeVfsRecursionDisplayName();
     }
 
     @Nonnull
     @Override
-    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, final boolean isOnTheFly) {
+    public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
             @RequiredReadAction
             public void visitMethodCallExpression(@Nonnull final PsiMethodCallExpression expression) {
-                final PsiReferenceExpression methodRef = expression.getMethodExpression();
+                PsiReferenceExpression methodRef = expression.getMethodExpression();
                 if (GET_CHILDREN_METHOD_NAME.equals(methodRef.getReferenceName())
                     && methodRef.resolve() instanceof PsiMethod method) {
 
@@ -69,7 +69,7 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
                     final SimpleReference<Boolean> result = SimpleReference.create();
                     containingMethod.accept(new JavaRecursiveElementVisitor() {
                         @Override
-                        public void visitMethodCallExpression(@Nonnull final PsiMethodCallExpression expression2) {
+                        public void visitMethodCallExpression(@Nonnull PsiMethodCallExpression expression2) {
                             if (expression2 != expression
                                 && containingMethodName.equals(expression2.getMethodExpression().getReferenceName())
                                 && expression2.resolveMethod() == containingMethod) {
@@ -79,7 +79,7 @@ public class UnsafeVfsRecursionInspection extends InternalInspection {
                     });
 
                     if (!result.isNull()) {
-                        holder.newProblem(DevKitLocalize.unsafeVfsRecursionInspectionMessage())
+                        holder.newProblem(DevKitLocalize.inspectionUnsafeVfsRecursionMessage())
                             .range(expression)
                             .create();
                     }

@@ -19,14 +19,13 @@ import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.psi.PsiElement;
-import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.util.lang.Pair;
-
 import jakarta.annotation.Nonnull;
 
 /**
@@ -34,11 +33,11 @@ import jakarta.annotation.Nonnull;
  */
 public class ChangeToPairCreateQuickFix extends LocalQuickFixBase {
     public ChangeToPairCreateQuickFix() {
-        super(LocalizeValue.localizeTODO("Change to Pair.create(..., ...)"));
+        super(DevKitLocalize.inspectionDontUseNewPairQuickfixName());
     }
 
     @Override
-    @RequiredReadAction
+    @RequiredWriteAction
     public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
         PsiElement element = descriptor.getPsiElement();
         if (element == null) {

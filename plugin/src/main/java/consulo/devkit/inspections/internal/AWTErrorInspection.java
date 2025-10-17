@@ -24,7 +24,6 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiElementVisitor;
-import consulo.language.util.ModuleUtilCore;
 import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.util.lang.StringUtil;
@@ -37,7 +36,7 @@ import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
  */
 @ExtensionImpl
 public class AWTErrorInspection extends InternalInspection {
-    private static final String[] ourErrorPackages = {
+    private static final String[] ERROR_PACKAGES = {
         "java.awt",
         "javax.swing"
     };
@@ -45,7 +44,7 @@ public class AWTErrorInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.awtErrorInspectionDisplayName();
+        return DevKitLocalize.inspectionAwtErrorDisplayName();
     }
 
     @Override
@@ -63,7 +62,7 @@ public class AWTErrorInspection extends InternalInspection {
 
             @Override
             public void visitNewExpression(@Nonnull PsiNewExpression expression) {
-                final PsiJavaCodeReferenceElement classReference = expression.getClassReference();
+                PsiJavaCodeReferenceElement classReference = expression.getClassReference();
                 if (classReference == null) {
                     return;
                 }
@@ -73,13 +72,13 @@ public class AWTErrorInspection extends InternalInspection {
             private void checkType(PsiElement owner, PsiType psiType) {
                 PsiClass psiClass = PsiUtil.resolveClassInType(psiType);
                 if (psiClass != null) {
-                    final String qualifiedName = psiClass.getQualifiedName();
+                    String qualifiedName = psiClass.getQualifiedName();
                     if (qualifiedName == null) {
                         return;
                     }
-                    for (String errorPackage : ourErrorPackages) {
+                    for (String errorPackage : ERROR_PACKAGES) {
                         if (StringUtil.startsWith(qualifiedName, errorPackage)) {
-                            holder.newProblem(DevKitLocalize.awtErrorInspectionMessage())
+                            holder.newProblem(DevKitLocalize.inspectionAwtErrorMessage())
                                 .range(owner)
                                 .create();
                         }
@@ -92,7 +91,7 @@ public class AWTErrorInspection extends InternalInspection {
     @RequiredReadAction
     @Override
     protected boolean isAllowed(ProblemsHolder holder) {
-        Module module = ModuleUtilCore.findModuleForPsiElement(holder.getFile());
+        Module module = holder.getFile().getModule();
         if (module == null) {
             return false;
         }

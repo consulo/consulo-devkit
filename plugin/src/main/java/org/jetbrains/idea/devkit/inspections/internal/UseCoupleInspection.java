@@ -41,7 +41,7 @@ public class UseCoupleInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.useCoupleInspectionDisplayName();
+        return DevKitLocalize.inspectionUseCoupleDisplayName();
     }
 
     @Nonnull
@@ -55,15 +55,14 @@ public class UseCoupleInspection extends InternalInspection {
         return new JavaElementVisitor() {
             @Override
             public void visitTypeElement(@Nonnull PsiTypeElement type) {
-                final String canonicalText = type.getType().getCanonicalText();
+                String canonicalText = type.getType().getCanonicalText();
                 if (canonicalText.startsWith(PAIR_FQN) && canonicalText.contains("<") && canonicalText.endsWith(">")) {
-                    String genericTypes =
-                        canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.length() - 1);
-                    final List<String> types = StringUtil.split(genericTypes, ",");
+                    String genericTypes = canonicalText.substring(canonicalText.indexOf('<') + 1, canonicalText.length() - 1);
+                    List<String> types = StringUtil.split(genericTypes, ",");
                     if (types.size() == 2 && StringUtil.equals(types.get(0), types.get(1))) {
-                        final List<String> parts = StringUtil.split(types.get(0), ".");
+                        List<String> parts = StringUtil.split(types.get(0), ".");
                         String typeName = parts.get(parts.size() - 1);
-                        LocalizeValue name = DevKitLocalize.useCoupleInspectionMessageType(typeName);
+                        LocalizeValue name = DevKitLocalize.inspectionUseCoupleMessageType(typeName);
                         holder.newProblem(name)
                             .range(type)
                             .withFix(new UseCoupleQuickFix(name))
@@ -83,7 +82,7 @@ public class UseCoupleInspection extends InternalInspection {
                         if (psiClass != null && PAIR_FQN.equals(psiClass.getQualifiedName())) {
                             PsiType[] types = expression.getArgumentList().getExpressionTypes();
                             if (types.length == 2 && Objects.equals(types[0], types[1])) {
-                                LocalizeValue name = DevKitLocalize.useCoupleInspectionMessageConstructor();
+                                LocalizeValue name = DevKitLocalize.inspectionUseCoupleMessageConstructor();
                                 holder.newProblem(name)
                                     .range(expression)
                                     .withFix(new UseCoupleQuickFix(name))

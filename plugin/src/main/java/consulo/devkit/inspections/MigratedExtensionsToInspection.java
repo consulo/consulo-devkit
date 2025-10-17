@@ -33,7 +33,7 @@ public class MigratedExtensionsToInspection extends InternalInspection {
         @Nonnull
         @Override
         public LocalizeValue getText() {
-            return DevKitLocalize.migratedExtensionsToInspectionQuickfixName();
+            return DevKitLocalize.inspectionMigratedExtensionsToQuickfixName();
         }
 
         @Override
@@ -110,7 +110,7 @@ public class MigratedExtensionsToInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.migratedExtensionsToInspectionDisplayName();
+        return DevKitLocalize.inspectionMigratedExtensionsToDisplayName();
     }
 
     @Override
@@ -127,7 +127,7 @@ public class MigratedExtensionsToInspection extends InternalInspection {
                         return;
                     }
 
-                    holder.newProblem(DevKitLocalize.migratedExtensionsToInspectionMessage())
+                    holder.newProblem(DevKitLocalize.inspectionMigratedExtensionsToMessage())
                         .range(nameIdentifier)
                         .withFix(new DelegateMethodsFix(method))
                         .create();

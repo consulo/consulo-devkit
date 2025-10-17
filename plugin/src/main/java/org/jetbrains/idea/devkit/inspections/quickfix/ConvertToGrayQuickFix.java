@@ -19,7 +19,7 @@ import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
@@ -35,17 +35,17 @@ public class ConvertToGrayQuickFix extends LocalQuickFixBase {
     private final int myNum;
 
     public ConvertToGrayQuickFix(int num) {
-        super(DevKitLocalize.useGrayInspectionMessage(num));
+        super(DevKitLocalize.inspectionUseGrayMessage(num));
         myNum = num;
     }
 
     @Override
-    @RequiredReadAction
+    @RequiredWriteAction
     public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-        final PsiElement element = descriptor.getPsiElement();
-        final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-        final PsiExpression expression = factory.createExpressionFromText("com.intellij.ui.Gray._" + myNum, element.getContext());
-        final PsiElement newElement = element.replace(expression);
+        PsiElement element = descriptor.getPsiElement();
+        PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+        PsiExpression expression = factory.createExpressionFromText("com.intellij.ui.Gray._" + myNum, element.getContext());
+        PsiElement newElement = element.replace(expression);
         JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
     }
 }

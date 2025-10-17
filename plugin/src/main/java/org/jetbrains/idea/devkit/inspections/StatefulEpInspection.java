@@ -39,7 +39,7 @@ public class StatefulEpInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.statefulEpInspectionDisplayName();
+        return DevKitLocalize.inspectionStatefulEpDisplayName();
     }
 
     @Override
@@ -58,9 +58,9 @@ public class StatefulEpInspection extends InternalInspection {
             return;
         }
 
-        final boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
+        boolean isQuickFix = InheritanceUtil.isInheritor(psiClass, LocalQuickFix.class.getCanonicalName());
         if (isQuickFix || AnnotationUtil.isAnnotated(psiClass, ValhallaClasses.IMPL, 0)) {
-            final boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
+            boolean isProjectComponent = isProjectServiceOrComponent(psiClass);
 
             for (Class c : new Class[]{PsiElement.class, PsiReference.class, Project.class}) {
                 if (c == Project.class && (field.isFinal() || isProjectComponent)) {
@@ -68,10 +68,10 @@ public class StatefulEpInspection extends InternalInspection {
                 }
                 LocalizeValue message;
                 if (c != PsiElement.class) {
-                    message = DevKitLocalize.statefulEpInspectionMessage(c.getSimpleName());
+                    message = DevKitLocalize.inspectionStatefulEpMessage(c.getSimpleName());
                 }
                 else {
-                    message = DevKitLocalize.statefulEpInspectionMessageDontHoldPsiElement(isQuickFix ? 1 : 0);
+                    message = DevKitLocalize.inspectionStatefulEpMessageDontHoldPsiElement(isQuickFix ? 1 : 0);
                 }
 
                 if (InheritanceUtil.isInheritor(field.getType(), c.getCanonicalName())) {

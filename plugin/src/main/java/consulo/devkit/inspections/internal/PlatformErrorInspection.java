@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.devkit.inspections.internal;
 
 import com.intellij.java.language.psi.JavaElementVisitor;
@@ -60,7 +59,7 @@ public class PlatformErrorInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.platformErrorInspectionDisplayName();
+        return DevKitLocalize.inspectionPlatformErrorDisplayName();
     }
 
     @Nonnull
@@ -81,7 +80,7 @@ public class PlatformErrorInspection extends InternalInspection {
                     if (containingClass != null) {
                         Collection<String> strings = myRestrictedMethodList.get(containingClass.getQualifiedName());
                         if (strings.contains(method.getName())) {
-                            holder.newProblem(DevKitLocalize.platformErrorInspectionMessage())
+                            holder.newProblem(DevKitLocalize.inspectionPlatformErrorMessage())
                                 .range(expression, expression.getMethodExpression().getRangeInElement())
                                 .highlightType(ProblemHighlightType.GENERIC_ERROR)
                                 .create();

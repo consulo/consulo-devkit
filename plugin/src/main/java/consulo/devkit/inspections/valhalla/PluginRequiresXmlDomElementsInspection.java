@@ -26,7 +26,7 @@ public class PluginRequiresXmlDomElementsInspection extends BasicDomElementsInsp
     @Override
     @Nonnull
     public LocalizeValue getDisplayName() {
-        return LocalizeValue.localizeTODO("Plugin Requires.xml Validity");
+        return DevKitLocalize.inspectionPluginRequiresXmlValidityDisplayName();
     }
 
     @Override

@@ -65,7 +65,7 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.placeXactionAnnotationInspectionDisplayName();
+        return DevKitLocalize.inspectionPlaceXactionAnnotationDisplayName();
     }
 
     @Nonnull
@@ -89,7 +89,7 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
                     for (PsiMethod itMethod : query) {
                         if (CallStateType.findSelfActionType(itMethod) == CallStateType.NONE) {
                             String actionClass = selfActionType.getActionClass();
-                            holder.newProblem(DevKitLocalize.placeXactionAnnotationInspectionMessageForOverridden(
+                            holder.newProblem(DevKitLocalize.inspectionPlaceXactionAnnotationMessageForOverridden(
                                     StringUtil.getShortName(actionClass)
                                 ))
                                 .range(nameIdentifier)
@@ -105,7 +105,7 @@ public class PlaceXActionAnnotationInspection extends InternalInspection {
                         CallStateType superActionType = CallStateType.findSelfActionType(superMethod);
                         if (superActionType != CallStateType.NONE) {
                             String actionClass = superActionType.getActionClass();
-                            holder.newProblem(DevKitLocalize.placeXactionAnnotationInspectionMessage(StringUtil.getShortName(actionClass)))
+                            holder.newProblem(DevKitLocalize.inspectionPlaceXactionAnnotationMessage(StringUtil.getShortName(actionClass)))
                                 .range(nameIdentifier)
                                 .withFix(new AddAnnotationFix(actionClass, method))
                                 .create();

@@ -55,7 +55,7 @@ public class UndesirableClassUsageInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.undesirableClassUsageInspectionDisplayName();
+        return DevKitLocalize.inspectionUndesirableClassUsageDisplayName();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class UndesirableClassUsageInspection extends InternalInspection {
                     return;
                 }
 
-                holder.newProblem(DevKitLocalize.undesirableClassUsageInspectionMessage(replacement))
+                holder.newProblem(DevKitLocalize.inspectionUndesirableClassUsageMessage(replacement))
                     .range(expression)
                     .highlightType(ProblemHighlightType.LIKE_DEPRECATED)
                     .create();
