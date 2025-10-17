@@ -49,7 +49,7 @@ public class InvalidMessageFormatInspection extends LocalInspectionTool {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return LocalizeValue.localizeTODO("Invalid icu.MessageFormat text");
+        return DevKitLocalize.inspectionInvalidMessageFormatDisplayName();
     }
 
     @Nonnull
@@ -61,7 +61,12 @@ public class InvalidMessageFormatInspection extends LocalInspectionTool {
     @Nonnull
     @Override
     @RequiredReadAction
-    public PsiElementVisitor buildVisitor(@Nonnull ProblemsHolder holder, boolean isOnTheFly, @Nonnull LocalInspectionToolSession session, @Nonnull Object state) {
+    public PsiElementVisitor buildVisitor(
+        @Nonnull ProblemsHolder holder,
+        boolean isOnTheFly,
+        @Nonnull LocalInspectionToolSession session,
+        @Nonnull Object state
+    ) {
         PsiFile file = holder.getFile();
 
         if (!PluginModuleUtil.isConsuloOrPluginProject(file.getProject(), file.getModule())) {
@@ -77,11 +82,16 @@ public class InvalidMessageFormatInspection extends LocalInspectionTool {
             @Override
             @RequiredReadAction
             public void visitElement(PsiElement element) {
-                if (element instanceof YAMLKeyValue keyValue && LocalizeUtil.TEXT_KEY.equals(keyValue.getKeyText()) && keyValue.getParent() instanceof YAMLMapping) {
+                if (element instanceof YAMLKeyValue keyValue
+                    && LocalizeUtil.TEXT_KEY.equals(keyValue.getKeyText())
+                    && keyValue.getParent() instanceof YAMLMapping) {
                     try {
                         new MessageFormat(keyValue.getValueText(), locale);
-                    } catch (Exception e) {
-                        holder.registerProblem(keyValue.getValue(), e.getMessage());
+                    }
+                    catch (Exception e) {
+                        holder.newProblem(LocalizeValue.of(e.getMessage()))
+                            .range(keyValue.getValue())
+                            .create();
                     }
                 }
             }

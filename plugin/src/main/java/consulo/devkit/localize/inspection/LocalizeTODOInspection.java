@@ -25,7 +25,7 @@ public class LocalizeTODOInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.localizeTodoInspectionDisplayName();
+        return DevKitLocalize.inspectionLocalizeTodoDisplayName();
     }
 
     @Nonnull
@@ -62,7 +62,7 @@ public class LocalizeTODOInspection extends InternalInspection {
 
                 // unquote string. if expression is reference - it's invalid, and must be fixed anyway
                 String text = StringUtil.unquoteString(stringLiteral.getText());
-                holder.newProblem(DevKitLocalize.localizeTodoInspectionMessage(text))
+                holder.newProblem(DevKitLocalize.inspectionLocalizeTodoMessage(text))
                     .range(stringLiteral, new TextRange(0, stringLiteral.getTextLength()))
                     .create();
             }

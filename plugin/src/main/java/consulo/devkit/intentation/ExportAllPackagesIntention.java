@@ -1,10 +1,12 @@
 package consulo.devkit.intentation;
 
+import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.*;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.WriteAction;
 import consulo.codeEditor.Editor;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.java.language.module.extension.JavaModuleExtension;
 import consulo.language.ast.ASTNode;
@@ -15,7 +17,6 @@ import consulo.language.psi.*;
 import consulo.language.psi.scope.GlobalSearchScope;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
-import consulo.language.util.ModuleUtilCore;
 import consulo.localize.LocalizeValue;
 import consulo.module.Module;
 import consulo.module.content.ModuleRootManager;
@@ -26,7 +27,6 @@ import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import consulo.virtualFileSystem.util.VirtualFileVisitor;
 import jakarta.annotation.Nonnull;
-import org.jetbrains.annotations.Nls;
 
 import java.util.*;
 
@@ -36,18 +36,17 @@ import java.util.*;
  */
 @ExtensionImpl
 @IntentionMetaData(ignoreId = "consulo.devkit.export.all.packages", fileExtensions = "java", categories = {"Java", "Consulo DevKit"})
-public class ExportAllPackageIntention implements IntentionAction {
+public class ExportAllPackagesIntention implements IntentionAction {
     @Nonnull
     @Override
     public LocalizeValue getText() {
-        return LocalizeValue.localizeTODO("Export all packages");
+        return DevKitLocalize.intentionExportAllPackagesDisplayName();
     }
 
     @Override
     @RequiredUIAccess
     public boolean isAvailable(@Nonnull Project project, Editor editor, PsiFile psiFile) {
-        Module module = ModuleUtilCore.findModuleForFile(psiFile);
-        return findModule(editor, psiFile) != null && PluginModuleUtil.isConsuloOrPluginProject(project, module);
+        return findModule(editor, psiFile) != null && PluginModuleUtil.isConsuloOrPluginProject(project, psiFile.getModule());
     }
 
     @Override
@@ -58,7 +57,7 @@ public class ExportAllPackageIntention implements IntentionAction {
             return;
         }
 
-        Module module = ModuleUtilCore.findModuleForFile(psiFile);
+        Module module = psiFile.getModule();
         if (module == null) {
             return;
         }
@@ -108,8 +107,8 @@ public class ExportAllPackageIntention implements IntentionAction {
             }
         }
 
-        com.intellij.java.language.psi.PsiElementFactory psiElementFactory =
-            com.intellij.java.language.psi.PsiElementFactory.getInstance(project);
+        PsiElementFactory psiElementFactory =
+            PsiElementFactory.getInstance(project);
         WriteAction.run(() -> {
             PsiElement anchor = getLastItem(javaModule.getExports());
             if (anchor == null) {

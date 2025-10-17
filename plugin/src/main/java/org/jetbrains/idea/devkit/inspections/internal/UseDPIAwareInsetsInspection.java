@@ -36,7 +36,7 @@ public class UseDPIAwareInsetsInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return LocalizeValue.localizeTODO("Use DPI-aware insets");
+        return DevKitLocalize.inspectionUseDpiAwareInsetsDisplayName();
     }
 
     @Override
@@ -51,9 +51,9 @@ public class UseDPIAwareInsetsInspection extends InternalInspection {
     }
 
     private static void checkNewExpression(ProblemsHolder holder, PsiNewExpression expression, boolean isOnTheFly) {
-        final Project project = holder.getProject();
-        final PsiType type = expression.getType();
-        final PsiExpressionList arguments = expression.getArgumentList();
+        Project project = holder.getProject();
+        PsiType type = expression.getType();
+        PsiExpressionList arguments = expression.getArgumentList();
         if (type != null && arguments != null && type.equalsToText("java.awt.Insets")) {
             if (expression.getParent() instanceof PsiExpressionList expressionList
                 && expressionList.getParent() instanceof PsiMethodCallExpression methodCallExpression) {
@@ -62,20 +62,20 @@ public class UseDPIAwareInsetsInspection extends InternalInspection {
                     return;
                 }
             }
-            final JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
-            final PsiResolveHelper resolveHelper = PsiResolveHelper.getInstance(project);
-            final PsiClass jbuiClass = facade.findClass(JBUI.class.getName(), GlobalSearchScope.allScope(project));
+            JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
+            PsiResolveHelper resolveHelper = PsiResolveHelper.getInstance(project);
+            PsiClass jbuiClass = facade.findClass(JBUI.class.getName(), GlobalSearchScope.allScope(project));
             if (jbuiClass != null && resolveHelper.isAccessible(jbuiClass, expression, jbuiClass)) {
                 if (expression.getParent() instanceof PsiExpressionList expressionList
                     && expressionList.getParent() instanceof PsiNewExpression newExpression) {
 
-                    final PsiType parentType = newExpression.getType();
+                    PsiType parentType = newExpression.getType();
                     if (parentType == null || JBInsets.class.getName().equals(parentType.getCanonicalText())) {
                         return;
                     }
                 }
                 if (arguments.getExpressions().length == 4) {
-                    holder.newProblem(DevKitLocalize.useDpiAwareInsetsInspectionMessage())
+                    holder.newProblem(DevKitLocalize.inspectionUseDpiAwareInsetsMessage())
                         .range(expression)
                         .withFix(new ConvertToJBInsetsQuickFix())
                         .onTheFly(isOnTheFly)

@@ -19,7 +19,6 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.localize.LocalizeValue;
 import consulo.xml.util.xml.highlighting.BasicDomElementsInspection;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 
 import jakarta.annotation.Nonnull;
@@ -28,8 +27,8 @@ import jakarta.annotation.Nonnull;
  * @author mike
  */
 @ExtensionImpl
-public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugin, Object> {
-    public PluginXmlDomInspection() {
+public class PluginXmlValidityInspection extends BasicDomElementsInspection<IdeaPlugin, Object> {
+    public PluginXmlValidityInspection() {
         super(IdeaPlugin.class);
     }
 
@@ -42,7 +41,7 @@ public class PluginXmlDomInspection extends BasicDomElementsInspection<IdeaPlugi
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return LocalizeValue.localizeTODO("Plugin.xml Validity");
+        return DevKitLocalize.inspectionPluginXmlValidityDisplayName();
     }
 
     @Nonnull

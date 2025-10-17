@@ -37,7 +37,7 @@ public class NoSingletonAnnotationInspection extends InternalInspection {
         @RequiredReadAction
         public void visitClass(@Nonnull PsiClass aClass) {
             if (isSingleton(aClass) && !AnnotationUtil.isAnnotated(aClass, SINGLETON_ANNOTATIONS, 0)) {
-                myHolder.newProblem(DevKitLocalize.noSingletonAnnotationInspectionMessage())
+                myHolder.newProblem(DevKitLocalize.inspectionNoSingletonAnnotationMessage())
                     .range(aClass.getNameIdentifier())
                     .withFix(new AddAnnotationFix(SINGLETON_ANNOTATIONS.get(0), aClass))
                     .create();
@@ -48,7 +48,7 @@ public class NoSingletonAnnotationInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.noSingletonAnnotationInspectionDisplayName();
+        return DevKitLocalize.inspectionNoSingletonAnnotationDisplayName();
     }
 
     @Nonnull

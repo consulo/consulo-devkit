@@ -13,38 +13,42 @@ import consulo.project.ui.wm.IdeFrame;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
 
+import java.util.List;
+
 /**
  * @author VISTALL
  * @since 2019-02-17
  */
 @ExtensionImpl
 public class WrongCastRequireExplicitConversionInspection extends InternalInspection {
-    private enum PossibleWrondCast {
-        AWT_COMPONENT_TO_UI_COMPONENT("java.awt.Component", "consulo.ui.Component"),
-        UI_COMPONENT_TO_AWT_COMPONENT("consulo.ui.Component", "java.awt.Component"),
+    private static class PossibleWrongCast {
+        @Nonnull
+        private final String myType1, myType2;
 
-        VAADIN_COMPONENT_TO_UI_COMPONENT("com.vaadin.ui.Component", "consulo.ui.Component"),
-        UI_COMPONENT_TO_VAADIN_COMPONENT("consulo.ui.Component", "com.vaadin.ui.Component"),
-
-        IDE_FRAME_TO_AWT_WINDOW(IdeFrame.class.getName(), "java.awt.Component"),
-        AWT_WINDOW_TO_IDE_FRAME("java.awt.Component", IdeFrame.class.getName()),
-
-        IDE_FRAME_EX_TO_AWT_WINDOW("consulo.project.ui.wm.IdeFrame", "java.awt.Component"),
-        AWT_WINDOW_TO_IDE_FRAME_EX("java.awt.Component", "consulo.project.ui.wm.IdeFrame");
-
-        private final String myType1;
-        private final String myType2;
-
-        PossibleWrondCast(String type1, String type2) {
+        private PossibleWrongCast(@Nonnull String type1, @Nonnull String type2) {
             myType1 = type1;
             myType2 = type2;
         }
     }
 
+    private static final List<PossibleWrongCast> POSSIBLE_WRONG_CASTS = List.of(
+        new PossibleWrongCast("java.awt.Component", "consulo.ui.Component"),
+        new PossibleWrongCast("consulo.ui.Component", "java.awt.Component"),
+
+        new PossibleWrongCast("com.vaadin.ui.Component", "consulo.ui.Component"),
+        new PossibleWrongCast("consulo.ui.Component", "com.vaadin.ui.Component"),
+
+        new PossibleWrongCast(IdeFrame.class.getName(), "java.awt.Component"),
+        new PossibleWrongCast("java.awt.Component", IdeFrame.class.getName()),
+
+        new PossibleWrongCast("consulo.project.ui.wm.IdeFrame", "java.awt.Component"),
+        new PossibleWrongCast("java.awt.Component", "consulo.project.ui.wm.IdeFrame")
+    );
+
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.wrongInjectBindingInspectionDisplayName();
+        return DevKitLocalize.inspectionWrongCastRequireExplicitConversionDisplayName();
     }
 
     @Nonnull
@@ -92,24 +96,20 @@ public class WrongCastRequireExplicitConversionInspection extends InternalInspec
                     return;
                 }
 
-                for (PossibleWrondCast possibleWrondCast : PossibleWrondCast.values()) {
-                    PsiClassType type1Ref =
-                        JavaPsiFacade.getElementFactory(expression.getProject()).createTypeByFQClassName(possibleWrondCast.myType1);
-                    PsiClassType type2Ref =
-                        JavaPsiFacade.getElementFactory(expression.getProject()).createTypeByFQClassName(possibleWrondCast.myType2);
+                PsiElementFactory elementFactory = JavaPsiFacade.getElementFactory(expression.getProject());
 
-                    if (!TypeConversionUtil.isAssignable(type1Ref, castType)) {
-                        continue;
+                for (PossibleWrongCast possibleWrongCast : POSSIBLE_WRONG_CASTS) {
+                    PsiClassType type1Ref = elementFactory.createTypeByFQClassName(possibleWrongCast.myType1);
+                    PsiClassType type2Ref = elementFactory.createTypeByFQClassName(possibleWrongCast.myType2);
+
+                    if (TypeConversionUtil.isAssignable(type1Ref, castType)
+                        && TypeConversionUtil.isAssignable(type2Ref, expressionType)) {
+
+                        holder.newProblem(DevKitLocalize.inspectionWrongCastRequireExplicitConversionMessage())
+                            .range(castTypeElement)
+                            .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                            .create();
                     }
-
-                    if (!TypeConversionUtil.isAssignable(type2Ref, expressionType)) {
-                        continue;
-                    }
-
-                    holder.newProblem(DevKitLocalize.wrongCastRequireExplicitConversionInspectionMessage())
-                        .range(castTypeElement)
-                        .highlightType(ProblemHighlightType.GENERIC_ERROR)
-                        .create();
                 }
             }
         };

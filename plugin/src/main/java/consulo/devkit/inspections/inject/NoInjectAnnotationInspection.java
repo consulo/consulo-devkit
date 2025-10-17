@@ -65,7 +65,7 @@ public class NoInjectAnnotationInspection extends InternalInspection {
                 }
             }
 
-            myHolder.newProblem(DevKitLocalize.noInjectAnnotationInspectionMessage())
+            myHolder.newProblem(DevKitLocalize.inspectionNoInjectAnnotationMessage())
                 .range(aClass.getNameIdentifier())
                 .create();
         }
@@ -74,7 +74,7 @@ public class NoInjectAnnotationInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.noInjectAnnotationInspectionDisplayName();
+        return DevKitLocalize.inspectionNoInjectAnnotationDisplayName();
     }
 
     @Nonnull

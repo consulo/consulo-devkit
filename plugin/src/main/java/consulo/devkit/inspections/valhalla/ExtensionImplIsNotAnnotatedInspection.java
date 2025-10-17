@@ -9,7 +9,6 @@ import com.intellij.java.language.psi.PsiIdentifier;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
-import consulo.language.editor.inspection.ProblemHighlightType;
 import consulo.language.editor.inspection.ProblemsHolder;
 import consulo.language.psi.PsiElementVisitor;
 import consulo.localize.LocalizeValue;
@@ -25,7 +24,7 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.extensionImplIsNotAnnotatedInspectionDisplayName();
+        return DevKitLocalize.inspectionExtensionImplIsNotAnnotatedDisplayName();
     }
 
     @Override
@@ -49,11 +48,9 @@ public class ExtensionImplIsNotAnnotatedInspection extends InternalInspection {
                         return;
                     }
 
-                    AddAnnotationFix addAnnotationFix = new AddAnnotationFix(ValhallaClasses.EXTENSION_IMPL, aClass);
-                    holder.newProblem(DevKitLocalize.extensionImplIsNotAnnotatedInspectionMessage())
+                    holder.newProblem(DevKitLocalize.inspectionExtensionImplIsNotAnnotatedMessage())
                         .range(nameIdentifier)
-                        .withFix(addAnnotationFix)
-                        .highlightType(ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+                        .withFix(new AddAnnotationFix(ValhallaClasses.EXTENSION_IMPL, aClass))
                         .create();
                 }
             }

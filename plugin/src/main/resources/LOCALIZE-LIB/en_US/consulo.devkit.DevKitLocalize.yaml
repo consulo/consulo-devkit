@@ -12,10 +12,6 @@ ant.build.jar.comment:
     text: Build archive for plugin ''{0}''
 ant.build.jar.description:
     text: Build plugin archive for module ''{0}''
-awt.error.inspection.display.name:
-    text: AWT & Swing implementation error reporting
-awt.error.inspection.message:
-    text: AWT & Swing implementation cannot be used. Please visit guide for writing UI
 class.action:
     text: action
 class.implementation:
@@ -24,12 +20,6 @@ class.interface:
     text: interface
 command.implement.externalizable:
     text: Implement Externalizable
-complicated.logger.initialization.inspection.display.name:
-    text: Complicated Logger Initialization
-complicated.logger.initialization.inspection.message:
-    text: Complicated logger initialization
-complicated.logger.initialization.quickfix.name:
-    text: Replace by class constant
 copy.artifacts.before.run.description.empty:
     text: Copy Artifacts
 copy.artifacts.before.run.description.multiple:
@@ -54,10 +44,6 @@ deployment.view.select:
     text: Select {0}
 dont.add.idea.libs.to.classpath:
     text: IDEA-related libraries ({0}) must not be added to the module classpath. Please add them to the IDEA-JDK instead.
-dont.use.new.pair.inspection.display.name:
-    text: Don't use constructor of Pair class
-dont.use.new.pair.inspection.message:
-    text: Replace with Pair.create()
 error.cannot.resolve.plugin:
     text: Cannot resolve plugin {0}
 error.file.not.found:
@@ -70,14 +56,6 @@ error.occurred:
     text: Error Occurred
 error.plugin.xml.readonly:
     text: The plugin.xml file is read-only
-extension.impl.is.not.annotated.inspection.display.name:
-    text: Extension implementation is not annotated by @ExtensionImpl
-extension.impl.is.not.annotated.inspection.message:
-    text: Extension implementation is not annotated by @ExtensionImpl
-file.equals.usage.inspection.display.name:
-    text: File.equals() usage
-file.equals.usage.inspection.message:
-    text: Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. Please use FileUtil.filesEquals/fileHashCode/compareFiles instead
 group.PluginDeployActions.text:
     text: Plugin Deployment Actions
 idea.log.tab.title:
@@ -88,10 +66,144 @@ incorrect.dependency.not.declared:
     text: The plugin module ''{0}'' doesn''t declare the dependency on ''{1}'' in its plugin.xml.
 info.message:
     text: Info
+inspection.awt.error.display.name:
+    text: AWT & Swing implementation error reporting
+inspection.awt.error.message:
+    text: AWT & Swing implementation cannot be used. Please visit guide for writing UI
+inspection.complicated.logger.initialization.display.name:
+    text: Complicated Logger Initialization
+inspection.complicated.logger.initialization.message:
+    text: Complicated logger initialization
+inspection.complicated.logger.initialization.quickfix.name:
+    text: Replace by class constant
 inspection.description.not.found.inspection.display.name:
     text: Inspection Description Checker
 inspection.description.not.found.inspection.message:
     text: Inspection does not have a description
+inspection.dont.use.new.pair.display.name:
+    text: Don't use constructor of Pair class
+inspection.dont.use.new.pair.message:
+    text: Replace with Pair.create()
+inspection.dont.use.new.pair.quickfix.name:
+    text: Change to Pair.create(..., ...)
+inspection.duplicate.localization.key.display.name:
+    text: Duplicate localization
+inspection.duplicate.localization.key.message:
+    text: Duplicate key
+inspection.extension.impl.is.not.annotated.display.name:
+    text: Extension implementation is not annotated by @ExtensionImpl
+inspection.extension.impl.is.not.annotated.message:
+    text: Extension implementation is not annotated by @ExtensionImpl
+inspection.file.equals.usage.display.name:
+    text: File.equals() usage
+inspection.file.equals.usage.message:
+    text: Do not use File.equals/hashCode/compareTo as they don't honor case-sensitivity on MacOS. Please use FileUtil.filesEquals/fileHashCode/compareFiles instead
+inspection.has.modifier.property.stortcuts.display.name:
+    text: PsiMember.hasModifierProperty() replacement with shortcut methods
+inspection.has.modifier.property.stortcuts.quickfix.name:
+    text: Replace with .{0}()
+inspection.invalid.message.format.display.name:
+    text: Invalid icu.MessageFormat text
+inspection.localize.todo.display.name:
+    text: Localize TODO inspection
+inspection.localize.todo.message:
+    text: '''''{0}'''' is not localized'
+inspection.migrated.extensions.to.display.name:
+    text: '@MigratedExtensionsTo helper'
+inspection.migrated.extensions.to.message:
+    text: Delegate method calls
+inspection.migrated.extensions.to.quickfix.name:
+    text: Delegate to new class
+inspection.no.inject.annotation.display.name:
+    text: Missing @Inject annotation for services & extensions
+inspection.no.inject.annotation.message:
+    text: Missing @Inject annotation
+inspection.no.singleton.annotation.display.name:
+    text: Missing @Singleton annotation for services
+inspection.no.singleton.annotation.message:
+    text: Missing @Singleton annotation
+inspection.place.xaction.annotation.display.name:
+    text: Invocation state(read, write, dispatch) annotation place inspection
+inspection.place.xaction.annotation.message:
+    text: Missed annotation @{0}, provided by super method
+inspection.place.xaction.annotation.message.for.overridden:
+    text: Overriden methods are not annotated by @{0}
+inspection.platform.error.display.name:
+    text: Platform method specific restriction
+inspection.platform.error.message:
+    text: Platform call restricted. Use 'consulo.platform.Platform.current()'
+inspection.plugin.requires.xml.validity.display.name:
+    text: Plugin Requires.xml Validity
+inspection.plugin.xml.validity.display.name:
+    text: Plugin.xml Validity
+inspection.stateful.ep.display.name:
+    text: Stateful Extension
+inspection.stateful.ep.message:
+    text: Don''t use {0} as a field in extension
+inspection.stateful.ep.message.dont.hold.psi.element:
+    text: 'Potential memory leak: don''''t hold PsiElement, use SmartPsiElementPointer instead {0, choice, 0#|1#; also see LocalQuickFixOnPsiElement}'
+inspection.title.capitalization.display.name:
+    text: Incorrect dialog title capitalization
+inspection.title.capitalization.message:
+    text: Dialog title ''{0}'' is not properly capitalized. It should have title capitalization
+inspection.title.capitalization.quickfix.family.name:
+    text: Properly capitalize
+inspection.title.capitalization.quickfix.name:
+    text: Properly capitalize ''{0}''
+inspection.undesirable.class.usage.display.name:
+    text: Undesirable class usage
+inspection.undesirable.class.usage.message:
+    text: Please use ''{0}'' instead
+inspection.unsafe.vfs.recursion.display.name:
+    text: Unsafe VFS recursion
+inspection.unsafe.vfs.recursion.message:
+    text: VirtualFile.getChildren() is called from a recursive method. This may cause an endless loop on cyclic symlinks. Please use VfsUtilCore.visitChildrenRecursively() instead.
+inspection.use.couple.display.name:
+    text: Use Couple<T> instead of Pair<T, T>
+inspection.use.couple.message.constructor:
+    text: Change to Couple.of
+inspection.use.couple.message.type:
+    text: Change to Couple<{0}>
+inspection.use.dpi.aware.insets.display.name:
+    text: Use DPI-aware insets
+inspection.use.dpi.aware.insets.message:
+    text: Replace with JBUI.insets(...)
+inspection.use.dpi.aware.insets.quickfix.name:
+    text: Convert to JBUI.insets(...)
+inspection.use.gray.display.name:
+    text: Using new Color(a,a,a)
+inspection.use.gray.message:
+    text: Convert to Gray._{0}
+inspection.use.gray.quickfix.family.name:
+    text: Convert to Gray
+inspection.use.j.b.color.display.name:
+    text: Use Darcula aware JBColor
+inspection.use.j.b.color.message.const:
+    text: Change to JBColor.{0}
+inspection.use.j.b.color.message.new:
+    text: Replace with JBColor
+inspection.use.j.b.color.quickfix.const.name:
+    text: Convert to JBColor.{0}
+inspection.use.j.b.color.quickfix.new.name:
+    text: Convert to JBColor
+inspection.use.primitive.types.display.name:
+    text: Use .equals with primitive types
+inspection.use.primitive.types.message:
+    text: Primitive types should be compared with .equals
+inspection.use.primitive.types.quickfix.name.eq:
+    text: Replace '==' with '.equals()'
+inspection.use.primitive.types.quickfix.name.ne:
+    text: Replace '!=' with '!equals()'
+inspection.wrong.cast.require.explicit.conversion.display.name:
+    text: Wrong cast — require explicit conversion
+inspection.wrong.cast.require.explicit.conversion.message:
+    text: Wrong cast — require explicit conversion
+inspection.wrong.inject.binding.display.name:
+    text: Wrong inject binding inside constructor
+inspection.wrong.inject.binding.message.too.high:
+    text: 'Target injecting scope too high. Current: {0}, target: {1}'
+inspection.wrong.inject.binding.message.unknown:
+    text: Unknown inject binding {0}
 inspections.annotation.0.is.required.at.owner.or.app.run:
     text: Annotation @Required{0}Action is required at owner or run code inside Application#run{0}Action(...)
 inspections.annotation.0.is.required.at.owner.or.app.run.dispath:
@@ -162,6 +274,8 @@ intention.description.not.found.inspection.message:
     text: Intention does not have a description
 intention.description.not.found.inspection.message.before.after.template:
     text: Intention must have 'before.*.template' and 'after.*.template' beside 'description.html'
+intention.export.all.packages.display.name:
+    text: Export all packages
 intention.meta.data.missed.inspection.display.name:
     text: Missing @IntentionMetaData annotation
 intention.meta.data.missed.inspection.message:
@@ -208,22 +322,12 @@ localize.editor.notification.sort.in.progress:
     text: Reordering...
 localize.editor.notification.sort.process.name:
     text: Sorting Keys
-localize.todo.inspection.display.name:
-    text: Localize TODO inspection
-localize.todo.inspection.message:
-    text: '''''{0}'''' is not localized'
 manifest.selection:
     text: Selected {0} will be included in resulting distribution
 manifest.settings:
     text: Manifest Settings
 manifest.use.user.defined:
     text: 'Use user manifest:'
-migrated.extensions.to.inspection.display.name:
-    text: '@MigratedExtensionsTo helper'
-migrated.extensions.to.inspection.message:
-    text: Delegate method calls
-migrated.extensions.to.inspection.quickfix.name:
-    text: Delegate to new class
 new.action.action.name:
     text: 'Creating new action: {0}.{1}'
 new.action.add.to.group:
@@ -300,26 +404,8 @@ new.project.component.prompt.title:
     text: New Project Component
 no.idea.sdk.version.found:
     text: Failed to detect JDK version required for IDEA Plugin SDK.
-no.inject.annotation.inspection.display.name:
-    text: Missing @Inject annotation for services & extensions
-no.inject.annotation.inspection.message:
-    text: Missing @Inject annotation
 no.java.sdk.for.idea.sdk.found:
     text: No Java SDK of appropriate version found. In addition to the IDEA Plugin SDK, you need to define a JDK with the same Java version ({0}).
-no.singleton.annotation.inspection.display.name:
-    text: Missing @Singleton annotation for services
-no.singleton.annotation.inspection.message:
-    text: Missing @Singleton annotation
-place.xaction.annotation.inspection.display.name:
-    text: Invocation state(read, write, dispatch) annotation place inspection
-place.xaction.annotation.inspection.message:
-    text: Missed annotation @{0}, provided by super method
-place.xaction.annotation.inspection.message.for.overridden:
-    text: Overriden methods are not annotated by @{0}
-platform.error.inspection.display.name:
-    text: Platform method specific restriction
-platform.error.inspection.message:
-    text: Platform call restricted. Use 'consulo.platform.Platform.current()'
 plugin.descriptor:
     text: Consulo Plugin Descriptor
 prepare.for.deployment:
@@ -334,10 +420,6 @@ program.parameters:
     text: '&Program Arguments'
 project.title:
     text: Plugin Project
-psi.member.modifier.property.stortcuts.inspection.display.name:
-    text: PsiMember.hasModifierProperty() replacement with shortcut methods
-psi.member.replace.with.shortcut.fix:
-    text: Replace with .{0}()
 run.configuration.classpath.from.module.choose:
     text: 'Use Classpath and JDK from Module:'
 run.configuration.no.consulo.sdk:
@@ -376,12 +458,6 @@ select.target.location.of.description:
     text: Select target location of {0}
 show.idea.log:
     text: '&Show consulo.log'
-stateful.ep.inspection.display.name:
-    text: Stateful Extension
-stateful.ep.inspection.message:
-    text: Don''t use {0} as a field in extension
-stateful.ep.inspection.message.dont.hold.psi.element:
-    text: 'Potential memory leak: don''''t hold PsiElement, use SmartPsiElementPointer instead {0, choice, 0#|1#; also see LocalQuickFixOnPsiElement}'
 success.deployment.message:
     text: Plugin Module ''{0}'' Successfully Prepared For Deployment
 success.deployment.message.all:
@@ -390,57 +466,5 @@ suggest.to.delete:
     text: Do you want to delete ''{0}''?
 test.run.configuration.title:
     text: Consulo In Sandbox (Test)
-title.capitalization.inspection.inspection.display.name:
-    text: Incorrect dialog title capitalization
-title.capitalization.inspection.inspection.message:
-    text: Dialog title ''{0}'' is not properly capitalized. It should have title capitalization
-title.capitalization.inspection.inspection.quickfix.family.name:
-    text: Properly capitalize
-title.capitalization.inspection.inspection.quickfix.name:
-    text: Properly capitalize ''{0}''
-undesirable.class.usage.inspection.display.name:
-    text: Undesirable class usage
-undesirable.class.usage.inspection.message:
-    text: Please use ''{0}'' instead
-unsafe.vfs.recursion.inspection.display.name:
-    text: Unsafe VFS recursion
-unsafe.vfs.recursion.inspection.message:
-    text: VirtualFile.getChildren() is called from a recursive method. This may cause an endless loop on cyclic symlinks. Please use VfsUtilCore.visitChildrenRecursively() instead.
-use.couple.inspection.display.name:
-    text: Use Couple<T> instead of Pair<T, T>
-use.couple.inspection.message.constructor:
-    text: Change to Couple.of
-use.couple.inspection.message.type:
-    text: Change to Couple<{0}>
-use.dpi.aware.insets.inspection.display.name:
-    text: Use DPI-aware insets
-use.dpi.aware.insets.inspection.message:
-    text: Replace with JBUI.insets(...)
-use.gray.inspection.display.name:
-    text: Using new Color(a,a,a)
-use.gray.inspection.message:
-    text: Convert to Gray._{0}
-use.gray.inspection.quickfix.family.name:
-    text: Convert to Gray
-use.jbcolor.inspection.display.name:
-    text: Use Darcula aware JBColor
-use.jbcolor.inspection.message:
-    text: Replace with JBColor
-use.jbcolor.inspection.message.change:
-    text: Change to JBColor.{0}
-use.primitive.types.inspection.display.name:
-    text: Use .equals with primitive types
-use.primitive.types.inspection.message:
-    text: Primitive types should be compared with .equals
 vm.parameters:
     text: '&VM Options'
-wrong.cast.require.explicit.conversion.inspection.display.name:
-    text: Wrong cast — require explicit conversion
-wrong.cast.require.explicit.conversion.inspection.message:
-    text: Wrong cast — require explicit conversion
-wrong.inject.binding.inspection.display.name:
-    text: Wrong inject binding inside constructor
-wrong.inject.binding.inspection.message.too.high:
-    text: 'Target injecting scope too high. Current: {0}, target: {1}'
-wrong.inject.binding.inspection.message.unknown:
-    text: Unknown inject binding {0}

@@ -37,7 +37,7 @@ public class UseGrayInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.useGrayInspectionDisplayName();
+        return DevKitLocalize.inspectionUseGrayDisplayName();
     }
 
     @Nonnull
@@ -58,14 +58,14 @@ public class UseGrayInspection extends InternalInspection {
     }
 
     private static void checkNewExpression(ProblemsHolder holder, PsiNewExpression expression, boolean isOnTheFly) {
-        final Project project = holder.getProject();
-        final JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
-        final PsiClass grayClass = facade.findClass(Gray.class.getName(), GlobalSearchScope.allScope(project));
-        final PsiType type = expression.getType();
+        Project project = holder.getProject();
+        JavaPsiFacade facade = JavaPsiFacade.getInstance(project);
+        PsiClass grayClass = facade.findClass(Gray.class.getName(), GlobalSearchScope.allScope(project));
+        PsiType type = expression.getType();
         if (type != null && grayClass != null) {
-            final PsiExpressionList arguments = expression.getArgumentList();
+            PsiExpressionList arguments = expression.getArgumentList();
             if (arguments != null) {
-                final PsiExpression[] expressions = arguments.getExpressions();
+                PsiExpression[] expressions = arguments.getExpressions();
                 if (expressions.length == 3 && "java.awt.Color".equals(type.getCanonicalText())) {
                     if (PsiResolveHelper.getInstance(project).isAccessible(grayClass, expression, grayClass)
                         && expressions[0] instanceof PsiLiteralExpression r
@@ -81,7 +81,7 @@ public class UseGrayInspection extends InternalInspection {
                                 int gg = Integer.parseInt(green.toString());
                                 int bb = Integer.parseInt(blue.toString());
                                 if (rr == gg && gg == bb && 0 <= rr && rr < 256) {
-                                    holder.newProblem(DevKitLocalize.useGrayInspectionMessage(rr))
+                                    holder.newProblem(DevKitLocalize.inspectionUseGrayMessage(rr))
                                         .range(expression)
                                         .onTheFly(isOnTheFly)
                                         .withFix(new ConvertToGrayQuickFix(rr))
@@ -102,7 +102,7 @@ public class UseGrayInspection extends InternalInspection {
                         try {
                             int num = Integer.parseInt(literalValue.toString());
                             if (0 <= num && num < 256) {
-                                holder.newProblem(DevKitLocalize.useGrayInspectionMessage(num))
+                                holder.newProblem(DevKitLocalize.inspectionUseGrayMessage(num))
                                     .range(expression)
                                     .onTheFly(isOnTheFly)
                                     .withFix(new ConvertToGrayQuickFix(num))

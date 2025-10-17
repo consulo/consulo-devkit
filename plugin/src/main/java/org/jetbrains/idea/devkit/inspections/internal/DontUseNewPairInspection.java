@@ -38,7 +38,7 @@ public class DontUseNewPairInspection extends InternalInspection {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.dontUseNewPairInspectionDisplayName();
+        return DevKitLocalize.inspectionDontUseNewPairDisplayName();
     }
 
     @Override
@@ -46,19 +46,18 @@ public class DontUseNewPairInspection extends InternalInspection {
         return new JavaElementVisitor() {
             @Override
             public void visitNewExpression(@Nonnull PsiNewExpression expression) {
-                final PsiType type = expression.getType();
-                final PsiExpressionList params = expression.getArgumentList();
+                PsiType type = expression.getType();
+                PsiExpressionList params = expression.getArgumentList();
                 if (type instanceof PsiClassType classType
                     && classType.rawType().equalsToText(PAIR_FQN)
                     && params != null
                     && expression.getArgumentList() != null
                 ) {
-                    final PsiType[] types = ((PsiClassType)type).getParameters();
+                    PsiType[] types = classType.getParameters();
                     if (Arrays.equals(types, params.getExpressionTypes())) {
-                        holder.newProblem(DevKitLocalize.dontUseNewPairInspectionMessage())
+                        holder.newProblem(DevKitLocalize.inspectionDontUseNewPairMessage())
                             .range(expression)
                             .withFix(new ChangeToPairCreateQuickFix())
-                            .highlightType(ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
                             .create();
                     }
                 }

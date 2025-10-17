@@ -63,7 +63,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
     @Nonnull
     @Override
     public LocalizeValue getDisplayName() {
-        return DevKitLocalize.titleCapitalizationInspectionInspectionDisplayName();
+        return DevKitLocalize.inspectionTitleCapitalizationDisplayName();
     }
 
     @Nonnull
@@ -121,7 +121,7 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
                         if ("title".equals(parameter.getName()) && i < args.length) {
                             String titleValue = getTitleValue(args[i]);
                             if (!hasTitleCapitalization(titleValue)) {
-                                holder.newProblem(DevKitLocalize.titleCapitalizationInspectionInspectionMessage(titleValue))
+                                holder.newProblem(DevKitLocalize.inspectionTitleCapitalizationMessage(titleValue))
                                     .range(args[i])
                                     .withFix(new TitleCapitalizationFix(titleValue))
                                     .create();
@@ -209,13 +209,13 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
         @Nonnull
         @Override
         public LocalizeValue getName() {
-            return DevKitLocalize.titleCapitalizationInspectionInspectionQuickfixName(myTitleValue);
+            return DevKitLocalize.inspectionTitleCapitalizationQuickfixName(myTitleValue);
         }
 
         @Override
         @RequiredWriteAction
         public final void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-            final PsiElement problemElement = descriptor.getPsiElement();
+            PsiElement problemElement = descriptor.getPsiElement();
             if (problemElement == null || !problemElement.isValid()) {
                 return;
             }
@@ -236,27 +236,27 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
         protected void doFix(Project project, PsiElement element) throws IncorrectOperationException {
             if (element instanceof PsiLiteralExpression literalExpression) {
                 if (literalExpression.getValue() instanceof String strValue) {
-                    final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
-                    final PsiExpression newExpression =
+                    PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
+                    PsiExpression newExpression =
                         factory.createExpressionFromText('"' + StringUtil.wordsToBeginFromUpperCase(strValue) + '"', element);
                     literalExpression.replace(newExpression);
                 }
             }
             else if (element instanceof PsiMethodCallExpression methodCallExpression) {
-                final PsiMethod method = methodCallExpression.resolveMethod();
-                final PsiExpression returnValue = PropertyUtil.getGetterReturnExpression(method);
+                PsiMethod method = methodCallExpression.resolveMethod();
+                PsiExpression returnValue = PropertyUtil.getGetterReturnExpression(method);
                 if (returnValue != null) {
                     doFix(project, returnValue);
                 }
-                final Property property = getPropertyArgument(methodCallExpression);
+                Property property = getPropertyArgument(methodCallExpression);
                 if (property == null) {
                     return;
                 }
-                final String value = property.getUnescapedValue();
+                String value = property.getUnescapedValue();
                 if (value == null) {
                     return;
                 }
-                final String capitalizedString = StringUtil.wordsToBeginFromUpperCase(value);
+                String capitalizedString = StringUtil.wordsToBeginFromUpperCase(value);
                 property.setValue(capitalizedString);
             }
             else if (element instanceof PsiReferenceExpression referenceExpression
@@ -267,23 +267,18 @@ public class TitleCapitalizationInspection extends BaseJavaLocalInspectionTool {
         }
 
         protected static boolean isQuickFixOnReadOnlyFile(PsiElement problemElement) {
-            final PsiFile containingPsiFile = problemElement.getContainingFile();
+            PsiFile containingPsiFile = problemElement.getContainingFile();
             if (containingPsiFile == null) {
                 return false;
             }
-            final VirtualFile virtualFile = containingPsiFile.getVirtualFile();
+            VirtualFile virtualFile = containingPsiFile.getVirtualFile();
             if (virtualFile == null) {
                 return false;
             }
-            final Project project = problemElement.getProject();
-            final ReadonlyStatusHandler handler = ReadonlyStatusHandler.getInstance(project);
-            final ReadonlyStatusHandler.OperationStatus status = handler.ensureFilesWritable(virtualFile);
+            Project project = problemElement.getProject();
+            ReadonlyStatusHandler handler = ReadonlyStatusHandler.getInstance(project);
+            ReadonlyStatusHandler.OperationStatus status = handler.ensureFilesWritable(virtualFile);
             return status.hasReadonlyFiles();
-        }
-
-        @Nonnull
-        public LocalizeValue getFamilyName() {
-            return DevKitLocalize.titleCapitalizationInspectionInspectionQuickfixFamilyName();
         }
     }
 }

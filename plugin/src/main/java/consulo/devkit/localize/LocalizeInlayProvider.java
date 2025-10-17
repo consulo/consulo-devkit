@@ -73,9 +73,7 @@ public class LocalizeInlayProvider implements DeclarativeInlayHintsProvider {
                     sink.addPresentation(
                         new DeclarativeInlayPosition.EndOfLinePosition(lineNumber),
                         FORMAT,
-                        builder -> {
-                            builder.text(otherTextVariant);
-                        }
+                        builder -> builder.text(otherTextVariant)
                     );
                 }
             }

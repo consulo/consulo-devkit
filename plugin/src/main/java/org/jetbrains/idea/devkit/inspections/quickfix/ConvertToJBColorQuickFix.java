@@ -19,13 +19,13 @@ import com.intellij.java.language.psi.JavaPsiFacade;
 import com.intellij.java.language.psi.PsiElementFactory;
 import com.intellij.java.language.psi.PsiExpression;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
-import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.codeEditor.Editor;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.language.editor.inspection.LocalQuickFixBase;
 import consulo.language.editor.inspection.ProblemDescriptor;
 import consulo.language.editor.util.PsiUtilBase;
 import consulo.language.psi.PsiElement;
-import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.JBColor;
 import jakarta.annotation.Nonnull;
@@ -35,20 +35,20 @@ import jakarta.annotation.Nonnull;
  */
 public class ConvertToJBColorQuickFix extends LocalQuickFixBase {
     public ConvertToJBColorQuickFix() {
-        super(LocalizeValue.localizeTODO("Convert to JBColor"));
+        super(DevKitLocalize.inspectionUseJBColorQuickfixNewName());
     }
 
     @Override
-    @RequiredReadAction
+    @RequiredWriteAction
     public void applyFix(@Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-        final PsiElement element = descriptor.getPsiElement();
-        final PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
-        final String newJBColor = String.format("new %s(%s, new java.awt.Color())", JBColor.class.getName(), element.getText());
-        final PsiExpression expression = factory.createExpressionFromText(newJBColor, element.getContext());
-        final PsiElement newElement = element.replace(expression);
-        final PsiElement el = JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
-        final int offset = el.getTextOffset() + el.getText().length() - 2;
-        final Editor editor = PsiUtilBase.findEditor(el);
+        PsiElement element = descriptor.getPsiElement();
+        PsiElementFactory factory = JavaPsiFacade.getInstance(project).getElementFactory();
+        String newJBColor = String.format("new %s(%s, new java.awt.Color())", JBColor.class.getName(), element.getText());
+        PsiExpression expression = factory.createExpressionFromText(newJBColor, element.getContext());
+        PsiElement newElement = element.replace(expression);
+        PsiElement el = JavaCodeStyleManager.getInstance(project).shortenClassReferences(newElement);
+        int offset = el.getTextOffset() + el.getText().length() - 2;
+        Editor editor = PsiUtilBase.findEditor(el);
         if (editor != null) {
             editor.getCaretModel().moveToOffset(offset);
         }
