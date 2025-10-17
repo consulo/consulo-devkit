@@ -31,7 +31,6 @@ import consulo.language.psi.PsiReference;
 import consulo.localize.LocalizeValue;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.JBIterable;
-import consulo.util.lang.function.Condition;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.intellij.grammar.KnownAttribute;
@@ -43,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static consulo.util.lang.function.Condition.NOT_NULL;
 import static org.intellij.grammar.KnownAttribute.RECOVER_WHILE;
@@ -110,7 +110,7 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
         }
 
         //noinspection LimitedScopeInnerClass,EmptyClass
-        abstract class Cond<T> extends JBIterable.Stateful<Cond> implements Condition<T> {
+        abstract class Cond<T> extends JBIterable.Stateful<Cond> implements Predicate<T> {
         }
 
         Set<BnfRule> inExpr = new HashSet<>();
@@ -126,11 +126,11 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
         for (int size = 0, prev = -1; size != prev; prev = size, size = inParsing.size()) {
             bnfTraverserNoAttrs(myFile).expand(new Cond<>() {
                 @Override
-                public boolean value(PsiElement element) {
+                public boolean test(PsiElement element) {
                     if (element instanceof BnfRule rule) {
                         // add recovery rules to calculation
                         BnfAttr recoverAttr = findAttribute(myFile.getVersion(), rule, KnownAttribute.RECOVER_WHILE);
-                        value(recoverAttr == null ? null : recoverAttr.getExpression());
+                        test(recoverAttr == null ? null : recoverAttr.getExpression());
                         return inParsing.contains(rule) || inSuppressed.contains(rule);
                     }
                     else if (element instanceof BnfReferenceOrToken referenceOrToken) {
@@ -150,7 +150,7 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
         }
 
         for (BnfRule r : rules.skip(1).filter(o -> !inSuppressed.contains(o))) {
-            LocalizeValue message = null;
+            LocalizeValue message = LocalizeValue.empty();
             if (ParserGeneratorUtil.Rule.isFake(r)) {
                 if (inExpr.contains(r)) {
                     message = BnfLocalize.unusedRuleInspectionMessageReachableFakeRule();
@@ -170,7 +170,7 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
             else if (!inParsing.contains(r)) {
                 message = BnfLocalize.unusedRuleInspectionMessageUnreachableRule();
             }
-            if (message != null) {
+            if (message != LocalizeValue.empty()) {
                 holder.newProblem(message)
                     .range(r.getId())
                     .create();
