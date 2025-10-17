@@ -36,7 +36,7 @@ import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
  */
 @ExtensionImpl
 public class AWTErrorInspection extends InternalInspection {
-    private static final String[] OUR_ERROR_PACKAGES = {
+    private static final String[] ERROR_PACKAGES = {
         "java.awt",
         "javax.swing"
     };
@@ -76,7 +76,7 @@ public class AWTErrorInspection extends InternalInspection {
                     if (qualifiedName == null) {
                         return;
                     }
-                    for (String errorPackage : OUR_ERROR_PACKAGES) {
+                    for (String errorPackage : ERROR_PACKAGES) {
                         if (StringUtil.startsWith(qualifiedName, errorPackage)) {
                             holder.newProblem(DevKitLocalize.inspectionAwtErrorMessage())
                                 .range(owner)

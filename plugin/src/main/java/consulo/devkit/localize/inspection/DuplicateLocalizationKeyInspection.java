@@ -33,14 +33,14 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 @ExtensionImpl
 public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
-    private static final PsiElementPattern.Capture<PsiElement> OUR_SCALAR_PATTERN = StandardPatterns.psiElement()
+    private static final PsiElementPattern.Capture<PsiElement> SCALAR_PATTERN = StandardPatterns.psiElement()
         .withElementType(YAMLTokenTypes.SCALAR_KEY)
         .withParent(YAMLKeyValue.class)
         .withSuperParent(2, YAMLMapping.class)
         .withSuperParent(3, YAMLDocument.class)
         .withSuperParent(4, YAMLFile.class);
 
-    private static final Key<Set<String>> ourAlreadyDefinedKeys = Key.create("DuplicateLocalizationKeyInspection.ourAlreadyDefinedKeys");
+    private static final Key<Set<String>> ALREADY_DEFINED_KEYS = Key.create("DuplicateLocalizationKeyInspection.ourAlreadyDefinedKeys");
 
     @Nonnull
     @Override
@@ -92,13 +92,13 @@ public class DuplicateLocalizationKeyInspection extends LocalInspectionTool {
         return new PsiElementVisitor() {
             @Override
             public void visitElement(PsiElement element) {
-                if (!OUR_SCALAR_PATTERN.accepts(element)) {
+                if (!SCALAR_PATTERN.accepts(element)) {
                     return;
                 }
 
-                Set<String> data = session.getUserData(ourAlreadyDefinedKeys);
+                Set<String> data = session.getUserData(ALREADY_DEFINED_KEYS);
                 if (data == null) {
-                    session.putUserDataIfAbsent(ourAlreadyDefinedKeys, data = new CopyOnWriteArraySet<>());
+                    session.putUserDataIfAbsent(ALREADY_DEFINED_KEYS, data = new CopyOnWriteArraySet<>());
                 }
 
                 YAMLKeyValue keyValue = (YAMLKeyValue) element.getParent();

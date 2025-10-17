@@ -38,7 +38,7 @@ public class AnonymousClassStateResolver extends StateResolver {
     public static final StateResolver INSTANCE = new AnonymousClassStateResolver();
 
     @SuppressWarnings("deprecation")
-    private static final Map<String, Class[]> OUR_INTERFACES = Map.of(
+    private static final Map<String, Class[]> INTERFACES = Map.of(
         "compute",
         new Class[]{
             Computable.class,
@@ -72,7 +72,7 @@ public class AnonymousClassStateResolver extends StateResolver {
         }
 
         if (callMethod.getParameterList().getParametersCount() == 0) {
-            Class[] qualifiedNames = OUR_INTERFACES.get(callMethod.getName());
+            Class[] qualifiedNames = INTERFACES.get(callMethod.getName());
             if (qualifiedNames == null) {
                 return false;
             }
