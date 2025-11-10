@@ -15,6 +15,7 @@
  */
 package org.intellij.grammar.impl.editor;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.application.dumb.DumbAware;
 import consulo.language.editor.annotation.Annotator;
 import consulo.colorScheme.TextAttributes;
@@ -47,6 +48,7 @@ import java.util.StringTokenizer;
  */
 public class BnfAnnotator implements Annotator, DumbAware {
     @Override
+    @RequiredReadAction
     public void annotate(@Nonnull PsiElement psiElement, @Nonnull AnnotationHolder annotationHolder) {
         PsiElement parent = psiElement.getParent();
         if (parent instanceof BnfRule rule && rule.getId() == psiElement) {
@@ -128,7 +130,7 @@ public class BnfAnnotator implements Annotator, DumbAware {
                 }
             }
             else if (parent instanceof BnfAttr || parent instanceof BnfListEntry) {
-                final String attrName = ObjectUtil.assertNotNull(PsiTreeUtil.getParentOfType(psiElement, BnfAttr.class)).getName();
+                String attrName = ObjectUtil.assertNotNull(PsiTreeUtil.getParentOfType(psiElement, BnfAttr.class)).getName();
                 KnownAttribute attribute = KnownAttribute.getCompatibleAttribute(attrName);
                 if (attribute != null) {
                     String value = (String)ParserGeneratorUtil.getAttributeValue((BnfExpression)psiElement);
@@ -189,6 +191,7 @@ public class BnfAnnotator implements Annotator, DumbAware {
         }
     }
 
+    @RequiredReadAction
     private static void addRuleHighlighting(BnfRule rule, PsiElement psiElement, AnnotationHolder annotationHolder) {
         if (ParserGeneratorUtil.Rule.isMeta(rule)) {
             annotationHolder.createInfoAnnotation(psiElement, null).setTextAttributes(BnfSyntaxHighlighter.META_RULE);
