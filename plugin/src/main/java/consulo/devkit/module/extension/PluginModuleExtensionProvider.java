@@ -1,6 +1,7 @@
 package consulo.devkit.module.extension;
 
 import consulo.annotation.component.ExtensionImpl;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.localize.LocalizeValue;
 import consulo.module.content.layer.ModuleExtensionProvider;
 import consulo.module.content.layer.ModuleRootLayer;
@@ -33,7 +34,7 @@ public class PluginModuleExtensionProvider implements ModuleExtensionProvider<Pl
     @Nonnull
     @Override
     public LocalizeValue getName() {
-        return LocalizeValue.localizeTODO("Consulo Plugin");
+        return DevKitLocalize.pluginModuleExtensionProviderName();
     }
 
     @Nonnull
