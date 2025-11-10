@@ -3,6 +3,7 @@ package consulo.devkit.localize;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.application.ReadAction;
 import consulo.codeEditor.Editor;
+import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.localize.folding.LocalizeFoldingBuilder;
 import consulo.document.Document;
 import consulo.language.Language;
@@ -95,20 +96,19 @@ public class LocalizeInlayProvider implements DeclarativeInlayHintsProvider {
     @Nonnull
     @Override
     public LocalizeValue getName() {
-        return LocalizeValue.localizeTODO("English Localization");
+        return DevKitLocalize.localizeInlayProviderName();
     }
 
     @Nonnull
     @Override
     public LocalizeValue getDescription() {
-        return LocalizeValue.localizeTODO("Showing English Localization in non-english localization");
+        return DevKitLocalize.localizeInlayProviderDescription();
     }
 
     @Nonnull
     @Override
     public LocalizeValue getPreviewFileText() {
-        return LocalizeValue.localizeTODO("whatsnew.platform.text:\n" +
-            "    text: Platform");
+        return DevKitLocalize.localizeInlayProviderPreviewFileText();
     }
 
     @Nonnull

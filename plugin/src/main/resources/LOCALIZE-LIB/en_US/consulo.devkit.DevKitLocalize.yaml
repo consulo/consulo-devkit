@@ -209,7 +209,7 @@ inspections.annotation.0.is.required.at.owner.or.app.run:
 inspections.annotation.0.is.required.at.owner.or.app.run.dispath:
     text: Annotation @RequiredRequiredDispatchThread is required at owner or run code inside UIUtil.invokeLaterIfNeeded(...)
 inspections.annotation.0.is.required.at.owner.or.app.run.ui:
-    text: Annotation @RequiredUIAcess is required at owner or run code inside UIAccess.give(...)
+    text: Annotation @RequiredUIAccess is required at owner or run code inside UIAccess.give(...)
 inspections.component.not.registered.message:
     text: '{0} is not registered in plugin.xml'
 inspections.component.not.registered.name:
@@ -322,6 +322,14 @@ localize.editor.notification.sort.in.progress:
     text: Reordering...
 localize.editor.notification.sort.process.name:
     text: Sorting Keys
+localize.inlay.provider.description:
+    text: Showing English Localization in non-english localization
+localize.inlay.provider.name:
+    text: English Localization
+localize.inlay.provider.preview.file.text:
+    text: |-
+        whatsnew.platform.text:
+            text: Platform
 manifest.selection:
     text: Selected {0} will be included in resulting distribution
 manifest.settings:
@@ -468,3 +476,5 @@ test.run.configuration.title:
     text: Consulo In Sandbox (Test)
 vm.parameters:
     text: '&VM Options'
+plugin.module.extension.provider.name:
+    text: Consulo Plugin
