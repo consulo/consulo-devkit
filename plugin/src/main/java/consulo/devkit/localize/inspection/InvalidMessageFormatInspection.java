@@ -89,7 +89,7 @@ public class InvalidMessageFormatInspection extends LocalInspectionTool {
                         new MessageFormat(keyValue.getValueText(), locale);
                     }
                     catch (Exception e) {
-                        holder.newProblem(LocalizeValue.of(e.getMessage()))
+                        holder.newProblem(LocalizeValue.ofNullable(e.getMessage()))
                             .range(keyValue.getValue())
                             .create();
                     }
