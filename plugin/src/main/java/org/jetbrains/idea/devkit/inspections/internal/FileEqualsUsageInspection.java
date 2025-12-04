@@ -38,8 +38,8 @@ public class FileEqualsUsageInspection extends InternalInspection {
         return DevKitLocalize.inspectionFileEqualsUsageDisplayName();
     }
 
-    @Override
     @Nonnull
+    @Override
     public PsiElementVisitor buildInternalVisitor(@Nonnull final ProblemsHolder holder, boolean isOnTheFly) {
         return new JavaElementVisitor() {
             @Override
@@ -53,7 +53,7 @@ public class FileEqualsUsageInspection extends InternalInspection {
 
                     if (CommonClassNames.JAVA_IO_FILE.equals(clazz.getQualifiedName()) && FILE_METHOD_NAMES.contains(method.getName())) {
                         holder.newProblem(DevKitLocalize.inspectionFileEqualsUsageMessage())
-                            .range((PsiReference) method)
+                            .rangeByRef((PsiReference) method)
                             .highlightType(ProblemHighlightType.LIKE_DEPRECATED)
                             .create();
                     }
