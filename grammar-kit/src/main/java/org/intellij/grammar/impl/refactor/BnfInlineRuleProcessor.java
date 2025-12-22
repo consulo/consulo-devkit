@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.refactor;
 
 import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.language.editor.refactoring.BaseRefactoringProcessor;
 import consulo.language.editor.refactoring.util.CommonRefactoringUtil;
 import consulo.language.psi.PsiElement;
@@ -25,6 +25,7 @@ import consulo.language.psi.PsiReference;
 import consulo.language.psi.search.ReferencesSearch;
 import consulo.language.psi.util.PsiTreeUtil;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.usage.UsageInfo;
@@ -33,22 +34,19 @@ import consulo.util.collection.ContainerUtil;
 import consulo.util.collection.primitive.objects.ObjectIntMap;
 import consulo.util.collection.primitive.objects.ObjectMaps;
 import consulo.util.lang.Couple;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.generator.ParserGeneratorUtil;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.BnfElementFactory;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 
-import jakarta.annotation.Nonnull;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * Date: 8/11/11
- * Time: 4:19 PM
- *
  * @author Vadim Romansky
+ * @since 2011-08-11
  */
 public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
     private static final Logger LOG = Logger.getInstance(BnfInlineRuleProcessor.class);
@@ -64,16 +62,19 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
     }
 
     @Nonnull
+    @Override
     protected UsageViewDescriptor createUsageViewDescriptor(@Nonnull UsageInfo[] usages) {
         return new BnfInlineViewDescriptor(myRule);
     }
 
     @Nonnull
-    protected String getCommandName() {
-        return "Inline rule '" + myRule.getName() + "'";
+    @Override
+    protected LocalizeValue getCommandName() {
+        return LocalizeValue.localizeTODO("Inline rule '" + myRule.getName() + "'");
     }
 
     @Nonnull
+    @Override
     @RequiredReadAction
     protected UsageInfo[] findUsages() {
         if (myInlineThisOnly) {
@@ -91,12 +92,14 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
         return result.toArray(new UsageInfo[result.size()]);
     }
 
+    @Override
     protected void refreshElements(PsiElement[] elements) {
         LOG.assertTrue(elements.length == 1 && elements[0] instanceof BnfRule);
-        myRule = (BnfRule)elements[0];
+        myRule = (BnfRule) elements[0];
     }
 
-    @RequiredReadAction
+    @Override
+    @RequiredWriteAction
     protected void performRefactoring(@Nonnull UsageInfo[] usages) {
         BnfExpression expression = myRule.getExpression();
         boolean meta = ParserGeneratorUtil.Rule.isMeta(myRule);
@@ -104,7 +107,7 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
         CommonRefactoringUtil.sortDepthFirstRightLeftOrder(usages);
         for (UsageInfo info : usages) {
             try {
-                final BnfExpression element = (BnfExpression)info.getElement();
+                BnfExpression element = (BnfExpression) info.getElement();
                 boolean metaRuleRef = GrammarUtil.isExternalReference(element);
                 if (meta && metaRuleRef) {
                     inlineMetaRuleUsage(element, expression);
@@ -128,22 +131,22 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
         }
     }
 
-    @RequiredReadAction
+    @RequiredWriteAction
     private static void inlineExpressionUsage(BnfExpression place, BnfExpression ruleExpr) throws IncorrectOperationException {
         BnfExpression replacement = BnfElementFactory.createExpressionFromText(ruleExpr.getProject(), '(' + ruleExpr.getText() + ')');
         BnfExpressionOptimizer.optimize(place.replace(replacement));
     }
 
-    @RequiredReadAction
+    @RequiredWriteAction
     private static void inlineMetaRuleUsage(BnfExpression place, BnfExpression expression) {
         BnfRule rule = PsiTreeUtil.getParentOfType(place, BnfRule.class);
         PsiElement parent = place.getParent();
         final List<BnfExpression> expressionList;
-        if (parent instanceof BnfExternalExpression) {
-            expressionList = ((BnfExternalExpression)parent).getExpressionList();
+        if (parent instanceof BnfExternalExpression externalExpr) {
+            expressionList = externalExpr.getExpressionList();
         }
-        else if (parent instanceof BnfSequence) {
-            expressionList = ((BnfSequence)parent).getExpressionList();
+        else if (parent instanceof BnfSequence sequence) {
+            expressionList = sequence.getExpressionList();
         }
         else if (parent instanceof BnfRule) {
             expressionList = Collections.emptyList();
@@ -154,11 +157,11 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
         }
         final ObjectIntMap<String> visited = ObjectMaps.newObjectIntHashMap();
         final LinkedList<Couple<PsiElement>> work = new LinkedList<>();
-        (expression = (BnfExpression)expression.copy()).acceptChildren(new PsiRecursiveElementWalkingVisitor() {
+        (expression = (BnfExpression) expression.copy()).acceptChildren(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(PsiElement element) {
-                if (element instanceof BnfExternalExpression) {
-                    List<BnfExpression> list = ((BnfExternalExpression)element).getExpressionList();
+                if (element instanceof BnfExternalExpression externalExpr) {
+                    List<BnfExpression> list = externalExpr.getExpressionList();
                     if (list.size() == 1) {
                         String text = list.get(0).getText();
                         int idx = visited.getInt(text);
@@ -178,7 +181,7 @@ public class BnfInlineRuleProcessor extends BaseRefactoringProcessor {
         for (Couple<PsiElement> pair : work) {
             BnfExpressionOptimizer.optimize(pair.first.replace(pair.second));
         }
-        inlineExpressionUsage((BnfExpression)parent, expression);
+        inlineExpressionUsage((BnfExpression) parent, expression);
         if (!(parent instanceof BnfExternalExpression)) {
             for (BnfModifier modifier : rule.getModifierList()) {
                 if (modifier.getText().equals("external")) {
