@@ -50,7 +50,7 @@ public class IdeaPluginConverter {
             public Result<Collection<IdeaPlugin>> compute() {
                 GlobalSearchScope scope =
                     GlobalSearchScopesCore.projectProductionScope(project).union(ProjectScopes.getLibrariesScope(project));
-                return Result.create(getPlugins(project, scope), PsiModificationTracker.OUT_OF_CODE_BLOCK_MODIFICATION_COUNT);
+                return Result.create(getPlugins(project, scope), PsiModificationTracker.MODIFICATION_COUNT);
             }
         });
     }
