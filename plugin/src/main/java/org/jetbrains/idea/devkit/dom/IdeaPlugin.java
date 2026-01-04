@@ -52,9 +52,6 @@ public interface IdeaPlugin extends DomElement {
   GenericAttributeValue<String> getUrl();
 
   @Nonnull
-  GenericDomValue<String> getCategory();
-
-  @Nonnull
   GenericDomValue<String> getName();
 
   @Nonnull
