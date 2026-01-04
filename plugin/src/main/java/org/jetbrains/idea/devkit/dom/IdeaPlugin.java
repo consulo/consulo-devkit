@@ -21,73 +21,78 @@ package org.jetbrains.idea.devkit.dom;
 
 import consulo.devkit.dom.Permissions;
 import consulo.devkit.dom.Tags;
+import consulo.devkit.dom.Vendors;
 import consulo.util.lang.StringUtil;
 import consulo.xml.util.xml.*;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+
 import java.util.List;
 
 @DefinesXml
 public interface IdeaPlugin extends DomElement {
-  @Required
-  @Nonnull
-  default String getPluginId() {
-    return StringUtil.notNullize(getId().getValue());
-  }
+    @Required
+    @Nonnull
+    default String getPluginId() {
+        return StringUtil.notNullize(getId().getValue());
+    }
 
-  @Nonnull
-  @NameValue
-  @Required
-  GenericDomValue<String> getId();
+    @Nonnull
+    @NameValue
+    @Required
+    GenericDomValue<String> getId();
 
-  @Nonnull
-  GenericDomValue<String> getVersion();
+    @Nonnull
+    GenericDomValue<String> getVersion();
 
-  @Nonnull
-  @SubTag("platformVersion")
-  GenericDomValue<String> getPlatformVersion();
+    @Nonnull
+    @SubTag("platformVersion")
+    GenericDomValue<String> getPlatformVersion();
 
-  @Nonnull
-  GenericAttributeValue<String> getUrl();
+    @Nonnull
+    GenericAttributeValue<String> getUrl();
 
-  @Nonnull
-  GenericDomValue<String> getName();
+    @Nonnull
+    GenericDomValue<String> getName();
 
-  @Nonnull
-  List<GenericDomValue<String>> getDescriptions();
+    @Nonnull
+    List<GenericDomValue<String>> getDescriptions();
 
-  GenericDomValue<String> addDescription();
+    GenericDomValue<String> addDescription();
 
-  @Nonnull
-  List<Vendor> getVendors();
+    @Nonnull
+    @SubTagList("vendor")
+    List<Vendor> getVendorsOld();
 
-  Vendor addVendor();
+    Vendor addVendor();
 
-  @Nonnull
-  @SubTagList("resource-bundle")
-  @Deprecated
-  List<GenericDomValue<String>> getResourceBundles();
+    @Nonnull
+    @SubTagList("resource-bundle")
+    @Deprecated
+    List<GenericDomValue<String>> getResourceBundles();
 
-  @Nonnull
-  GenericDomValue<String> getLocalize();
+    @Nonnull
+    GenericDomValue<String> getLocalize();
 
-  GenericDomValue<String> addResourceBundle();
+    GenericDomValue<String> addResourceBundle();
 
-  @Nonnull
-  @SubTagList("depends")
-  List<Dependency> getDependencies();
+    @Nonnull
+    @SubTagList("depends")
+    List<Dependency> getDependencies();
 
-  @SubTagList("depends")
-  Dependency addDependency();
+    @SubTagList("depends")
+    Dependency addDependency();
 
-  @Nonnull
-  GenericDomValue<Boolean> getExperimental();
+    @Nonnull
+    GenericDomValue<Boolean> getExperimental();
 
-  @Nullable
-  Permissions getPermissions();
+    @Nullable
+    Permissions getPermissions();
 
-  @Nullable
-  @Required
-  Tags getTags();
+    @Nullable
+    @Required
+    Tags getTags();
+
+    @Nonnull
+    Vendors getVendors();
 }
