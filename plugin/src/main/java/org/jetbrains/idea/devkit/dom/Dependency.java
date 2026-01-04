@@ -32,7 +32,4 @@ import jakarta.annotation.Nonnull;
 public interface Dependency extends GenericDomValue<PluginDescriptor> {
     @Nonnull
     GenericAttributeValue<Boolean> getOptional();
-
-    @Nonnull
-    GenericAttributeValue<String> getConfigFile();
 }
