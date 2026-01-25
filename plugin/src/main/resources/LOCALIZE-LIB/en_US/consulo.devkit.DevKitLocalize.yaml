@@ -86,10 +86,6 @@ inspection.dont.use.new.pair.message:
     text: Replace with Pair.create()
 inspection.dont.use.new.pair.quickfix.name:
     text: Change to Pair.create(..., ...)
-inspection.duplicate.localization.key.display.name:
-    text: Duplicate localization
-inspection.duplicate.localization.key.message:
-    text: Duplicate key
 inspection.extension.impl.is.not.annotated.display.name:
     text: Extension implementation is not annotated by @ExtensionImpl
 inspection.extension.impl.is.not.annotated.message:
