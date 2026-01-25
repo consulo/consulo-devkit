@@ -170,7 +170,7 @@ public class BnfUnusedRuleInspection extends LocalInspectionTool {
             else if (!inParsing.contains(r)) {
                 message = BnfLocalize.unusedRuleInspectionMessageUnreachableRule();
             }
-            if (message != LocalizeValue.empty()) {
+            if (message.isNotEmpty()) {
                 holder.newProblem(message)
                     .range(r.getId())
                     .create();
