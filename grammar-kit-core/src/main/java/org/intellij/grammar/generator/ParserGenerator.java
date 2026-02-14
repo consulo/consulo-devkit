@@ -1765,22 +1765,9 @@ public class ParserGenerator {
         else {
             ContainerUtil.addIfNotNull(imports, tokenTypeClass);
         }
-        if (G.generatePsi) {
-            imports.addAll(ContainerUtil.sorted(
-                JBIterable.from(sortedCompositeTypes.values()).map(this::ruleInfo).map(o -> o.implPackage + ".*").toSet()
-            ));
-            if (G.generatePsiClassesMap) {
-                imports.add(Collections.class.getName());
-                imports.add(Set.class.getName());
-                imports.add(LinkedHashMap.class.getName());
-            }
-            if (G.generatePsiFactory) {
-                if (JBIterable.from(myRuleInfos.values()).find(o -> o.mixedAST) != null) {
-                    imports.add(PlatformClass.COMPOSITE_PSI_ELEMENT.select(myVersion));
-                }
-            }
-        }
+
         generateClassHeader(className, imports, "", Java.INTERFACE);
+
         if (G.generateElementTypes) {
             for (String elementType : sortedCompositeTypes.keySet()) {
                 String exactType = null;
