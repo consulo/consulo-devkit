@@ -1,74 +1,76 @@
 <consulo-plugin url="https://github.com/consulo/consulo-devkit">
-  <id>consulo.devkit</id>
-  <name>Consulo Plugin DevKit</name>
-  <version>SNAPSHOT</version>
-  <category>IDE Frameworks</category>
-  <vendor>JetBrains &amp; consulo.io</vendor>
+    <id>consulo.devkit</id>
+    <name>Consulo Plugin DevKit</name>
+    <version>SNAPSHOT</version>
+    <vendor>JetBrains &amp; consulo.io</vendor>
 
-  <depends>consulo.java</depends>
-  <depends>com.intellij.properties</depends>
-  <depends>com.intellij.xml</depends>
-  <depends>org.jetbrains.plugins.yaml</depends>
-  <depends>org.jetbrains.idea.maven</depends>
+    <depends>consulo.java</depends>
+    <depends>com.intellij.properties</depends>
+    <depends>com.intellij.xml</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+    <depends>org.jetbrains.idea.maven</depends>
 
-  <resource-bundle>messages.DevKitBundle</resource-bundle>
+    <resource-bundle>messages.DevKitBundle</resource-bundle>
 
-  <tags>
-    <tag>ide.framework</tag>
-  </tags>
+    <tags>
+        <tag>ide.framework</tag>
+    </tags>
 
-  <permissions>
-    <permission type="GET_ENV"/>
-  </permissions>
+    <permissions>
+        <permission type="GET_ENV"/>
+    </permissions>
 
-  <actions>
-    <group id="Internal.DevKit" class="consulo.devkit.action.InternalGroup" text="DevKit" popup="true">
-      <action class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
-              id="GenerateDomModel"/>
+    <actions>
+        <group id="Internal.DevKit" class="consulo.devkit.action.InternalGroup" text="DevKit" popup="true">
+            <action class="org.jetbrains.idea.devkit.dom.generator.GenerateDomModelAction" text="Generate DOM Model..."
+                    id="GenerateDomModel"/>
 
-      <add-to-group group-id="ToolsMenu" anchor="last"/>
-    </group>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </group>
 
-    <action id="ConvertResourceBundleToYamlAction" class="consulo.devkit.action.ConvertResourceBundleToYamlAction">
-      <add-to-group group-id="ProjectViewPopupMenu"/>
-    </action>
+        <action id="ConvertResourceBundleToYamlAction" class="consulo.devkit.action.ConvertResourceBundleToYamlAction">
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+        </action>
 
-    <group id="grammar.file.group" popup="false">
-      <action id="grammar.LivePreview" class="org.intellij.grammar.impl.actions.LivePreviewAction" text="Live Preview">
-        <keyboard-shortcut keymap="$default" first-keystroke="control alt P"/>
-      </action>
-      <separator/>
-      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
-    </group>
-    <action id="grammar.HighlightGrammarAtCaretAction" class="org.intellij.grammar.impl.actions.HighlightGrammarAtCaretAction"
-            text="Grammar Highlighting">
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-      <keyboard-shortcut keymap="$default" first-keystroke="control alt F7"/>
-    </action>
-    <group id="grammar.RefactoringGroup" popup="false">
-      <add-to-group group-id="RefactoringMenu" anchor="first"/>
-      <action id="grammars.IntroduceRule" class="org.intellij.grammar.impl.refactor.BnfIntroduceRuleAction" text="Introduce Rule"
-              description="Introduce Rule">
-        <keyboard-shortcut keymap="$default" first-keystroke="control alt R"/>
-      </action>
-      <action id="grammars.IntroduceToken" class="org.intellij.grammar.impl.refactor.BnfIntroduceTokenAction" text="Introduce Token"
-              description="Introduce Token">
-        <keyboard-shortcut keymap="$default" first-keystroke="control alt C"/>
-      </action>
-    </group>
+        <group id="grammar.file.group" popup="false">
+            <action id="grammar.LivePreview" class="org.intellij.grammar.impl.actions.LivePreviewAction" text="Live Preview">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt P"/>
+            </action>
 
-    <action id="grammar.Generate" class="org.intellij.grammar.impl.actions.GenerateAction" text="Generate Parser Code">
-      <keyboard-shortcut keymap="$default" first-keystroke="control shift G"/>
-    </action>
-    
-    <action id="grammar.Generate.ParserUtil" class="org.intellij.grammar.impl.actions.BnfGenerateParserUtilAction"
-            text="Generate Parser Util">
-      <add-to-group group-id="grammar.file.group" anchor="after" relative-to-action="grammar.Generate"/>
-    </action>
-    <action id="grammar.Generate.JFlexLexer" class="org.intellij.grammar.impl.actions.BnfGenerateLexerAction" text="Generate JFlex Lexer">
-      <add-to-group group-id="grammar.file.group" anchor="after" relative-to-action="grammar.Generate"/>
-    </action>
-  </actions>
+            <reference id="grammar.GenerateParser.API"/>
+            <reference id="grammar.GenerateParser.Impl"/>
+
+            <separator/>
+            <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="com.intellij.tools.ExternalToolsGroup"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </group>
+
+        <action id="grammar.HighlightGrammarAtCaretAction" class="org.intellij.grammar.impl.actions.HighlightGrammarAtCaretAction"
+                text="Grammar Highlighting">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control alt F7"/>
+        </action>
+
+        <group id="grammar.RefactoringGroup" popup="false">
+            <add-to-group group-id="RefactoringMenu" anchor="first"/>
+            <action id="grammars.IntroduceRule" class="org.intellij.grammar.impl.refactor.BnfIntroduceRuleAction" text="Introduce Rule"
+                    description="Introduce Rule">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt R"/>
+            </action>
+            <action id="grammars.IntroduceToken" class="org.intellij.grammar.impl.refactor.BnfIntroduceTokenAction" text="Introduce Token"
+                    description="Introduce Token">
+                <keyboard-shortcut keymap="$default" first-keystroke="control alt C"/>
+            </action>
+        </group>
+
+        <action id="grammar.Generate.ParserUtil" class="org.intellij.grammar.impl.actions.BnfGenerateParserUtilAction"
+                text="Generate Parser Util">
+            <add-to-group group-id="grammar.file.group"/>
+        </action>
+        <action id="grammar.Generate.JFlexLexer" class="org.intellij.grammar.impl.actions.BnfGenerateLexerAction"
+                text="Generate JFlex Lexer">
+            <add-to-group group-id="grammar.file.group"/>
+        </action>
+    </actions>
 </consulo-plugin>

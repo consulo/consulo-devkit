@@ -23,8 +23,8 @@ import consulo.application.progress.ProgressManager;
 import consulo.application.progress.Task;
 import consulo.application.util.function.ThrowableComputable;
 import consulo.component.ProcessCanceledException;
+import consulo.devkit.grammarKit.generator.GenerateTarget;
 import consulo.devkit.grammarKit.impl.BnfNotificationGroup;
-import consulo.devkit.grammarKit.generator.ErrorReporter;
 import consulo.document.FileDocumentManager;
 import consulo.language.editor.LangDataKeys;
 import consulo.language.psi.PsiDocumentManager;
@@ -45,18 +45,19 @@ import consulo.util.lang.ExceptionUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGenerator;
 import org.intellij.grammar.psi.BnfFile;
 
-import jakarta.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-import static org.intellij.grammar.impl.actions.FileGeneratorUtil.getTargetDirectoryFor;
 import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
+import static org.intellij.grammar.impl.actions.FileGeneratorUtil.getTargetDirectoryFor;
 
 /**
  * @author gregory
@@ -64,16 +65,13 @@ import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribut
  */
 public class GenerateAction extends AnAction {
     public static final NotificationGroup LOG_GROUP = NotificationGroup.logOnlyGroup("Parser Generator Log");
-
     private static final Logger LOG = Logger.getInstance(GenerateAction.class);
 
-    public GenerateAction() {
-        ErrorReporter.ourInstance = new ErrorReporter() {
-            @Override
-            public void reportWarning(@Nonnull Project project, @Nonnull String text) {
-                GenerateAction.LOG_GROUP.createNotification(text, NotificationType.WARNING).notify(project);
-            }
-        };
+    private final Set<GenerateTarget> myGenerateTargets;
+
+    public GenerateAction(@Nullable String text, Set<GenerateTarget> generateTargets) {
+        super(text);
+        myGenerateTargets = generateTargets;
     }
 
     @Override
@@ -110,10 +108,10 @@ public class GenerateAction extends AnAction {
         PsiDocumentManager.getInstance(project).commitAllDocuments();
         FileDocumentManager.getInstance().saveAllDocuments();
 
-        doGenerate(project, files);
+        doGenerate(project, files, myGenerateTargets);
     }
 
-    public static void doGenerate(@Nonnull final Project project, final List<BnfFile> bnfFiles) {
+    public static void doGenerate(@Nonnull final Project project, final List<BnfFile> bnfFiles, Set<GenerateTarget> generateTargets) {
         final Map<BnfFile, VirtualFile> rootMap = new LinkedHashMap<>();
         Application.get().runWriteAction(() -> {
             for (BnfFile file : bnfFiles) {
@@ -184,7 +182,7 @@ public class GenerateAction extends AnAction {
                                             files.add(file);
                                             return super.openOutputInner(file);
                                         }
-                                    }.generate();
+                                    }.generate(generateTargets);
                                     return true;
                                 }
                             });
