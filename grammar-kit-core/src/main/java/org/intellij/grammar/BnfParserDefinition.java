@@ -25,12 +25,12 @@ import consulo.language.parser.PsiParser;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.version.LanguageVersion;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.parser.BnfLexer;
 import org.intellij.grammar.parser.GrammarParser;
 import org.intellij.grammar.psi.BnfTypes;
 import org.intellij.grammar.psi.impl.BnfFileImpl;
-
-import jakarta.annotation.Nonnull;
+import org.intellij.grammar.psi.impl.BnfTypesFactory;
 
 /**
  * User: gregory
@@ -89,7 +89,7 @@ public class BnfParserDefinition implements ParserDefinition {
     @Nonnull
     @Override
     public PsiElement createElement(ASTNode astNode) {
-        return BnfTypes.Factory.createElement(astNode);
+        return BnfTypesFactory.createElement(astNode);
     }
 
     @Override
