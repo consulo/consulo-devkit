@@ -26,10 +26,7 @@ import org.intellij.grammar.java.JavaHelper;
 import org.intellij.grammar.psi.*;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Function;
@@ -328,6 +325,10 @@ public class ParserGenerator {
         myOut = openOutputInner(file);
     }
 
+    private void openDummyOutput() {
+        myOut = new PrintWriter(new StringWriter());
+    }
+
     protected PrintWriter openOutputInner(File file) throws IOException {
         //noinspection ResultOfMethodCallIgnored
         file.getParentFile().mkdirs();
@@ -407,9 +408,7 @@ public class ParserGenerator {
 
     @RequiredReadAction
     public void generate(Set<GenerateTarget> targets) throws IOException {
-        if (targets.contains(GenerateTarget.Impl)) {
-            generateParser();
-        }
+        generateParser(targets);
 
         Map<String, BnfRule> sortedCompositeTypes = new TreeMap<>();
         Map<String, BnfRule> sortedPsiRules = new TreeMap<>();
@@ -611,10 +610,16 @@ public class ParserGenerator {
         out("}");
     }
 
-    public void generateParser() throws IOException {
+    public void generateParser(Set<GenerateTarget> targets) throws IOException {
         Map<String, Set<RuleInfo>> classified = ContainerUtil.classify(myRuleInfos.values().iterator(), o -> o.parserClass);
         for (String className : ContainerUtil.sorted(classified.keySet())) {
-            openOutput(className);
+
+            if (targets.size() == 1 && targets.contains(GenerateTarget.API)) {
+                openDummyOutput(); // we need run Parser in invisible way, due it fill this field myTokensUsedInGrammar
+            } else {
+                openOutput(className);
+            }
+
             try {
                 generateParser(className, map(classified.get(className), it -> it.name));
             }
