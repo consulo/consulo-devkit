@@ -70,7 +70,7 @@ public enum CallStateType {
                 return false;
             }
             return JavaPsiFacade.getInstance(context.getProject())
-                .findClass("consulo.application.concurrent.DataLock", GlobalSearchScope.moduleWithDependenciesScope(module)) != null;
+                .findClass("consulo.application.concurrent.coroutine.OptionalReadLock", GlobalSearchScope.moduleWithDependenciesScope(module)) != null;
         }
     },
     @SuppressWarnings("deprecation")
