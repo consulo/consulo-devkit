@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl;
 
 import consulo.annotation.access.RequiredReadAction;
@@ -26,6 +25,7 @@ import consulo.language.psi.PsiNamedElement;
 import consulo.ui.ex.JBColor;
 import consulo.ui.ex.awt.util.ColorUtil;
 import consulo.util.lang.StringUtil;
+import consulo.util.lang.xml.XmlStringUtil;
 import jakarta.annotation.Nullable;
 import org.intellij.grammar.BnfLanguage;
 import org.intellij.grammar.KnownAttribute;
@@ -60,7 +60,7 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
     @Nullable
     @Override
     @RequiredReadAction
-    public String generateDoc(final PsiElement element, final PsiElement originalElement) {
+    public String generateDoc(PsiElement element, PsiElement originalElement) {
         if (element instanceof BnfRule rule) {
             BnfFirstNextAnalyzer analyzer = new BnfFirstNextAnalyzer();
             Set<String> first = analyzer.asStrings(analyzer.calcFirst(rule));
@@ -70,12 +70,16 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
             String[] firstS = first.toArray(new String[first.size()]);
             Arrays.sort(firstS);
             docBuilder.append("<h1>Starts with:</h1>");
-            docBuilder.append("<code>").append(StringUtil.escapeXml(StringUtil.join(firstS, " | "))).append("</code>");
+            docBuilder.append("<code>");
+            XmlStringUtil.escapeText(StringUtil.join(firstS, " | "), docBuilder);
+            docBuilder.append("</code>");
 
             String[] nextS = next.toArray(new String[next.size()]);
             Arrays.sort(nextS);
             docBuilder.append("<br><h1>Followed by:</h1>");
-            docBuilder.append("<code>").append(StringUtil.escapeXml(StringUtil.join(nextS, " | "))).append("</code>");
+            docBuilder.append("<code>");
+            XmlStringUtil.escapeText(StringUtil.join(nextS, " | "), docBuilder);
+            docBuilder.append("</code>");
 
             BnfFile file = (BnfFile)rule.getContainingFile();
             String recover = file.findAttributeValue(file.getVersion(), rule, KnownAttribute.RECOVER_WHILE, null);
@@ -97,7 +101,7 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
                     else {
                         docBuilder.append(" | ");
                     }
-                    docBuilder.append(StringUtil.escapeXml(s));
+                    XmlStringUtil.escapeText(s, docBuilder);
                 }
                 docBuilder.append(")");
                 docBuilder.append("</code>");
@@ -148,7 +152,7 @@ public class BnfDocumentationProvider implements LanguageDocumentationProvider {
         if (expressionInfo == null) {
             return;
         }
-        final ExpressionHelper.OperatorInfo ruleOperator = expressionInfo.operatorMap.get(rule);
+        ExpressionHelper.OperatorInfo ruleOperator = expressionInfo.operatorMap.get(rule);
 
         docBuilder.append("\n<br><h1>Priority table:");
         if (ruleOperator != null) {
