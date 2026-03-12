@@ -150,9 +150,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
 
         params.setJdk(javaSdk);
 
-        OwnJdkVersionDetector.JdkVersionInfo versionInfo = OwnJdkVersionDetector.getInstance().detectJdkVersionInfo(javaSdk.getHomePath());
-
-        boolean enableModules = versionInfo != null && versionInfo.version.isAtLeast(9) && profile.ENABLED_JAVA9_MODULES;
+        boolean enableModules = profile.ENABLED_JAVA9_MODULES;
 
         ArrayList<File> classpath = new ArrayList<>();
         ArrayList<File> modulepath = new ArrayList<>();
