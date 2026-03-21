@@ -62,7 +62,7 @@ public class ConsuloDebuggerRunner extends GenericDebuggerRunner {
         @Nonnull RunProfileState state,
         @Nonnull ExecutionEnvironment env
     ) throws ExecutionException {
-        String address = DebuggerUtils.getInstance().findAvailableDebugAddress(DebuggerSettings.SOCKET_TRANSPORT).address();
+        String address = DebuggerUtils.getInstance().findAvailableDebugAddress(true);
         RemoteConnection connection = new RemoteConnection(true, "127.0.0.1", address, false);
 
         ConsuloSandboxRunState consuloSandboxRunState = (ConsuloSandboxRunState)state;
