@@ -17,7 +17,6 @@
 package consulo.devkit.run;
 
 import com.intellij.java.execution.impl.RunConfigurationExtension;
-import com.intellij.java.language.projectRoots.OwnJdkVersionDetector;
 import consulo.content.bundle.Sdk;
 import consulo.execution.configuration.CommandLineState;
 import consulo.execution.runner.ExecutionEnvironment;
@@ -32,10 +31,10 @@ import consulo.util.io.FileUtil;
 import consulo.util.lang.ObjectUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.jetbrains.idea.devkit.sdk.ConsuloSdkType;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
