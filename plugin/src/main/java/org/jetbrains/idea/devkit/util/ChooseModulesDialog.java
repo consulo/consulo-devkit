@@ -27,7 +27,7 @@ import consulo.ui.ex.awt.table.JBTable;
 import consulo.ui.image.Image;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
-import consulo.xml.psi.xml.XmlFile;
+import consulo.xml.language.psi.XmlFile;
 import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;

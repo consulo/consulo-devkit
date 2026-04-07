@@ -23,7 +23,6 @@ import com.intellij.java.debugger.impl.DebuggerSession;
 import com.intellij.java.debugger.impl.GenericDebuggerRunner;
 import com.intellij.java.debugger.impl.engine.DebugProcessImpl;
 import com.intellij.java.debugger.impl.engine.JavaDebugProcess;
-import com.intellij.java.debugger.impl.settings.DebuggerSettings;
 import com.intellij.java.debugger.impl.ui.tree.render.BatchEvaluator;
 import com.intellij.java.execution.configurations.RemoteConnection;
 import consulo.annotation.component.ExtensionImpl;
@@ -35,7 +34,6 @@ import consulo.execution.debug.XDebuggerManager;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.execution.ui.RunContentDescriptor;
 import consulo.process.ExecutionException;
-
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
