@@ -1,8 +1,8 @@
 package consulo.devkit.requires.dom;
 
-import consulo.xml.util.xml.DefinesXml;
-import consulo.xml.util.xml.DomElement;
-import consulo.xml.util.xml.SubTagList;
+import consulo.xml.dom.DefinesXml;
+import consulo.xml.dom.DomElement;
+import consulo.xml.dom.SubTagList;
 
 import java.util.List;
 

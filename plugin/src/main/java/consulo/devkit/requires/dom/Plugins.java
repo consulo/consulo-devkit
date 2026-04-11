@@ -1,6 +1,6 @@
 package consulo.devkit.requires.dom;
 
-import consulo.xml.util.xml.DomElement;
+import consulo.xml.dom.DomElement;
 
 import java.util.List;
 

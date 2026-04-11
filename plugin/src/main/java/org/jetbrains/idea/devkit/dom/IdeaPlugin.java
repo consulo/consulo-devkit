@@ -23,7 +23,7 @@ import consulo.devkit.dom.Permissions;
 import consulo.devkit.dom.Tags;
 import consulo.devkit.dom.Vendors;
 import consulo.util.lang.StringUtil;
-import consulo.xml.util.xml.*;
+import consulo.xml.dom.*;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 

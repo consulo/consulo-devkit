@@ -1,6 +1,6 @@
 package consulo.devkit.dom;
 
-import consulo.xml.util.xml.DomElement;
+import consulo.xml.dom.DomElement;
 
 /**
  * @author VISTALL

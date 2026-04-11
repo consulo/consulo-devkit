@@ -1,7 +1,7 @@
 package consulo.devkit.dom;
 
 import consulo.container.plugin.PluginPermissionType;
-import consulo.xml.util.xml.*;
+import consulo.xml.dom.*;
 
 import java.util.List;
 

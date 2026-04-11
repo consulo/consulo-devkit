@@ -5,6 +5,7 @@
 open module consulo.devkit {
     requires consulo.java;
     requires com.intellij.xml;
+    requires com.intellij.xml.html.api;
     requires org.jetbrains.plugins.yaml;
     requires com.intellij.properties;
     requires org.jetbrains.idea.maven;

@@ -22,7 +22,7 @@ import consulo.annotation.UsedInPlugin;
 import consulo.annotation.component.ExtensionImpl;
 import consulo.language.editor.ImplicitUsageProvider;
 import consulo.language.psi.PsiElement;
-import consulo.xml.util.xml.DomElement;
+import consulo.xml.dom.DomElement;
 
 /**
  * User: anna

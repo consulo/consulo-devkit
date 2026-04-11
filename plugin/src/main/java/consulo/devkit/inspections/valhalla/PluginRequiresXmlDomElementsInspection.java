@@ -4,7 +4,7 @@ import consulo.annotation.component.ExtensionImpl;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.requires.dom.PluginRequires;
 import consulo.localize.LocalizeValue;
-import consulo.xml.util.xml.highlighting.BasicDomElementsInspection;
+import consulo.xml.dom.editor.BasicDomElementsInspection;
 import jakarta.annotation.Nonnull;
 
 /**

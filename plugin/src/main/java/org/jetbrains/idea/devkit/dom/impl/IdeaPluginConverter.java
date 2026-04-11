@@ -24,8 +24,8 @@ import consulo.project.DumbService;
 import consulo.project.Project;
 import consulo.project.content.scope.ProjectScopes;
 import consulo.util.collection.ContainerUtil;
-import consulo.xml.util.xml.DomFileElement;
-import consulo.xml.util.xml.DomService;
+import consulo.xml.dom.DomFileElement;
+import consulo.xml.dom.DomService;
 import jakarta.annotation.Nullable;
 import org.jetbrains.idea.devkit.dom.IdeaPlugin;
 

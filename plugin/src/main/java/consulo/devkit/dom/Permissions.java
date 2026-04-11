@@ -1,7 +1,7 @@
 package consulo.devkit.dom;
 
-import consulo.xml.util.xml.DomElement;
-import consulo.xml.util.xml.SubTagList;
+import consulo.xml.dom.DomElement;
+import consulo.xml.dom.SubTagList;
 
 import java.util.List;
 

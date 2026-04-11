@@ -17,7 +17,7 @@ import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.Presentation;
 import consulo.util.jdom.JDOMUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.xml.ide.highlighter.XmlFileType;
+import consulo.xml.language.XmlFileType;
 import jakarta.annotation.Nonnull;
 import org.jdom.Element;
 

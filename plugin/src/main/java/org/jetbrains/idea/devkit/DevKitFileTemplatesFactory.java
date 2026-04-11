@@ -22,7 +22,7 @@ import consulo.devkit.localize.DevKitLocalize;
 import consulo.fileTemplate.FileTemplateDescriptor;
 import consulo.fileTemplate.FileTemplateGroupDescriptor;
 import consulo.fileTemplate.FileTemplateGroupDescriptorFactory;
-import consulo.xml.ide.highlighter.HtmlFileType;
+import consulo.html.language.HtmlFileType;
 
 @ExtensionImpl
 public class DevKitFileTemplatesFactory implements FileTemplateGroupDescriptorFactory {
