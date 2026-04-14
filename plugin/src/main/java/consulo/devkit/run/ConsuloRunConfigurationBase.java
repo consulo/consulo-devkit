@@ -28,7 +28,7 @@ import consulo.execution.configuration.log.LogFileOptions;
 import consulo.execution.configuration.log.PredefinedLogFile;
 import consulo.execution.executor.Executor;
 import consulo.execution.runner.ExecutionEnvironment;
-import consulo.ide.ServiceManager;
+import consulo.application.Application;
 import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
@@ -123,7 +123,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
         myJavaSdkPointer = PluginRunXmlConfigurationUtil.readPointer(
             JAVA_SDK,
             element,
-            () -> ServiceManager.getService(SdkPointerManager.class)
+            () -> Application.get().getInstance(SdkPointerManager.class)
         );
 
         super.readExternal(element);
