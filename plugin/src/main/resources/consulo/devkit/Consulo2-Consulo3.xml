@@ -7109,8 +7109,8 @@
   <entry oldName="com.intellij.openapi.vfs.StandardFileSystems" newName="consulo.virtualFileSystem.StandardFileSystems" type="class" />
   <entry oldName="com.intellij.openapi.vfs.VFileProperty" newName="consulo.virtualFileSystem.VFileProperty" type="class" />
   <entry oldName="com.intellij.openapi.vfs.VfsBundle" newName="consulo.virtualFileSystem.VfsBundle" type="class" />
-  <entry oldName="com.intellij.openapi.vfs.VfsUtil" newName="consulo.ide.impl.idea.openapi.vfs.VfsUtil" type="class" />
-  <entry oldName="com.intellij.openapi.vfs.VfsUtilCore" newName="consulo.ide.impl.idea.openapi.vfs.VfsUtilCore" type="class" />
+  <entry oldName="com.intellij.openapi.vfs.VfsUtil" newName="consulo.virtualFileSystem.util.VirtualFileUtil" type="class" />
+  <entry oldName="com.intellij.openapi.vfs.VfsUtilCore" newName="consulo.virtualFileSystem.util.VirtualFileUtil" type="class" />
   <entry oldName="com.intellij.openapi.vfs.VirtualFile" newName="consulo.virtualFileSystem.VirtualFile" type="class" />
   <entry oldName="com.intellij.openapi.vfs.VirtualFileAdapter" newName="consulo.virtualFileSystem.event.VirtualFileAdapter" type="class" />
   <entry oldName="com.intellij.openapi.vfs.VirtualFileCopyEvent" newName="consulo.virtualFileSystem.event.VirtualFileCopyEvent" type="class" />

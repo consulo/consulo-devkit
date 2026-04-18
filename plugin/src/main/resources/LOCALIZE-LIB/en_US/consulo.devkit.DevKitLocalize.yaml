@@ -153,7 +153,7 @@ inspection.undesirable.class.usage.message:
 inspection.unsafe.vfs.recursion.display.name:
     text: Unsafe VFS recursion
 inspection.unsafe.vfs.recursion.message:
-    text: VirtualFile.getChildren() is called from a recursive method. This may cause an endless loop on cyclic symlinks. Please use VfsUtilCore.visitChildrenRecursively() instead.
+    text: VirtualFile.getChildren() is called from a recursive method. This may cause an endless loop on cyclic symlinks. Please use VirtualFileUtil.visitChildrenRecursively() instead.
 inspection.use.couple.display.name:
     text: Use Couple<T> instead of Pair<T, T>
 inspection.use.couple.message.constructor:
