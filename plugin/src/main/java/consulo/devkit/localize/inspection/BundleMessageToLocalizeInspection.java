@@ -15,6 +15,7 @@ import consulo.language.psi.PsiElementVisitor;
 import consulo.language.psi.PsiFile;
 import consulo.localize.LocalizeValue;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.util.lang.StringUtil;
 import jakarta.annotation.Nonnull;
 import org.jetbrains.idea.devkit.inspections.internal.InternalInspection;
@@ -124,6 +125,7 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
         }
 
         @Override
+        @RequiredUIAccess
         public void invoke(
             @Nonnull Project project,
             @Nonnull PsiFile psiFile,
