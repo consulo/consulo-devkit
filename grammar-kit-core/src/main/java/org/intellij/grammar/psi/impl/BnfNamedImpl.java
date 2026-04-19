@@ -3,25 +3,23 @@
  */
 package org.intellij.grammar.psi.impl;
 
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.content.scope.SearchScope;
 import consulo.language.ast.ASTNode;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.scope.LocalSearchScope;
 import consulo.language.util.IncorrectOperationException;
+import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfModifier;
 import org.intellij.grammar.psi.BnfNamedElement;
 import org.intellij.grammar.psi.BnfRule;
-import org.jetbrains.annotations.NonNls;
-
-import jakarta.annotation.Nonnull;
 
 import static org.intellij.grammar.psi.BnfTypes.BNF_ID;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gregory
- * Date: 14.07.11
- * Time: 20:04
+ * @author gregory
+ * @since 2011-07-14
  */
 public abstract class BnfNamedImpl extends BnfCompositeImpl implements BnfNamedElement {
     private volatile String myCachedName;
@@ -46,7 +44,8 @@ public abstract class BnfNamedImpl extends BnfCompositeImpl implements BnfNamedE
     }
 
     @Override
-    public PsiElement setName(@NonNls @Nonnull String s) throws IncorrectOperationException {
+    @RequiredWriteAction
+    public PsiElement setName(@Nonnull String s) throws IncorrectOperationException {
         getId().replace(BnfElementFactory.createLeafFromText(getProject(), s));
         return this;
     }
@@ -65,16 +64,16 @@ public abstract class BnfNamedImpl extends BnfCompositeImpl implements BnfNamedE
 //	@Override
 //	public Icon getIcon(int flags)
 //	{
-//		if(this instanceof BnfRule)
+//		if (this instanceof BnfRule)
 //		{
-//			final Icon base = hasModifier((BnfRule) this, "external") ? BnfIcons.EXTERNAL_RULE : BnfIcons.RULE;
-//			final Icon visibility = hasModifier((BnfRule) this, "private") ? PlatformIcons.PRIVATE_ICON : PlatformIcons.PUBLIC_ICON;
-//			final RowIcon row = new RowIcon(2);
+//			Icon base = hasModifier((BnfRule) this, "external") ? BnfIcons.EXTERNAL_RULE : BnfIcons.RULE;
+//			Icon visibility = hasModifier((BnfRule) this, "private") ? PlatformIconGroup.nodesC_private() : PlatformIconGroup.nodesC_public();
+//			RowIcon row = new RowIcon(2);
 //			row.setIcon(base, 0);
 //			row.setIcon(visibility, 1);
 //			return row;
 //		}
-//		else if(this instanceof BnfAttr)
+//		else if (this instanceof BnfAttr)
 //		{
 //			return BnfIcons.ATTRIBUTE;
 //		}
@@ -96,6 +95,7 @@ public abstract class BnfNamedImpl extends BnfCompositeImpl implements BnfNamedE
     }
 
     @Override
+    @RequiredReadAction
     public String toString() {
         // AE fix in LOG.toString in inconsistent state
         PsiElement nullableId = findChildByType(BNF_ID);
