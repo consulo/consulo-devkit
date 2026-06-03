@@ -412,6 +412,8 @@ no.java.sdk.for.idea.sdk.found:
     text: No Java SDK of appropriate version found. In addition to the IDEA Plugin SDK, you need to define a JDK with the same Java version ({0}).
 plugin.descriptor:
     text: Consulo Plugin Descriptor
+plugin.module.extension.provider.name:
+    text: Consulo Plugin
 prepare.for.deployment:
     text: Prepare Plugin Module ''{0}'' For Deployment
 prepare.for.deployment.all:
@@ -472,5 +474,3 @@ test.run.configuration.title:
     text: Consulo In Sandbox (Test)
 vm.parameters:
     text: '&VM Options'
-plugin.module.extension.provider.name:
-    text: Consulo Plugin
