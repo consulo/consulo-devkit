@@ -1,5 +1,7 @@
 package consulo.devkit.localize.inspection;
 
+import com.intellij.java.impl.codeInsight.ExpectedTypeInfo;
+import com.intellij.java.impl.codeInsight.ExpectedTypesProvider;
 import com.intellij.java.language.impl.psi.impl.JavaConstantExpressionEvaluator;
 import com.intellij.java.language.psi.*;
 import com.intellij.java.language.psi.codeStyle.JavaCodeStyleManager;
@@ -101,9 +103,30 @@ public class BundleMessageToLocalizeInspection extends InternalInspection {
                     codeBlock.append(argExpression.getText());
                 }
 
-                codeBlock.append(").get()");
+                codeBlock.append(")");
+
+                if (!isExpectedLocalizeValue()) {
+                    codeBlock.append(".get()");
+                }
 
                 myReplacementCodeBlock = codeBlock.toString();
+            }
+
+            private boolean isExpectedLocalizeValue() {
+                ExpectedTypeInfo[] expectedTypes = ExpectedTypesProvider.getExpectedTypes(myExpression, true);
+                for (ExpectedTypeInfo expectedType : expectedTypes) {
+                    PsiType type = expectedType.getType();
+
+                    if (type instanceof PsiClassType classType) {
+                        String canonicalText = classType.getCanonicalText();
+
+                        if (LocalizeValue.class.getName().equals(canonicalText)) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
             }
         }
     }
