@@ -16,14 +16,15 @@
 
 package consulo.devkit.action;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.module.Module;
 import consulo.project.Project;
-import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
 import consulo.ui.image.Image;
-
+import consulo.util.concurrent.coroutine.Coroutine;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -43,15 +44,21 @@ public abstract class InternalAction extends AnAction {
         super(text);
     }
 
-    protected InternalAction(@Nullable String text, @Nullable String description, @Nullable Image icon) {
-        super(text, description, icon);
+    @Override
+    public final Coroutine<?, ?> updateAsync(AnActionEvent e) {
+        return ActionSafeReadLock.run(e, presentation -> presentation.setEnabledAndVisible(checkUpdate(e))).toCoroutine();
     }
 
-    @RequiredUIAccess
     @Override
-    public void update(@Nonnull AnActionEvent e) {
+    public final void update(AnActionEvent e) {
+        throw new AbstractMethodError();
+    }
+
+    @RequiredReadAction
+    protected boolean checkUpdate(@Nonnull AnActionEvent e) {
         Project project = e.getData(Project.KEY);
         Module module = e.getData(Module.KEY);
-        e.getPresentation().setEnabledAndVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, module));
+
+        return project != null && PluginModuleUtil.isConsuloOrPluginProject(project, module);
     }
 }

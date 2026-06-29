@@ -3,6 +3,7 @@ package consulo.devkit.action;
 import com.intellij.lang.properties.IProperty;
 import com.intellij.lang.properties.PropertiesFileType;
 import com.intellij.lang.properties.psi.PropertiesFile;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.localize.LocalizeYamlUtil;
 import consulo.language.editor.CommonDataKeys;
 import consulo.language.psi.PsiFile;
@@ -32,7 +33,7 @@ public class ConvertResourceBundleToYamlAction extends InternalAction {
     @RequiredUIAccess
     @Override
     public void actionPerformed(@Nonnull AnActionEvent event) {
-        PsiFile file = event.getData(CommonDataKeys.PSI_FILE);
+        PsiFile file = event.getData(PsiFile.KEY);
 
         PropertiesFile propertiesFile = (PropertiesFile)file;
 
@@ -63,18 +64,18 @@ public class ConvertResourceBundleToYamlAction extends InternalAction {
         LocalFileSystem.getInstance().refreshIoFiles(Arrays.asList(result));
     }
 
-    @RequiredUIAccess
+    @RequiredReadAction
     @Override
-    public void update(@Nonnull AnActionEvent event) {
-        super.update(event);
-
-        if (!event.getPresentation().isEnabled()) {
-            return;
+    protected boolean checkUpdate(@Nonnull AnActionEvent e) {
+        if (!super.checkUpdate(e)) {
+            return false;
         }
 
-        PsiFile file = event.getData(CommonDataKeys.PSI_FILE);
+        PsiFile file = e.getData(PsiFile.KEY);
         if (file == null || file.getFileType() != PropertiesFileType.INSTANCE) {
-            event.getPresentation().setEnabledAndVisible(false);
+            return false;
         }
+
+        return true;
     }
 }

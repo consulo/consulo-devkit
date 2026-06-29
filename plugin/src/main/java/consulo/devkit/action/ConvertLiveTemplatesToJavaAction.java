@@ -3,6 +3,7 @@ package consulo.devkit.action;
 import com.intellij.java.language.impl.JavaFileType;
 import com.palantir.javapoet.JavaFile;
 import com.palantir.javapoet.TypeSpec;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.annotation.component.ActionImpl;
 import consulo.annotation.component.ActionParentRef;
 import consulo.annotation.component.ActionRef;
@@ -14,7 +15,6 @@ import consulo.project.Project;
 import consulo.ui.Alerts;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
-import consulo.ui.ex.action.Presentation;
 import consulo.util.jdom.JDOMUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.xml.language.XmlFileType;
@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets;
  */
 @ActionImpl(id = "ConvertLiveTemplatesToJavaAction", parents = @ActionParentRef(@ActionRef(id = "ProjectViewPopupMenu")))
 public class ConvertLiveTemplatesToJavaAction extends InternalAction {
-    private static final String ourliveTemplatesDir = "liveTemplates";
+    private static final String ourLiveTemplatesDir = "liveTemplates";
 
     public ConvertLiveTemplatesToJavaAction() {
         super("Convert LiveTemplates to Java Code");
@@ -85,28 +85,22 @@ public class ConvertLiveTemplatesToJavaAction extends InternalAction {
         });
     }
 
-    @RequiredUIAccess
+    @RequiredReadAction
     @Override
-    public void update(@Nonnull AnActionEvent e) {
-        super.update(e);
-
-        Presentation presentation = e.getPresentation();
-        if (!presentation.isVisible()) {
-            return;
+    protected boolean checkUpdate(@Nonnull AnActionEvent e) {
+        if (!super.checkUpdate(e)) {
+            return false;
         }
-
         VirtualFile file = e.getData(VirtualFile.KEY);
         if (file == null || file.getFileType() != XmlFileType.INSTANCE) {
-            presentation.setEnabledAndVisible(false);
-            return;
+            return false;
         }
 
         VirtualFile parent = file.getParent();
-        if (parent == null || !ourliveTemplatesDir.equals(parent.getName())) {
-            presentation.setEnabledAndVisible(false);
-            return;
+        if (parent == null || !ourLiveTemplatesDir.equals(parent.getName())) {
+            return false;
         }
 
-        presentation.setEnabledAndVisible(true);
+        return true;
     }
 }
