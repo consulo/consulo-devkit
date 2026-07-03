@@ -18,21 +18,22 @@ package consulo.devkit.action;
 
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.project.Project;
-import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
 import consulo.ui.ex.action.DefaultActionGroup;
-
-import jakarta.annotation.Nonnull;
+import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
+import consulo.util.concurrent.coroutine.Coroutine;
 
 /**
  * @author VISTALL
  * @since 2017-01-28
  */
-public class InternalGroup extends DefaultActionGroup {
-    @RequiredUIAccess
+public class InternalGroup extends DefaultActionGroup implements AnActionWithAsyncUpdate {
     @Override
-    public void update(@Nonnull AnActionEvent e) {
-        Project project = e.getData(Project.KEY);
-        e.getPresentation().setVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
+    public Coroutine<?, ?> updateAsync(AnActionEvent e) {
+        return ActionSafeReadLock.run(e, presentation -> {
+            Project project = e.getData(Project.KEY);
+            presentation.setVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
+        }).toCoroutine();
     }
 }

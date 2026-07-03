@@ -38,6 +38,7 @@ import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.awt.Messages;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.io.FileUtil;
@@ -55,9 +56,8 @@ import java.util.function.Consumer;
 /**
  * @author greg
  */
-public class BnfGenerateParserUtilAction extends AnAction {
+public class BnfGenerateParserUtilAction extends AnAction implements AnActionWithSyncUpdate {
     @Override
-    @RequiredUIAccess
     public void update(AnActionEvent e) {
         PsiFile file = e.getData(LangDataKeys.PSI_FILE);
         if (file instanceof BnfFile bnfFile) {

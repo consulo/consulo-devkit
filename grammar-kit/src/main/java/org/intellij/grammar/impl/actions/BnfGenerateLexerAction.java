@@ -37,6 +37,7 @@ import consulo.project.ui.notification.Notifications;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.awt.Messages;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
@@ -70,9 +71,8 @@ import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribut
 /**
  * @author greg
  */
-public class BnfGenerateLexerAction extends AnAction {
+public class BnfGenerateLexerAction extends AnAction implements AnActionWithSyncUpdate {
     @Override
-    @RequiredUIAccess
     public void update(AnActionEvent e) {
         PsiFile file = e.getData(LangDataKeys.PSI_FILE);
         e.getPresentation().setEnabledAndVisible(file instanceof BnfFile);

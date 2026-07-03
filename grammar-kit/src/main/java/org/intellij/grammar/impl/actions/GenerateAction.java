@@ -38,7 +38,11 @@ import consulo.project.ui.notification.NotificationType;
 import consulo.project.ui.notification.Notifications;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
 import consulo.util.collection.ContainerUtil;
+import consulo.util.concurrent.coroutine.Coroutine;
 import consulo.util.io.FileUtil;
 import consulo.util.io.PathUtil;
 import consulo.util.lang.ExceptionUtil;
@@ -63,7 +67,7 @@ import static org.intellij.grammar.impl.actions.FileGeneratorUtil.getTargetDirec
  * @author gregory
  * Date: 15.07.11 17:12
  */
-public class GenerateAction extends AnAction {
+public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate {
     public static final NotificationGroup LOG_GROUP = NotificationGroup.logOnlyGroup("Parser Generator Log");
     private static final Logger LOG = Logger.getInstance(GenerateAction.class);
 
@@ -75,11 +79,12 @@ public class GenerateAction extends AnAction {
     }
 
     @Override
-    @RequiredReadAction
-    public void update(@Nonnull AnActionEvent e) {
-        Project project = e.getData(Project.KEY);
-        List<BnfFile> files = getFiles(e);
-        e.getPresentation().setEnabledAndVisible(project != null && !files.isEmpty());
+    public Coroutine<?, ?> updateAsync(AnActionEvent e) {
+        return ActionSafeReadLock.run(e, presentation -> {
+            Project project = e.getData(Project.KEY);
+            List<BnfFile> files = getFiles(e);
+            presentation.setEnabledAndVisible(project != null && !files.isEmpty());
+        }).toCoroutine();
     }
 
     @RequiredReadAction

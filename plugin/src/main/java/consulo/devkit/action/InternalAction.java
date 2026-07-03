@@ -22,6 +22,7 @@ import consulo.module.Module;
 import consulo.project.Project;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
 import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
 import consulo.ui.image.Image;
 import consulo.util.concurrent.coroutine.Coroutine;
@@ -32,7 +33,7 @@ import jakarta.annotation.Nullable;
  * @author VISTALL
  * @since 2017-01-28
  */
-public abstract class InternalAction extends AnAction {
+public abstract class InternalAction extends AnAction implements AnActionWithAsyncUpdate {
     protected InternalAction() {
     }
 
@@ -47,11 +48,6 @@ public abstract class InternalAction extends AnAction {
     @Override
     public final Coroutine<?, ?> updateAsync(AnActionEvent e) {
         return ActionSafeReadLock.run(e, presentation -> presentation.setEnabledAndVisible(checkUpdate(e))).toCoroutine();
-    }
-
-    @Override
-    public final void update(AnActionEvent e) {
-        throw new AbstractMethodError();
     }
 
     @RequiredReadAction

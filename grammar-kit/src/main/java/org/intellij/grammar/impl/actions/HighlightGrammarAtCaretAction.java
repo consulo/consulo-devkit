@@ -16,6 +16,7 @@
 
 package org.intellij.grammar.impl.actions;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.Editor;
 import consulo.language.Language;
 import consulo.language.editor.DaemonCodeAnalyzer;
@@ -26,6 +27,10 @@ import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
+import consulo.ui.ex.action.AnActionWithAsyncUpdate;
+import consulo.ui.ex.action.AnActionWithSyncUpdate;
+import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
+import consulo.util.concurrent.coroutine.Coroutine;
 import consulo.util.lang.ObjectUtil;
 import jakarta.annotation.Nullable;
 import org.intellij.grammar.impl.livePreview.GrammarAtCaretPassFactory;
@@ -38,9 +43,10 @@ import java.util.List;
 /**
  * @author gregsh
  */
-public class HighlightGrammarAtCaretAction extends AnAction {
+public class HighlightGrammarAtCaretAction extends AnAction implements AnActionWithAsyncUpdate {
 
     @Nullable
+    @RequiredReadAction
     private static Editor getPreviewEditor(@Nonnull AnActionEvent e) {
         Editor editor = e.getData(PlatformDataKeys.EDITOR);
         PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
@@ -54,13 +60,14 @@ public class HighlightGrammarAtCaretAction extends AnAction {
     }
 
     @Override
-    @RequiredUIAccess
-    public void update(@Nonnull AnActionEvent e) {
-        Editor editor = getPreviewEditor(e);
-        boolean enabled = editor != null;
-        String command = !enabled ? "" : GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.get(editor) != null ? "Stop " : "Start ";
-        e.getPresentation().setText(command + getTemplatePresentation().getText());
-        e.getPresentation().setEnabledAndVisible(enabled);
+    public Coroutine<?, ?> updateAsync(AnActionEvent e) {
+        return ActionSafeReadLock.run(e, presentation -> {
+            Editor editor = getPreviewEditor(e);
+            boolean enabled = editor != null;
+            String command = !enabled ? "" : GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.get(editor) != null ? "Stop " : "Start ";
+            presentation.setText(command + getTemplatePresentation().getText());
+            presentation.setEnabledAndVisible(enabled);
+        }).toCoroutine();
     }
 
     @Override
