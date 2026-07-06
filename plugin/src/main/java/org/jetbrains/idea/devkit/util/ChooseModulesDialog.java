@@ -104,6 +104,7 @@ public class ChooseModulesDialog extends DialogWrapper {
     myView.getColumnModel().getColumn(0).setMaxWidth(new JCheckBox().getPreferredSize().width);
     myView.getModel().addTableModelListener(e -> getOKAction().setEnabled(getSelectedModules().size() > 0));
     myView.addKeyListener(new KeyAdapter() {
+      @Override
       public void keyTyped(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyChar() == '\n') {
           doOKAction();
