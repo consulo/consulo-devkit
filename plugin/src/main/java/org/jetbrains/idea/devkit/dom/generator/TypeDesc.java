@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
- * XSD/DTD Model generator tool
- *
- * By Gregory Shrago
- * 2002 - 2006
- */
 package org.jetbrains.idea.devkit.dom.generator;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
+ * XSD/DTD Model generator tool
+ *
+ * @author Gregory Shrago
  * @author Konstantin Bulenkov
  */
 public class TypeDesc {
@@ -46,11 +42,12 @@ public class TypeDesc {
     final String xsName;
     final String xsNamespace;
     final String name;
-    final Map<String, FieldDesc> fdMap = new TreeMap<String, FieldDesc>();
+    final Map<String, FieldDesc> fdMap = new TreeMap<>();
     boolean duplicates;
     String documentation;
     TypeDesc[] supers;
 
+    @Override
     public String toString() {
         return (type == TypeEnum.ENUM ? "enum" : "type") + ": " + name + ";" + xsName + ";";
     }

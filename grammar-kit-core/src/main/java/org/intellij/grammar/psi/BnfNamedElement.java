@@ -15,17 +15,19 @@
  */
 package org.intellij.grammar.psi;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiNameIdentifierOwner;
 import jakarta.annotation.Nonnull;
 
 /**
- * User: gregory
- * Date: 13.07.11
- * Time: 19:02
+ * @author gregory
+ * @since 2011-07-13
  */
 public interface BnfNamedElement extends BnfComposite, PsiNameIdentifierOwner {
     @Nonnull
+    @Override
+    @RequiredReadAction
     String getName();
 
     @Nonnull

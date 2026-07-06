@@ -15,11 +15,13 @@
  */
 package org.jetbrains.idea.devkit.util;
 
-import consulo.application.AllIcons;
+import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.devkit.util.PluginModuleUtil;
 import consulo.module.Module;
+import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.project.Project;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.SimpleTextAttributes;
 import consulo.ui.ex.awt.*;
 import consulo.ui.ex.awt.internal.laf.MultiLineLabelUI;
@@ -52,39 +54,45 @@ public class ChooseModulesDialog extends DialogWrapper {
   private final List<Module> myCandidateModules;
   private final boolean[] myStates;
 
-  public ChooseModulesDialog(final Project project, List<Module> candidateModules, @NonNls String title) {
+  public ChooseModulesDialog(Project project, List<Module> candidateModules, @NonNls String title) {
     this(project, candidateModules, title, DevKitLocalize.selectPluginModulesToPatch().get());
   }
 
-  public ChooseModulesDialog(final Project project, List<Module> candidateModules, @NonNls String title, final String message) {
+  public ChooseModulesDialog(Project project, List<Module> candidateModules, @NonNls String title, String message) {
     super(project, false);
     setTitle(title);
 
     myCandidateModules = candidateModules;
-    myIcon = Messages.getQuestionIcon();
+    myIcon = UIUtil.getQuestionIcon();
     myMessage = message;
     myView = new JBTable(new AbstractTableModel() {
+      @Override
       public int getRowCount() {
         return myCandidateModules.size();
       }
 
+      @Override
       public int getColumnCount() {
         return 2;
       }
 
+      @Override
       public boolean isCellEditable(int rowIndex, int columnIndex) {
         return columnIndex == 0;
       }
 
+      @Override
       public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         myStates[rowIndex] = (Boolean)aValue;
         fireTableCellUpdated(rowIndex, columnIndex);
       }
 
+      @Override
       public Class<?> getColumnClass(int columnIndex) {
         return columnIndex == 0 ? Boolean.class : Module.class;
       }
 
+      @Override
       public Object getValueAt(int rowIndex, int columnIndex) {
         return columnIndex == 0 ? myStates[rowIndex] : myCandidateModules.get(rowIndex);
       }
@@ -110,6 +118,7 @@ public class ChooseModulesDialog extends DialogWrapper {
     init();
   }
 
+  @Override
   protected JComponent createNorthPanel() {
     JPanel panel = new JPanel(new BorderLayout(15, 10));
     if (myIcon != null) {
@@ -129,25 +138,27 @@ public class ChooseModulesDialog extends DialogWrapper {
     }
     panel.add(messagePanel, BorderLayout.CENTER);
 
-    final JScrollPane jScrollPane = ScrollPaneFactory.createScrollPane();
+    JScrollPane jScrollPane = ScrollPaneFactory.createScrollPane();
     jScrollPane.setViewportView(myView);
     jScrollPane.setPreferredSize(new Dimension(300, 80));
     panel.add(jScrollPane, BorderLayout.SOUTH);
     return panel;
   }
 
+  @Override
+  @RequiredUIAccess
   public JComponent getPreferredFocusedComponent() {
     return myView;
   }
 
-
+  @Override
   protected JComponent createCenterPanel() {
     return null;
   }
 
   public List<Module> getSelectedModules() {
-    final ArrayList<Module> list = new ArrayList<>(myCandidateModules);
-    final Iterator<Module> modules = list.iterator();
+    List<Module> list = new ArrayList<>(myCandidateModules);
+    Iterator<Module> modules = list.iterator();
     for (boolean b : myStates) {
       modules.next();
       if (!b) {
@@ -166,17 +177,19 @@ public class ChooseModulesDialog extends DialogWrapper {
       myProject = project;
       myList = new JBList();
       myCellRenderer = new ColoredListCellRenderer() {
+        @Override
+        @RequiredReadAction
         protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
-          final Module module = ((Module)value);
-          setIcon(AllIcons.Nodes.Module);
+          Module module = ((Module)value);
+          setIcon(PlatformIconGroup.nodesModule());
           append(module.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
-          final XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
+          XmlFile pluginXml = PluginModuleUtil.getPluginXml(module);
           assert pluginXml != null;
 
-          final VirtualFile virtualFile = pluginXml.getVirtualFile();
+          VirtualFile virtualFile = pluginXml.getVirtualFile();
           assert virtualFile != null;
-          final VirtualFile projectPath = myProject.getBaseDir();
+          VirtualFile projectPath = myProject.getBaseDir();
           assert projectPath != null;
           if (VirtualFileUtil.isAncestor(projectPath, virtualFile, false)) {
             append(" (" + VirtualFileUtil.getRelativePath(virtualFile, projectPath, File.separatorChar) + ")",
@@ -189,6 +202,7 @@ public class ChooseModulesDialog extends DialogWrapper {
       };
     }
 
+    @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       return myCellRenderer.getListCellRendererComponent(myList, value, row, isSelected, hasFocus);
     }

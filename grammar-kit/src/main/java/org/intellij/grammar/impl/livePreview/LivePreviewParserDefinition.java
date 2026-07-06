@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.livePreview;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.ast.ASTNode;
 import consulo.language.parser.ParserDefinition;
 import consulo.language.lexer.Lexer;
@@ -54,6 +54,7 @@ public class LivePreviewParserDefinition implements ParserDefinition {
         myFileElementType = new IFileElementType(myLanguage); // todo do not register
     }
 
+    @Override
     public LivePreviewLanguage getLanguage() {
         return myLanguage;
     }
@@ -65,6 +66,7 @@ public class LivePreviewParserDefinition implements ParserDefinition {
     }
 
     @Override
+    @RequiredReadAction
     public PsiParser createParser(LanguageVersion languageVersion) {
         return new LivePreviewParser(null, myLanguage);
     }
@@ -94,6 +96,7 @@ public class LivePreviewParserDefinition implements ParserDefinition {
 
     @Nonnull
     @Override
+    @RequiredReadAction
     public PsiElement createElement(ASTNode node) {
         return new ASTWrapperPsiElement(node);
     }

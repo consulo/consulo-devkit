@@ -1,7 +1,6 @@
 /*
  * Copyright 2011-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
-
 package org.intellij.grammar.generator;
 
 import consulo.util.collection.ContainerUtil;
@@ -191,6 +190,7 @@ public class NodeCalls {
         }
 
         @Nonnull
+        @Override
         public String render(@Nonnull Names names) {
             if (renderClass) {
                 return String.format("%s.%s(%s, %s + 1)", className, methodName, names.builder, names.level);
