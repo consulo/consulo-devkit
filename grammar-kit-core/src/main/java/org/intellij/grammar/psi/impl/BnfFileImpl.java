@@ -38,9 +38,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * User: gregory
- * Date: 13.07.11
- * Time: 23:55
+ * @author gregory
+ * @since 2011-07-13
  */
 public class BnfFileImpl extends PsiFileBase implements BnfFile {
     private final CachedValue<Map<String, BnfRule>> myRules;
@@ -98,6 +97,7 @@ public class BnfFileImpl extends PsiFileBase implements BnfFile {
         return PsiTreeUtil.getParentOfType(findElementAt(result.attrOffset), BnfAttr.class);
     }
 
+    @Override
     @RequiredReadAction
     public <T> T findAttributeValue(
         @Nullable String version,

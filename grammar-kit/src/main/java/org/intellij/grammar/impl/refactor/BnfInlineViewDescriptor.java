@@ -15,7 +15,7 @@
  */
 package org.intellij.grammar.impl.refactor;
 
-import consulo.language.editor.refactoring.RefactoringBundle;
+import consulo.language.editor.refactoring.localize.RefactoringLocalize;
 import consulo.language.psi.PsiElement;
 import consulo.usage.UsageViewBundle;
 import consulo.usage.UsageViewDescriptor;
@@ -23,11 +23,8 @@ import jakarta.annotation.Nonnull;
 import org.intellij.grammar.psi.BnfRule;
 
 /**
- * Created by IntelliJ IDEA.
- * Date: 8/11/11
- * Time: 8:50 PM
- *
  * @author Vadim Romansky
+ * @since 2011-08-11
  */
 public class BnfInlineViewDescriptor implements UsageViewDescriptor {
     private final BnfRule myElement;
@@ -37,22 +34,23 @@ public class BnfInlineViewDescriptor implements UsageViewDescriptor {
     }
 
     @Nonnull
+    @Override
     public PsiElement[] getElements() {
         return new PsiElement[]{myElement};
     }
 
+    @Override
     public String getProcessedElementsHeader() {
         return "Rule";
     }
 
+    @Override
     public String getCodeReferencesText(int usagesCount, int filesCount) {
-        return RefactoringBundle.message("invocations.to.be.inlined", UsageViewBundle.getReferencesString(usagesCount, filesCount));
+        return RefactoringLocalize.invocationsToBeInlined(UsageViewBundle.getReferencesString(usagesCount, filesCount)).get();
     }
 
+    @Override
     public String getCommentReferencesText(int usagesCount, int filesCount) {
-        return RefactoringBundle.message(
-            "comments.elements.header",
-            UsageViewBundle.getOccurencesString(usagesCount, filesCount)
-        );
+        return RefactoringLocalize.commentsElementsHeader(UsageViewBundle.getOccurencesString(usagesCount, filesCount)).get();
     }
 }

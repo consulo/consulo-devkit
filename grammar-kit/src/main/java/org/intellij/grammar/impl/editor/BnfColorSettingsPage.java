@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.editor;
 
 import consulo.annotation.component.ExtensionImpl;
@@ -61,21 +60,25 @@ public class BnfColorSettingsPage implements ColorSettingsPage {
     }
 
     @Nonnull
+    @Override
     public LocalizeValue getDisplayName() {
         return LocalizeValue.localizeTODO("IntelliJ Grammar");
     }
 
     @Nonnull
+    @Override
     public AttributesDescriptor[] getAttributeDescriptors() {
         return ATTRS;
     }
 
     @Nonnull
+    @Override
     public SyntaxHighlighter getHighlighter() {
         return new BnfSyntaxHighlighter();
     }
 
     @Nonnull
+    @Override
     public String getDemoText() {
         return "/*\n" +
             " * Sample grammar\n" +
@@ -102,8 +105,9 @@ public class BnfColorSettingsPage implements ColorSettingsPage {
             "\n";
     }
 
+    @Override
     public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
-        final Map<String, TextAttributesKey> map = new HashMap<>();
+        Map<String, TextAttributesKey> map = new HashMap<>();
         map.put("r", RULE);
         map.put("mr", META_RULE);
         map.put("a", ATTRIBUTE);

@@ -15,6 +15,8 @@
  */
 package org.intellij.grammar.psi.impl;
 
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.document.util.TextRange;
 import consulo.language.ast.ASTNode;
 import consulo.language.psi.PsiElement;
@@ -28,10 +30,8 @@ import org.intellij.grammar.psi.BnfRule;
 import jakarta.annotation.Nullable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gregory
- * Date: 14.07.11
- * Time: 19:17
+ * @author gregory
+ * @since 2011-07-14
  */
 public abstract class BnfRefOrTokenImpl extends BnfExpressionImpl implements BnfReferenceOrToken {
     public BnfRefOrTokenImpl(ASTNode node) {
@@ -39,17 +39,20 @@ public abstract class BnfRefOrTokenImpl extends BnfExpressionImpl implements Bnf
     }
 
     @Nullable
+    @Override
     public BnfRule resolveRule() {
         PsiFile file = getContainingFile();
         return file instanceof BnfFile bnfFile ? bnfFile.getRule(GrammarUtil.getIdText(getId())) : null;
     }
 
     @Override
+    @RequiredReadAction
     public PsiReference getReference() {
         int delta = GrammarUtil.isIdQuoted(getId().getText()) ? 1 : 0;
         TextRange range = TextRange.create(delta, getTextLength() - delta);
         return new BnfReferenceImpl<BnfReferenceOrToken>(this, range) {
             @Override
+            @RequiredWriteAction
             public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
                 myElement.getId().replace(BnfElementFactory.createLeafFromText(getElement().getProject(), newElementName));
                 return myElement;
