@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
- * XSD/DTD Model generator tool
- *
- * By Gregory Shrago
- * 2002 - 2006
- */
 package org.jetbrains.idea.devkit.dom.generator;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * XSD/DTD Model generator tool
+ *
+ * @author Gregory Shrago
  * @author Konstantin Bulenkov
  */
 public class NamespaceDesc {
@@ -54,7 +50,6 @@ public class NamespaceDesc {
         skip = true;
     }
 
-
     public NamespaceDesc(String name, NamespaceDesc def) {
         this.name = name;
         this.pkgName = def.pkgName;
@@ -79,6 +74,7 @@ public class NamespaceDesc {
     String[] pkgNames;
     String enumPkg;
 
+    @Override
     public String toString() {
         return "NS:" + name + " " + (skip ? "skip" : "") + pkgName;
     }

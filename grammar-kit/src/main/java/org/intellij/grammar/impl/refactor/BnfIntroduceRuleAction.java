@@ -15,6 +15,7 @@
  */
 package org.intellij.grammar.impl.refactor;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.language.editor.refactoring.RefactoringSupportProvider;
 import consulo.language.editor.refactoring.action.BasePlatformRefactoringAction;
 import consulo.language.editor.refactoring.action.RefactoringActionHandler;
@@ -25,17 +26,15 @@ import org.intellij.grammar.psi.BnfFile;
 import jakarta.annotation.Nonnull;
 
 /**
- * Created by IntelliJ IDEA.
- * Date: 8/16/11
- * Time: 5:14 PM
- *
  * @author Vadim Romansky
+ * @since 2011-08-16
  */
 public class BnfIntroduceRuleAction extends BasePlatformRefactoringAction {
     public BnfIntroduceRuleAction() {
         setInjectedContext(true);
     }
 
+    @Override
     protected boolean isAvailableInEditorOnly() {
         return true;
     }
@@ -45,6 +44,8 @@ public class BnfIntroduceRuleAction extends BasePlatformRefactoringAction {
         return file instanceof BnfFile;
     }
 
+    @Override
+    @RequiredReadAction
     protected boolean isEnabledOnElements(PsiElement[] elements) {
         return false;
     }

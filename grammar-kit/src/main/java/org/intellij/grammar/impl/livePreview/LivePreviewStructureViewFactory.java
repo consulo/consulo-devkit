@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.impl.livePreview;
 
+import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.CodeInsightColors;
 import consulo.codeEditor.Editor;
 import consulo.colorScheme.TextAttributesKey;
@@ -48,6 +48,7 @@ import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.intellij.grammar.generator.ParserGeneratorUtil.getPsiClassFormat;
 import static org.intellij.grammar.generator.ParserGeneratorUtil.getRulePsiClassName;
@@ -57,6 +58,8 @@ import static org.intellij.grammar.generator.ParserGeneratorUtil.getRulePsiClass
  */
 public class LivePreviewStructureViewFactory implements PsiStructureViewFactory {
     @Nullable
+    @Override
+    @RequiredReadAction
     public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
         if (!(psiFile.getLanguage() instanceof LivePreviewLanguage)) {
             return null;
@@ -101,7 +104,6 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
         public boolean isAlwaysLeaf(StructureViewTreeElement element) {
             return element.getValue() instanceof LeafPsiElement;
         }
-
     }
 
     private static class MyElement extends PsiTreeElementBase<PsiElement> implements SortableTreeElement, ColoredItemPresentation {
@@ -110,12 +112,14 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
         }
 
         @Nonnull
+        @Override
+        @RequiredReadAction
         public Collection<StructureViewTreeElement> getChildrenBase() {
             PsiElement element = getElement();
             if (element == null || element instanceof LeafPsiElement) {
                 return Collections.emptyList();
             }
-            ArrayList<StructureViewTreeElement> result = new ArrayList<StructureViewTreeElement>();
+            List<StructureViewTreeElement> result = new ArrayList<>();
             for (PsiElement e = element.getFirstChild(); e != null; e = e.getNextSibling()) {
                 if (e instanceof PsiWhiteSpace) {
                     continue;
@@ -126,12 +130,14 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
         }
 
         @Override
+        @RequiredReadAction
         public String getAlphaSortKey() {
             return getPresentableText();
         }
 
         @Nonnull
         @Override
+        @RequiredReadAction
         public String getPresentableText() {
             PsiElement element = getElement();
             ASTNode node = element != null ? element.getNode() : null;
@@ -139,11 +145,11 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
             if (element instanceof LeafPsiElement) {
                 return elementType + ": '" + element.getText() + "'";
             }
-            else if (element instanceof PsiErrorElement) {
-                return "PsiErrorElement: '" + ((PsiErrorElement)element).getErrorDescription() + "'";
+            else if (element instanceof PsiErrorElement errorElem) {
+                return "PsiErrorElement: '" + errorElem.getErrorDescription() + "'";
             }
-            else if (elementType instanceof LivePreviewElementType.RuleType) {
-                BnfRule rule = ((LivePreviewElementType.RuleType)elementType).getRule(element.getProject());
+            else if (elementType instanceof LivePreviewElementType.RuleType ruleType) {
+                BnfRule rule = ruleType.getRule(element.getProject());
                 if (rule != null) {
                     BnfFile file = (BnfFile)rule.getContainingFile();
                     String className = getRulePsiClassName(rule, getPsiClassFormat(file));

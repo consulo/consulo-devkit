@@ -15,6 +15,8 @@
  */
 package org.intellij.grammar.psi.impl;
 
+import consulo.annotation.access.RequiredReadAction;
+import consulo.annotation.access.RequiredWriteAction;
 import consulo.document.util.TextRange;
 import consulo.language.ast.ASTNode;
 import consulo.language.impl.psi.FakePsiElement;
@@ -90,6 +92,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
     }
 
     @Nonnull
+    @Override
     public PsiReference[] getReferences() {
         // performance: do not run injectors
         // return PsiReferenceService.getService().getContributedReferences(this);
@@ -114,8 +117,9 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
     }
 
     @Override
-    public BnfStringImpl updateText(@Nonnull final String text) {
-        final BnfExpression expression = BnfElementFactory.createExpressionFromText(getProject(), text);
+    @RequiredWriteAction
+    public BnfStringImpl updateText(@Nonnull String text) {
+        BnfExpression expression = BnfElementFactory.createExpressionFromText(getProject(), text);
         assert expression instanceof BnfStringImpl : text + "-->" + expression;
         return (BnfStringImpl)this.replace(expression);
     }
@@ -127,6 +131,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
     }
 
     @Nullable
+    @RequiredReadAction
     private static Pattern getPattern(BnfLiteralExpression expression) {
         return ParserGeneratorUtil.compilePattern(StringUtil.stripQuotesAroundValue(expression.getText()));
     }
@@ -142,6 +147,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
         }
 
         @Override
+        @RequiredWriteAction
         public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
             BnfStringImpl element = getElement();
             PsiElement string = element.getString();
@@ -176,17 +182,19 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 
         @Nonnull
         @Override
+        @RequiredReadAction
         public ResolveResult[] multiResolve(boolean b) {
             return ResolveCache.getInstance(getElement().getProject()).resolveWithCaching(this, RESOLVER, false, b);
         }
 
         @Nonnull
+        @RequiredReadAction
         public ResolveResult[] multiResolveInner() {
-            final Pattern pattern = getPattern(getElement());
+            Pattern pattern = getPattern(getElement());
             if (pattern == null) {
                 return ResolveResult.EMPTY_ARRAY;
             }
-            final List<PsiElement> result = ContainerUtil.newArrayList();
+            List<PsiElement> result = new ArrayList<>();
 
             BnfAttr thisAttr = ObjectUtil.assertNotNull(PsiTreeUtil.getParentOfType(getElement(), BnfAttr.class));
             BnfAttrs thisAttrs = ObjectUtil.assertNotNull(PsiTreeUtil.getParentOfType(thisAttr, BnfAttrs.class));
@@ -249,6 +257,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
         }
 
         @Override
+        @RequiredWriteAction
         public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
             // do not rename pattern
             return myElement;
@@ -256,11 +265,13 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
 
         @Nonnull
         @Override
+        @RequiredReadAction
         public Object[] getVariants() {
             return ArrayUtil.EMPTY_OBJECT_ARRAY;
         }
     }
 
+    @RequiredReadAction
     public static boolean matchesElement(@Nullable BnfLiteralExpression e1, @Nonnull PsiElement e2) {
         if (e1 == null) {
             return false;
@@ -285,6 +296,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
         }
 
         @Override
+        @RequiredReadAction
         public String getName() {
             return myFuncName;
         }
@@ -296,6 +308,7 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
         }
 
         @Override
+        @RequiredReadAction
         public TextRange getTextRange() {
             return myExpression.getTextRange();
         }
@@ -311,7 +324,8 @@ public abstract class BnfStringImpl extends BnfExpressionImpl implements BnfStri
         }
     }
 
-    public static TextRange getStringTokenRange(final BnfStringImpl element) {
+    @RequiredReadAction
+    public static TextRange getStringTokenRange(BnfStringImpl element) {
         return TextRange.from(1, element.getTextLength() - 2);
     }
 }

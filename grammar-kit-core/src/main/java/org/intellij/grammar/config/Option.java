@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.intellij.grammar.config;
 
 import consulo.util.lang.ObjectUtil;
@@ -33,6 +32,7 @@ abstract class Option<T> implements Supplier<T> {
         this.defValue = defValue;
     }
 
+    @Override
     public abstract T get();
 
     String innerValue() {
@@ -40,7 +40,7 @@ abstract class Option<T> implements Supplier<T> {
     }
 
     static Option<Integer> intOption(String id, int def) {
-        return new Option<Integer>(id, def) {
+        return new Option<>(id, def) {
             @Override
             public Integer get() {
                 return StringUtil.parseInt(innerValue(), defValue);
@@ -49,7 +49,7 @@ abstract class Option<T> implements Supplier<T> {
     }
 
     static Option<String> strOption(String id, String def) {
-        return new Option<String>(id, def) {
+        return new Option<>(id, def) {
             @Override
             public String get() {
                 return ObjectUtil.chooseNotNull(innerValue(), defValue);

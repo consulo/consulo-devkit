@@ -30,6 +30,7 @@ public class BnfIntroduceTokenAction extends BasePlatformRefactoringAction {
     public BnfIntroduceTokenAction() {
     }
 
+    @Override
     protected boolean isAvailableInEditorOnly() {
         return true;
     }
@@ -39,6 +40,7 @@ public class BnfIntroduceTokenAction extends BasePlatformRefactoringAction {
         return file instanceof BnfFile;
     }
 
+    @Override
     protected boolean isEnabledOnElements(@Nonnull PsiElement[] elements) {
         return false;
     }
@@ -48,4 +50,3 @@ public class BnfIntroduceTokenAction extends BasePlatformRefactoringAction {
         return new BnfIntroduceTokenHandler();
     }
 }
-

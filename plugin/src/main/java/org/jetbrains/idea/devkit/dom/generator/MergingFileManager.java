@@ -13,13 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
- * XSD/DTD Model generator tool
- *
- * By Gregory Shrago
- * 2002 - 2006
- */
 package org.jetbrains.idea.devkit.dom.generator;
 
 import consulo.util.collection.ArrayUtil;
@@ -27,13 +20,18 @@ import consulo.util.collection.ArrayUtil;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
+ * XSD/DTD Model generator tool
+ *
  * @author Gregory.Shrago
  * @author Konstantin Bulenkov
+ * @since 2002
  */
 public class MergingFileManager implements FileManager {
+    @Override
     public File getOutputFile(File target) {
         File outFile = target;
         if (!outFile.getParentFile().exists() && !outFile.getParentFile().mkdirs()) {
@@ -46,6 +44,7 @@ public class MergingFileManager implements FileManager {
         return outFile;
     }
 
+    @Override
     public File releaseOutputFile(File outFile) {
         int idx = outFile.getName().indexOf(".tmp.");
         File target = outFile;
@@ -87,7 +86,7 @@ public class MergingFileManager implements FileManager {
         if (prevLines.length == 0) {
             return curLines;
         }
-        ArrayList<String> merged = new ArrayList<String>();
+        List<String> merged = new ArrayList<>();
         int curIdx = 0, prevIdx = 0;
         String cur, prev;
         boolean classScope = false;
@@ -159,13 +158,13 @@ public class MergingFileManager implements FileManager {
         }
     }
 
-    private static void mergeImports(ArrayList<String> merged, String[] curLines, String[] prevLines, int[] indices) {
+    private static void mergeImports(List<String> merged, String[] curLines, String[] prevLines, int[] indices) {
         TreeSet<String> externalClasses = new TreeSet<String>();
         for (int i = 0; i < curLines.length; i++) {
             String line = curLines[i].trim();
             if (line.startsWith("import ") && line.endsWith(";")) {
                 indices[0] = i + 1;
-                final String name = line.substring("import ".length(), line.length() - 1).trim();
+                String name = line.substring("import ".length(), line.length() - 1).trim();
                 if (name.endsWith("*")) {
                     continue;
                 }
@@ -176,7 +175,7 @@ public class MergingFileManager implements FileManager {
             String line = prevLines[i].trim();
             if (line.startsWith("import ") && line.endsWith(";")) {
                 indices[1] = i + 1;
-                final String name = line.substring("import ".length(), line.length() - 1).trim();
+                String name = line.substring("import ".length(), line.length() - 1).trim();
                 if (name.endsWith("*")) {
                     continue;
                 }
@@ -202,7 +201,7 @@ public class MergingFileManager implements FileManager {
         }
     }
 
-    private static int addAllStringsUpTo(ArrayList<String> merged, String[] lines, int startIdx, String upTo) {
+    private static int addAllStringsUpTo(List<String> merged, String[] lines, int startIdx, String upTo) {
         String str;
         do {
             str = startIdx < lines.length ? lines[startIdx] : upTo;
@@ -223,7 +222,7 @@ public class MergingFileManager implements FileManager {
             return 1;
         }
         for (int i = start; i < mergedLines.length; i++) {
-            final int comp = mergedLines[i].compareTo(curLines[i]);
+            int comp = mergedLines[i].compareTo(curLines[i]);
             if (comp != 0) {
                 return comp;
             }
@@ -251,7 +250,7 @@ public class MergingFileManager implements FileManager {
                 try {
                     out.close();
                 }
-                catch (Exception e) {
+                catch (Exception ignored) {
                 }
             }
         }
@@ -262,7 +261,7 @@ public class MergingFileManager implements FileManager {
         if (!f1.exists()) {
             return ArrayUtil.EMPTY_STRING_ARRAY;
         }
-        ArrayList<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         BufferedReader in = null;
         try {
             in = new BufferedReader(new FileReader(f1));
@@ -279,7 +278,7 @@ public class MergingFileManager implements FileManager {
                 try {
                     in.close();
                 }
-                catch (IOException e) {
+                catch (IOException ignored) {
                 }
             }
         }

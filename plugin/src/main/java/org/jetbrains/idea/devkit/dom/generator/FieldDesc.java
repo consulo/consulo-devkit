@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
- * XSD/DTD Model generator tool
- *
- * By Gregory Shrago
- * 2002 - 2006
- */
 package org.jetbrains.idea.devkit.dom.generator;
 
 /**
+ * XSD/DTD Model generator tool
+ *
+ * @author Gregory Shrago
  * @author Konstantin Bulenkov
  */
 public class FieldDesc implements Comparable<FieldDesc> {
@@ -67,10 +63,12 @@ public class FieldDesc implements Comparable<FieldDesc> {
     int realIndex;
     String contentQualifiedName;
 
+    @Override
     public int compareTo(FieldDesc o) {
         return name.compareTo(o.name);
     }
 
+    @Override
     public String toString() {
         return "Field: " + name + ";" + type + ";" + elementName + ";" + elementType;
     }
