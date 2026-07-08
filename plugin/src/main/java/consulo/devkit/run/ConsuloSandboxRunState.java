@@ -131,16 +131,6 @@ public class ConsuloSandboxRunState extends CommandLineState {
         vm.defineProperty("idea.log.path", logFile.getParent());
         vm.defineProperty("consulo.log.path", logFile.getParent());
 
-        PlatformOperatingSystem os = Platform.current().os();
-        if (os.isMac()) {
-            vm.defineProperty("idea.smooth.progress", "false");
-            vm.defineProperty("apple.laf.useScreenMenuBar", "true");
-        }
-        else if (os.isXWindow()) {
-            if (profile.VM_PARAMETERS == null || !profile.VM_PARAMETERS.contains("-Dsun.awt.disablegrab")) {
-                vm.defineProperty("sun.awt.disablegrab", "true");
-            }
-        }
         vm.defineProperty("consulo.in.sandbox", "true");
         // always define internal as sandbox, later just drop this flag
         vm.defineProperty("idea.is.internal", "true");
