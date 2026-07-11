@@ -19,6 +19,7 @@ package org.intellij.grammar.impl.inspection;
 import consulo.annotation.access.RequiredReadAction;
 import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.localize.LocalizeValue;
+import consulo.ui.annotation.RequiredUIAccess;
 import jakarta.annotation.Nonnull;
 
 import consulo.application.AccessToken;
@@ -59,10 +60,9 @@ public class CreateRuleFromTokenFix implements LocalQuickFix {
     }
 
     @Override
-    @RequiredReadAction
+    @RequiredUIAccess
     public void applyFix(final @Nonnull Project project, @Nonnull ProblemDescriptor descriptor) {
-        final AccessToken token = WriteAction.start();
-        try {
+        WriteAction.run(() -> {
             final PsiElement element = descriptor.getPsiElement();
             final BnfRule rule = PsiTreeUtil.getParentOfType(element, BnfRule.class);
             if (rule == null) {
@@ -71,17 +71,14 @@ public class CreateRuleFromTokenFix implements LocalQuickFix {
 
             final BnfRule addedRule = BnfIntroduceRuleHandler.addNextRule(project, rule, "private " + myName + " ::= ");
             final FileEditor selectedEditor =
-                FileEditorManager.getInstance(project).getSelectedEditor(rule.getContainingFile().getVirtualFile());
+                    FileEditorManager.getInstance(project).getSelectedEditor(rule.getContainingFile().getVirtualFile());
             if (selectedEditor instanceof TextEditor textEditor) {
                 final Editor editor = textEditor.getEditor();
                 editor.getCaretModel().moveToOffset(
-                    addedRule.getTextRange().getEndOffset() - (BnfIntroduceRuleHandler.endsWithSemicolon(addedRule) ? 1 : 0)
+                        addedRule.getTextRange().getEndOffset() - (BnfIntroduceRuleHandler.endsWithSemicolon(addedRule) ? 1 : 0)
                 );
                 editor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
             }
-        }
-        finally {
-            token.finish();
-        }
+        });
     }
 }

@@ -195,21 +195,16 @@ public class BnfPositionManager implements PositionManager {
 
     @RequiredReadAction
     private int getLineNumber(PsiElement element, String parserClass, int currentLine) {
-        int line = 0;
-        AccessToken token = ReadAction.start();
-        try {
+        return ReadAction.compute(() -> {
             BnfRule rule = PsiTreeUtil.getParentOfType(element, BnfRule.class);
             PsiClass aClass = JavaPsiFacade.getInstance(myProcess.getProject()).findClass(parserClass, myProcess.getSearchScope());
             Document document =
-                aClass != null ? PsiDocumentManager.getInstance(myProcess.getProject()).getDocument(aClass.getContainingFile()) : null;
+                    aClass != null ? PsiDocumentManager.getInstance(myProcess.getProject()).getDocument(aClass.getContainingFile()) : null;
             if (rule != null && document != null) {
                 return getLineNumber(aClass, document, currentLine, rule, element);
             }
-        }
-        finally {
-            token.finish();
-        }
-        return line;
+            return 0;
+        });
     }
 
     @RequiredReadAction
@@ -262,8 +257,7 @@ public class BnfPositionManager implements PositionManager {
 
     @Nonnull
     private String getParserClass(SourcePosition classPosition) throws NoDataException {
-        AccessToken token = ReadAction.start();
-        try {
+        return ReadAction.computeNotNull(() -> {
             BnfRule rule = getRuleAt(classPosition);
             String version = rule.getContainingFile() instanceof BnfFile bnfFile ? bnfFile.getVersion() : null;
             String parserClass = ParserGeneratorUtil.getAttribute(version, rule, KnownAttribute.PARSER_CLASS);
@@ -271,10 +265,7 @@ public class BnfPositionManager implements PositionManager {
                 throw new NoDataException();
             }
             return parserClass;
-        }
-        finally {
-            token.finish();
-        }
+        });
     }
 
     @Nonnull

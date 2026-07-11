@@ -93,8 +93,7 @@ public class BnfIntroduceRulePopup extends InplaceVariableIntroducer<BnfExpressi
     @Override
     protected void moveOffsetAfter(boolean success) {
         RangeMarker exprMarker = getExprMarker();
-        final AccessToken accessToken = WriteAction.start();
-        try {
+        WriteAction.run(() -> {
             Document document = myEditor.getDocument();
             // todo restore original expression if not success
             PsiDocumentManager.getInstance(myProject).commitDocument(document);
@@ -103,10 +102,7 @@ public class BnfIntroduceRulePopup extends InplaceVariableIntroducer<BnfExpressi
                 myEditor.getScrollingModel().scrollToCaret(ScrollType.MAKE_VISIBLE);
                 exprMarker.dispose();
             }
-        }
-        finally {
-            accessToken.finish();
-        }
+        });
     }
 
     @Override
