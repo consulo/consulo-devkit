@@ -55,22 +55,13 @@ public enum CallStateType {
             if (type == READ) {
                 return true;
             }
-            // in new data lock model ui thread not provide read lock
-            if (type == UI_ACCESS) {
-                return !isNewDataLockModel(context);
-            }
-            return type == WRITE;
-        }
 
-        @RequiredReadAction
-        private boolean isNewDataLockModel(PsiElement context) {
-            Module module = context.getModule();
-            //noinspection SimplifiableIfStatement
-            if (module == null) {
-                return false;
+            // in future will be disabled
+            if (type == UI_ACCESS) {
+                return true;
             }
-            return JavaPsiFacade.getInstance(context.getProject())
-                .findClass("consulo.application.concurrent.coroutine.OptionalReadLock", GlobalSearchScope.moduleWithDependenciesScope(module)) != null;
+
+            return type == WRITE;
         }
     },
     @SuppressWarnings("deprecation")
@@ -87,13 +78,7 @@ public enum CallStateType {
         new AcceptableMethodCallCheck(Application.class, Set.of("invokeLater", "invokeAndWait")),
         new AcceptableMethodCallCheck(UIUtil.class, Set.of("invokeAndWaitIfNeeded", "invokeLaterIfNeeded")),
         new AcceptableMethodCallCheck(SwingUtilities.class, Set.of("invokeAndWait", "invokeLater"))
-    ) {
-        @Override
-        public boolean isAcceptableActionType(@Nonnull CallStateType type, @Nonnull PsiElement context) {
-            // write actions required call from dispatch thread, and it inherit dispatch state
-            return type == UI_ACCESS || type == WRITE;
-        }
-    };
+    );
 
     private static final CallStateType[] VARIANTS = {READ, WRITE, UI_ACCESS};
 
