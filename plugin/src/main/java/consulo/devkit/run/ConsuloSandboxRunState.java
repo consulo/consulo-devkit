@@ -145,7 +145,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
         ArrayList<File> modulepath = new ArrayList<>();
         ConsuloPlatform consuloPlatform = addBootLibraries(selectedBuildPath, classpath, modulepath, enableModules);
 
-        if ((consuloPlatform == ConsuloPlatform.DESKTOP_AWT || consuloPlatform == ConsuloPlatform.DESKTOP_SWT) && enableModules) {
+        if ((consuloPlatform == ConsuloPlatform.DESKTOP_AWT || consuloPlatform == ConsuloPlatform.DESKTOP_SWT || consuloPlatform == ConsuloPlatform.DESKTOP_QT) && enableModules) {
             modulepath.clear();
             modulepath.add(new File(selectedBuildPath, "boot"));
             modulepath.add(new File(selectedBuildPath, "boot/spi"));
@@ -176,7 +176,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
         List<File> modulepath,
         boolean enableModules
     ) {
-        ConsuloPlatform platform = ConsuloPlatform.DESKTOP_AWT_OLD;
+        ConsuloPlatform platform = ConsuloPlatform.DESKTOP_AWT;
 
         File bootDirectory = new File(consuloHomePath + "/boot");
         if (bootDirectory.exists()) {
@@ -205,6 +205,9 @@ public class ConsuloSandboxRunState extends CommandLineState {
                     }
                     else if (fileName.contains("desktop-awt")) {
                         platform = ConsuloPlatform.DESKTOP_AWT;
+                    }
+                    else if (fileName.contains("desktop-qt")) {
+                        platform = ConsuloPlatform.DESKTOP_QT;
                     }
                     else if (fileName.contains("desktop-swt")) {
                         platform = ConsuloPlatform.DESKTOP_SWT;
