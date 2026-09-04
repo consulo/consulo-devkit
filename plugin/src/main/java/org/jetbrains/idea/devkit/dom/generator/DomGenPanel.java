@@ -21,6 +21,7 @@ import consulo.fileChooser.FileChooserDescriptorFactory;
 import consulo.fileChooser.FileTypeDescriptor;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.ui.ex.awt.Messages;
 import consulo.ui.ex.awt.TextFieldWithBrowseButton;
@@ -57,9 +58,9 @@ public class DomGenPanel {
 
     private void createUIComponents() {
         mySchemaLocation = new TextFieldWithBrowseButton();
-        final String title = "Choose XSD or DTD schema";
+        final LocalizeValue title = LocalizeValue.localizeTODO("Choose XSD or DTD schema");
         mySchemaLocation.addBrowseFolderListener(
-            title,
+            title.get(),
             "Make sure there are only necessary schemes in directory where your XSD or DTD schema is located",
             myProject,
             new FileTypeDescriptor(title, "xsd", "dtd")
