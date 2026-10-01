@@ -8948,7 +8948,6 @@
   <entry oldName="com.intellij.ui.AncestorListenerAdapter" newName="consulo.ide.impl.idea.ui.AncestorListenerAdapter" type="class" />
   <entry oldName="com.intellij.ui.AnchorableComponent" newName="consulo.ui.ex.awt.AnchorableComponent" type="class" />
   <entry oldName="com.intellij.ui.Animated" newName="consulo.ui.ex.awt.Animated" type="class" />
-  <entry oldName="com.intellij.ui.AnimatedIcon" newName="consulo.ui.ex.awt.AnimatedIcon" type="class" />
   <entry oldName="com.intellij.ui.AppIcon" newName="consulo.ui.ex.AppIcon" type="class" />
   <entry oldName="com.intellij.ui.AppUIUtil" newName="consulo.ide.impl.idea.ui.AppUIUtil" type="class" />
   <entry oldName="com.intellij.ui.AutoScrollFromSourceHandler" newName="consulo.ui.ex.awt.AutoScrollFromSourceHandler" type="class" />

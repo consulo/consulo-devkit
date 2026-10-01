@@ -17,34 +17,41 @@
 package consulo.devkit.run;
 
 import com.intellij.java.language.projectRoots.JavaSdkType;
-import consulo.configurable.ConfigurationException;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.execution.configuration.ui.SettingsEditor;
-import consulo.execution.ui.awt.RawCommandLineEditor;
 import consulo.fileChooser.FileChooserDescriptorFactory;
-import consulo.ide.setting.ShowSettingsUtil;
-import consulo.ide.setting.bundle.SettingsSdksModel;
-import consulo.module.ui.awt.SdkComboBox;
+import consulo.fileChooser.FileChooserTextBoxBuilder;
+import consulo.localize.LocalizeValue;
+import consulo.module.ui.BundleBox;
+import consulo.module.ui.BundleBoxBuilder;
+import consulo.platform.base.icon.PlatformIconGroup;
+import consulo.process.cmd.ParametersListUtil;
 import consulo.project.Project;
-import consulo.ui.ex.awt.FormBuilder;
-import consulo.ui.ex.awt.JBCheckBox;
-import consulo.ui.ex.awt.TextFieldWithBrowseButton;
+import consulo.ui.CheckBox;
+import consulo.ui.Component;
+import consulo.ui.TextBoxWithExpandAction;
+import consulo.ui.annotation.RequiredUIAccess;
+import consulo.ui.util.FormBuilder;
 import consulo.util.io.FileUtil;
 import consulo.util.lang.StringUtil;
 
 import jakarta.annotation.Nonnull;
-import javax.swing.*;
-import java.awt.*;
+import jakarta.annotation.Nullable;
 
 public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConfigurationBase> extends SettingsEditor<T> {
-    private SdkComboBox myJavaSdkComboBox;
-    private RawCommandLineEditor myProgramParameters;
-    private RawCommandLineEditor myVMParameters;
+    @Nullable
+    private BundleBox myJavaSdkBox;
+    @Nullable
+    private TextBoxWithExpandAction myProgramParameters;
+    @Nullable
+    private TextBoxWithExpandAction myVMParameters;
 
-    private JPanel myRoot;
-    private JCheckBox myEnableJava9Modules;
-    private TextFieldWithBrowseButton myPluginsHomePath;
-    private TextFieldWithBrowseButton myConsuloSdkTextField;
+    @Nullable
+    private CheckBox myEnableJava9Modules;
+    @Nullable
+    private FileChooserTextBoxBuilder.Controller myPluginsHomePath;
+    @Nullable
+    private FileChooserTextBoxBuilder.Controller myConsuloSdkPath;
 
     private final Project myProject;
 
@@ -52,84 +59,136 @@ public abstract class ConsuloRunConfigurationEditorBase<T extends ConsuloRunConf
         myProject = project;
     }
 
-    protected void initPanel() {
-        FormBuilder builder = FormBuilder.createFormBuilder();
+    @Override
+    @RequiredUIAccess
+    protected Component createUIComponent() {
+        FormBuilder builder = FormBuilder.create();
 
         setupPanel(builder);
 
-        myRoot = new JPanel(new BorderLayout());
-        myRoot.add(builder.getPanel(), BorderLayout.NORTH);
+        return builder.build();
     }
 
+    @RequiredUIAccess
     protected void setupPanel(@Nonnull FormBuilder builder) {
-        SettingsSdksModel projectSdksModel = ShowSettingsUtil.getInstance().getSdksModel();
-        myJavaSdkComboBox = new SdkComboBox(projectSdksModel, it -> it instanceof JavaSdkType, false);
-        builder.addLabeledComponent("Java SDK", myJavaSdkComboBox);
+        BundleBox javaSdkBox = BundleBoxBuilder.create(this)
+            .withSdkTypeFilterByClass(JavaSdkType.class)
+            .build();
+        myJavaSdkBox = javaSdkBox;
+        builder.addLabeled(DevKitLocalize.labelJavaSdk(), javaSdkBox.getComponent());
 
-        myConsuloSdkTextField = new TextFieldWithBrowseButton();
-        myConsuloSdkTextField.addBrowseFolderListener(
-            "Select SDK",
-            "Select alternative consulo sdk for run",
-            myProject,
-            FileChooserDescriptorFactory.createSingleFolderDescriptor()
+        FileChooserTextBoxBuilder.Controller consuloSdkPath = createFolderChooser(
+            DevKitLocalize.runConfigurationConsuloSdkChooserTitle(),
+            DevKitLocalize.runConfigurationConsuloSdkChooserDescription()
         );
-        myConsuloSdkTextField.setEditable(true);
-        builder.addLabeledComponent("Consulo SDK", myConsuloSdkTextField);
+        myConsuloSdkPath = consuloSdkPath;
+        builder.addLabeled(DevKitLocalize.labelConsuloSdk(), consuloSdkPath.getComponent());
 
-
-        myPluginsHomePath = new TextFieldWithBrowseButton();
-        myPluginsHomePath.addBrowseFolderListener(
-            "Select Plugins Home Path",
-            "Select plugins home path",
-            myProject,
-            FileChooserDescriptorFactory.createSingleFolderDescriptor()
+        FileChooserTextBoxBuilder.Controller pluginsHomePath = createFolderChooser(
+            DevKitLocalize.runConfigurationPluginsHomePathChooserTitle(),
+            DevKitLocalize.runConfigurationPluginsHomePathChooserDescription()
         );
+        myPluginsHomePath = pluginsHomePath;
+        builder.addLabeled(DevKitLocalize.labelPluginsHomePath(), pluginsHomePath.getComponent());
 
-        builder.addLabeledComponent("Plugins Home Path", myPluginsHomePath);
+        TextBoxWithExpandAction programParameters = createParametersBox(DevKitLocalize.labelProgramParameters());
+        myProgramParameters = programParameters;
+        builder.addLabeled(DevKitLocalize.labelProgramParameters(), programParameters);
 
-        myProgramParameters = new RawCommandLineEditor();
-        builder.addLabeledComponent("Program Parameters", myProgramParameters);
-        myVMParameters = new RawCommandLineEditor();
-        builder.addLabeledComponent("VM Parameters", myVMParameters);
+        TextBoxWithExpandAction vmParameters = createParametersBox(DevKitLocalize.labelVmParameters());
+        myVMParameters = vmParameters;
+        builder.addLabeled(DevKitLocalize.labelVmParameters(), vmParameters);
 
-        myEnableJava9Modules = new JBCheckBox("Enable Java 9 modules?");
+        CheckBox enableJava9Modules = CheckBox.create(DevKitLocalize.runConfigurationEnableJava9Modules());
+        myEnableJava9Modules = enableJava9Modules;
+        builder.addBottom(enableJava9Modules);
+    }
 
-        builder.addComponent(myEnableJava9Modules);
+    @RequiredUIAccess
+    private FileChooserTextBoxBuilder.Controller createFolderChooser(@Nonnull LocalizeValue title, @Nonnull LocalizeValue description) {
+        return FileChooserTextBoxBuilder.create(myProject)
+            .fileChooserDescriptor(FileChooserDescriptorFactory.createSingleFolderDescriptor())
+            .dialogTitle(title)
+            .dialogDescription(description)
+            .uiDisposable(this)
+            .build();
+    }
+
+    @RequiredUIAccess
+    private static TextBoxWithExpandAction createParametersBox(@Nonnull LocalizeValue dialogTitle) {
+        return TextBoxWithExpandAction.create(
+            PlatformIconGroup.actionsShow(),
+            dialogTitle.get(),
+            ParametersListUtil.DEFAULT_LINE_PARSER,
+            ParametersListUtil.DEFAULT_LINE_JOINER
+        );
     }
 
     @Override
-    public void resetEditorFrom(T prc) {
-        myVMParameters.setText(prc.VM_PARAMETERS);
-        myEnableJava9Modules.setSelected(prc.ENABLED_JAVA9_MODULES);
-        if (prc.ALT_CONSULO_SDK_PATH != null) {
-            myConsuloSdkTextField.setText(FileUtil.toSystemDependentName(prc.ALT_CONSULO_SDK_PATH));
+    @RequiredUIAccess
+    protected void resetEditorFrom(T configuration) {
+        BundleBox javaSdkBox = myJavaSdkBox;
+        if (javaSdkBox != null) {
+            javaSdkBox.setSelectedBundle(configuration.getJavaSdkName());
         }
 
-        if (prc.PLUGINS_HOME_PATH != null) {
-            myPluginsHomePath.setText(FileUtil.toSystemDependentName(prc.PLUGINS_HOME_PATH));
+        FileChooserTextBoxBuilder.Controller consuloSdkPath = myConsuloSdkPath;
+        if (consuloSdkPath != null) {
+            consuloSdkPath.setValue(FileUtil.toSystemDependentName(StringUtil.notNullize(configuration.ALT_CONSULO_SDK_PATH)));
         }
 
-        myVMParameters.setDialogCaption(DevKitLocalize.labelVmParameters().get());
-        myProgramParameters.setText(prc.PROGRAM_PARAMETERS);
-        myProgramParameters.setDialogCaption(DevKitLocalize.labelProgramParameters().get());
+        FileChooserTextBoxBuilder.Controller pluginsHomePath = myPluginsHomePath;
+        if (pluginsHomePath != null) {
+            pluginsHomePath.setValue(FileUtil.toSystemDependentName(StringUtil.notNullize(configuration.PLUGINS_HOME_PATH)));
+        }
 
-        myJavaSdkComboBox.setSelectedSdk(prc.getJavaSdkName());
+        TextBoxWithExpandAction programParameters = myProgramParameters;
+        if (programParameters != null) {
+            programParameters.setValue(StringUtil.notNullize(configuration.PROGRAM_PARAMETERS));
+        }
+
+        TextBoxWithExpandAction vmParameters = myVMParameters;
+        if (vmParameters != null) {
+            vmParameters.setValue(StringUtil.notNullize(configuration.VM_PARAMETERS));
+        }
+
+        CheckBox enableJava9Modules = myEnableJava9Modules;
+        if (enableJava9Modules != null) {
+            enableJava9Modules.setValue(configuration.ENABLED_JAVA9_MODULES);
+        }
     }
 
     @Override
-    public void applyEditorTo(T prc) throws ConfigurationException {
-        prc.setJavaSdkName(myJavaSdkComboBox.getSelectedSdkName());
-        prc.ENABLED_JAVA9_MODULES = myEnableJava9Modules.isSelected();
+    @RequiredUIAccess
+    protected void applyEditorTo(T configuration) {
+        BundleBox javaSdkBox = myJavaSdkBox;
+        if (javaSdkBox != null) {
+            configuration.setJavaSdkName(javaSdkBox.getSelectedBundleName());
+        }
 
-        prc.VM_PARAMETERS = myVMParameters.getText();
-        prc.PROGRAM_PARAMETERS = myProgramParameters.getText();
-        prc.PLUGINS_HOME_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myPluginsHomePath.getText()));
-        prc.ALT_CONSULO_SDK_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(myConsuloSdkTextField.getText()));
-    }
+        CheckBox enableJava9Modules = myEnableJava9Modules;
+        if (enableJava9Modules != null) {
+            configuration.ENABLED_JAVA9_MODULES = Boolean.TRUE.equals(enableJava9Modules.getValue());
+        }
 
-    @Override
-    @Nonnull
-    public JComponent createEditor() {
-        return myRoot;
+        TextBoxWithExpandAction vmParameters = myVMParameters;
+        if (vmParameters != null) {
+            configuration.VM_PARAMETERS = StringUtil.notNullize(vmParameters.getValue());
+        }
+
+        TextBoxWithExpandAction programParameters = myProgramParameters;
+        if (programParameters != null) {
+            configuration.PROGRAM_PARAMETERS = StringUtil.notNullize(programParameters.getValue());
+        }
+
+        FileChooserTextBoxBuilder.Controller pluginsHomePath = myPluginsHomePath;
+        if (pluginsHomePath != null) {
+            configuration.PLUGINS_HOME_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(pluginsHomePath.getValue()));
+        }
+
+        FileChooserTextBoxBuilder.Controller consuloSdkPath = myConsuloSdkPath;
+        if (consuloSdkPath != null) {
+            configuration.ALT_CONSULO_SDK_PATH = StringUtil.nullize(FileUtil.toSystemIndependentName(consuloSdkPath.getValue()));
+        }
     }
 }

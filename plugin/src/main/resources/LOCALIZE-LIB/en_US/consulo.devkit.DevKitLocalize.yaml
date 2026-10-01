@@ -298,6 +298,8 @@ label.java.sdk:
     text: 'Java SDK:'
 label.plugin.artifact:
     text: 'Plugin Artifact:'
+label.plugins.home.path:
+    text: 'Plugins Home Path:'
 label.program.parameters:
     text: 'Program Parameters:'
 label.vm.parameters:
@@ -428,12 +430,22 @@ project.title:
     text: Plugin Project
 run.configuration.classpath.from.module.choose:
     text: 'Use Classpath and JDK from Module:'
+run.configuration.consulo.sdk.chooser.description:
+    text: Select alternative consulo sdk for run
+run.configuration.consulo.sdk.chooser.title:
+    text: Select SDK
+run.configuration.enable.java9.modules:
+    text: Enable Java 9 modules?
 run.configuration.no.consulo.sdk:
     text: No Consulo Sdk
 run.configuration.no.java.sdk:
     text: No Java Sdk
 run.configuration.no.plugin.artifact:
     text: No Plugin Artifact
+run.configuration.plugins.home.path.chooser.description:
+    text: Select plugins home path
+run.configuration.plugins.home.path.chooser.title:
+    text: Select Plugins Home Path
 run.configuration.title:
     text: Consulo In Sandbox
 run.configuration.type.description:

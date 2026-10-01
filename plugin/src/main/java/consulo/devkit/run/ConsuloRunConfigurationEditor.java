@@ -25,6 +25,5 @@ import consulo.project.Project;
 public class ConsuloRunConfigurationEditor extends ConsuloRunConfigurationEditorBase<ConsuloRunConfiguration> {
     public ConsuloRunConfigurationEditor(Project project) {
         super(project);
-        initPanel();
     }
 }
