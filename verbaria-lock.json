@@ -3,11 +3,11 @@
   "project" : "consulo-devkit",
   "projectVersion" : "master",
   "sourceLocale" : "en-US",
-  "generatedAt" : "2026-07-28T17:54:03.702860697Z",
+  "generatedAt" : "2026-10-01T08:49:05.860439395Z",
   "documents" : {
     "consulo.devkit.DevKitLocalize" : {
       "source" : {
-        "sig" : "a9b29ed4ebd443bf7cbfb6baf4080b4d"
+        "sig" : "b6968a900fed4f9ceb18518ad6bd9434"
       }
     },
     "consulo.devkit.grammarKit.BnfLocalize" : {
