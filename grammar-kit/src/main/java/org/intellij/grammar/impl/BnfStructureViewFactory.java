@@ -30,6 +30,7 @@ import consulo.language.editor.structureView.StructureViewModelBase;
 import consulo.language.icon.IconDescriptorUpdaters;
 import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiFile;
+import consulo.localize.LocalizeValue;
 import consulo.platform.base.icon.PlatformIconGroup;
 import consulo.ui.image.Image;
 import consulo.util.collection.ContainerUtil;
@@ -86,7 +87,7 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
 
         @Override
         public boolean isAlwaysLeaf(StructureViewTreeElement element) {
-            final Object value = element.getValue();
+            Object value = element.getValue();
             return value instanceof BnfRule || value instanceof BnfAttr;
         }
 
@@ -102,7 +103,6 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
     }
 
     public static class MyElement extends PsiTreeElementBase<PsiElement> implements SortableTreeElement {
-
         public MyElement(PsiElement element) {
             super(element);
         }
@@ -110,17 +110,18 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
         @Override
         @RequiredReadAction
         public String getAlphaSortKey() {
-            return getPresentableText();
+            return getPresentableText().get();
         }
 
         @Nonnull
         @Override
+        @RequiredReadAction
         public Collection<StructureViewTreeElement> getChildrenBase() {
             PsiElement element = getElement();
             if (element instanceof BnfRule || element instanceof BnfAttr) {
                 return Collections.emptyList();
             }
-            final ArrayList<StructureViewTreeElement> result = new ArrayList<>();
+            List<StructureViewTreeElement> result = new ArrayList<>();
             if (element instanceof BnfFile bnfFile) {
                 for (BnfAttrs o : bnfFile.getAttributes()) {
                     result.add(new MyElement(o));
@@ -139,33 +140,33 @@ public class BnfStructureViewFactory implements PsiStructureViewFactory {
 
         @Override
         @RequiredReadAction
-        public String getPresentableText() {
+        public LocalizeValue getPresentableText() {
             PsiElement element = getElement();
             if (element instanceof BnfRule rule) {
-                return rule.getName();
+                return LocalizeValue.of(rule.getName());
             }
             else if (element instanceof BnfAttr attr) {
-                return getAttrDisplayName(attr);
+                return LocalizeValue.of(getAttrDisplayName(attr));
             }
             else if (element instanceof BnfAttrs attrs) {
                 List<BnfAttr> attrList = attrs.getAttrList();
-                final BnfAttr firstAttr = ContainerUtil.getFirstItem(attrList);
+                BnfAttr firstAttr = ContainerUtil.getFirstItem(attrList);
                 if (firstAttr == null) {
-                    return "Attributes { <empty> }";
+                    return LocalizeValue.localizeTODO("Attributes { <empty> }");
                 }
                 String suffix = attrList.size() > 1 ? " & " + attrList.size() + " more..." : " ";
-                return "Attributes { " + getAttrDisplayName(firstAttr) + suffix + "}";
+                return LocalizeValue.localizeTODO("Attributes { " + getAttrDisplayName(firstAttr) + suffix + "}");
             }
             else if (element instanceof BnfFileImpl file) {
-                return file.getName();
+                return LocalizeValue.of(file.getName());
             }
-            return "" + element;
+            return LocalizeValue.of(String.valueOf(element));
         }
 
         @RequiredReadAction
         private static String getAttrDisplayName(BnfAttr attr) {
-            final BnfAttrPattern attrPattern = attr.getAttrPattern();
-            final BnfExpression attrValue = attr.getExpression();
+            BnfAttrPattern attrPattern = attr.getAttrPattern();
+            BnfExpression attrValue = attr.getExpression();
             String attrValueText = attrValue == null ? "" : attrValue instanceof BnfValueList ? "[ ... ]" : attrValue.getText();
             return attr.getName() + (attrPattern == null ? "" : attrPattern.getText()) + " = " + attrValueText;
         }
