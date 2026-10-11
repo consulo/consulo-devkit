@@ -35,6 +35,7 @@ import consulo.language.psi.PsiElement;
 import consulo.language.psi.PsiErrorElement;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiWhiteSpace;
+import consulo.localize.LocalizeValue;
 import consulo.ui.ex.ColoredItemPresentation;
 import consulo.ui.image.Image;
 import consulo.util.lang.StringUtil;
@@ -44,7 +45,8 @@ import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfRule;
 
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -132,42 +134,41 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
         @Override
         @RequiredReadAction
         public String getAlphaSortKey() {
-            return getPresentableText();
+            return getPresentableText().get();
         }
 
         @Nonnull
         @Override
         @RequiredReadAction
-        public String getPresentableText() {
+        public LocalizeValue getPresentableText() {
             PsiElement element = getElement();
             ASTNode node = element != null ? element.getNode() : null;
             IElementType elementType = node != null ? node.getElementType() : null;
             if (element instanceof LeafPsiElement) {
-                return elementType + ": '" + element.getText() + "'";
+                return LocalizeValue.of(elementType + ": '" + element.getText() + "'");
             }
             else if (element instanceof PsiErrorElement errorElem) {
-                return "PsiErrorElement: '" + errorElem.getErrorDescription() + "'";
+                return LocalizeValue.of("PsiErrorElement: '" + errorElem.getErrorDescription() + "'");
             }
             else if (elementType instanceof LivePreviewElementType.RuleType ruleType) {
                 BnfRule rule = ruleType.getRule(element.getProject());
                 if (rule != null) {
                     BnfFile file = (BnfFile)rule.getContainingFile();
                     String className = getRulePsiClassName(rule, getPsiClassFormat(file));
-                    return className + ": '" + StringUtil.first(element.getText(), 30, true) + "'";
+                    return LocalizeValue.of(className + ": '" + StringUtil.first(element.getText(), 30, true) + "'");
                 }
             }
-            return elementType + "";
+            return LocalizeValue.of(String.valueOf(elementType));
         }
 
-        @Nullable
         @Override
-        public String getLocationString() {
+        public @Nullable String getLocationString() {
             return null;
         }
 
-        @Nullable
         @Override
-        public Image getIcon() {
+        @RequiredReadAction
+        public @Nullable Image getIcon() {
             PsiElement element = getElement();
             if (element instanceof PsiErrorElement) {
                 return null; //AllIcons.General.Error;
@@ -183,9 +184,9 @@ public class LivePreviewStructureViewFactory implements PsiStructureViewFactory 
             return null;
         }
 
-        @Nullable
         @Override
-        public TextAttributesKey getTextAttributesKey() {
+        @RequiredReadAction
+        public @Nullable TextAttributesKey getTextAttributesKey() {
             return getElement() instanceof PsiErrorElement ? CodeInsightColors.ERRORS_ATTRIBUTES : null;
         }
     }

@@ -24,11 +24,8 @@ import consulo.usage.UsageViewNodeTextLocation;
 import org.intellij.grammar.psi.BnfRule;
 
 /**
- * Created by IntelliJ IDEA.
- * Date: 8/11/11
- * Time: 4:04 PM
- *
  * @author Vadim Romansky
+ * @since 2011-08-11
  */
 public class InlineRuleDialog extends InlineOptionsDialog {
     private final PsiReference myReference;
@@ -48,7 +45,7 @@ public class InlineRuleDialog extends InlineOptionsDialog {
 
     @Override
     protected LocalizeValue getNameLabelText() {
-        return LocalizeValue.localizeTODO(ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE));
+        return ElementDescriptionUtil.getElementDescription(myElement, UsageViewNodeTextLocation.INSTANCE);
     }
 
     @Override
