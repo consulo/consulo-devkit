@@ -29,11 +29,10 @@ import consulo.language.plain.PlainTextFileType;
 import consulo.language.psi.*;
 import consulo.language.psi.search.FilenameIndex;
 import consulo.language.util.IncorrectOperationException;
+import consulo.localize.LocalizeValue;
 import consulo.project.Project;
 import consulo.project.content.scope.ProjectScopes;
-import consulo.project.ui.notification.Notification;
-import consulo.project.ui.notification.NotificationType;
-import consulo.project.ui.notification.Notifications;
+import consulo.project.ui.notification.NotificationService;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
@@ -46,6 +45,7 @@ import consulo.virtualFileSystem.VirtualFileWrapper;
 import consulo.virtualFileSystem.fileType.UnknownFileType;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.intellij.grammar.KnownAttribute;
@@ -57,7 +57,6 @@ import org.intellij.grammar.psi.BnfFile;
 import org.intellij.grammar.psi.BnfReferenceOrToken;
 import org.intellij.grammar.psi.impl.GrammarUtil;
 
-import jakarta.annotation.Nullable;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -88,7 +87,7 @@ public class BnfGenerateLexerAction extends AnAction implements AnActionWithSync
 
         final Project project = file.getProject();
 
-        final BnfFile bnfFile = (BnfFile)file;
+        final BnfFile bnfFile = (BnfFile) file;
         final String flexFileName = getFlexFileName(bnfFile);
 
         Collection<VirtualFile> files = FilenameIndex.getVirtualFilesByName(project, flexFileName, ProjectScopes.getAllScope(project));
@@ -119,14 +118,10 @@ public class BnfGenerateLexerAction extends AnAction implements AnActionWithSync
 
                     VirtualFileUtil.saveText(virtualFile, text);
 
-                    Notifications.Bus.notify(
-                        new Notification(
-                            BnfNotificationGroup.GRAMMAR_KIT,
-                            virtualFile.getName() + " generated", "to " + virtualFile.getParent().getPath(),
-                            NotificationType.INFORMATION
-                        ),
-                        project
-                    );
+                    NotificationService.getInstance().newInfo(BnfNotificationGroup.GRAMMAR_KIT)
+                        .title(LocalizeValue.localizeTODO(virtualFile.getName() + " generated"))
+                        .content(LocalizeValue.localizeTODO("to " + virtualFile.getParent().getPath()))
+                        .notify(project);
 
                     associateFileTypeAndNavigate(project, virtualFile);
                 }

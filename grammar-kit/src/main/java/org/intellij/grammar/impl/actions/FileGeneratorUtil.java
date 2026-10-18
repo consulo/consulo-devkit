@@ -20,22 +20,20 @@ import consulo.application.WriteAction;
 import consulo.component.ProcessCanceledException;
 import consulo.devkit.grammarKit.impl.BnfNotificationGroup;
 import consulo.language.psi.search.FilenameIndex;
+import consulo.localize.LocalizeValue;
 import consulo.module.content.ProjectFileIndex;
 import consulo.module.content.ProjectRootManager;
 import consulo.project.Project;
 import consulo.project.content.scope.ProjectScopes;
-import consulo.project.ui.notification.Notification;
-import consulo.project.ui.notification.NotificationType;
-import consulo.project.ui.notification.Notifications;
+import consulo.project.ui.notification.NotificationService;
 import consulo.util.lang.ObjectUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.intellij.grammar.BnfFileType;
 import org.intellij.grammar.config.Options;
-
-import jakarta.annotation.Nonnull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -120,14 +118,11 @@ public class FileGeneratorUtil {
     }
 
     static void fail(@Nonnull Project project, @Nonnull String title, @Nonnull String message) {
-        Notifications.Bus.notify(
-            new Notification(
-                BnfNotificationGroup.GRAMMAR_KIT,
-                title, message,
-                NotificationType.ERROR
-            ),
-            project
-        );
+        NotificationService.getInstance().newError(BnfNotificationGroup.GRAMMAR_KIT)
+            .title(LocalizeValue.localizeTODO(title))
+            .content(LocalizeValue.localizeTODO(message))
+            .notify(project);
+
         throw new ProcessCanceledException();
     }
 }

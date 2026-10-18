@@ -30,22 +30,19 @@ import consulo.language.editor.LangDataKeys;
 import consulo.language.psi.PsiDocumentManager;
 import consulo.language.psi.PsiFile;
 import consulo.language.psi.PsiManager;
+import consulo.localize.LocalizeValue;
 import consulo.logging.Logger;
 import consulo.project.Project;
-import consulo.project.ui.notification.Notification;
 import consulo.project.ui.notification.NotificationGroup;
-import consulo.project.ui.notification.NotificationType;
-import consulo.project.ui.notification.Notifications;
+import consulo.project.ui.notification.NotificationService;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithAsyncUpdate;
-import consulo.ui.ex.action.AnActionWithSyncUpdate;
 import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.concurrent.coroutine.Coroutine;
 import consulo.util.io.FileUtil;
 import consulo.util.io.PathUtil;
-import consulo.util.lang.ExceptionUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
@@ -155,10 +152,9 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
                             StringUtil.formatDuration(System.currentTimeMillis() - startTime)
                         );
                         if (bnfFiles.size() > 3) {
-                            Notifications.Bus.notify(
-                                new Notification(BnfNotificationGroup.GRAMMAR_KIT, "", report, NotificationType.INFORMATION),
-                                project
-                            );
+                            NotificationService.getInstance().newInfo(BnfNotificationGroup.GRAMMAR_KIT)
+                                .content(LocalizeValue.localizeTODO(report))
+                                .notify(project);
                         }
                         VirtualFileUtil.markDirtyAndRefresh(true, true, true, targets.toArray(new VirtualFile[targets.size()]));
                     }
@@ -198,28 +194,18 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
                                 written += f.length();
                             }
                             totalWritten += written;
-                            Notifications.Bus.notify(
-                                new Notification(
-                                    BnfNotificationGroup.GRAMMAR_KIT,
-                                    String.format("%s generated (%s)", file.getName(), StringUtil.formatFileSize(written)),
-                                    "to " + genDir + (duration == null ? "" : " in " + duration),
-                                    NotificationType.INFORMATION
-                                ),
-                                project
-                            );
+                            NotificationService.getInstance().newInfo(BnfNotificationGroup.GRAMMAR_KIT)
+                                .title(LocalizeValue.localizeTODO(String.format("%s generated (%s)", file.getName(), StringUtil.formatFileSize(written))))
+                                .content(LocalizeValue.localizeTODO("to " + genDir + (duration == null ? "" : " in " + duration)))
+                                .notify(project);
                         }
                         catch (ProcessCanceledException ignored) {
                         }
                         catch (Exception ex) {
-                            Notifications.Bus.notify(
-                                new Notification(
-                                    BnfNotificationGroup.GRAMMAR_KIT,
-                                    file.getName() + " generation failed",
-                                    ExceptionUtil.getMessage(ex),
-                                    NotificationType.ERROR
-                                ),
-                                project
-                            );
+                            NotificationService.getInstance().newError(BnfNotificationGroup.GRAMMAR_KIT)
+                                .title(LocalizeValue.localizeTODO(file.getName() + " generation failed"))
+                                .content(LocalizeValue.of(ex))
+                                .notify(project);
                             LOG.warn(ex);
                         }
                     }
