@@ -57,12 +57,8 @@ public class PluginConfigurationType extends ConfigurationTypeBase {
             public RunConfiguration createTemplateConfiguration(Project project) {
                 final ConsuloRunConfiguration runConfiguration = new ConsuloRunConfiguration(project, this, getDisplayName().get());
 
-                if (runConfiguration.VM_PARAMETERS == null) {
-                    runConfiguration.VM_PARAMETERS = getVmParameters();
-                }
-                else {
-                    runConfiguration.VM_PARAMETERS += getVmParameters();
-                }
+                String vmParameters = runConfiguration.getVmParameters();
+                runConfiguration.setVmParameters(vmParameters == null ? getVmParameters() : vmParameters + getVmParameters());
                 return runConfiguration;
             }
 

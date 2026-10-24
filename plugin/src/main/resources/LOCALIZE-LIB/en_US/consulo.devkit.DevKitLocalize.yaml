@@ -436,6 +436,14 @@ run.configuration.consulo.sdk.chooser.title:
     text: Select SDK
 run.configuration.enable.java9.modules:
     text: Enable Java 9 modules?
+run.configuration.fragment.java9.modules:
+    text: Enable Java 9 modules
+run.configuration.fragment.plugins.home.path:
+    text: Plugins home path
+run.configuration.fragment.sdk:
+    text: SDK
+run.configuration.fragment.vm.parameters:
+    text: VM parameters
 run.configuration.no.consulo.sdk:
     text: No Consulo Sdk
 run.configuration.no.java.sdk:

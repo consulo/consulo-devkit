@@ -16,13 +16,8 @@
 
 package consulo.devkit.run;
 
-import com.intellij.java.coverage.CoverageConfigurable;
 import consulo.content.bundle.Sdk;
 import consulo.execution.configuration.ConfigurationFactory;
-import consulo.execution.configuration.RunConfiguration;
-import consulo.execution.configuration.log.ui.LogConfigurationPanel;
-import consulo.execution.configuration.ui.SettingsEditor;
-import consulo.execution.configuration.ui.SettingsEditorGroup;
 import consulo.execution.executor.Executor;
 import consulo.execution.runner.ExecutionEnvironment;
 import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
@@ -37,16 +32,6 @@ public class ConsuloRunConfiguration extends ConsuloRunConfigurationBase impleme
         super(project, factory, name);
     }
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("unchecked")
-    public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-        SettingsEditorGroup settingsEditorGroup = new SettingsEditorGroup<RunConfiguration>();
-        settingsEditorGroup.addEditor("General", new ConsuloRunConfigurationEditor(getProject()));
-        settingsEditorGroup.addEditor("Coverage", new CoverageConfigurable(this));
-        settingsEditorGroup.addEditor("Log", new LogConfigurationPanel<ConsuloRunConfiguration>());
-        return settingsEditorGroup;
-    }
 
     @Nonnull
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2016 consulo.io
+ * Copyright 2013-2026 consulo.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package consulo.devkit.run;
 
-import consulo.project.Project;
+import org.jspecify.annotations.Nullable;
 
 /**
- * @author VISTALL
- * @since 2015-04-12
+ * The {@code <option name value>} fields a sandbox configuration wrote before the fragment model.
  */
-public class ConsuloRunConfigurationEditor extends ConsuloRunConfigurationEditorBase<ConsuloRunConfiguration> {
-    public ConsuloRunConfigurationEditor(Project project) {
-        super(project);
-    }
+public class ConsuloRunConfigurationLegacyState {
+    public @Nullable String VM_PARAMETERS;
+    public boolean ENABLED_JAVA9_MODULES;
+    public @Nullable String PROGRAM_PARAMETERS;
+    public @Nullable String PLUGINS_HOME_PATH;
+    public @Nullable String ALT_CONSULO_SDK_PATH;
 }

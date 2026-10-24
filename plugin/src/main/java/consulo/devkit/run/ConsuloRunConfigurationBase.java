@@ -17,54 +17,81 @@
 package consulo.devkit.run;
 
 import consulo.annotation.access.RequiredReadAction;
-import consulo.component.util.pointer.NamedPointer;
 import consulo.content.bundle.Sdk;
-import consulo.content.bundle.SdkPointerManager;
 import consulo.content.bundle.SdkUtil;
 import consulo.devkit.localize.DevKitLocalize;
 import consulo.execution.configuration.ConfigurationFactory;
+import consulo.execution.configuration.LegacyRunConfigurationConverter;
+import consulo.execution.configuration.ProgramParametersAware;
+import consulo.execution.configuration.fragment.ProgramParametersFragmentState;
+import consulo.execution.configuration.fragment.RunConfigurationFragment;
 import consulo.execution.configuration.LocatableConfigurationBase;
 import consulo.execution.configuration.log.LogFileOptions;
 import consulo.execution.configuration.log.PredefinedLogFile;
 import consulo.execution.executor.Executor;
 import consulo.execution.runner.ExecutionEnvironment;
-import consulo.application.Application;
 import consulo.java.debugger.impl.GenericDebugRunnerConfiguration;
 import consulo.module.Module;
 import consulo.module.ModuleManager;
 import consulo.process.ExecutionException;
 import consulo.project.Project;
 import consulo.util.lang.Comparing;
-import consulo.util.lang.StringUtil;
-import consulo.util.xml.serializer.DefaultJDOMExternalizer;
-import consulo.util.xml.serializer.InvalidDataException;
-import consulo.util.xml.serializer.WriteExternalException;
 import org.jdom.Element;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
+import java.util.List;
+
 /**
  * @author VISTALL
  * @since 2015-04-12
  */
-public abstract class ConsuloRunConfigurationBase extends LocatableConfigurationBase implements GenericDebugRunnerConfiguration {
+public abstract class ConsuloRunConfigurationBase extends LocatableConfigurationBase implements GenericDebugRunnerConfiguration, ProgramParametersAware {
     public static final PredefinedLogFile CONSULO_LOG = new PredefinedLogFile("CONSULO_LOG", true);
 
     public static final String LOG_FILE = "/system/log/consulo.log";
     private static final String JAVA_SDK = "java-sdk";
-    private static final String CONSULO_SDK = "consulo-sdk";
-
-    public String VM_PARAMETERS;
-    public boolean ENABLED_JAVA9_MODULES;
-    public String PROGRAM_PARAMETERS;
-    public String PLUGINS_HOME_PATH;
-    protected NamedPointer<Sdk> myJavaSdkPointer;
-    public boolean USE_ALT_CONSULO_SDK;
-    public String ALT_CONSULO_SDK_PATH;
 
     public ConsuloRunConfigurationBase(Project project, ConfigurationFactory factory, String name) {
         super(project, factory, name);
+    }
+
+    @Override
+    protected Class<ConsuloRunConfigurationOptions> getOptionsClass() {
+        return ConsuloRunConfigurationOptions.class;
+    }
+
+    @Override
+    public ConsuloRunConfigurationOptions getOptions() {
+        return (ConsuloRunConfigurationOptions) super.getOptions();
+    }
+
+    @Override
+    protected void convertLegacyState(LegacyRunConfigurationConverter converter) {
+        super.convertLegacyState(converter);
+
+        ConsuloRunConfigurationLegacyState old = converter.readXml(ConsuloRunConfigurationLegacyState.class);
+        ConsuloRunConfigurationOptions options = new ConsuloRunConfigurationOptions();
+        options.setVmParameters(old.VM_PARAMETERS);
+        options.setJava9Modules(old.ENABLED_JAVA9_MODULES);
+        options.setPluginsHomePath(old.PLUGINS_HOME_PATH);
+        options.setConsuloSdkPath(old.ALT_CONSULO_SDK_PATH);
+        Element javaSdk = converter.getElement().getChild(JAVA_SDK);
+        options.setJavaSdk(javaSdk == null ? null : javaSdk.getAttributeValue("name"));
+        converter.setOptions(options);
+
+        converter.addFragment(new ProgramParametersFragmentState(old.PROGRAM_PARAMETERS));
+    }
+
+    @Override
+    public List<RunConfigurationFragment<?>> createFragments() {
+        return List.of(
+            new ConsuloSdkFragment<>(),
+            new ConsuloVmParametersFragment<>(),
+            new ConsuloPluginsHomePathFragment<>(),
+            new ConsuloJava9ModulesFragment<>()
+        );
     }
 
     @Nonnull
@@ -84,17 +111,46 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
         }
     }
 
+    @Nullable
     public String getConsuloSdkHome() {
-        if (StringUtil.isEmpty(ALT_CONSULO_SDK_PATH)) {
-            return null;
-        }
-        return ALT_CONSULO_SDK_PATH;
+        return getOptions().getConsuloSdkPath();
+    }
+
+    public void setConsuloSdkHome(@Nullable String path) {
+        getOptions().setConsuloSdkPath(path);
+    }
+
+    @Nullable
+    public String getPluginsHomePath() {
+        return getOptions().getPluginsHomePath();
+    }
+
+    public void setPluginsHomePath(@Nullable String path) {
+        getOptions().setPluginsHomePath(path);
+    }
+
+    @Nullable
+    public String getVmParameters() {
+        return getOptions().getVmParameters();
+    }
+
+    public void setVmParameters(@Nullable String vmParameters) {
+        getOptions().setVmParameters(vmParameters);
+    }
+
+    public boolean isEnabledJava9Modules() {
+        return getOptions().isJava9Modules();
+    }
+
+    public void setEnabledJava9Modules(boolean enabled) {
+        getOptions().setJava9Modules(enabled);
     }
 
     @Nullable
     @Override
     public final ConsuloSandboxRunState getState(@Nonnull Executor executor, @Nonnull ExecutionEnvironment env) throws ExecutionException {
-        final Sdk javaSdk = myJavaSdkPointer == null ? null : myJavaSdkPointer.get();
+        String javaSdkName = getJavaSdkName();
+        final Sdk javaSdk = javaSdkName == null ? null : SdkUtil.createPointer(javaSdkName).get();
         if (javaSdk == null) {
             throw new ExecutionException(DevKitLocalize.runConfigurationNoJavaSdk().get());
         }
@@ -104,7 +160,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
             throw new ExecutionException(DevKitLocalize.runConfigurationNoConsuloSdk().get());
         }
 
-        return createState(executor, env, javaSdk, consuloSdkHome, PLUGINS_HOME_PATH);
+        return createState(executor, env, javaSdk, consuloSdkHome, getPluginsHomePath());
     }
 
     @Nonnull
@@ -116,27 +172,7 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
         @Nullable String pluginsHomePath
     ) throws ExecutionException;
 
-    @Override
-    public void readExternal(Element element) throws InvalidDataException {
-        DefaultJDOMExternalizer.readExternal(this, element);
 
-        myJavaSdkPointer = PluginRunXmlConfigurationUtil.readPointer(
-            JAVA_SDK,
-            element,
-            () -> Application.get().getInstance(SdkPointerManager.class)
-        );
-
-        super.readExternal(element);
-    }
-
-    @Override
-    public void writeExternal(Element element) throws WriteExternalException {
-        DefaultJDOMExternalizer.writeExternal(this, element);
-
-        PluginRunXmlConfigurationUtil.writePointer(JAVA_SDK, element, myJavaSdkPointer);
-
-        super.writeExternal(element);
-    }
 
     @Override
     public boolean isGeneratedName() {
@@ -145,11 +181,11 @@ public abstract class ConsuloRunConfigurationBase extends LocatableConfiguration
 
     @Nullable
     public String getJavaSdkName() {
-        return myJavaSdkPointer == null ? null : myJavaSdkPointer.getName();
+        return getOptions().getJavaSdk();
     }
 
     public void setJavaSdkName(@Nullable String name) {
-        myJavaSdkPointer = name == null ? null : SdkUtil.createPointer(name);
+        getOptions().setJavaSdk(name);
     }
 
     @Nonnull

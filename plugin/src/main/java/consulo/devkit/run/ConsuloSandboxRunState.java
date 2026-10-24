@@ -102,8 +102,8 @@ public class ConsuloSandboxRunState extends CommandLineState {
 
         ParametersList vm = params.getVMParametersList();
 
-        vm.addParametersString(profile.VM_PARAMETERS);
-        params.getProgramParametersList().addParametersString(profile.PROGRAM_PARAMETERS);
+        vm.addParametersString(profile.getVmParameters());
+        params.getProgramParametersList().addParametersString(profile.getProgramParameters());
 
         String selectedBuildPath = ObjectUtil.notNull(ConsuloSdkType.selectBuild(consuloSdkHome), consuloSdkHome);
 
@@ -139,7 +139,7 @@ public class ConsuloSandboxRunState extends CommandLineState {
 
         params.setJdk(javaSdk);
 
-        boolean enableModules = profile.ENABLED_JAVA9_MODULES;
+        boolean enableModules = profile.isEnabledJava9Modules();
 
         ArrayList<File> classpath = new ArrayList<>();
         ArrayList<File> modulepath = new ArrayList<>();
