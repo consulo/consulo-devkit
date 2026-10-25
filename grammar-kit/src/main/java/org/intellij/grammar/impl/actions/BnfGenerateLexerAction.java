@@ -41,9 +41,13 @@ import consulo.ui.ex.awt.Messages;
 import consulo.util.collection.ContainerUtil;
 import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
-import consulo.virtualFileSystem.VirtualFileWrapper;
 import consulo.virtualFileSystem.fileType.UnknownFileType;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
+import consulo.ui.UIAction;
+import consulo.util.concurrent.coroutine.Coroutine;
+import consulo.util.concurrent.coroutine.CoroutineScope;
+import consulo.util.concurrent.coroutine.step.CodeExecution;
+import consulo.virtualFileSystem.LocalFileSystem;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.apache.velocity.VelocityContext;
@@ -64,6 +68,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
 import static org.intellij.grammar.generator.ParserGeneratorUtil.getRootAttribute;
 
@@ -95,16 +103,49 @@ public class BnfGenerateLexerAction extends AnAction implements AnActionWithSync
 
         FileSaverDescriptor descriptor = new FileSaverDescriptor("Save JFlex Lexer", "", "flex");
         VirtualFile baseDir = firstItem != null ? firstItem.getParent() : bnfFile.getVirtualFile().getParent();
-        VirtualFileWrapper fileWrapper = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project).
-            save(baseDir, firstItem != null ? firstItem.getName() : flexFileName);
-        if (fileWrapper == null) {
-            return;
-        }
-        final VirtualFile virtualFile = fileWrapper.getVirtualFile(true);
-        if (virtualFile == null) {
-            return;
-        }
+        FileChooserFactory.getInstance()
+            .newSaverBuilder(descriptor)
+            .project(project)
+            .baseDir(baseDir.getFileSystem().getNioPath(baseDir))
+            .fileName(firstItem != null ? firstItem.getName() : flexFileName)
+            .showAsync()
+            .whenComplete((path, error) -> {
+                if (error == null) {
+                    generateLexer(project, bnfFile, flexFileName, path);
+                }
+            });
+    }
 
+    private void generateLexer(Project project, BnfFile bnfFile, String flexFileName, Path path) {
+        CoroutineScope.launchAsync(
+            project.coroutineContext(),
+            () -> Coroutine
+                .first(CodeExecution.<Object, Optional<VirtualFile>>apply(ignored -> createFile(path)))
+                .then(UIAction.<Optional<VirtualFile>, Optional<VirtualFile>>apply(file -> {
+                    file.ifPresent(virtualFile -> writeLexer(project, bnfFile, flexFileName, virtualFile));
+                    return file;
+                }))
+        );
+    }
+
+    private static Optional<VirtualFile> createFile(Path path) {
+        try {
+            Path parent = path.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+        }
+        catch (IOException e) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(LocalFileSystem.getInstance().refreshAndFindFileByNioFile(path));
+    }
+
+    @RequiredUIAccess
+    private void writeLexer(Project project, BnfFile bnfFile, String flexFileName, VirtualFile virtualFile) {
         new WriteCommandAction.Simple(project) {
             @Override
             protected void run() throws Throwable {
