@@ -9,16 +9,16 @@ import consulo.language.editor.CommonDataKeys;
 import consulo.language.psi.PsiFile;
 import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnActionEvent;
-import consulo.virtualFileSystem.LocalFileSystem;
+import consulo.virtualFileSystem.RefreshQueue;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import org.yaml.snakeyaml.Yaml;
 
 import jakarta.annotation.Nonnull;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,7 +61,7 @@ public class ConvertResourceBundleToYamlAction extends InternalAction {
         catch (IOException ignored) {
         }
 
-        LocalFileSystem.getInstance().refreshIoFiles(Arrays.asList(result));
+        RefreshQueue.getInstance().refreshPaths(false, false, null, List.of(result.toPath()));
     }
 
     @RequiredReadAction
