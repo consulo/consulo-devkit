@@ -77,11 +77,11 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
 
     @Override
     public Coroutine<?, ?> updateAsync(AnActionEvent e) {
-        return ActionSafeReadLock.run(e, presentation -> {
-            Project project = e.getData(Project.KEY);
-            List<BnfFile> files = getFiles(e);
-            presentation.setEnabledAndVisible(project != null && !files.isEmpty());
-        }).toCoroutine();
+        return ActionSafeReadLock.run(
+            e,
+            presentation -> presentation.setEnabledAndVisible(e.getData(Project.KEY) != null),
+            presentation -> presentation.setEnabledAndVisible(!getFiles(e).isEmpty())
+        ).toCoroutine();
     }
 
     @RequiredReadAction

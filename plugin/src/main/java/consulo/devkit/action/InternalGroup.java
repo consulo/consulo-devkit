@@ -16,13 +16,16 @@
 
 package consulo.devkit.action;
 
+import consulo.devkit.module.extension.PluginModuleExtension;
 import consulo.devkit.util.PluginModuleUtil;
+import consulo.module.extension.ModuleExtensionHelper;
 import consulo.project.Project;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithAsyncUpdate;
 import consulo.ui.ex.action.DefaultActionGroup;
-import consulo.ui.ex.action.coroutine.ActionSafeReadLock;
+import consulo.ui.ex.action.Presentation;
 import consulo.util.concurrent.coroutine.Coroutine;
+import consulo.util.concurrent.coroutine.step.CodeExecution;
 
 /**
  * @author VISTALL
@@ -31,9 +34,14 @@ import consulo.util.concurrent.coroutine.Coroutine;
 public class InternalGroup extends DefaultActionGroup implements AnActionWithAsyncUpdate {
     @Override
     public Coroutine<?, ?> updateAsync(AnActionEvent e) {
-        return ActionSafeReadLock.run(e, presentation -> {
+        // PluginModuleUtil.isConsuloOrPluginProject(project, null) without a module is the project name and the module
+        // extensions only: nothing needs the read lock, so the group is never disabled by a running write action
+        return Coroutine.first(CodeExecution.<Object, Object>apply(input -> {
+            Presentation presentation = e.getPresentation();
             Project project = e.getData(Project.KEY);
-            presentation.setVisible(project != null && PluginModuleUtil.isConsuloOrPluginProject(project, null));
-        }).toCoroutine();
+            presentation.setVisible(project != null && (PluginModuleUtil.isConsuloProject(project)
+                || ModuleExtensionHelper.getInstance(project).hasModuleExtension(PluginModuleExtension.class)));
+            return input;
+        }));
     }
 }

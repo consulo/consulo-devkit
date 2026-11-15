@@ -47,9 +47,16 @@ public abstract class InternalAction extends AnAction implements AnActionWithAsy
 
     @Override
     public final Coroutine<?, ?> updateAsync(AnActionEvent e) {
-        return ActionSafeReadLock.run(e, presentation -> presentation.setEnabledAndVisible(checkUpdate(e))).toCoroutine();
+        return ActionSafeReadLock.run(
+            e,
+            presentation -> presentation.setEnabledAndVisible(e.getData(Project.KEY) != null),
+            presentation -> presentation.setEnabledAndVisible(checkUpdate(e))
+        ).toCoroutine();
     }
 
+    /**
+     * Called under the read lock and only for an event with a project: without one the action is already hidden.
+     */
     @RequiredReadAction
     protected boolean checkUpdate(@Nonnull AnActionEvent e) {
         Project project = e.getData(Project.KEY);

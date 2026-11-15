@@ -18,10 +18,12 @@ package org.intellij.grammar.impl.actions;
 
 import consulo.annotation.access.RequiredReadAction;
 import consulo.codeEditor.Editor;
+import consulo.document.FileDocumentManager;
 import consulo.language.Language;
 import consulo.language.editor.DaemonCodeAnalyzer;
 import consulo.language.editor.LangDataKeys;
 import consulo.language.editor.PlatformDataKeys;
+import consulo.language.file.light.LightVirtualFile;
 import consulo.language.psi.PsiFile;
 import consulo.project.Project;
 import consulo.ui.annotation.RequiredUIAccess;
@@ -62,6 +64,16 @@ public class HighlightGrammarAtCaretAction extends AnAction implements AnActionW
     @Override
     public Coroutine<?, ?> updateAsync(AnActionEvent e) {
         return ActionSafeReadLock.run(e, presentation -> {
+            // a preview editor edits a live preview file: a light file of a live preview language
+            Editor editor = e.getData(Editor.KEY);
+            boolean preview = editor != null
+                && FileDocumentManager.getInstance().getFile(editor.getDocument()) instanceof LightVirtualFile file
+                && file.getLanguage() instanceof LivePreviewLanguage;
+            if (!preview) {
+                presentation.setText(getTemplatePresentation().getText());
+            }
+            presentation.setEnabledAndVisible(preview);
+        }, presentation -> {
             Editor editor = getPreviewEditor(e);
             boolean enabled = editor != null;
             String command = !enabled ? "" : GrammarAtCaretPassFactory.GRAMMAR_AT_CARET_KEY.get(editor) != null ? "Stop " : "Start ";
