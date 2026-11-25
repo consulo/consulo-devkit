@@ -2,6 +2,7 @@ package org.intellij.grammar.impl.actions;
 
 import consulo.annotation.component.ActionImpl;
 import consulo.devkit.grammarKit.generator.GenerateTarget;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 
 import java.util.EnumSet;
 
@@ -12,6 +13,6 @@ import java.util.EnumSet;
 @ActionImpl(id = "grammar.GenerateParser.API")
 public class GenerateApiParserAction extends GenerateAction {
     public GenerateApiParserAction() {
-        super("Generate Parser [API]", EnumSet.of(GenerateTarget.API));
+        super(BnfLocalize.actionTextGenerateParserApi(), EnumSet.of(GenerateTarget.API));
     }
 }
