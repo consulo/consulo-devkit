@@ -16,15 +16,16 @@
 package org.intellij.grammar.impl.actions;
 
 import consulo.annotation.access.RequiredReadAction;
-import consulo.application.Application;
+import consulo.application.ReadAction;
+import consulo.application.WriteAction;
 import consulo.application.progress.PerformInBackgroundOption;
 import consulo.application.progress.ProgressIndicator;
 import consulo.application.progress.ProgressManager;
 import consulo.application.progress.Task;
-import consulo.application.util.function.ThrowableComputable;
 import consulo.component.ProcessCanceledException;
 import consulo.devkit.grammarKit.generator.GenerateTarget;
 import consulo.devkit.grammarKit.impl.BnfNotificationGroup;
+import consulo.devkit.grammarKit.localize.BnfLocalize;
 import consulo.document.FileDocumentManager;
 import consulo.language.editor.LangDataKeys;
 import consulo.language.psi.PsiDocumentManager;
@@ -35,6 +36,7 @@ import consulo.logging.Logger;
 import consulo.project.Project;
 import consulo.project.ui.notification.NotificationGroup;
 import consulo.project.ui.notification.NotificationService;
+import consulo.ui.annotation.RequiredUIAccess;
 import consulo.ui.ex.action.AnAction;
 import consulo.ui.ex.action.AnActionEvent;
 import consulo.ui.ex.action.AnActionWithAsyncUpdate;
@@ -47,7 +49,6 @@ import consulo.util.lang.StringUtil;
 import consulo.virtualFileSystem.VirtualFile;
 import consulo.virtualFileSystem.util.VirtualFileUtil;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.intellij.grammar.KnownAttribute;
 import org.intellij.grammar.generator.ParserGenerator;
 import org.intellij.grammar.psi.BnfFile;
@@ -62,15 +63,16 @@ import static org.intellij.grammar.impl.actions.FileGeneratorUtil.getTargetDirec
 
 /**
  * @author gregory
- * Date: 15.07.11 17:12
+ * @since 2011-07-15
  */
 public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate {
-    public static final NotificationGroup LOG_GROUP = NotificationGroup.logOnlyGroup("Parser Generator Log");
+    public static final NotificationGroup LOG_GROUP =
+        NotificationGroup.logOnlyGroup("parserGeneratorLog", BnfLocalize.notificationGroupParserGeneratorLog());
     private static final Logger LOG = Logger.getInstance(GenerateAction.class);
 
     private final Set<GenerateTarget> myGenerateTargets;
 
-    public GenerateAction(@Nullable String text, Set<GenerateTarget> generateTargets) {
+    public GenerateAction(LocalizeValue text, Set<GenerateTarget> generateTargets) {
         super(text);
         myGenerateTargets = generateTargets;
     }
@@ -79,7 +81,7 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
     public Coroutine<?, ?> updateAsync(AnActionEvent e) {
         return ActionSafeReadLock.run(
             e,
-            presentation -> presentation.setEnabledAndVisible(e.getData(Project.KEY) != null),
+            presentation -> presentation.setEnabledAndVisible(e.hasData(Project.KEY)),
             presentation -> presentation.setEnabledAndVisible(!getFiles(e).isEmpty())
         ).toCoroutine();
     }
@@ -91,7 +93,7 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
         if (project == null || files == null) {
             return Collections.emptyList();
         }
-        final PsiManager manager = PsiManager.getInstance(project);
+        PsiManager manager = PsiManager.getInstance(project);
         return ContainerUtil.mapNotNull(files, file -> {
             @SuppressWarnings("RequiredXAction")
             PsiFile psiFile = manager.findFile(file);
@@ -100,7 +102,7 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
     }
 
     @Override
-    @RequiredReadAction
+    @RequiredUIAccess
     public void actionPerformed(@Nonnull AnActionEvent e) {
         Project project = e.getData(Project.KEY);
         List<BnfFile> files = getFiles(e);
@@ -113,9 +115,10 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
         doGenerate(project, files, myGenerateTargets);
     }
 
+    @RequiredUIAccess
     public static void doGenerate(@Nonnull final Project project, final List<BnfFile> bnfFiles, Set<GenerateTarget> generateTargets) {
         final Map<BnfFile, VirtualFile> rootMap = new LinkedHashMap<>();
-        Application.get().runWriteAction(() -> {
+        WriteAction.run(() -> {
             for (BnfFile file : bnfFiles) {
                 String parserClass = getRootAttribute(file.getVersion(), file, KnownAttribute.PARSER_CLASS);
                 VirtualFile target = getTargetDirectoryFor(
@@ -130,7 +133,7 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
         });
 
         ProgressManager.getInstance().run(
-            new Task.Backgroundable(project, "Parser Generation", true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
+            new Task.Backgroundable(project, BnfLocalize.taskTitleParserGeneration(), true, PerformInBackgroundOption.ALWAYS_BACKGROUND) {
                 List<File> files = new ArrayList<>();
                 Set<VirtualFile> targets = new LinkedHashSet<>();
                 long totalWritten = 0;
@@ -144,16 +147,14 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
                         runInner();
                     }
                     finally {
-                        String report = String.format(
-                            "%d grammars: %d files generated (%s) in %s",
-                            bnfFiles.size(),
-                            files.size(),
-                            StringUtil.formatFileSize(totalWritten),
-                            StringUtil.formatDuration(System.currentTimeMillis() - startTime)
-                        );
                         if (bnfFiles.size() > 3) {
                             NotificationService.getInstance().newInfo(BnfNotificationGroup.GRAMMAR_KIT)
-                                .content(LocalizeValue.localizeTODO(report))
+                                .content(BnfLocalize.notificationContentNGrammarsNFilesGeneratedWithSizeInTime(
+                                    bnfFiles.size(),
+                                    files.size(),
+                                    StringUtil.formatFileSize(totalWritten),
+                                    StringUtil.formatDuration(System.currentTimeMillis() - startTime)
+                                ))
                                 .notify(project);
                         }
                         VirtualFileUtil.markDirtyAndRefresh(true, true, true, targets.toArray(new VirtualFile[targets.size()]));
@@ -174,36 +175,34 @@ public class GenerateAction extends AnAction implements AnActionWithAsyncUpdate 
                         try {
                             long time = System.currentTimeMillis();
                             int filesCount = files.size();
-                            Application.get().runReadAction(new ThrowableComputable<Boolean, Exception>() {
-                                @Override
-                                public Boolean compute() throws Exception {
-                                    new ParserGenerator(file, sourcePath, genDir.getPath(), "") {
-                                        @Override
-                                        protected PrintWriter openOutputInner(File file) throws IOException {
-                                            files.add(file);
-                                            return super.openOutputInner(file);
-                                        }
-                                    }.generate(generateTargets);
-                                    return true;
-                                }
-                            });
+                            ReadAction.run(
+                                () -> new ParserGenerator(file, sourcePath, genDir.getPath(), "") {
+                                    @Override
+                                    protected PrintWriter openOutputInner(File file) throws IOException {
+                                        files.add(file);
+                                        return super.openOutputInner(file);
+                                    }
+                                }.generate(generateTargets)
+                            );
                             long millis = System.currentTimeMillis() - time;
-                            String duration = millis < 1000 ? null : StringUtil.formatDuration(millis);
                             long written = 0;
                             for (File f : files.subList(filesCount, files.size())) {
                                 written += f.length();
                             }
                             totalWritten += written;
                             NotificationService.getInstance().newInfo(BnfNotificationGroup.GRAMMAR_KIT)
-                                .title(LocalizeValue.localizeTODO(String.format("%s generated (%s)", file.getName(), StringUtil.formatFileSize(written))))
-                                .content(LocalizeValue.localizeTODO("to " + genDir + (duration == null ? "" : " in " + duration)))
+                                .title(BnfLocalize.notificationTitleFileGeneratedWithSize(
+                                    file.getName(),
+                                    StringUtil.formatFileSize(written)
+                                ))
+                                .content(BnfLocalize.notificationContentToDirInTime(genDir.getPath(), StringUtil.formatDuration(millis)))
                                 .notify(project);
                         }
                         catch (ProcessCanceledException ignored) {
                         }
                         catch (Exception ex) {
                             NotificationService.getInstance().newError(BnfNotificationGroup.GRAMMAR_KIT)
-                                .title(LocalizeValue.localizeTODO(file.getName() + " generation failed"))
+                                .title(BnfLocalize.notificationTitleFileGenerationFailed(file.getName()))
                                 .content(LocalizeValue.of(ex))
                                 .notify(project);
                             LOG.warn(ex);

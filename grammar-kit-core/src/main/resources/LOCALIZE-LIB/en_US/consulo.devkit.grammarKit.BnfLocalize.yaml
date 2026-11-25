@@ -1,3 +1,7 @@
+action.text.generate.parser.api:
+    text: Generate Parser [API]
+action.text.generate.parser.impl:
+    text: Generate Parser [Impl]
 bnf.language.display.name:
     text: Grammar-Kit BNF
 bnf.preview.language.display.name:
@@ -20,10 +24,22 @@ left.recursion.inspection.display.name:
     text: Left recursion
 left.recursion.inspection.message:
     text: '''''{0}'''' employs left-recursion unsupported by generator'
+notification.content.n.grammars.n.files.generated.with.size.in.time:
+    text: '{0, number} {0, choice, 0#grammars|1#grammar|1<grammars}: {1, number} {1, choice, 0#files|1#file|1<files} generated ({2}) in {3}'
+notification.content.to.dir.in.time:
+    text: to {0} in {1}
+notification.group.parser.generator.log:
+    text: Parser Generator Log
+notification.title.file.generated.with.size:
+    text: '{0} generated ({1})'
+notification.title.file.generation.failed:
+    text: '{0} generation failed'
 suspicious.token.inspection.display.name:
     text: Suspicious token
 suspicious.token.inspection.message:
     text: '''''{0}'''' token looks like a reference to a missing rule'
+task.title.parser.generation:
+    text: Parser Generation
 unreachable.choice.branch.inspection.display.name:
     text: Unreachable choice branch
 unreachable.choice.branch.inspection.message.matches.eof:
