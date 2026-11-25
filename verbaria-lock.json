@@ -3,7 +3,7 @@
   "project" : "consulo-devkit",
   "projectVersion" : "master",
   "sourceLocale" : "en-US",
-  "generatedAt" : "2026-10-24T12:31:00.523419679Z",
+  "generatedAt" : "2026-11-25T17:02:45.640497902Z",
   "documents" : {
     "consulo.devkit.DevKitLocalize" : {
       "source" : {
@@ -12,7 +12,7 @@
     },
     "consulo.devkit.grammarKit.BnfLocalize" : {
       "source" : {
-        "sig" : "808700c310c850fb54da8bd527e22e40"
+        "sig" : "f4e36cd7b747d298c224f7c9392a9f52"
       }
     }
   }
